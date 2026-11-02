@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { noHorizontalScroll, shot, shotEl, trackConsole } from './helpers';
 
@@ -207,7 +208,9 @@ test.describe('mock exam (T086) @visual', () => {
     expect(problems, problems.join('\n')).toEqual([]);
   });
 
-  test('real routes degrade: /mock/1 and /day/29 without content; dark theme exam', async ({ page }) => {
+  test('real routes: /mock/1 and /day/29 (content or graceful "coming soon"); dark theme exam', async ({ page }) => {
+    const hasMock1 = existsSync('src/content/questions/mock-1.yaml');
+    const hasDay29 = existsSync('src/content/lessons/day-29.mdx');
     const problems = trackConsole(page);
     await seed(
       page,
@@ -217,11 +220,16 @@ test.describe('mock exam (T086) @visual', () => {
       }),
     );
     await page.goto('/mock/1');
-    await expect(page.locator('[data-coming-soon="mock"]')).toContainText('Mock exam 1 is coming soon');
+    if (hasMock1) await expect(page.locator('[data-mock="mock-1"]')).toBeVisible();
+    else await expect(page.locator('[data-coming-soon="mock"]')).toContainText('Mock exam 1 is coming soon');
     await page.goto('/mock/3');
     await expect(page.locator('h1')).toHaveText('Mock exam 3 (optional final retake)');
     await page.goto('/day/29');
-    await expect(page.locator('[data-coming-soon="mock-day"]')).toBeVisible();
+    if (hasDay29) {
+      await expect(page.locator('[data-coming-soon="mock-day"]')).toHaveCount(0);
+      await expect(page.locator('#remediation')).toBeVisible();
+    } else await expect(page.locator('[data-coming-soon="mock-day"]')).toBeVisible();
+    await noHorizontalScroll(page);
     await expect(
       page.locator('[data-mock-launch="1"]').getByRole('link', { name: 'Start mock 1 →' }),
     ).toHaveAttribute('href', '/mock/1');

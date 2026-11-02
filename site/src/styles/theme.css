@@ -481,3 +481,12 @@
   }
 }
 }
+
+/* Day content tables (lesson, review and mock layouts): scroll inside their box on small screens. */
+@layer components {
+  article table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}

@@ -97,5 +97,15 @@ const nav = [
         apply(next);
       });
     </script>
+      <script>
+      // Wide tables / code blocks scroll horizontally on small screens: make them keyboard-focusable (WCAG 2.1.1).
+      const markScrollable = () =>
+        document.querySelectorAll<HTMLElement>('article table, article pre').forEach((el) => {
+          if (el.scrollWidth > el.clientWidth + 1) el.tabIndex = 0;
+          else el.removeAttribute('tabindex');
+        });
+      markScrollable();
+      window.addEventListener('resize', markScrollable);
+    </script>
   </body>
 </html>

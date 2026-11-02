@@ -404,7 +404,7 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) �
 - [x] T119 [P] [US2] Author site/src/content/questions/day-06.yaml (20 Q, TS 1.3) — TC-Q
 - [x] T120 [US4] Author site/src/content/lessons/day-07.mdx (`kind: review`) — D1 concept map, top-20 facts, traps — TC: W1–W2 for day 07
 - [x] T121 [US4] Author site/src/content/questions/week-1.yaml (57 new Q, TS 1.1–1.3 + 4.1) — TC-Q
-- [ ] T122 REVIEW Week 1 content: regression + screenshots Days 4–7
+- [x] T122 REVIEW Week 1 content: regression + screenshots Days 4–7
 
 ### Week 2
 - [x] T123 [P] [US1] Author site/src/content/lessons/day-08.mdx — tokens, chunking, embeddings, vectors, transformer LLMs, FMs, multimodal, diffusion; Deep Dive "Embedding pipeline" (TS 2.1) — TC-L
@@ -421,7 +421,7 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) �
 - [x] T134 [P] [US2] Author site/src/content/questions/day-13.yaml (20 Q, TS 2.3, 3.1) — TC-Q
 - [x] T135 [US4] Author site/src/content/lessons/day-14.mdx (`kind: review`, D1–D2) — TC: W1–W2
 - [x] T136 [US4] Author site/src/content/questions/week-2.yaml (57 new Q, D1–D2) — TC-Q
-- [ ] T137 REVIEW Week 2 content; log
+- [x] T137 REVIEW Week 2 content; log
 
 ### Week 3
 - [x] T138 [P] [US1] Author site/src/content/lessons/day-15.mdx — FM selection criteria, inference parameters, customization spectrum ICL→RAG→fine-tune→distillation→pre-train (TS 3.1) — TC-L
@@ -438,7 +438,7 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) �
 - [x] T149 [P] [US2] Author site/src/content/questions/day-20.yaml (20 Q, TS 3.4) — TC-Q
 - [x] T150 [US4] Author site/src/content/lessons/day-21.mdx (`kind: review`, D1–D3) — TC: W1–W2
 - [x] T151 [US4] Author site/src/content/questions/week-3.yaml (57 new Q, D1–D3) — TC-Q
-- [ ] T152 REVIEW Week 3 content; log
+- [x] T152 REVIEW Week 3 content; log
 
 ### Week 4
 - [x] T153 [P] [US1] Author site/src/content/lessons/day-22.mdx — responsible AI dimensions, datasets, bias/variance effects, legal risks (TS 4.1) — TC-L
@@ -455,7 +455,7 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) �
 - [x] T164 [P] [US2] Author site/src/content/questions/day-27.yaml (20 Q, TS 5.2) — TC-Q
 - [x] T165 [US4] Author site/src/content/lessons/day-28.mdx (`kind: review`, D1–D5) — TC: W1–W2
 - [x] T166 [US4] Author site/src/content/questions/week-4.yaml (57 new Q, D1–D5) — TC-Q
-- [ ] T167 REVIEW Week 4 content; log
+- [x] T167 REVIEW Week 4 content; log
 
 ### Mocks
 - [x] T168 [P] [US5] Author site/src/content/questions/mock-1.yaml (65 Q, split 13/16/18/9/9, all 4 types) — TC-Q
@@ -465,19 +465,19 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) �
   - TC: M11 launch button opens `/mock/1`; remediation lists weak domains after an attempt.
 - [x] T172 [US5] Author site/src/content/lessons/day-30.mdx (`kind: mock`) — Mock 2, optional Mock 3, final revision, exam-day strategy
   - TC: M12 launch buttons for Mock 2 and 3; strategy section lists registration, delivery options, 90 min / 65 Q pacing, question types.
-- [ ] T173 REVIEW mocks: `npm run validate:content -- --final` → ≥ 900 unique, every TS ≥ 3, mock splits; Q7 on 100% of mock questions; log
+- [x] T173 REVIEW mocks: `npm run validate:content -- --final` → ≥ 900 unique, every TS ≥ 3, mock splits; Q7 on 100% of mock questions; log
 
 ---
 
 ## Phase 11: Polish & Final Validation
 
-- [ ] T174 [P] Accessibility suite site/tests/e2e/a11y.spec.ts — TC: axe zero serious/critical on every route desktop+mobile; keyboard-only quiz + mock walkthrough
-- [ ] T175 [P] Full visual regression site/tests/e2e/visual.spec.ts (`@visual`) — TC: every route × desktop/mobile × light/dark vs. baselines; inspect all
-- [ ] T176 [P] Performance spec site/tests/e2e/perf.spec.ts — TC: P1 lesson page interactive < 2 s with 4× CPU throttling; P2 search results < 1 s; P3 lesson JS < 200 KB gzipped excluding lazy mermaid chunk (script site/scripts/perf-check.ts)
-- [ ] T177 Security review — TC: no `innerHTML`/`set:html` on untrusted data (lint + grep), CSP present, zero external requests in Playwright network log, import validation covered by T017; log
+- [x] T174 [P] Accessibility suite site/tests/e2e/a11y.spec.ts — TC: axe zero serious/critical on every route desktop+mobile; keyboard-only quiz + mock walkthrough
+- [x] T175 [P] Full visual regression site/tests/e2e/visual.spec.ts (`@visual`) — TC: every route × desktop/mobile × light/dark vs. baselines; inspect all
+- [x] T176 [P] Performance spec site/tests/e2e/perf.spec.ts — TC: P1 lesson page interactive < 2 s with 4× CPU throttling; P2 search results < 1 s; P3 lesson JS < 200 KB gzipped excluding lazy mermaid chunk (script site/scripts/perf-check.ts)
+- [x] T177 Security review — TC: no `innerHTML`/`set:html` on untrusted data (lint + grep), CSP present, zero external requests in Playwright network log, import validation covered by T017; log
 - [ ] T178 Content currency re-check — TC: live AIF-C01 guide version/domains/in-scope lists equal site/src/data/exam-guide.yaml; every lesson `lastVerified` updated; `validate:content --final` green
 - [ ] T179 Port-forwarding check — TC: `npm run preview -- --host`, forward 4321 in VS Code, forwarded URL loads, export on localhost → import on forwarded URL; screenshot `port-forward`
-- [ ] T180 Implement site/scripts/audit-tasks.ts (final task validation) — TC: A1 every task with `@visual` has screenshots on disk; A2 every task's test files exist and pass; A3 reports unchecked tasks
+- [x] T180 Implement site/scripts/audit-tasks.ts (final task validation) — TC: A1 every task with `@visual` has screenshots on disk; A2 every task's test files exist and pass; A3 reports unchecked tasks
 - [ ] T181 Final validation: run quickstart.md V1–V15, `npm run verify`, `npm run audit:tasks`; run the single multi-model swarm review (matrix in Quality Gate) over the whole site incl. screenshots; fix findings; log once in reviews/review-log.md
 
 ---

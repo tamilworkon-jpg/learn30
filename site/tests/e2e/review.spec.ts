@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { noHorizontalScroll, shot, shotEl, trackConsole } from './helpers';
 
@@ -26,7 +27,7 @@ const seed = (page: Page, p: object) =>
 const stored = (page: Page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? '{}'), KEY);
 
 test.describe('weekly review (T079) @visual', () => {
-  test('W1 summary lists every prior lesson day grouped by domain; missing content degrades', async ({
+  test('W1 summary lists every prior lesson day grouped by domain; content or graceful "coming soon"', async ({
     page,
   }) => {
     const problems = trackConsole(page);
@@ -52,9 +53,14 @@ test.describe('weekly review (T079) @visual', () => {
     await expect(d4.getByRole('link')).toHaveCount(1);
     await expect(d4.getByRole('link')).toContainText('Day 2:');
     await expect(d1.locator('.review-avg')).toHaveText('Daily quiz average 80% (2 of 6 days taken)');
-    // Day 7 MDX and week-1.yaml are authored later: both parts say "coming soon".
-    await expect(page.locator('[data-coming-soon="review-content"]')).toBeVisible();
-    await expect(page.locator('#weekly-test')).toContainText('coming soon');
+    // Day 7 MDX and week-1.yaml: real content when authored, otherwise both parts say "coming soon".
+    if (existsSync('src/content/lessons/day-07.mdx')) {
+      await expect(page.locator('[data-coming-soon="review-content"]')).toHaveCount(0);
+      await expect(page.locator('#concept-map figure.diagram img')).toHaveCount(1);
+      expect(await page.locator('#top-facts ol > li').count()).toBeGreaterThanOrEqual(20);
+    } else await expect(page.locator('[data-coming-soon="review-content"]')).toBeVisible();
+    if (existsSync('src/content/questions/week-1.yaml')) await expect(page.locator('#weekly-test [data-quiz="week-1"]')).toBeAttached();
+    else await expect(page.locator('#weekly-test')).toContainText('coming soon');
     await noHorizontalScroll(page);
     await shotEl(page.locator('#summary'), 'review-summary');
 
