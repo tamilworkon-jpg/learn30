@@ -1,0 +1,24 @@
+---
+// Test-only fixture (T093/M11): Day 29 mock-day layout rendering the documented example MDX. Not linked from learner navigation.
+import MockDayLayout from '../../layouts/MockDayLayout.astro';
+import Section from '../../components/lesson/Section.astro';
+import Diagram from '../../components/lesson/Diagram.astro';
+import Callout from '../../components/lesson/Callout.astro';
+import MockLaunch from '../../components/mock/MockLaunch.astro';
+import RemediationSlot from '../../components/mock/RemediationSlot.astro';
+import { Content as Day29, frontmatter as fm29 } from '../../../tests/fixtures/days/day-29-mock.mdx';
+import { Content as Day30, frontmatter as fm30 } from '../../../tests/fixtures/days/day-30-mock.mdx';
+import { course } from '../../lib/data';
+
+export function getStaticPaths() {
+  return [{ params: { day: '29' } }, { params: { day: '30' } }];
+}
+const day = Number(Astro.params.day);
+const cd = course.days.find((d) => d.day === day)!;
+const [Content, fm] = day === 29 ? [Day29, fm29] : [Day30, fm30];
+const components = { Section, Diagram, Callout, MockLaunch, Remediation: RemediationSlot };
+---
+
+<MockDayLayout cd={cd} hasContent title={`${fm.title} (fixture)`}>
+  <Content components={components} />
+</MockDayLayout>

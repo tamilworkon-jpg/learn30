@@ -1,0 +1,257 @@
+/* Review + mock islands (T081, T082, T088–T091). Global because Preact components can't use Astro scoped styles. */
+/* Per-domain results */
+.dom-results {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 14px;
+}
+.dom-row-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.dom-name {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.dom-score {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.dom-weak {
+  background: var(--trap-bg);
+  color: var(--trap-text);
+}
+.dom-bar {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 10px;
+  margin-top: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+.dom-bar::-webkit-progress-bar {
+  background: var(--border);
+  border-radius: 999px;
+}
+.dom-bar-D1::-webkit-progress-value {
+  background: var(--d1);
+}
+.dom-bar-D2::-webkit-progress-value {
+  background: var(--d2);
+}
+.dom-bar-D3::-webkit-progress-value {
+  background: var(--d3);
+}
+.dom-bar-D4::-webkit-progress-value {
+  background: var(--d4);
+}
+.dom-bar-D5::-webkit-progress-value {
+  background: var(--d5);
+}
+.dom-bar-D1::-moz-progress-bar {
+  background: var(--d1);
+}
+.dom-bar-D2::-moz-progress-bar {
+  background: var(--d2);
+}
+.dom-bar-D3::-moz-progress-bar {
+  background: var(--d3);
+}
+.dom-bar-D4::-moz-progress-bar {
+  background: var(--d4);
+}
+.dom-bar-D5::-moz-progress-bar {
+  background: var(--d5);
+}
+.dom-revisit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+
+/* Engagement rating */
+.rating-stars {
+  display: flex;
+  gap: 6px;
+}
+.rating-star {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  color: var(--muted);
+  font-size: 24px;
+  cursor: pointer;
+}
+.rating-star.on {
+  color: var(--brand-orange-strong);
+  border-color: var(--accent);
+}
+[data-theme='dark'] .rating-star.on {
+  color: var(--accent);
+}
+.rating-star:focus-within {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Mock exam */
+.mock-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 20px;
+  margin-top: 16px;
+}
+.mock-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.timer {
+  background: var(--brand-purple);
+  color: #fff;
+  font-size: 16px;
+  padding: 8px 16px;
+  font-variant-numeric: tabular-nums;
+}
+.timer.timer-warn {
+  background: #fde68a;
+  color: #78350f;
+}
+.timer.timer-danger {
+  background: #b91c1c;
+  color: #fff;
+}
+.palette {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 6px;
+}
+.pal {
+  position: relative;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 6px 0;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  min-height: 30px;
+}
+.pal.answered {
+  background: var(--brand-purple2);
+  border-color: var(--brand-purple2);
+  color: #fff;
+}
+.pal.flagged {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+.pal.current {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+.pal.answered.current {
+  outline-color: var(--brand-orange-strong);
+}
+.pal:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 2px;
+}
+.pal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--muted);
+}
+.pal-legend .pal {
+  display: inline-block;
+  width: 14px;
+  min-height: 14px;
+  padding: 0;
+  vertical-align: middle;
+  margin-right: 4px;
+  cursor: default;
+}
+.mock-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+.btn-flag[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+.mock-review-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.mock-review-list .pal {
+  width: 44px;
+}
+.scaled-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 28px;
+}
+.scaled-num {
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.pill-pass {
+  background: var(--d4);
+  color: #fff;
+  font-size: 14px;
+}
+.pill-fail {
+  background: #b91c1c;
+  color: #fff;
+  font-size: 14px;
+}
+.notice-auto {
+  background: var(--real-bg);
+  color: var(--real-text);
+}
+@media (max-width: 900px) {
+  .mock-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 520px) {
+  .mock-actions > .btn {
+    flex: 1 1 0;
+    justify-content: center;
+    gap: 4px;
+    padding-inline: 8px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+}

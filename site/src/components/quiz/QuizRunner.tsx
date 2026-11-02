@@ -13,9 +13,11 @@ interface Props {
   assessmentId: string;
   title: string;
   questions: Question[];
+  /** 'weekly' on review days (`week-N`); defaults to the daily quiz. */
+  kind?: Attempt['kind'];
 }
 
-export default function QuizRunner({ assessmentId, title, questions }: Props) {
+export default function QuizRunner({ assessmentId, title, questions, kind = 'daily' }: Props) {
   const [session, setSession] = useState<QuizSession | null>(null);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [index, setIndex] = useState(0);
@@ -26,11 +28,11 @@ export default function QuizRunner({ assessmentId, title, questions }: Props) {
   const moved = useRef(false);
 
   useEffect(() => {
-    const s = createQuizSession(getStore(), assessmentId, questions);
+    const s = createQuizSession(getStore(), assessmentId, questions, kind);
     setSession(s);
     setAnswers(s.answers());
     setBest(s.best());
-  }, [assessmentId, questions]);
+  }, [assessmentId, questions, kind]);
 
   // Move focus to the new question / results for keyboard and screen-reader users (not on first render).
   useEffect(() => {
@@ -68,7 +70,8 @@ export default function QuizRunner({ assessmentId, title, questions }: Props) {
     setIndex(0);
   };
 
-  if (questions.length === 0) return <p class="muted">Questions for this day are coming soon.</p>;
+  if (questions.length === 0)
+    return <p class="muted">{kind === 'weekly' ? 'The cumulative test for this week is coming soon.' : 'Questions for this day are coming soon.'}</p>;
 
   return (
     <div class="quiz" ref={root} data-ready={session ? 'true' : undefined} data-quiz={assessmentId}>

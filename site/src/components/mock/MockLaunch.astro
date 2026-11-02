@@ -1,0 +1,49 @@
+---
+// T093 — mock-day launch card (`<MockLaunch n={1} />` in kind: mock MDX): format, start link, last attempt (client).
+import { getCollection } from 'astro:content';
+import { examGuide } from '../../lib/data';
+
+interface Props {
+  n: number;
+  optional?: boolean;
+}
+const { n, optional = false } = Astro.props;
+const count = (await getCollection('questions', (q) => q.data.set === `mock-${n}`)).length;
+const f = examGuide.format;
+---
+
+<div class="card mock-launch" data-mock-launch={n}>
+  <div class="flex flex-wrap items-center gap-2">
+    <strong class="text-lg">Mock exam {n}</strong>
+    {optional && <span class="pill pill-soft-launch">Optional final retake</span>}
+    {count === 0 && <span class="pill pill-soft-launch">Coming soon</span>}
+  </div>
+  <p class="muted m-0 mt-1 text-sm">{f.totalQuestions} questions · {f.minutes} minutes · pass {f.passScaled} on a {f.scaleMin}–{f.scaleMax} scale</p>
+  <p class="m-0 mt-2 text-sm" data-mock-last={n} hidden></p>
+  <a class="btn mt-3" href={`/mock/${n}`}>Start mock {n} →</a>
+</div>
+
+<script>
+  import { getStore } from '../../lib/progress/store';
+  const p = getStore().get();
+  for (const el of document.querySelectorAll<HTMLElement>('[data-mock-last]')) {
+    const id = `mock-${el.dataset.mockLast}`;
+    const last = p.attempts.filter((a) => a.assessmentId === id).at(-1);
+    const running = p.inProgress[id]?.deadline;
+    if (running) el.textContent = 'In progress — the clock is running. Resume now.';
+    else if (last) el.textContent = `Last attempt: ${last.score.scaled} / 1000 · ${(last.score.scaled ?? 0) >= 700 ? 'PASS' : 'FAIL'} (${Math.round(last.score.percent)}%)`;
+    else continue;
+    el.hidden = false;
+  }
+</script>
+
+<style>
+  .mock-launch {
+    margin: 16px 0;
+  }
+  .pill-soft-launch {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+</style>

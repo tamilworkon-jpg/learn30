@@ -1,0 +1,7 @@
+---
+// Test-only fixture (T086): Mock 1 runner with 65 synthetic questions (13/16/18/9/9). Not linked from learner navigation.
+import MockExam from '../../components/mock/MockExam.astro';
+import { mockFixture } from '../../../tests/fixtures/review-mock';
+---
+
+<MockExam n={1} questions={mockFixture} heading="Mock exam 1 (fixture)" />

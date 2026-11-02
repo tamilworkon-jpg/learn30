@@ -1,8 +1,17 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import LessonLayout from '../../layouts/LessonLayout.astro';
+import ReviewLayout from '../../layouts/ReviewLayout.astro';
+import MockDayLayout from '../../layouts/MockDayLayout.astro';
+import Section from '../../components/lesson/Section.astro';
+import Diagram from '../../components/lesson/Diagram.astro';
+import Callout from '../../components/lesson/Callout.astro';
+import MockLaunch from '../../components/mock/MockLaunch.astro';
+import RemediationSlot from '../../components/mock/RemediationSlot.astro';
 import { course, pad } from '../../lib/data';
+import { weeklySetId } from '../../lib/review';
+import type { Question } from '../../lib/types';
 
 export async function getStaticPaths() {
   const lessons = await getCollection('lessons');
@@ -12,10 +21,23 @@ export async function getStaticPaths() {
   }));
 }
 const { cd, entry } = Astro.props;
+const Content = entry && cd.kind !== 'lesson' ? (await render(entry)).Content : null;
+const weeklySet = weeklySetId(course, cd.day);
+const weekly: Question[] = weeklySet
+  ? (await getCollection('questions', (q) => q.data.set === weeklySet)).map((q) => q.data as Question).sort((a, b) => a.id.localeCompare(b.id))
+  : [];
 ---
 
 {
-  entry ? (
+  cd.kind === 'review' ? (
+    <ReviewLayout cd={cd} questions={weekly} hasContent={Boolean(Content)} title={entry?.data.title}>
+      {Content && <Content components={{ Section, Diagram, Callout }} />}
+    </ReviewLayout>
+  ) : cd.kind === 'mock' ? (
+    <MockDayLayout cd={cd} hasContent={Boolean(Content)} title={entry?.data.title}>
+      {Content && <Content components={{ Section, Diagram, Callout, MockLaunch, Remediation: RemediationSlot }} />}
+    </MockDayLayout>
+  ) : entry ? (
     <LessonLayout entry={entry} />
   ) : (
     <BaseLayout title={`Day ${cd.day}: ${cd.title}`}>

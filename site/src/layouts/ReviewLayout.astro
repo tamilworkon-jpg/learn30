@@ -1,0 +1,149 @@
+---
+// T083 — weekly review day (kind: review): summary → authored MDX (concept map, top facts, traps) → cumulative test →
+// per-domain results → engagement rating. Contract: specs/001-aws-ai-practitioner-course/contracts/review-and-mock-days.md
+import BaseLayout from './BaseLayout.astro';
+import ReviewSummary from '../components/review/ReviewSummary.astro';
+import DomainResults from '../components/review/DomainResults';
+import RatingPrompt from '../components/review/RatingPrompt';
+import QuizRunner from '../components/quiz/QuizRunner';
+import { course, examGuide, pad } from '../lib/data';
+import { getPrevNext } from '../lib/lesson-utils';
+import { weekOfDay } from '../lib/review';
+import type { CourseDay, Question } from '../lib/types';
+import '../styles/quiz.css';
+import '../styles/review.css';
+
+interface Props {
+  cd: CourseDay;
+  questions: Question[];
+  /** True when the day's MDX exists; its rendered content is passed in the default slot. */
+  hasContent: boolean;
+  title?: string;
+}
+const { cd, questions, hasContent, title = cd.title } = Astro.props;
+const week = weekOfDay(course, cd.day)!;
+const set = `week-${week.number}`;
+const { prev, next } = getPrevNext(cd.day, course);
+const domainIds = [...new Set(cd.taskStatements.map((ts) => examGuide.domains.find((d) => d.tasks.some((t) => t.id === ts))!.id))].sort();
+const domainNames = Object.fromEntries(examGuide.domains.map((d) => [d.id, d.name]));
+const dayTitles = Object.fromEntries(course.days.map((d) => [String(d.day), d.title]));
+const slim = questions.map(({ id, domain, lessonRef, type, answer }) => ({ id, domain, lessonRef, type, answer }));
+---
+
+<BaseLayout title={`Day ${cd.day}: ${title}`}>
+  <p class="muted text-sm m-0">Week {week.number} · {week.title} › Day {cd.day}</p>
+  <h1 class="h1">{title}</h1>
+  <div class="flex flex-wrap items-center gap-2 mb-2">
+    {domainIds.map((id) => <span class={`chip chip-${id}`}>{id} · {domainNames[id]}</span>)}
+    <span class="pill pill-accent">Review day · Days 1–{cd.day - 1}</span>
+  </div>
+
+  <div class="review" data-review-day={cd.day}>
+    <ReviewSummary day={cd.day} />
+
+    {
+      hasContent ? (
+        <article class="review-body" data-pagefind-body>
+          <slot />
+        </article>
+      ) : (
+        <div class="card mt-8" data-coming-soon="review-content">
+          <p class="m-0 font-semibold">🚧 Concept map, top facts and exam traps coming soon</p>
+          <p class="m-0 muted">The written part of this review is being prepared. You can still use the summary above and take the test below once it is available.</p>
+        </div>
+      )
+    }
+
+    <section class="review-section" id="weekly-test" data-section-type="quiz" aria-labelledby="weekly-test-h">
+      <h2 class="h2 sec-head" id="weekly-test-h">Cumulative test</h2>
+      {
+        questions.length > 0 && (
+          <p class="muted mt-0">
+            {questions.length} questions from Days 1–{cd.day - 1} · about {questions.length} minutes · mixed domains. Your answers are saved as you go.
+          </p>
+        )
+      }
+      <QuizRunner client:visible assessmentId={set} kind="weekly" title={`Week ${week.number} · Cumulative test`} questions={questions} />
+    </section>
+
+    <section class="review-section" id="domain-results" data-section-type="results" aria-labelledby="domain-results-h">
+      <h2 class="h2 sec-head" id="domain-results-h">Results by domain</h2>
+      <DomainResults client:visible assessmentId={set} questions={slim} domainNames={domainNames} dayTitles={dayTitles} />
+    </section>
+
+    <section class="review-section" id="rating" data-section-type="rating" aria-labelledby="rating-h">
+      <h2 class="h2 sec-head" id="rating-h">Your week</h2>
+      <RatingPrompt client:visible week={week.number} />
+    </section>
+
+    <nav class="prevnext" aria-label="Day navigation">
+      {prev ? <a class="btn btn-ghost" href={`/day/${pad(prev)}`}>← Previous: Day {prev}</a> : <span />}
+      {next && <a class="btn" href={`/day/${pad(next)}`}>Next: Day {next} →</a>}
+    </nav>
+  </div>
+</BaseLayout>
+
+<style>
+  .review :global(.lesson-section),
+  .review-section,
+  .review :global(.review-summary) {
+    margin-top: 32px;
+    scroll-margin-top: 16px;
+  }
+  .review :global(.sec-head) {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 6px;
+  }
+  .review-body :global(p),
+  .review-body :global(li) {
+    line-height: 1.75;
+  }
+  .review-body :global(ol:not([class])) {
+    list-style: decimal;
+    padding-left: 1.6em;
+  }
+  .review-body :global(ul:not([class])) {
+    list-style: disc;
+    padding-left: 1.4em;
+  }
+  .review-body :global(li) {
+    margin-top: 4px;
+  }
+  .review-body :global(li::marker) {
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .review-body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    display: block;
+    overflow-x: auto;
+  }
+  .review-body :global(th),
+  .review-body :global(td) {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .review-body :global(th) {
+    background: var(--card);
+  }
+  .review-body :global(code) {
+    background: var(--card);
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: 0.9em;
+  }
+  .prevnext {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+</style>

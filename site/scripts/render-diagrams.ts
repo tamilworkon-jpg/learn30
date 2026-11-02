@@ -16,7 +16,8 @@ function walk(dir: string): string[] {
 }
 
 const codes = new Map<string, string>();
-for (const file of walk(join(root, 'src'))) {
+// tests/fixtures holds the review/mock day examples rendered by the test-only /design/fixture-* routes.
+for (const file of [...walk(join(root, 'src')), ...walk(join(root, 'tests', 'fixtures'))]) {
   for (const code of extractDiagramCode(readFileSync(file, 'utf8'))) codes.set(diagramHash(code), code.replace(/\r\n?/g, '\n').trim());
 }
 const missing = [...codes].filter(([h]) => !existsSync(join(outDir, `${h}.svg`)));

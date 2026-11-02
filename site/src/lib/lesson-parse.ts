@@ -11,6 +11,8 @@ export interface ParsedSection {
 export interface ParsedLesson {
   frontmatter: Record<string, unknown>;
   sections: ParsedSection[];
+  /** MDX source after the frontmatter. */
+  body: string;
 }
 
 const attr = (attrs: string, name: string) => new RegExp(`${name}="([^"]*)"`).exec(attrs)?.[1] ?? '';
@@ -29,5 +31,5 @@ export function parseLesson(source: string): ParsedLesson {
       content: s[2],
     });
   }
-  return { frontmatter, sections };
+  return { frontmatter, sections, body: m ? source.slice(m[0].length) : source };
 }

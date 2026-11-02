@@ -73,7 +73,11 @@ export function createQuizSession(store: Store, assessmentId: string, questions:
       startedAt = new Date().toISOString();
       return attempt;
     },
-    best: () => (dayKey ? store.get().days[String(Number(dayKey))]?.bestScore : undefined),
+    best(): number | undefined {
+      if (dayKey) return store.get().days[String(Number(dayKey))]?.bestScore;
+      const scores = store.get().attempts.filter((a) => a.assessmentId === assessmentId).map((a) => a.score.percent);
+      return scores.length ? Math.max(...scores) : undefined;
+    },
     lastAttempt: () => store.get().attempts.filter((a) => a.assessmentId === assessmentId).at(-1),
   };
 }

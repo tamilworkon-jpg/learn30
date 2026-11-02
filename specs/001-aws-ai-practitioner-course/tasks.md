@@ -308,13 +308,14 @@ If a model is unavailable, use any available model that differs from the author 
 
 **Goal**: Review days with domain summary, concept map, 55–60 Q test, per-domain results, engagement rating (FR-026). **Independent test**: quickstart V7.
 
-- [ ] T079 [P] [US4] E2E site/tests/e2e/review.spec.ts (`@visual`)
+- [x] T079 [P] [US4] E2E site/tests/e2e/review.spec.ts (`@visual`)
   - TC: W1 summary lists every prior lesson day grouped by domain; W2 concept map renders; W3 results show per-domain bars + "Revisit Day N" links; W4 rating prompt 1–5 saves to `ratings.week-N` and shows on dashboard; screenshots `review-summary`, `review-results`, `review-rating`.
-- [ ] T080 [P] [US4] Create site/src/components/review/ReviewSummary.astro
-- [ ] T081 [P] [US4] Create site/src/components/review/DomainResults.tsx
-- [ ] T082 [P] [US4] Create site/src/components/review/RatingPrompt.tsx (FR-026)
-- [ ] T083 [US4] Create site/src/layouts/ReviewLayout.astro; render `kind: review` in site/src/pages/day/[day].astro → T079 green
-- [ ] T084 [US4] REVIEW US4; log
+- [x] T080 [P] [US4] Create site/src/components/review/ReviewSummary.astro
+- [x] T081 [P] [US4] Create site/src/components/review/DomainResults.tsx
+- [x] T082 [P] [US4] Create site/src/components/review/RatingPrompt.tsx (FR-026)
+- [x] T083 [US4] Create site/src/layouts/ReviewLayout.astro; render `kind: review` in site/src/pages/day/[day].astro → T079 green
+- [x] T084 [US4] REVIEW US4; log
+  - Done 2026-11-02: unit 162 passing (new review.test.ts; quiz-state Q-S4 weekly; validator review/mock structure), E2E review.spec 6 passing (W1 on real /day/07 + /day/14; W2–W4 on the test-only fixture route /design/fixture-review rendering tests/fixtures/days/day-07-review.mdx + an 8-question week-1 fixture), quiz.spec regression green; lint/typecheck/validate:content clean; screenshots review-summary/results/rating/page/dark inspected (fixed: list markers in review MDX, "1 of 1 day" grammar, results card). Decisions: the layout (not the MDX) adds summary → test → per-domain results → rating, so review MDX holds only conceptMap/topFacts/traps (contract: contracts/review-and-mock-days.md); weak domain = < 70% (data-model); "Revisit Day N" = lesson days of the missed questions in that domain. Open: W4 "shows on dashboard" belongs to the dashboard (T075, other agent) — `ratings.week-N` is saved and validated here.
 
 ---
 
@@ -322,18 +323,19 @@ If a model is unavailable, use any available model that differs from the author 
 
 **Goal**: 65 Q / 90 min mocks with flagging, review, auto-submit, scaled score. **Independent test**: quickstart V8, V9.
 
-- [ ] T085 [P] [US5] Unit test site/tests/unit/mock.test.ts
+- [x] T085 [P] [US5] Unit test site/tests/unit/mock.test.ts
   - TC: M1 deadline = start + 90 min; M2 remaining time after reload; M3 expired → auto-submit `autoSubmitted: true`; M4 unanswered incorrect; M5 scaled + pass at 700; M6 readiness flag at ≥ 80%.
-- [ ] T086 [P] [US5] E2E site/tests/e2e/mock.spec.ts (`@visual`, fixture mock)
+- [x] T086 [P] [US5] E2E site/tests/e2e/mock.spec.ts (`@visual`, fixture mock)
   - TC: M7 65 Q, timer 90:00, palette nav, flag/unflag; M8 review screen lists flagged + unanswered; M9 submit → scaled, PASS/FAIL, domains; M10 inject `deadline` = now+3 s, reload → auto-submitted; screenshots `mock-question`, `mock-review`, `mock-results`.
-- [ ] T087 [US5] Implement site/src/lib/mock.ts → T085 green
-- [ ] T088 [P] [US5] Create site/src/components/mock/Timer.tsx (amber < 10 min, red < 2 min, aria-live every 5 min)
-- [ ] T089 [P] [US5] Create site/src/components/mock/Palette.tsx
-- [ ] T090 [P] [US5] Create site/src/components/mock/ReviewScreen.tsx
-- [ ] T091 [US5] Create site/src/components/mock/MockRunner.tsx
-- [ ] T092 [US5] Create site/src/pages/mock/[n].astro (n = 1..3) → T086 green
-- [ ] T093 [US5] Create site/src/layouts/MockDayLayout.astro; render `kind: mock` in day route
-- [ ] T094 [US5] REVIEW US5; log
+- [x] T087 [US5] Implement site/src/lib/mock.ts → T085 green
+- [x] T088 [P] [US5] Create site/src/components/mock/Timer.tsx (amber < 10 min, red < 2 min, aria-live every 5 min)
+- [x] T089 [P] [US5] Create site/src/components/mock/Palette.tsx
+- [x] T090 [P] [US5] Create site/src/components/mock/ReviewScreen.tsx
+- [x] T091 [US5] Create site/src/components/mock/MockRunner.tsx
+- [x] T092 [US5] Create site/src/pages/mock/[n].astro (n = 1..3) → T086 green
+- [x] T093 [US5] Create site/src/layouts/MockDayLayout.astro; render `kind: mock` in day route
+- [x] T094 [US5] REVIEW US5; log
+  - Done 2026-11-02: unit 169 passing (mock.test.ts M1–M6 + timer helpers), full E2E 62 passing (mock.spec 12: M7–M10 on the test-only fixture route /design/fixture-mock with 65 synthetic questions and the real 90-min clock, deadline injected for M10; M11–M12 on /design/fixture-mock-day-29|30 rendering the documented example MDX; real /mock/N and /day/29–30 show "coming soon" + launch cards); lint/typecheck/validate:content clean; screenshots mock-question/review/results/autosubmitted/timer-warn/exam-dark/day-29/day-30 desktop+mobile inspected (fixed: bullets on the remediation list, mobile action row wrapping → shorter "Flag" label with static aria-label). Decisions: the deadline lives in `inProgress['mock-N'].deadline` (resume on reload; expired on load → auto-submit); readiness = ≥ 80% (SC-005); MDX contract for review/mock days in contracts/review-and-mock-days.md, enforced by `checkReviewOrMockDay` in validate.ts (mock days list all 14 task statements; course.yaml keeps []). Fixture routes reuse the real assessment ids (`week-1`, `mock-1`) because progress-schema restricts ids; they are not linked from learner navigation.
 
 ---
 

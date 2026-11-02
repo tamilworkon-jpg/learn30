@@ -68,48 +68,55 @@ export default function Results({ questions, attempt, best, onRetake }: Props) {
       </div>
 
       <h3 class="h2 mt-8">Review your answers</h3>
-      <ol class="review-list">
-        {questions.map((q, i) => {
-          const ok = scoreQuestion(q, attempt.answers[q.id]);
-          const key = q.answer;
-          const isCorrectOption = (id: string) => (q.type === 'matching' ? false : (key as string[]).includes(id));
-          return (
-            <li key={q.id} class="card review-item" data-correct={ok ? 'true' : 'false'}>
-              <span class={`num-icon ${ok ? 'ok' : 'bad'}`} role="img" aria-label={ok ? 'Correct' : 'Incorrect'}>
-                {ok ? '✓' : '✗'}
-              </span>
-              <div class="min-w-0 flex-1">
-                <p class="m-0 font-medium">
-                  {i + 1}. {q.stem}
-                </p>
-                <p class="m-0 mt-2 text-sm">
-                  <strong>Your answer:</strong> {describe(q, attempt.answers[q.id])}
-                </p>
-                {!ok && (
-                  <p class="m-0 mt-1 text-sm">
-                    <strong>Correct answer:</strong> {describe(q, key)}
-                  </p>
-                )}
-                <p class="m-0 mt-2 text-sm">{q.explanation}</p>
-                <details class="opt-explain mt-2">
-                  <summary class="text-sm">Why each option is right or wrong</summary>
-                  <ul class="text-sm">
-                    {q.options.map((o) => (
-                      <li key={o.id} class={isCorrectOption(o.id) ? 'opt-correct' : undefined}>
-                        <strong>{o.text}</strong>
-                        {isCorrectOption(o.id) ? ' (correct)' : ''} — {o.explanation}
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-                <a class="text-sm" href={lessonHref(q.lessonRef)}>
-                  Review in lesson →
-                </a>
-              </div>
-            </li>
-          );
-        })}
-      </ol>
+      <AnswerReview questions={questions} answers={attempt.answers} />
     </div>
+  );
+}
+
+/** Per-question review: your answer, the key, every option's explanation and a link to the lesson section. */
+export function AnswerReview({ questions, answers }: { questions: Question[]; answers: Attempt['answers'] }) {
+  return (
+    <ol class="review-list">
+      {questions.map((q, i) => {
+        const ok = scoreQuestion(q, answers[q.id]);
+        const key = q.answer;
+        const isCorrectOption = (id: string) => (q.type === 'matching' ? false : (key as string[]).includes(id));
+        return (
+          <li key={q.id} class="card review-item" data-correct={ok ? 'true' : 'false'}>
+            <span class={`num-icon ${ok ? 'ok' : 'bad'}`} role="img" aria-label={ok ? 'Correct' : 'Incorrect'}>
+              {ok ? '✓' : '✗'}
+            </span>
+            <div class="min-w-0 flex-1">
+              <p class="m-0 font-medium">
+                {i + 1}. {q.stem}
+              </p>
+              <p class="m-0 mt-2 text-sm">
+                <strong>Your answer:</strong> {describe(q, answers[q.id])}
+              </p>
+              {!ok && (
+                <p class="m-0 mt-1 text-sm">
+                  <strong>Correct answer:</strong> {describe(q, key)}
+                </p>
+              )}
+              <p class="m-0 mt-2 text-sm">{q.explanation}</p>
+              <details class="opt-explain mt-2">
+                <summary class="text-sm">Why each option is right or wrong</summary>
+                <ul class="text-sm">
+                  {q.options.map((o) => (
+                    <li key={o.id} class={isCorrectOption(o.id) ? 'opt-correct' : undefined}>
+                      <strong>{o.text}</strong>
+                      {isCorrectOption(o.id) ? ' (correct)' : ''} — {o.explanation}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+              <a class="text-sm" href={lessonHref(q.lessonRef)}>
+                Review in lesson →
+              </a>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
   );
 }

@@ -1,0 +1,38 @@
+---
+day: 29
+kind: mock
+title: 'Mock exam 1 & remediation'
+summary: 'Sit a full 65-question, 90-minute mock under exam conditions, then turn your weakest domains into a focused remediation plan.'
+domains: [D1, D2, D3, D4, D5]
+taskStatements: ['1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '3.4', '4.1', '4.2', '5.1', '5.2']
+objectives:
+  - 'Complete Mock exam 1 in one 90-minute sitting'
+  - 'Read your scaled score and per-domain results'
+  - 'Plan targeted remediation for every domain under 70%'
+estimatedMinutes: 120
+lastVerified: '2026-11-02'
+---
+
+<Section id="launch" type="launch" title="Mock exam 1" minutes={90}>
+
+Treat this as the real exam: one sitting, no notes, phone away. Flag anything you are unsure about and use the review screen before you submit.
+
+<MockLaunch n={1} />
+
+<Callout type="tip">
+Budget about 80 seconds per question and keep 10 minutes at the end for flagged questions.
+</Callout>
+
+</Section>
+
+<Section id="remediation" type="remediation" title="Remediation plan" minutes={30}>
+
+Your weakest domains appear below once you have submitted Mock 1. Work through them in order.
+
+<Remediation mock={1} />
+
+1. Re-read the exam tips and summary of every "Revisit Day" link above.
+2. Retake the daily quiz of those days until you score 80% or more.
+3. Re-read the top facts of the matching weekly review.
+
+</Section>

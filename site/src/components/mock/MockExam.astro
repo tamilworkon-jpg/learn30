@@ -1,0 +1,38 @@
+---
+// T092 — shared body of /mock/N (and the test-only fixture route): heading + MockRunner island, or "coming soon".
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MockRunner from './MockRunner';
+import { course, examGuide, pad } from '../../lib/data';
+import type { Question } from '../../lib/types';
+import '../../styles/quiz.css';
+import '../../styles/review.css';
+
+interface Props {
+  n: number;
+  questions: Question[];
+  heading?: string;
+}
+const { n, questions, heading = `Mock exam ${n}${n === 3 ? ' (optional final retake)' : ''}` } = Astro.props;
+const domainNames = Object.fromEntries(examGuide.domains.map((d) => [d.id, d.name]));
+const dayTitles = Object.fromEntries(course.days.map((d) => [String(d.day), d.title]));
+const backDay = n === 1 ? 29 : 30;
+---
+
+<BaseLayout title={heading}>
+  <p class="muted text-sm m-0">
+    <a href={`/day/${pad(backDay)}`}>Day {backDay}</a> › Mock exam {n}
+  </p>
+  <h1 class="h1">{heading}</h1>
+  {
+    questions.length > 0 ? (
+      <MockRunner client:load assessmentId={`mock-${n}`} n={n} questions={questions} domainNames={domainNames} dayTitles={dayTitles} />
+    ) : (
+      <div class="card mt-4" data-coming-soon="mock">
+        <p class="m-0 font-semibold">🚧 Mock exam {n} is coming soon</p>
+        <p class="m-0 muted">
+          Its {examGuide.format.totalQuestions} questions are being written. Meanwhile, retake the daily quizzes and weekly tests for your weakest domains.
+        </p>
+      </div>
+    )
+  }
+</BaseLayout>
