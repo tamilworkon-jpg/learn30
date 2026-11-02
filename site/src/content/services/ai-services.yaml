@@ -1,0 +1,82 @@
+- name: Amazon Comprehend
+  category: AI services
+  purpose: "Managed natural language processing (NLP): sentiment, entities, key phrases, language detection, PII detection and custom classification in text."
+  examCue: "Choose this when the scenario says analyze text for sentiment, extract entities or key phrases, classify documents, or detect PII in text without building a model."
+  notThis: "Not for pulling text out of scanned documents (that's Textract) or converting speech to text (that's Transcribe)."
+  inScope: true
+  taskStatements: ['1.1', '1.2']
+  lessonRefs: ['day-01#explanation', 'day-03#explanation', 'day-05']
+- name: Amazon Lex
+  category: AI services
+  purpose: "Build conversational chatbots and voice bots with intents, slots and automatic speech recognition (the technology behind Alexa)."
+  examCue: "Choose this when the scenario needs a chatbot or IVR/contact-center voice bot that captures intents and slots, e.g. booking or order-status bots."
+  notThis: "Not a text-to-speech engine (that's Polly) and not a foundation model service for open-ended generation (that's Bedrock)."
+  inScope: true
+  taskStatements: ['1.2']
+  lessonRefs: ['day-01#examples', 'day-05']
+- name: Amazon Personalize
+  category: AI services
+  purpose: "Managed recommendation service that builds real-time personalized recommendations from user-interaction data."
+  examCue: "Choose this when the scenario mentions product recommendations, 'customers who bought X', personalized rankings or user segmentation for e-commerce or media."
+  notThis: "Not for forecasting numbers over time (use SageMaker AI) and not for sentiment analysis (that's Comprehend)."
+  inScope: true
+  taskStatements: ['1.2']
+  lessonRefs: ['day-01#explanation', 'day-03#explanation', 'day-05']
+- name: Amazon Polly
+  category: AI services
+  purpose: "Text-to-speech service that turns text into lifelike speech in many voices and languages."
+  examCue: "Choose this when the scenario needs to read text aloud: audio versions of articles, voice prompts, accessibility, spoken responses."
+  notThis: "Not speech-to-text (that's Transcribe) and not a chatbot builder (that's Lex)."
+  inScope: true
+  taskStatements: ['1.2']
+  lessonRefs: ['day-01#explanation', 'day-05']
+- name: Amazon Rekognition
+  category: AI services
+  purpose: "Computer vision for images and video: object and scene labels, face analysis and comparison, text in images, content moderation."
+  examCue: "Choose this when the scenario involves detecting objects, faces, celebrities or unsafe content in images or video, or identity verification by face."
+  notThis: "Not for extracting forms and tables from documents (that's Textract); it does read short text in images but is not an OCR document tool."
+  inScope: true
+  taskStatements: ['1.1', '1.2']
+  lessonRefs: ['day-01#explanation', 'day-01#hands-on', 'day-03#explanation', 'day-05']
+- name: Amazon Textract
+  category: AI services
+  purpose: "Extracts printed and handwritten text, forms (key-value pairs) and tables from scanned documents and PDFs."
+  examCue: "Choose this when the scenario says digitize invoices, forms, receipts, IDs or scanned PDFs and extract fields or tables (intelligent document processing)."
+  notThis: "Not for understanding the meaning of text (send Textract output to Comprehend) and not for general image labels (that's Rekognition)."
+  inScope: true
+  taskStatements: ['1.2']
+  lessonRefs: ['day-01#explanation', 'day-03#explanation', 'day-05']
+- name: Amazon Transcribe
+  category: AI services
+  purpose: "Automatic speech recognition: converts audio and video speech to text, with speaker labels, custom vocabulary and PII redaction."
+  examCue: "Choose this when the scenario needs call recordings, meetings or videos turned into text or subtitles (speech-to-text)."
+  notThis: "Not text-to-speech (that's Polly) and not translation (that's Translate)."
+  inScope: true
+  taskStatements: ['1.2']
+  lessonRefs: ['day-01#explanation', 'day-03#explanation', 'day-05']
+- name: Amazon Translate
+  category: AI services
+  purpose: "Neural machine translation of text between many languages, in real time or batch, with custom terminology."
+  examCue: "Choose this when the scenario needs to localize content or translate chat, documents or reviews between languages."
+  notThis: "Not for speech-to-text (Transcribe) or detecting the language's sentiment (Comprehend)."
+  inScope: true
+  taskStatements: ['1.2']
+  lessonRefs: ['day-01#explanation', 'day-05']
+- name: Amazon SageMaker AI
+  aka: [Amazon SageMaker, SageMaker]
+  category: AI services
+  purpose: "Fully managed platform to build, train, tune, deploy and monitor your own ML models (renamed from Amazon SageMaker in Dec 2024)."
+  examCue: "Choose this when the scenario needs a custom ML model end to end: Canvas (no-code), Data Wrangler, Ground Truth, Feature Store, Pipelines, Model Registry, Clarify, Model Monitor, endpoints."
+  notThis: "Not the first choice when a pre-trained AI service or a Bedrock foundation model already solves the task with no ML expertise."
+  inScope: true
+  taskStatements: ['1.1', '1.3', '2.3', '4.1', '4.2']
+  lessonRefs: ['day-01#explanation', 'day-02#hands-on', 'day-03#hands-on', 'day-06']
+- name: Amazon SageMaker JumpStart
+  aka: [JumpStart, SageMaker JumpStart]
+  category: AI services
+  purpose: "ML hub inside SageMaker AI with pre-trained and foundation models plus solution templates you can deploy or fine-tune in a few clicks."
+  examCue: "Choose this when the scenario wants to deploy or fine-tune an open-source/pre-trained model on your own SageMaker AI infrastructure with full control."
+  notThis: "Not a serverless API to FMs (that's Bedrock); JumpStart models run on SageMaker AI instances you manage and pay for."
+  inScope: true
+  taskStatements: ['1.3', '2.3', '3.1']
+  lessonRefs: ['day-06', 'day-12']

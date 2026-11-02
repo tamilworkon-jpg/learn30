@@ -1,0 +1,187 @@
+# Glossary — Domain 4: Guidelines for responsible AI (task statements 4.1–4.2).
+# Sorted alphabetically by term. `related` entries must match another glossary `term` exactly.
+
+- term: Amazon Bedrock Guardrails
+  aliases: [Guardrails]
+  definition: "Configurable safeguards applied to model inputs and outputs: content filters (hate, violence, sexual, misconduct, prompt attacks), denied topics, word filters, sensitive-information (PII) filters, contextual grounding checks and Automated Reasoning checks. Works with any model, including via the ApplyGuardrail API."
+  examCue: "On the exam: 'block harmful content', 'deny a topic', 'mask PII' or 'detect ungrounded answers' in a GenAI app → Amazon Bedrock Guardrails."
+  domain: D4
+  taskStatements: ['4.1', '5.1']
+  related: [Toxicity, Output filtering, Hallucination detection]
+  lessonRefs: ['day-17', 'day-23']
+
+- term: Amazon SageMaker Model Cards
+  aliases: [Model card, SageMaker Model Cards]
+  definition: "Structured documentation for an ML model recording its intended uses, risk rating, training data and method, evaluation results and limitations, so stakeholders can review and audit it."
+  examCue: "On the exam: 'document intended use, risks and evaluation of a model for governance or audit' → SageMaker Model Cards."
+  domain: D4
+  taskStatements: ['4.2', '5.1']
+  related: [Transparency, Data lineage]
+  lessonRefs: ['day-24', 'day-26']
+
+- term: Bias (responsible AI)
+  aliases: [Algorithmic bias]
+  definition: "When a model systematically favours or disadvantages certain people or groups, often because training data under-represents or misrepresents them, or reflects past unfair decisions."
+  examCue: "On the exam: unequal outcomes across demographic groups → responsible-AI bias; detect it with SageMaker Clarify and subgroup analysis."
+  domain: D4
+  taskStatements: ['1.1', '4.1']
+  related: [Fairness, Bias metrics, Bias (statistical)]
+  lessonRefs: ['day-02#explanation', 'day-22']
+
+- term: Bias metrics
+  definition: "Quantitative measures of unequal treatment in data or model predictions, such as class imbalance or difference in positive-prediction rates between groups. SageMaker Clarify reports them before training (data) and after training (predictions)."
+  examCue: "On the exam: 'measure bias in the dataset before training and in predictions after' → SageMaker Clarify bias metrics."
+  domain: D4
+  taskStatements: ['4.1']
+  related: [Bias (responsible AI), Class imbalance, SHAP values]
+  lessonRefs: ['day-23']
+
+- term: Class imbalance
+  definition: "When one class or group is far more common than another in a dataset — for example 99.8% legitimate vs 0.2% fraud, or few examples from one demographic. It can make models ignore the minority and inflate accuracy."
+  examCue: "On the exam: fix imbalance by collecting more minority data or resampling, and evaluate with precision/recall rather than accuracy."
+  domain: D4
+  taskStatements: ['4.1']
+  related: [Representativeness, Accuracy, Bias metrics]
+  lessonRefs: ['day-03#explanation', 'day-22']
+
+- term: Explainability
+  aliases: [Explainable AI, XAI]
+  definition: "The ability to describe, in human terms, why a model produced a particular output — for example which features drove a loan decision. Post-hoc tools such as SHAP explain even complex models."
+  examCue: "On the exam: 'explain why the model made this decision' to customers or regulators → explainability (SageMaker Clarify feature attributions)."
+  domain: D4
+  taskStatements: ['4.2']
+  related: [Interpretability, SHAP values, Transparency]
+  lessonRefs: ['day-24']
+
+- term: Fairness
+  definition: "The goal that a model's outcomes do not unjustly disadvantage individuals or groups based on attributes such as gender, age or ethnicity. Fairness is measured, not assumed."
+  examCue: "On the exam: fairness is a core responsible-AI dimension; verify it with per-group metrics, not overall accuracy."
+  domain: D4
+  taskStatements: ['1.1', '4.1']
+  related: [Bias (responsible AI), Subgroup analysis, Inclusivity]
+  lessonRefs: ['day-01#explanation', 'day-22']
+
+- term: Human audit
+  aliases: [Human review]
+  definition: "People periodically reviewing a model's data, decisions or outputs to catch errors, bias and harmful content that automated checks miss. Low-confidence predictions can be routed to reviewers (for example with Amazon Augmented AI)."
+  examCue: "On the exam: high-stakes or low-confidence decisions → add human review/audit as a responsible-AI control."
+  domain: D4
+  taskStatements: ['4.1']
+  related: [Human-in-the-loop evaluation, Subgroup analysis, Confidence score]
+  lessonRefs: ['day-23']
+
+- term: Human-centered design
+  aliases: [Human-centred design]
+  definition: "Designing AI systems around the needs of the people who use and are affected by them — clear explanations, ways to question or override decisions, and accessible interfaces."
+  examCue: "On the exam: human-centered design for explainable AI means explanations matched to the audience and users kept in control."
+  domain: D4
+  taskStatements: ['4.2']
+  related: [Explainability, Transparency]
+  lessonRefs: ['day-24']
+
+- term: Inclusivity
+  definition: "Ensuring an AI system works well for, and is designed with input from, people of diverse backgrounds, languages, abilities and regions rather than only a majority group."
+  examCue: "On the exam: 'performs poorly for users with regional accents' → an inclusivity problem, usually rooted in unrepresentative data."
+  domain: D4
+  taskStatements: ['4.1']
+  related: [Fairness, Representativeness]
+  lessonRefs: ['day-22']
+
+- term: Intellectual property risk
+  aliases: [IP risk, Copyright risk]
+  definition: "The legal risk that generative AI outputs reproduce or closely resemble copyrighted or trademarked material, or that training data was used without proper rights or licences."
+  examCue: "On the exam: legal risks of GenAI include IP infringement, biased outputs, loss of customer trust and hallucinations."
+  domain: D4
+  taskStatements: ['4.1', '4.2']
+  related: [Hallucination, Responsible AI]
+  lessonRefs: ['day-22']
+
+- term: Interpretability
+  definition: "How easily a human can understand a model's internal logic directly — for example reading a decision tree or linear-regression weights. Simpler models are more interpretable but may be less accurate."
+  examCue: "On the exam: regulation demands a fully understandable model → choose an interpretable (transparent) model, accepting a possible performance trade-off."
+  domain: D4
+  taskStatements: ['2.2', '4.2']
+  related: [Explainability, Transparency]
+  lessonRefs: ['day-11', 'day-24']
+
+- term: Representativeness
+  definition: "How well a dataset reflects the full range of people, situations and conditions the model will face in production. Unrepresentative data leads to worse performance for under-represented groups."
+  examCue: "On the exam: 'model works poorly for a group missing from training data' → improve dataset representativeness and balance."
+  domain: D4
+  taskStatements: ['3.3', '4.1']
+  related: [Class imbalance, Inclusivity, Data curation]
+  lessonRefs: ['day-03#explanation', 'day-22']
+
+- term: Responsible AI
+  definition: "Practices for building AI that is fair, inclusive, robust, safe, truthful (veracity), explainable, transparent, private, secure and well governed throughout its lifecycle."
+  examCue: "On the exam: responsible AI is a lifecycle practice backed by tools — Bedrock Guardrails, SageMaker Clarify, Model Monitor, Model Cards and human review."
+  domain: D4
+  taskStatements: ['4.1']
+  related: [Fairness, Robustness, Veracity]
+  lessonRefs: ['day-22']
+
+- term: Robustness
+  definition: "A model's ability to keep performing reliably when inputs are noisy, unusual, slightly changed or adversarial, and when conditions shift over time."
+  examCue: "On the exam: 'small changes to input wording flip the answer' → a robustness problem; test with perturbed inputs."
+  domain: D4
+  taskStatements: ['4.1']
+  related: [Safety, Drift]
+  lessonRefs: ['day-22']
+
+- term: Safety
+  definition: "Preventing an AI system from causing harm — producing dangerous, toxic or illegal content, or taking harmful actions — through testing, guardrails and human oversight."
+  examCue: "On the exam: safety vs transparency trade-off — revealing every detail of a model can help attackers, so disclosure is balanced against risk."
+  domain: D4
+  taskStatements: ['4.1', '4.2']
+  related: [Toxicity, Amazon Bedrock Guardrails, Robustness]
+  lessonRefs: ['day-22', 'day-24']
+
+- term: SHAP values
+  aliases: [SHAP, Shapley values, Feature attribution]
+  definition: "Scores that show how much each input feature pushed a specific prediction up or down, based on game theory (Shapley values). SageMaker Clarify uses SHAP to explain model predictions."
+  examCue: "On the exam: 'which features contributed most to this prediction' → feature attributions (SHAP) from SageMaker Clarify."
+  domain: D4
+  taskStatements: ['4.2']
+  related: [Explainability, Bias metrics]
+  lessonRefs: ['day-23', 'day-24']
+
+- term: Subgroup analysis
+  definition: "Evaluating model performance separately for each demographic or user group instead of only overall, to reveal groups the model serves poorly."
+  examCue: "On the exam: good average accuracy can hide poor accuracy for one group — subgroup analysis exposes it."
+  domain: D4
+  taskStatements: ['4.1']
+  related: [Fairness, Bias metrics]
+  lessonRefs: ['day-02#explanation', 'day-23']
+
+- term: Sustainability
+  aliases: [Environmental sustainability]
+  definition: "Considering the energy use and carbon footprint of training and running models — for example choosing a smaller or distilled model, efficient hardware or a lower-carbon Region when it meets the need."
+  examCue: "On the exam: responsible model selection includes environmental impact — the smallest model that meets requirements is often the best choice."
+  domain: D4
+  taskStatements: ['4.1']
+  related: [Model distillation, Responsible AI]
+  lessonRefs: ['day-23']
+
+- term: Toxicity
+  definition: "Harmful, offensive or abusive content in model output, such as hate speech, insults, harassment or graphic violence."
+  examCue: "On the exam: filter toxic outputs with Bedrock Guardrails content filters; measure toxicity in Bedrock Model Evaluation."
+  domain: D4
+  taskStatements: ['4.1', '5.1']
+  related: [Amazon Bedrock Guardrails, Output filtering, Safety]
+  lessonRefs: ['day-22', 'day-25']
+
+- term: Transparency
+  definition: "Openness about how an AI system works and is used: its data, intended use, limitations and when users are interacting with AI. Transparent models (decision trees) can be inspected; opaque 'black-box' models (deep neural networks) cannot."
+  examCue: "On the exam: transparent vs opaque models — transparency tools include SageMaker Model Cards, open-source models and clear licensing."
+  domain: D4
+  taskStatements: ['4.2']
+  related: [Explainability, Interpretability, Amazon SageMaker Model Cards]
+  lessonRefs: ['day-24']
+
+- term: Veracity
+  definition: "The truthfulness and accuracy of an AI system's outputs — producing correct, verifiable information rather than fabrications."
+  examCue: "On the exam: veracity is the responsible-AI dimension threatened by hallucinations; improve it with grounding and RAG."
+  domain: D4
+  taskStatements: ['4.1']
+  related: [Hallucination, Grounding]
+  lessonRefs: ['day-22']

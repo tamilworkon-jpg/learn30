@@ -1,0 +1,89 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LessonLinks from '../../components/lookup/LessonLinks.astro';
+import LookupTabs from '../../components/lookup/LookupTabs.astro';
+import { examGuide } from '../../lib/data';
+import { searchText } from '../../lib/lookup';
+import { SERVICE_CATEGORIES } from '../../schemas/lookup';
+import '../../styles/lookup.css';
+
+const cards = (await getCollection('services')).map((e) => ({ ...e.data, id: `svc-${e.id}` })).sort((a, b) => a.name.localeCompare(b.name));
+const outOfScope = new Set(examGuide.outOfScopeServices);
+const scopeLabel = (c: (typeof cards)[number]) => (c.inScope ? `In scope · v${examGuide.version}` : outOfScope.has(c.name) ? 'Out of scope' : 'Not listed');
+const sections = [
+  ...SERVICE_CATEGORIES.map((cat) => ({ key: cat, title: cat, items: cards.filter((c) => c.inScope && c.category === cat) })),
+  { key: 'beyond', title: 'Beyond the exam — trap cards', items: cards.filter((c) => !c.inScope) },
+].filter((s) => s.items.length);
+const inCount = cards.filter((c) => c.inScope).length;
+---
+
+<BaseLayout title="AWS services cheat sheet" active="cheatsheet" description="AIF-C01 v1.2 AWS services: what each is for, when to choose it, and what it is not.">
+  <LookupTabs current="services" />
+  <div id="services-root" data-pagefind-body>
+    <h1 class="h1">AWS services cheat sheet</h1>
+    <p class="muted lookup-intro">
+      {inCount} services named in exam guide v{examGuide.version}, plus {cards.length - inCount} trap cards for services that appear as distractors but are out of scope or not listed. Each card says what the service is for,
+      when to choose it, and what it is <em>not</em>.
+    </p>
+
+    <div class="filter-bar" data-pagefind-ignore>
+      <label class="sr-only" for="services-filter">Filter services</label>
+      <input id="services-filter" class="filter-input" type="search" placeholder="Filter services…" autocomplete="off" data-filter-input />
+      <div class="facet-group" role="group" aria-label="Filter by exam scope">
+        <button type="button" class="facet" data-facet="" aria-pressed="true">All</button>
+        <button type="button" class="facet" data-facet="in" aria-pressed="false">In scope</button>
+        <button type="button" class="facet" data-facet="out" aria-pressed="false">Beyond the exam</button>
+      </div>
+      <span class="filter-count" aria-live="polite" data-filter-count>{cards.length} services</span>
+    </div>
+
+    <p class="card empty-state" data-empty hidden>No services match. Clear the filter or try the <a href="/search">full-text search</a>.</p>
+
+    {
+      sections.map((s) => (
+        <section class="letter-group" data-group aria-labelledby={`cat-${s.key.replace(/\W+/g, '-').toLowerCase()}`}>
+          <h2 class="h2 mt-6 mb-3" id={`cat-${s.key.replace(/\W+/g, '-').toLowerCase()}`}>
+            {s.title}
+          </h2>
+          {s.key === 'beyond' && (
+            <p class="muted text-sm mt-0" data-pagefind-ignore>
+              These services are real and useful, but guide v{examGuide.version} does not test them. If one appears as an answer option, it is usually the distractor.
+            </p>
+          )}
+          <div class="entry-grid">
+            {s.items.map((c) => (
+              <article class="entry" data-entry data-facets={c.inScope ? 'in' : 'out'} data-search={searchText(c.name, c.aka, c.category, c.purpose, c.examCue, c.notThis)} data-testid="service-card" data-service={c.name}>
+                <h3 id={c.id}>{c.name}</h3>
+                <div class="meta" data-pagefind-ignore>
+                  <span class={`scope-badge ${c.inScope ? 'scope-in' : 'scope-out'}`} data-testid="scope-badge">
+                    {scopeLabel(c)}
+                  </span>
+                  {c.aka?.length ? <span class="muted text-xs">aka {c.aka.join(', ')}</span> : null}
+                </div>
+                <p>
+                  <strong class="block" data-pagefind-ignore>Purpose</strong>
+                  {c.purpose}
+                </p>
+                <p class="choose-when">
+                  <strong class="block" data-pagefind-ignore>{c.inScope ? 'Choose when' : 'On the exam'}</strong>
+                  {c.examCue.replace(/^Beyond the exam:\s*(.)/i, (_, ch: string) => ch.toUpperCase())}
+                </p>
+                <p class="not-this">
+                  <strong class="block" data-pagefind-ignore>Not this</strong>
+                  {c.notThis.replace(/^Not this:\s*/i, '')}
+                </p>
+                <LessonLinks refs={c.lessonRefs} />
+              </article>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>
+
+<script>
+  import { setupFilter } from '../../lib/lookup-filter';
+  setupFilter(document.getElementById('services-root')!, ['service', 'services']);
+</script>

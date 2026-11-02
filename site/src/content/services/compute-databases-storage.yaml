@@ -1,0 +1,111 @@
+- name: Amazon EC2
+  category: Compute
+  purpose: "Resizable virtual servers in the cloud, including GPU and AWS Trainium/Inferentia instances for ML training and inference."
+  examCue: "Choose this when the scenario needs full control of servers or self-hosting a model on specific GPU/accelerator instances."
+  notThis: "Not the low-ops choice; for managed ML use SageMaker AI and for serverless FMs use Bedrock."
+  inScope: true
+  taskStatements: ['1.3', '2.3']
+  lessonRefs: ['day-01#explanation', 'day-06']
+- name: AWS Lambda
+  category: Compute
+  purpose: "Serverless compute that runs code on events, billed per request and duration, with no servers to manage."
+  examCue: "Choose this when the scenario needs event-driven glue code, e.g. calling Bedrock when a file lands in S3, or a tool function for an agent."
+  notThis: "Not for long-running model training or large GPU workloads (use SageMaker AI or EC2)."
+  inScope: true
+  taskStatements: ['2.3', '3.1']
+  lessonRefs: ['day-01#explanation', 'day-12']
+- name: Amazon ECS
+  aka: [Elastic Container Service]
+  category: Compute
+  purpose: "AWS-native managed container orchestration service, running on EC2 or serverless AWS Fargate."
+  examCue: "Choose this when the scenario runs containerized apps or model servers on AWS with simple AWS-native orchestration."
+  notThis: "Not Kubernetes (that's EKS) and not a managed ML platform (that's SageMaker AI)."
+  inScope: true
+  taskStatements: ['1.3']
+  lessonRefs: ['day-06']
+- name: Amazon EKS
+  aka: [Elastic Kubernetes Service]
+  category: Compute
+  purpose: "Managed Kubernetes service for running containerized workloads, including ML training and inference clusters."
+  examCue: "Choose this when the scenario says Kubernetes, or a team wants portable open-source container orchestration for ML workloads."
+  notThis: "Not the simplest container option (that's ECS) and not a managed model API (that's Bedrock)."
+  inScope: true
+  taskStatements: ['1.3']
+  lessonRefs: ['day-06']
+- name: Amazon Aurora
+  category: Databases & vector stores
+  purpose: "High-performance managed relational database compatible with MySQL and PostgreSQL; Aurora PostgreSQL supports vectors via pgvector."
+  examCue: "Choose this when the scenario wants a relational database that can also store embeddings (pgvector) as a Bedrock Knowledge Bases vector store."
+  notThis: "Not a data warehouse (that's Redshift) and not a key-value store (that's DynamoDB)."
+  inScope: true
+  taskStatements: ['3.1']
+  lessonRefs: ['day-18']
+- name: Amazon DocumentDB
+  aka: [DocumentDB (with MongoDB compatibility)]
+  category: Databases & vector stores
+  purpose: "Managed JSON document database with MongoDB compatibility and built-in vector search."
+  examCue: "Choose this when the scenario has MongoDB-style JSON documents and wants vector search alongside them for RAG."
+  notThis: "Not relational SQL (that's RDS/Aurora) and not a graph database (that's Neptune)."
+  inScope: true
+  taskStatements: ['3.1']
+  lessonRefs: ['day-18']
+- name: Amazon DynamoDB
+  category: Databases & vector stores
+  purpose: "Serverless NoSQL key-value and document database with single-digit-millisecond performance at any scale."
+  examCue: "Choose this when the scenario needs fast, scalable key-value storage, e.g. chat history, session state or app metadata for a GenAI app."
+  notThis: "Not a native vector similarity-search store for RAG (pick OpenSearch, Aurora/RDS pgvector, Neptune Analytics or S3 Vectors)."
+  inScope: true
+  taskStatements: ['3.1']
+  lessonRefs: ['day-06', 'day-18']
+- name: Amazon ElastiCache
+  category: Databases & vector stores
+  purpose: "Managed in-memory cache (Valkey, Redis OSS, Memcached) for microsecond reads; supports vector search for semantic caching."
+  examCue: "Choose this when the scenario needs to cache results or LLM responses (semantic cache) to cut latency and cost."
+  notThis: "Not a durable primary database or data warehouse (use DynamoDB, RDS or Redshift)."
+  inScope: true
+  taskStatements: ['3.1']
+  lessonRefs: ['day-18']
+- name: Amazon Neptune
+  category: Databases & vector stores
+  purpose: "Managed graph database; Neptune Analytics adds vector search and powers GraphRAG in Bedrock Knowledge Bases."
+  examCue: "Choose this when the scenario mentions relationships, knowledge graphs, fraud rings or GraphRAG combining graphs with vectors."
+  notThis: "Not a relational or document database (that's RDS or DocumentDB)."
+  inScope: true
+  taskStatements: ['3.1']
+  lessonRefs: ['day-18']
+- name: Amazon RDS
+  aka: [Relational Database Service]
+  category: Databases & vector stores
+  purpose: "Managed relational databases (PostgreSQL, MySQL, MariaDB, Oracle, SQL Server); RDS for PostgreSQL supports pgvector."
+  examCue: "Choose this when the scenario needs a managed SQL database, or wants to store embeddings in PostgreSQL with pgvector."
+  notThis: "Not a data warehouse for analytics at scale (that's Redshift)."
+  inScope: true
+  taskStatements: ['3.1']
+  lessonRefs: ['day-06', 'day-18']
+- name: Amazon OpenSearch Service
+  aka: [OpenSearch, OpenSearch Serverless]
+  category: Databases & vector stores
+  purpose: "Managed search and analytics engine with a k-NN vector engine; OpenSearch Serverless is the default Knowledge Bases vector store."
+  examCue: "Choose this when the scenario needs a vector database for RAG/semantic search, hybrid keyword + vector search, or log analytics."
+  notThis: "Not a relational database (that's RDS/Aurora) and not the RAG orchestrator itself (that's Bedrock Knowledge Bases)."
+  inScope: true
+  taskStatements: ['3.1']
+  lessonRefs: ['day-06', 'day-18']
+- name: Amazon S3
+  aka: [Simple Storage Service, S3 Vectors]
+  category: Storage
+  purpose: "Durable, scalable object storage; the default home for training data, data lakes, model artifacts and RAG source documents. S3 Vectors stores embeddings."
+  examCue: "Choose this when the scenario needs to store datasets, documents or model artifacts cheaply, as a data lake, or as a low-cost vector store (S3 Vectors)."
+  notThis: "Not long-term archive at the lowest price (that's S3 Glacier) and not a relational database."
+  inScope: true
+  taskStatements: ['1.3', '3.1', '5.1']
+  lessonRefs: ['day-06']
+- name: Amazon S3 Glacier
+  aka: [S3 Glacier storage classes]
+  category: Storage
+  purpose: "Low-cost S3 storage classes for archiving data long term, with retrieval times from milliseconds to hours."
+  examCue: "Choose this when the scenario needs cheap long-term retention or archive of old training data, logs or records for compliance."
+  notThis: "Not for frequently accessed data or live inference inputs (use S3 Standard)."
+  inScope: true
+  taskStatements: ['5.2']
+  lessonRefs: ['day-27']

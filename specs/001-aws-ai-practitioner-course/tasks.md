@@ -331,20 +331,26 @@ If a model is unavailable, use any available model that differs from the author 
 
 **Goal**: Search, glossary, cheat sheets, coverage matrix. **Independent test**: quickstart V10.
 
-- [ ] T095 [P] [US6] Unit test site/tests/unit/coverage.test.ts
+- [x] T095 [P] [US6] Unit test site/tests/unit/coverage.test.ts
   - TC: K1 task statement → days + question counts; K2 flags < 3 questions.
-- [ ] T096 [P] [US6] E2E site/tests/e2e/lookup.spec.ts (`@visual`)
+  - Done: 4 unit tests (coverage.test.ts) + 4 validator-rule tests in lookup-content.test.ts.
+- [x] T096 [P] [US6] E2E site/tests/e2e/lookup.spec.ts (`@visual`)
   - TC: K3 search "Guardrails" returns lesson + glossary + service results; K4 search results appear < 1 s after typing (SC-006); K5 glossary A–Z + domain filter; K6 services sheet shows purpose / choose-when / not-this / scope badge, AWS WAF out of scope; K7 metrics sheet; K8 coverage shows 14 task statements; screenshots `search`, `glossary`, `cheatsheet-services`, `cheatsheet-metrics`, `coverage`.
-- [ ] T097 [US6] Implement site/src/lib/coverage.ts → T095 green
-- [ ] T098 [P] [US6] Build site/src/pages/glossary.astro
-- [ ] T099 [P] [US6] Build site/src/pages/cheatsheet/services.astro
-- [ ] T100 [P] [US6] Build site/src/pages/cheatsheet/metrics.astro
-- [ ] T101 [P] [US6] Build site/src/pages/coverage.astro
-- [ ] T102 [US6] Build site/src/pages/search.astro (bundled Pagefind UI; `data-pagefind-body` on lesson, glossary, cheat sheets) → T096 green
-- [ ] T103 [P] [US6] Author ~150 glossary terms in site/src/content/glossary/*.yaml
+  - Done: 6 tests × desktop/mobile = 12 e2e green (3× repeat stable); screenshots search, glossary, cheatsheet-services, cheatsheet-metrics, coverage (+ -dark variants) inspected. K4 timed after a warm-up query (cold wasm/index load excluded).
+- [x] T097 [US6] Implement site/src/lib/coverage.ts → T095 green
+  - Done: site/src/lib/coverage.ts (computeCoverage, coverageSummary); validate.ts coverage left unchanged (same rules, duplicated loop kept to avoid merge conflicts).
+- [x] T098 [P] [US6] Build site/src/pages/glossary.astro
+- [x] T099 [P] [US6] Build site/src/pages/cheatsheet/services.astro
+- [x] T100 [P] [US6] Build site/src/pages/cheatsheet/metrics.astro
+- [x] T101 [P] [US6] Build site/src/pages/coverage.astro
+- [x] T102 [US6] Build site/src/pages/search.astro (bundled Pagefind UI; `data-pagefind-body` on lesson, glossary, cheat sheets) → T096 green
+  - Done: Pagefind UI from build output; page-scoped CSP adds only 'wasm-unsafe-eval' via Astro.csp.insertScriptResource; zero CSP console errors.
+- [x] T103 [P] [US6] Author ~150 glossary terms in site/src/content/glossary/*.yaml
   - TC: K9 each has `term`, `definition`, `examCue`, ≥1 resolvable `lessonRefs` (added to validator). Exam-content review.
-- [ ] T104 [P] [US6] Author ~60 service cards in site/src/content/services/*.yaml (all v1.2 in-scope + trap cards: AWS WAF, GuardDuty, Security Hub, Shield, Cognito, DeepLens, Kendra, Amazon Q, A2I, Audit Manager — `inScope: false`, "Beyond the exam")
+  - Done: 166 terms in 5 files; lessonRefs use section anchors only for Days 1–3, bare `day-NN` elsewhere; validated by src/lib/validate-lookup.ts (wired into validate:content).
+- [x] T104 [P] [US6] Author ~60 service cards in site/src/content/services/*.yaml (all v1.2 in-scope + trap cards: AWS WAF, GuardDuty, Security Hub, Shield, Cognito, DeepLens, Kendra, Amazon Q, A2I, Audit Manager — `inScope: false`, "Beyond the exam")
   - TC: K10 every in-scope service in exam-guide.yaml has a card; every `inScope` flag matches exam-guide.yaml.
+  - Done: 75 cards (51 in-scope + 16 out-of-scope + 8 not-listed trap cards); inScope flags checked against exam-guide.yaml.
 - [ ] T105 [US6] REVIEW US6; log
 
 ---

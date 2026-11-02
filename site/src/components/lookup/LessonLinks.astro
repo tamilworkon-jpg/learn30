@@ -1,0 +1,18 @@
+---
+import { lessonLink } from '../../lib/lookup';
+
+interface Props {
+  refs: string[];
+}
+const links = Astro.props.refs.map(lessonLink);
+---
+
+<p class="entry-links" data-pagefind-ignore>
+  Learn it:
+  {
+    links.map((l, i) => [
+      i > 0 ? ' · ' : '',
+      <a href={l.href}>{`${l.label}: ${l.title}`}</a>,
+    ])
+  }
+</p>

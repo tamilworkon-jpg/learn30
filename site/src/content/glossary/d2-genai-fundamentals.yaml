@@ -1,0 +1,290 @@
+# Glossary — Domain 2: Fundamentals of generative AI (task statements 2.1–2.3).
+# Sorted alphabetically by term. `related` entries must match another glossary `term` exactly.
+
+- term: Agent memory
+  aliases: [Short-term memory, Long-term memory]
+  definition: "What lets an AI agent remember context: short-term memory holds the current conversation or task state, and long-term memory keeps facts and preferences across sessions. Amazon Bedrock AgentCore Memory provides this as a managed service."
+  examCue: "On the exam: 'remember the user's preferences across sessions' → agent long-term memory, not a bigger context window."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [AI agent, Context window]
+  lessonRefs: ['day-10']
+
+- term: Agentic AI
+  definition: "AI systems that pursue a goal on their own: they plan steps, call tools and APIs, observe results and adapt, rather than only answering a single prompt. They are usually built on foundation models."
+  examCue: "On the exam: 'plans and takes actions', 'multi-step tasks', 'calls APIs autonomously' → agentic AI, not just generative AI."
+  domain: D2
+  taskStatements: ['1.1', '2.1']
+  related: [AI agent, Generative AI, Tool use]
+  lessonRefs: ['day-01#explanation', 'day-10']
+
+- term: AI agent
+  aliases: [Agent]
+  definition: "A software component that uses a foundation model to reason about a goal, decide which tools to call, act and iterate until the task is done. On AWS, agents can be built with Strands Agents or Amazon Bedrock Agents and deployed on Amazon Bedrock AgentCore."
+  examCue: "On the exam: automating multi-step work across systems (look up an order, then issue a refund) → an AI agent with tools."
+  domain: D2
+  taskStatements: ['2.1', '3.1']
+  related: [Agentic AI, Tool use, Orchestration]
+  lessonRefs: ['day-10', 'day-18']
+
+- term: Attention mechanism
+  aliases: [Self-attention]
+  definition: "The core idea inside transformers: for each token, the model weighs how relevant every other token in the input is, so it can use context from anywhere in the sequence."
+  examCue: "On the exam: attention is what lets transformers handle long-range context in parallel — the reason they replaced RNNs."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Transformer, Token]
+  lessonRefs: ['day-08']
+
+- term: Bedrock batch inference
+  aliases: [Amazon Bedrock batch inference]
+  definition: "An Amazon Bedrock mode that processes many prompts from a file in Amazon S3 as one asynchronous job and writes results back to S3, at a lower price than on-demand calls for supported models."
+  examCue: "On the exam: large volumes of prompts with no need for an immediate answer → Bedrock batch inference to cut cost."
+  domain: D2
+  taskStatements: ['2.3', '3.1']
+  related: [On-demand inference, Provisioned Throughput, Batch inference]
+  lessonRefs: ['day-13']
+
+- term: Chunking
+  definition: "Splitting long documents into smaller pieces before creating embeddings, so each piece fits the embedding model and can be retrieved precisely. Strategies include fixed-size, hierarchical and semantic chunking."
+  examCue: "On the exam: chunk size is a RAG design choice — too large dilutes relevance, too small loses context."
+  domain: D2
+  taskStatements: ['2.1', '3.1']
+  related: [Embedding, Retrieval-augmented generation]
+  lessonRefs: ['day-08', 'day-18']
+
+- term: Context engineering
+  definition: "Deliberately choosing and arranging everything a model sees at inference time — instructions, retrieved documents, tool results, memory and conversation history — within the context window to get reliable results at reasonable cost."
+  examCue: "On the exam: context engineering goes beyond wording a prompt — it manages what information goes into the context window and in what order."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Context window, Prompt engineering, Retrieval-augmented generation]
+  lessonRefs: ['day-09']
+
+- term: Context window
+  definition: "The maximum number of tokens a model can consider at once, covering the prompt, any added context and the generated output. Larger windows allow longer documents but raise cost and latency."
+  examCue: "On the exam: 'must process very long documents in one request' → choose a model with a larger context window (or use RAG)."
+  domain: D2
+  taskStatements: ['2.1', '3.1']
+  related: [Token, Context engineering]
+  lessonRefs: ['day-09', 'day-15']
+
+- term: Cosine similarity
+  definition: "A measure of how similar two vectors are based on the angle between them, from -1 to 1 (closer to 1 means more similar meaning). Vector search uses it to find embeddings closest to a query."
+  examCue: "On the exam: semantic search compares embeddings with a similarity measure such as cosine similarity, not keyword matching."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Embedding, Vector, Vector database]
+  lessonRefs: ['day-08']
+
+- term: Cross-Region inference
+  definition: "An Amazon Bedrock feature that uses inference profiles to route requests to the model in several AWS Regions, increasing throughput and resilience during traffic peaks. Model availability still varies by Region."
+  examCue: "On the exam: 'handle bursts' or 'regional coverage and redundancy' for Bedrock → cross-Region inference; check data residency rules first."
+  domain: D2
+  taskStatements: ['2.3']
+  related: [On-demand inference, Data residency]
+  lessonRefs: ['day-13']
+
+- term: Custom model
+  definition: "A foundation model you have adapted with your own data, for example by fine-tuning, continued pre-training or distillation in Amazon Bedrock, or a model imported into Bedrock. Customization and hosting add cost beyond base-model pricing."
+  examCue: "On the exam: custom models carry training cost plus hosting cost (often Provisioned Throughput) — try prompting or RAG first."
+  domain: D2
+  taskStatements: ['2.3']
+  related: [Fine-tuning, Provisioned Throughput, Model distillation]
+  lessonRefs: ['day-13', 'day-19']
+
+- term: Customer lifetime value
+  aliases: [CLV, CLTV]
+  definition: "The total revenue a business expects from a customer over the whole relationship. Used, with conversion rate and average revenue per user (ARPU), to measure the business value of GenAI features."
+  examCue: "On the exam: GenAI success is judged by business metrics such as CLV, conversion rate, ARPU and efficiency — not only model scores."
+  domain: D2
+  taskStatements: ['2.2']
+  related: [Return on investment]
+  lessonRefs: ['day-11']
+
+- term: Diffusion model
+  definition: "A generative model that learns to create images (or audio, video) by starting from random noise and removing it step by step until a realistic result appears, guided by a text prompt."
+  examCue: "On the exam: text-to-image generation (for example Amazon Nova Canvas, Stable Diffusion) → diffusion model; an older alternative is the GAN (generator vs discriminator)."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Multimodal model, Foundation model]
+  lessonRefs: ['day-08']
+
+- term: Embedding
+  aliases: [Vector embedding]
+  definition: "A list of numbers (a vector) produced by an embedding model that captures the meaning of text, images or other data, so that similar items have nearby vectors. Example models are Amazon Titan Text Embeddings and Cohere Embed."
+  examCue: "On the exam: semantic search, RAG retrieval and 'find similar items' all rely on embeddings stored in a vector database."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Vector, Vector database, Cosine similarity]
+  lessonRefs: ['day-08']
+
+- term: Foundation model
+  aliases: [FM]
+  definition: "A very large model pre-trained on broad data that can be adapted to many tasks — writing, summarising, coding, image generation — through prompting, RAG or fine-tuning. LLMs are one type of foundation model."
+  examCue: "On the exam: FMs are general-purpose and reusable; traditional ML models are trained for one narrow task with your labeled data."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Large language model, Pre-training, Foundation model lifecycle]
+  lessonRefs: ['day-08']
+
+- term: Foundation model lifecycle
+  aliases: [FM lifecycle]
+  definition: "The stages of building and running an FM application: data selection, model selection, pre-training, fine-tuning or other customization, evaluation, deployment, and feedback that drives further improvement."
+  examCue: "On the exam: ordering questions — data selection → model selection → pre-training → fine-tuning → evaluation → deployment → feedback."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Foundation model, Pre-training, Fine-tuning]
+  lessonRefs: ['day-09']
+
+- term: Generative AI
+  aliases: [GenAI]
+  definition: "A subset of deep learning that creates new content — text, images, audio, video or code — in response to prompts, using foundation models trained on huge datasets."
+  examCue: "On the exam: 'create', 'draft', 'summarise', 'generate' → generative AI; 'predict a label or number' → traditional ML."
+  domain: D2
+  taskStatements: ['1.1', '2.1']
+  related: [Foundation model, Large language model, Agentic AI]
+  lessonRefs: ['day-01#explanation', 'day-08']
+
+- term: Hallucination
+  definition: "When a generative model produces fluent, confident output that is false or invented, such as a fake citation. It is the most-tested limitation of generative AI."
+  examCue: "On the exam: reduce hallucinations with RAG grounding, Guardrails contextual grounding checks, lower temperature and human review."
+  domain: D2
+  taskStatements: ['2.2', '5.1']
+  related: [Grounding, Retrieval-augmented generation, Hallucination detection]
+  lessonRefs: ['day-01#explanation', 'day-11']
+
+- term: Large language model
+  aliases: [LLM]
+  definition: "A foundation model, usually built on the transformer architecture, trained on vast amounts of text to understand and generate language one token at a time."
+  examCue: "On the exam: LLMs are FMs specialised in text; they generate by predicting the next token, which is why they can hallucinate."
+  domain: D2
+  taskStatements: ['1.1', '2.1']
+  related: [Foundation model, Transformer, Token]
+  lessonRefs: ['day-01#explanation', 'day-08']
+
+- term: Model Context Protocol
+  aliases: [MCP]
+  definition: "An open standard that defines how AI applications and agents connect to external tools and data sources through MCP servers, so one integration works with many models and agent frameworks."
+  examCue: "On the exam: 'standard way for agents to discover and call tools or data sources' → MCP (AgentCore Gateway can expose APIs as MCP tools)."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Tool use, AI agent]
+  lessonRefs: ['day-10']
+
+- term: Multi-agent system
+  aliases: [Multi-agent pattern, Multi-agent collaboration]
+  definition: "An application in which several specialised agents work together on a task. Common patterns include supervisor (orchestrator) with sub-agents, sequential pipelines, parallel workers and peer-to-peer swarms."
+  examCue: "On the exam: a complex workflow split among specialist agents (research, write, review) → multi-agent pattern."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Supervisor pattern, Orchestration, AI agent]
+  lessonRefs: ['day-10']
+
+- term: Multimodal model
+  definition: "A model that accepts or produces more than one type of data, such as text plus images, audio or video — for example describing a photo or answering questions about a chart."
+  examCue: "On the exam: inputs that mix images and text (or outputs that are images) → choose a multimodal model."
+  domain: D2
+  taskStatements: ['2.1', '3.1']
+  related: [Foundation model, Diffusion model]
+  lessonRefs: ['day-08']
+
+- term: Nondeterminism
+  aliases: [Non-deterministic output]
+  definition: "The property that a generative model can return different outputs for the same prompt, because it samples from probabilities. Lower temperature reduces, but may not eliminate, the variation."
+  examCue: "On the exam: 'must always return the same exact answer' is a poor fit for GenAI — nondeterminism is a listed disadvantage."
+  domain: D2
+  taskStatements: ['2.2']
+  related: [Temperature, Hallucination]
+  lessonRefs: ['day-11']
+
+- term: On-demand inference
+  aliases: [On-demand mode]
+  definition: "Amazon Bedrock's pay-as-you-go mode: no commitment, charged per input and output token (or per image) actually processed, subject to service quotas."
+  examCue: "On the exam: variable or unpredictable traffic, prototypes, no commitment → on-demand; steady high volume → Provisioned Throughput."
+  domain: D2
+  taskStatements: ['2.3']
+  related: [Token-based pricing, Provisioned Throughput, Bedrock batch inference]
+  lessonRefs: ['day-13']
+
+- term: Orchestration
+  definition: "Coordinating the steps of an agentic workflow: breaking a goal into sub-tasks, deciding which agent or tool runs next, passing results along and handling errors."
+  examCue: "On the exam: 'coordinate multiple steps or agents toward a goal' → orchestration (for example a supervisor agent)."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Multi-agent system, AI agent]
+  lessonRefs: ['day-10']
+
+- term: Prompt caching
+  definition: "Reusing the processed form of a repeated prompt prefix (such as a long system prompt or document) across requests, so cached tokens are cheaper and responses faster. Supported for selected models in Amazon Bedrock."
+  examCue: "On the exam: many requests sharing the same long context → prompt caching to cut cost and latency."
+  domain: D2
+  taskStatements: ['2.3', '3.1']
+  related: [Token-based pricing, Context window]
+  lessonRefs: ['day-13', 'day-15']
+
+- term: Provisioned Throughput
+  definition: "Amazon Bedrock capacity bought as model units for a fixed term (or hourly), giving guaranteed throughput for steady, high-volume workloads. It is often required to serve custom models."
+  examCue: "On the exam: 'consistent high volume', 'guaranteed capacity' or 'serve a fine-tuned model' → Provisioned Throughput."
+  domain: D2
+  taskStatements: ['2.3']
+  related: [On-demand inference, Custom model]
+  lessonRefs: ['day-13']
+
+- term: Supervisor pattern
+  aliases: [Orchestrator-worker pattern]
+  definition: "A multi-agent pattern where one supervisor (orchestrator) agent breaks down the request, delegates sub-tasks to specialist agents and combines their answers."
+  examCue: "On the exam: 'one agent routes work to specialist sub-agents and merges results' → supervisor pattern."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Multi-agent system, Orchestration]
+  lessonRefs: ['day-10']
+
+- term: Token
+  definition: "The basic unit of text a language model reads and writes — a word, part of a word or punctuation mark. As a rough guide, one token is about four characters of English."
+  examCue: "On the exam: tokens drive context-window limits and pricing — both input and output tokens are counted."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Tokenization, Token-based pricing, Context window]
+  lessonRefs: ['day-08']
+
+- term: Token-based pricing
+  definition: "Charging for GenAI usage by the number of input and output tokens processed, often with output tokens priced higher. Prompt length, retrieved context and answer length all affect cost."
+  examCue: "On the exam: cut cost by shortening prompts, limiting max tokens, caching prompts, choosing smaller models or using batch."
+  domain: D2
+  taskStatements: ['2.1', '2.3']
+  related: [Token, On-demand inference, Prompt caching]
+  lessonRefs: ['day-09', 'day-13']
+
+- term: Tokenization
+  definition: "Splitting text into tokens and mapping each to a numeric ID the model can process. Different models use different tokenizers, so the same text can be a different number of tokens."
+  examCue: "On the exam: tokenization is the first step before embedding — models never see raw characters."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Token, Embedding]
+  lessonRefs: ['day-08']
+
+- term: Tool use
+  aliases: [Function calling]
+  definition: "A model's ability to request calls to external functions or APIs (search, databases, calculators, business systems) and use the results in its answer. It is what lets agents act in the real world."
+  examCue: "On the exam: 'get live data' or 'take an action in another system' → tool use, not fine-tuning."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [AI agent, Model Context Protocol]
+  lessonRefs: ['day-10']
+
+- term: Transformer
+  definition: "The neural network architecture behind modern LLMs and many FMs. It uses attention to process all tokens in parallel and capture relationships across long text."
+  examCue: "On the exam: 'transformer-based LLM' — the T in GPT; attention is the key mechanism."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Attention mechanism, Large language model, Recurrent neural network]
+  lessonRefs: ['day-04', 'day-08']
+
+- term: Vector
+  definition: "An ordered list of numbers representing a point in many-dimensional space. In GenAI, embeddings are vectors, and distance between vectors stands for difference in meaning."
+  examCue: "On the exam: 'store and search vectors' → a vector database or vector-enabled store such as OpenSearch Service or Aurora PostgreSQL with pgvector."
+  domain: D2
+  taskStatements: ['2.1']
+  related: [Embedding, Vector database, Cosine similarity]
+  lessonRefs: ['day-08']
