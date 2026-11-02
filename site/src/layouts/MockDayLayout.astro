@@ -20,7 +20,7 @@ const week = weekOfDay(course, cd.day)!;
 const { prev, next } = getPrevNext(cd.day, course);
 ---
 
-<BaseLayout title={`Day ${cd.day}: ${title}`}>
+<BaseLayout active="outline" title={`Day ${cd.day}: ${title}`}>
   <p class="muted text-sm m-0">Week {week.number} · {week.title} › Day {cd.day}</p>
   <h1 class="h1">{title}</h1>
   <div class="flex flex-wrap items-center gap-2 mb-2">

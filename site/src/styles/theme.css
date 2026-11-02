@@ -280,19 +280,19 @@
   text-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
 }
 .grad-1 {
-  background: linear-gradient(135deg, #3b2a85, #6553b2 55%, #8b5cf6);
+  background: linear-gradient(rgb(0 0 0 / 0.4), rgb(0 0 0 / 0.4)), linear-gradient(135deg, #3b2a85, #6553b2 55%, #8b5cf6);
 }
 .grad-2 {
-  background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #38bdf8);
+  background: linear-gradient(rgb(0 0 0 / 0.4), rgb(0 0 0 / 0.4)), linear-gradient(135deg, #1e3a8a, #2563eb 60%, #38bdf8);
 }
 .grad-3 {
-  background: linear-gradient(135deg, #7c2d12, #c2410c 55%, #ea580c);
+  background: linear-gradient(rgb(0 0 0 / 0.4), rgb(0 0 0 / 0.4)), linear-gradient(135deg, #7c2d12, #c2410c 55%, #ea580c);
 }
 .grad-4 {
-  background: linear-gradient(135deg, #14532d, #15803d 60%, #22c55e);
+  background: linear-gradient(rgb(0 0 0 / 0.4), rgb(0 0 0 / 0.4)), linear-gradient(135deg, #14532d, #15803d 60%, #22c55e);
 }
 .grad-5 {
-  background: linear-gradient(135deg, #7f1d1d, #dc2626 60%, #f87171);
+  background: linear-gradient(rgb(0 0 0 / 0.4), rgb(0 0 0 / 0.4)), linear-gradient(135deg, #7f1d1d, #dc2626 60%, #f87171);
 }
 .pill {
   display: inline-flex;

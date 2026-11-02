@@ -30,23 +30,51 @@ function normalize(p: Progress): Progress {
   return { ...p, lastPosition: p.lastPosition ?? null, ratings: p.ratings ?? {}, settings: p.settings ?? {} };
 }
 
-export function createStore(storage: Storage = localStorage) {
+/** localStorage can be missing, blocked (privacy modes) or full: fall back to memory instead of crashing. */
+function browserStorage(): Storage | null {
+  try {
+    return typeof localStorage === 'undefined' ? null : localStorage;
+  } catch {
+    return null;
+  }
+}
+
+export function createStore(storage: Storage | null = browserStorage()) {
   let recovered = false;
+  let persistent = storage !== null;
   let state: Progress;
-  const raw = storage.getItem(STORAGE_KEY);
+  const read = (key: string) => {
+    try {
+      return storage?.getItem(key) ?? null;
+    } catch {
+      persistent = false;
+      return null;
+    }
+  };
+  const write = (key: string, value: string) => {
+    if (!storage) return;
+    try {
+      storage.setItem(key, value);
+      persistent = true;
+    } catch {
+      persistent = false; // quota exceeded / blocked: keep working in memory for this session
+    }
+  };
+  const raw = read(STORAGE_KEY);
   try {
     const parsed = raw ? JSON.parse(raw) : defaultProgress();
     if (!validateProgress(parsed)) throw new Error('invalid');
     state = normalize(parsed as Progress);
   } catch {
     recovered = raw !== null;
-    if (raw !== null) storage.setItem(`${STORAGE_KEY}:backup`, raw);
+    // Keep the FIRST unreadable copy: a later recovery must not overwrite the original backup.
+    if (raw !== null && read(`${STORAGE_KEY}:backup`) === null) write(`${STORAGE_KEY}:backup`, raw);
     state = defaultProgress();
   }
   const listeners = new Set<Listener>();
 
   const save = () => {
-    storage.setItem(STORAGE_KEY, JSON.stringify(state));
+    write(STORAGE_KEY, JSON.stringify(state));
     listeners.forEach((l) => l(state));
   };
   const day = (n: number) => (state.days[String(n)] ??= { status: 'not-started', sectionsViewed: [] });
@@ -58,6 +86,10 @@ export function createStore(storage: Storage = localStorage) {
   return {
     get recovered() {
       return recovered;
+    },
+    /** false when progress can't be saved (storage blocked or full) — UI may warn the learner. */
+    get persistent() {
+      return persistent;
     },
     get: () => state,
     subscribe(l: Listener) {

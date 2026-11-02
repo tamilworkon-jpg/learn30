@@ -70,4 +70,23 @@ describe('progress store (T016)', () => {
     }
     expect(s.get().attempts).toHaveLength(500);
   });
+
+  it('storage that throws (blocked or full) never breaks the app; progress stays in memory', () => {
+    const blocked = { getItem: () => { throw new Error('SecurityError'); }, setItem: () => { throw new Error('QuotaExceededError'); }, removeItem() {}, clear() {}, key: () => null, length: 0 } as Storage;
+    const s = createStore(blocked);
+    expect(s.persistent).toBe(false);
+    expect(() => s.markDayComplete(1)).not.toThrow();
+    expect(s.get().days['1'].status).toBe('completed');
+    const none = createStore(null);
+    expect(none.persistent).toBe(false);
+    expect(() => none.setLastPosition(2, 'recap')).not.toThrow();
+  });
+
+  it('a second recovery keeps the first backup', () => {
+    localStorage.setItem(STORAGE_KEY, '{first bad');
+    createStore();
+    localStorage.setItem(STORAGE_KEY, '{second bad');
+    createStore();
+    expect(localStorage.getItem('aip-course:v1:backup')).toBe('{first bad');
+  });
 });

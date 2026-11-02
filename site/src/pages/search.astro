@@ -32,7 +32,7 @@ Astro.csp.insertScriptResource("'wasm-unsafe-eval'");
       pageSize: 10,
       autofocus: true,
       resetStyles: false,
-      translations: { placeholder: 'Search lessons, terms, services…' },
+      translations: { placeholder: 'Search the course' },
     });
     // Pagefind's input only has a placeholder; give it a real accessible name.
     const label = () => document.querySelector('#search input')?.setAttribute('aria-label', 'Search the course');

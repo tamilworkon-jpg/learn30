@@ -191,6 +191,7 @@
   vertical-align: middle;
   margin-right: 4px;
   cursor: default;
+  border: 1px solid var(--muted); /* the "not answered" swatch was white on white */
 }
 .mock-actions {
   display: flex;
@@ -200,8 +201,10 @@
   margin-top: 16px;
 }
 .btn-flag[aria-pressed='true'] {
-  background: var(--accent);
-  color: var(--accent-text);
+  /* Pressed = outlined accent, so it doesn't compete with the filled "Next" button. */
+  background: transparent;
+  color: var(--text);
+  box-shadow: inset 0 0 0 2px var(--brand-orange-strong, var(--accent));
 }
 .mock-review-list {
   display: flex;

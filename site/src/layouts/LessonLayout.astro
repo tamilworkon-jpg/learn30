@@ -32,7 +32,7 @@ const week = course.weeks.find((w) => d.day >= w.days[0] && d.day <= w.days[1])!
 const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.name ?? id;
 ---
 
-<BaseLayout title={`Day ${d.day}: ${d.title}`}>
+<BaseLayout active="outline" title={`Day ${d.day}: ${d.title}`}>
   <p class="muted text-sm m-0">Week {week.number} · {week.title} › Day {d.day}</p>
   <h1 class="h1">{d.title}</h1>
   <div role="status" class="skip-notice card" id="skip-notice" hidden data-day={d.day}>
@@ -116,6 +116,7 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
   }
   article :global(.sec-head) {
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
     gap: 8px;
     border-bottom: 2px solid var(--border);
@@ -181,6 +182,10 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
   .pastel-a {
     background: #efeafd;
     color: #1f1a3a;
+  }
+  :global([data-theme='dark']) .pastel-a {
+    background: var(--card);
+    color: var(--text);
   }
   .skip-notice:not([hidden]) {
     display: flex;

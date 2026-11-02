@@ -40,7 +40,7 @@ const weekly: Question[] = weeklySet
   ) : entry ? (
     <LessonLayout entry={entry} />
   ) : (
-    <BaseLayout title={`Day ${cd.day}: ${cd.title}`}>
+    <BaseLayout active="outline" title={`Day ${cd.day}: ${cd.title}`}>
       <p class="muted text-sm m-0">Day {cd.day}</p>
       <h1 class="h1">{cd.title}</h1>
       <div class="card mt-4">

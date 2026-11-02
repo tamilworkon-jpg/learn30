@@ -43,4 +43,11 @@ describe('exam guide data (T012)', () => {
       for (const ts of d.taskStatements) expect(known.has(ts)).toBe(true);
     }
   });
+
+  it('FR-003 lesson days are allocated in proportion to domain weights (±5 points)', () => {
+    const lessons = course.days.filter((d) => d.kind === 'lesson');
+    const share: Record<string, number> = {};
+    for (const d of lessons) for (const ts of d.taskStatements) share[`D${ts[0]}`] = (share[`D${ts[0]}`] ?? 0) + 1 / d.taskStatements.length;
+    for (const dom of examGuide.domains) expect(Math.abs((100 * share[dom.id]) / lessons.length - dom.weight), dom.id).toBeLessThanOrEqual(5);
+  });
 });

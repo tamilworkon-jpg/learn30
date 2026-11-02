@@ -18,7 +18,7 @@ const dayTitles = Object.fromEntries(course.days.map((d) => [String(d.day), d.ti
 const backDay = n === 1 ? 29 : 30;
 ---
 
-<BaseLayout title={heading}>
+<BaseLayout active="outline" title={heading}>
   <p class="muted text-sm m-0">
     <a href={`/day/${pad(backDay)}`}>Day {backDay}</a> › Mock exam {n}
   </p>
