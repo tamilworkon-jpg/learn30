@@ -1,0 +1,188 @@
+// @vitest-environment node
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { startHarness, type Harness, type Res } from './server-harness';
+
+let h: Harness;
+beforeAll(async () => {
+  h = await startHarness();
+});
+afterAll(async () => {
+  await h.close();
+});
+
+function bootstrapOf(res: Res): unknown {
+  const m = /<script type="application\/json" id="aip-bootstrap">(.*?)<\/script><\/head>/s.exec(res.text);
+  if (!m) throw new Error('no bootstrap before </head>: ' + res.text);
+  return JSON.parse(m[1]);
+}
+
+function expectSecurityHeaders(r: Res) {
+  expect(r.headers['x-content-type-options']).toBe('nosniff');
+  expect(r.headers['referrer-policy']).toBe('same-origin');
+  expect(r.headers['x-frame-options']).toBe('DENY');
+  expect(r.headers['permissions-policy']).toBe('interest-cohort=()');
+}
+
+describe('SV5 static serving (T188)', () => {
+  it('serves HTML with directory index, no-store and security headers', async () => {
+    for (const p of ['/day/1', '/day/1/', '/day/1/index.html', '/glossary']) {
+      const r = await h.req('GET', p);
+      expect(r.status, p).toBe(200);
+      expect(r.headers['content-type']).toBe('text/html; charset=utf-8');
+      expect(r.headers['cache-control']).toBe('no-store');
+      expectSecurityHeaders(r);
+    }
+    expect((await h.req('GET', '/day/1')).text).toContain('<h1>Day 1</h1>');
+  });
+
+  it('content types, ETag/Last-Modified and 304 for assets', async () => {
+    const types: Record<string, string> = {
+      '/_astro/app.abc123.css': 'text/css; charset=utf-8',
+      '/scripts/ui-prefs.js': 'text/javascript; charset=utf-8',
+      '/favicon.svg': 'image/svg+xml',
+      '/fonts/poppins.woff2': 'font/woff2',
+      '/pagefind/pagefind.js': 'text/javascript; charset=utf-8',
+    };
+    for (const [p, t] of Object.entries(types)) {
+      const r = await h.req('GET', p);
+      expect(r.status, p).toBe(200);
+      expect(r.headers['content-type'], p).toBe(t);
+      expect(r.headers.etag).toBeTruthy();
+      expect(r.headers['last-modified']).toBeTruthy();
+      expectSecurityHeaders(r);
+      expect(r.text).not.toContain('aip-bootstrap');
+    }
+    const first = await h.req('GET', '/_astro/app.abc123.css');
+    expect(first.headers['cache-control']).toContain('immutable');
+    const again = await h.req('GET', '/_astro/app.abc123.css', { headers: { 'If-None-Match': first.headers.etag! } });
+    expect(again.status).toBe(304);
+    expect(again.text).toBe('');
+  });
+
+  it('unknown path → 404 page (with bootstrap) and security headers', async () => {
+    const r = await h.req('GET', '/does/not/exist');
+    expect(r.status).toBe(404);
+    expect(r.text).toContain('<h1>Not found</h1>');
+    expect(bootstrapOf(r)).toEqual({ user: null, progress: null, ui: null });
+    expectSecurityHeaders(r);
+  });
+
+  it('path traversal is impossible (encoded dots, encoded slashes, backslashes, NUL)', async () => {
+    const attempts = [
+      '/../package.json',
+      '/%2e%2e/package.json',
+      '/%2E%2E/secret.txt',
+      '/..%2fpackage.json',
+      '/..%2Fsecret.txt',
+      '/day/..%2f..%2fpackage.json',
+      '/%2e%2e%2fsecret.txt',
+      '/..\\package.json',
+      '/..%5cpackage.json',
+      '/day/1/..%5c..%5c..%5csecret.txt',
+      '/secret.txt%00.html',
+      '/C:/Windows/win.ini',
+      '/%2e%2e/%2e%2e/%2e%2e/etc/passwd',
+      '//etc/passwd',
+    ];
+    for (const p of attempts) {
+      const r = await h.req('GET', p);
+      expect(r.status, p).toBe(404);
+      expect(r.text, p).not.toContain('outside-dist');
+      expectSecurityHeaders(r);
+    }
+  });
+
+  it('non-GET on pages → 405', async () => {
+    expect((await h.req('POST', '/day/1')).status).toBe(405);
+  });
+
+  it('HEAD returns headers without a body', async () => {
+    const r = await h.req('HEAD', '/day/1');
+    expect(r.status).toBe(200);
+    expect(r.text).toBe('');
+  });
+});
+
+describe('SV6 bootstrap injection + escaping (T188)', () => {
+  it('signed out → {user:null,progress:null,ui:null} immediately before </head>', async () => {
+    const r = await h.req('GET', '/day/1');
+    expect(r.text).toContain('<script type="application/json" id="aip-bootstrap">{"user":null,"progress":null,"ui":null}</script></head>');
+  });
+
+  it('signed in → user, progress and ui; a hostile display name cannot break out of the element', async () => {
+    // Display names are capped at 30 chars: the hostile part that fits, plus U+2028 and '&'.
+    const name = '</script><script>alert(1)\u2028&';
+    const { cookie } = await h.signup('mallory', 'password123', name);
+    await h.api('PUT', '/api/ui', { lessonView: 'full' }, cookie);
+    const r = await h.req('GET', '/day/1', { cookie });
+    expect(r.status).toBe(200);
+    const head = r.text.slice(0, r.text.indexOf('</head>'));
+    // Exactly one </script> (the bootstrap's own) and only our <script> open tag.
+    expect(head.match(/<\/script/gi)).toHaveLength(1);
+    expect(head.match(/<script/gi)).toHaveLength(1);
+    expect(head).not.toContain('\u2028');
+    expect(head).toContain('\\u003c/script\\u003e\\u003cscript\\u003ealert(1)\\u2028\\u0026');
+    const data = bootstrapOf(r) as { user: { displayName: string; username: string }; progress: { schemaVersion: number }; ui: unknown };
+    expect(data.user.displayName).toBe(name);
+    expect(data.user.username).toBe('mallory');
+    expect(data.progress.schemaVersion).toBe(1);
+    expect(data.ui).toEqual({ lessonView: 'full' });
+  });
+
+  it('a full </script><script>alert(1)</script> display name is rejected or escaped (never raw)', async () => {
+    const full = '</script><script>alert(1)</script>';
+    const res = await h.api('POST', '/api/auth/signup', { username: 'mallory2', password: 'password123', displayName: full.slice(0, 30) });
+    expect(res.status).toBe(201);
+    const cookie = res.headers['set-cookie']![0].split(';')[0];
+    const r = await h.req('GET', '/glossary', { cookie });
+    expect(r.text).not.toContain(full.slice(0, 30));
+    expect((bootstrapOf(r) as { user: { displayName: string } }).user.displayName).toBe(full.slice(0, 30));
+  });
+});
+
+describe('SV7 page access (T188)', () => {
+  it('protected pages redirect signed-out visitors to /login?next=<path>', async () => {
+    const cases: Record<string, string> = {
+      '/': '/login?next=%2F',
+      '/index.html': '/login?next=%2Findex.html',
+      '/settings': '/login?next=%2Fsettings',
+      '/settings/': '/login?next=%2Fsettings%2F',
+      '/SETTINGS': '/login?next=%2FSETTINGS',
+      '/mock/1?x=1': '/login?next=%2Fmock%2F1%3Fx%3D1',
+    };
+    for (const [p, loc] of Object.entries(cases)) {
+      const r = await h.req('GET', p);
+      expect(r.status, p).toBe(302);
+      expect(r.headers.location, p).toBe(loc);
+      expectSecurityHeaders(r);
+    }
+  });
+
+  it('public pages are served signed out', async () => {
+    for (const p of ['/day/1', '/glossary', '/login', '/signup']) expect((await h.req('GET', p)).status, p).toBe(200);
+  });
+
+  it('signed in: protected pages served; /login and /signup → / or a safe next', async () => {
+    const { cookie } = await h.signup('nina', 'password123');
+    const home = await h.req('GET', '/', { cookie });
+    expect(home.status).toBe(200);
+    expect(home.text).toContain('<h1>Dashboard</h1>');
+    expect((await h.req('GET', '/settings', { cookie })).status).toBe(200);
+    expect((await h.req('GET', '/mock/1', { cookie })).status).toBe(200);
+    const cases: Record<string, string> = {
+      '/login': '/',
+      '/signup': '/',
+      '/login?next=%2Fday%2F1%3Fa%3D1': '/day/1?a=1',
+      '/login?next=%2Fsettings': '/settings',
+      '/login?next=https%3A%2F%2Fevil.example': '/',
+      '/login?next=%2F%2Fevil.example': '/',
+      '/login?next=%2F%5Cevil.example': '/',
+      '/login?next=%2Flogin': '/',
+    };
+    for (const [p, loc] of Object.entries(cases)) {
+      const r = await h.req('GET', p, { cookie });
+      expect(r.status, p).toBe(302);
+      expect(r.headers.location, p).toBe(loc);
+    }
+  });
+});
