@@ -2,6 +2,7 @@
 // T083 — weekly review day (kind: review): summary → authored MDX (concept map, top facts, traps) → cumulative test →
 // per-domain results → engagement rating. Contract: specs/001-aws-ai-practitioner-course/contracts/review-and-mock-days.md
 import BaseLayout from './BaseLayout.astro';
+import PlannedDate from '../components/schedule/PlannedDate.astro';
 import ReviewSummary from '../components/review/ReviewSummary.astro';
 import DomainResults from '../components/review/DomainResults';
 import RatingPrompt from '../components/review/RatingPrompt';
@@ -33,6 +34,7 @@ const slim = questions.map(({ id, domain, lessonRef, type, answer }) => ({ id, d
 <BaseLayout active="outline" title={`Day ${cd.day}: ${title}`}>
   <p class="muted text-sm m-0">Week {week.number} · {week.title} › Day {cd.day}</p>
   <h1 class="h1">{title}</h1>
+  <PlannedDate day={cd.day} />
   <div class="flex flex-wrap items-center gap-2 mb-2">
     {domainIds.map((id) => <span class={`chip chip-${id}`}>{id} · {domainNames[id]}</span>)}
     <span class="pill pill-accent">Review day · Days 1–{cd.day - 1}</span>
