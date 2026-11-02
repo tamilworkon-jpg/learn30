@@ -1,10 +1,11 @@
 import { existsSync } from 'node:fs';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
+import type { Progress } from '../../src/lib/types';
 import { noHorizontalScroll, shot, shotEl, trackConsole } from './helpers';
+import { editProgress, readProgress, seed as seedProgress } from './progress-fixtures';
 
 // T086 — mock exams on the test-only fixture route /design/fixture-mock (65 synthetic questions, real 90-minute clock;
 // the correct option is always "Correct answer N"). Real /mock/N and /day/29–30 degrade to "coming soon" until content lands.
-const KEY = 'aip-course:v1';
 const progress = (extra: Record<string, unknown> = {}) => ({
   schemaVersion: 1,
   examGuideVersion: '1.2',
@@ -19,18 +20,9 @@ const progress = (extra: Record<string, unknown> = {}) => ({
   ratings: {},
   ...extra,
 });
-/** Seeds progress once (before the first page script); later reloads keep whatever the app saved. */
-const seed = (page: Page, p: object) =>
-  page.addInitScript(
-    ([k, v]) => {
-      if (!sessionStorage.getItem('seeded')) {
-        localStorage.setItem(k, v);
-        sessionStorage.setItem('seeded', '1');
-      }
-    },
-    [KEY, JSON.stringify(p)] as const,
-  );
-const stored = (page: Page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? '{}'), KEY);
+/** Saves progress on the server for this test's user (before the first navigation). */
+const seed = (page: Page, p: object) => seedProgress(page, p as Progress);
+const stored = async (page: Page) => (await readProgress(page))!;
 const qid = (n: number) => `q-mock-1-${String(n).padStart(3, '0')}`;
 const inProgress = (deadlineMs: number, answers: Record<string, string[]> = {}, flagged: string[] = []) => ({
   'mock-1': {
@@ -174,15 +166,10 @@ test.describe('mock exam (T086) @visual', () => {
     expect(a).toMatchObject({ autoSubmitted: true, score: { correct: 1, total: 65 } });
 
     // expired while away: reload with a past deadline → submitted immediately on load
-    await page.evaluate(
-      ([k, ip]) => {
-        const p = JSON.parse(localStorage.getItem(k)!);
-        p.inProgress = ip;
-        localStorage.setItem(k, JSON.stringify(p));
-      },
-      [KEY, inProgress(Date.now() - 1_000, { [qid(2)]: ['a', 'e'], [qid(3)]: ['b'] })] as const,
-    );
-    await page.reload();
+    const ip = inProgress(Date.now() - 1_000, { [qid(2)]: ['a', 'e'], [qid(3)]: ['b'] });
+    await editProgress(page, (p) => {
+      p.inProgress = ip as Progress['inProgress'];
+    });
     await expect(runner(page)).toHaveAttribute('data-phase', 'results');
     await expect(runner(page).locator('[data-auto-submitted]')).toBeVisible();
     const s = await stored(page);
@@ -193,15 +180,10 @@ test.describe('mock exam (T086) @visual', () => {
     await shotEl(runner(page).locator('.mock-results'), 'mock-autosubmitted');
 
     // amber under 10 minutes
-    await page.evaluate(
-      ([k, ip]) => {
-        const p = JSON.parse(localStorage.getItem(k)!);
-        p.inProgress = ip;
-        localStorage.setItem(k, JSON.stringify(p));
-      },
-      [KEY, inProgress(Date.now() + 9 * 60_000)] as const,
-    );
-    await page.reload();
+    const amber = inProgress(Date.now() + 9 * 60_000);
+    await editProgress(page, (p) => {
+      p.inProgress = amber as Progress['inProgress'];
+    });
     await expect(page.getByRole('timer')).toHaveAttribute('data-phase', 'warn');
     await expect(page.getByRole('timer')).toHaveText(/⏱ 0[89]:\d\d/);
     await shotEl(runner(page).locator('.mock-head'), 'mock-timer-warn');
@@ -260,21 +242,8 @@ test.describe('mock days (T093, M11–M12) @visual', () => {
         .evaluateAll((els) => els.map((e) => e.getAttribute('data-section-type'))),
     ).toEqual(['launch', 'remediation']);
 
-    await page.evaluate((k) => {
-      const now = new Date().toISOString();
-      const p = JSON.parse(localStorage.getItem(k) ?? 'null') ?? {
-        schemaVersion: 1,
-        examGuideVersion: '1.2',
-        startedAt: now,
-        lastPosition: null,
-        days: {},
-        attempts: [],
-        inProgress: {},
-        streak: { current: 0, longest: 0 },
-        badges: [],
-        settings: {},
-        ratings: {},
-      };
+    const now = new Date().toISOString();
+    await editProgress(page, (p) => {
       p.attempts.push({
         id: 'm1',
         assessmentId: 'mock-1',
@@ -293,9 +262,7 @@ test.describe('mock days (T093, M11–M12) @visual', () => {
         },
         autoSubmitted: false,
       });
-      localStorage.setItem(k, JSON.stringify(p));
-    }, KEY);
-    await page.reload();
+    });
     const rem = page.locator('[data-remediation="mock-1"]');
     await rem.scrollIntoViewIfNeeded();
     await expect(rem).toContainText('654');

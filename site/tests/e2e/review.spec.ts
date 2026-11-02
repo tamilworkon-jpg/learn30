@@ -1,10 +1,11 @@
 import { existsSync } from 'node:fs';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
+import type { Progress } from '../../src/lib/types';
 import { noHorizontalScroll, shot, shotEl, trackConsole } from './helpers';
+import { readProgress, seed as seedProgress } from './progress-fixtures';
 
 // T079 — weekly review days. Real routes for the summary (content is written later); the test-only fixture route
 // /design/fixture-review renders the documented example MDX + an 8-question week-1 fixture for W2–W4.
-const KEY = 'aip-course:v1';
 const progress = (extra: Record<string, unknown> = {}) => ({
   schemaVersion: 1,
   examGuideVersion: '1.2',
@@ -19,12 +20,9 @@ const progress = (extra: Record<string, unknown> = {}) => ({
   ratings: {},
   ...extra,
 });
-const seed = (page: Page, p: object) =>
-  page.addInitScript(([k, v]) => localStorage.getItem(k) ?? localStorage.setItem(k, v), [
-    KEY,
-    JSON.stringify(p),
-  ] as const);
-const stored = (page: Page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? '{}'), KEY);
+/** Saves progress on the server for this test's user (before the first navigation). */
+const seed = (page: Page, p: object) => seedProgress(page, p as Progress);
+const stored = async (page: Page) => (await readProgress(page))!;
 
 test.describe('weekly review (T079) @visual', () => {
   test('W1 summary lists every prior lesson day grouped by domain; content or graceful "coming soon"', async ({

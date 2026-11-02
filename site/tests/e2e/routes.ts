@@ -1,3 +1,6 @@
+import type { Page } from '@playwright/test';
+import { progress, seed } from './progress-fixtures';
+
 // Every learner-facing route (T174–T177). Day pages cover each kind: lesson (01, 02), review (07), mock day (29).
 export const ROUTES = [
   { name: 'dashboard', path: '/' },
@@ -15,20 +18,5 @@ export const ROUTES = [
   { name: 'settings', path: '/settings' },
 ] as const;
 
-/** Seed the saved theme before any page script runs (BaseLayout applies it on load). */
-export const themeInit = (theme: 'light' | 'dark') => {
-  const p = {
-    schemaVersion: 1,
-    examGuideVersion: '1.2',
-    startedAt: '2026-10-20T08:00:00.000Z',
-    lastPosition: null,
-    days: {},
-    attempts: [],
-    inProgress: {},
-    streak: { current: 0, longest: 0 },
-    badges: [],
-    settings: { theme },
-    ratings: {},
-  };
-  return `if (!localStorage.getItem('aip-course:v1')) localStorage.setItem('aip-course:v1', ${JSON.stringify(JSON.stringify(p))});`;
-};
+/** Save the theme in this test's progress before the first navigation (BaseLayout applies it before paint). */
+export const seedTheme = (page: Page, theme: 'light' | 'dark') => seed(page, progress({ settings: { theme } }));

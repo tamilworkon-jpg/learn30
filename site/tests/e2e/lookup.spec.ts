@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { noHorizontalScroll, shot, trackConsole } from './helpers';
 
 // T096 — US6 lookup: search, glossary, cheat sheets, coverage (K3–K8).

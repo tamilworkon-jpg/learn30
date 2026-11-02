@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { noHorizontalScroll, shot, trackConsole } from './helpers';
 import { attempt, done, progress, readProgress, seed } from './progress-fixtures';
 
@@ -83,7 +83,7 @@ test.describe('resume & dashboard (T065) @visual', () => {
     await mc.scrollIntoViewIfNeeded();
     await mc.getByRole('button', { name: 'Undo' }).click();
     await expect(mc.getByRole('button', { name: 'Mark Day 1 complete' })).toBeVisible();
-    expect((await readProgress(page))?.days['1'].status).toBe('in-progress');
+    await expect.poll(async () => (await readProgress(page))?.days['1'].status).toBe('in-progress');
   });
 
   test('R6 in-progress quiz answers are retained across navigation', async ({ page }) => {

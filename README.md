@@ -1,18 +1,18 @@
 # AIP 30 — AWS Certified AI Practitioner in 30 days
 
-A free, offline-friendly study website for the **AWS Certified AI Practitioner (AIF-C01, exam guide v1.2)** exam: 30 one-hour days of lessons shown as screen-sized slides, daily quizzes, weekly reviews, three full 65-question mock exams, a glossary and cheat sheets. Progress is saved per learner in the browser — no account, no server.
+A free, offline-friendly study website for the **AWS Certified AI Practitioner (AIF-C01, exam guide v1.2)** exam: 30 one-hour days of lessons shown as screen-sized slides, daily quizzes, weekly reviews, three full 65-question mock exams, a glossary and cheat sheets. A small Node server serves the site and keeps each learner's progress in a local SQLite file: one login = one learner, and your progress follows you to any browser or device that signs in.
 
 | | |
 |---|---|
 | Content | 24 lesson days · 4 weekly review days · 2 mock-exam days · 903 exam-style questions · 166 glossary terms · 75 service cards |
-| Stack | Astro 5 (static) + MDX · Preact islands · Tailwind CSS v4 · build-time Mermaid SVG · Pagefind search · Vitest · Playwright + axe |
+| Stack | Astro 5 (static build) + MDX · Preact islands · Tailwind CSS v4 · build-time Mermaid SVG · Pagefind search · Node 22 server (`node:http` + built-in `node:sqlite`, no extra runtime dependencies) · Vitest · Playwright + axe |
 | Spec | [`specs/001-aws-ai-practitioner-course/`](specs/001-aws-ai-practitioner-course/) — spec, plan, tasks, contracts, review log |
 
 ---
 
 ## 1. Prerequisites
 
-- **Node.js 22** (≥ 22.12; 22.19+ avoids `undici` engine warnings) and npm 10.
+- **Node.js 22** (≥ 22.12; 22.19+ avoids `undici` engine warnings) and npm 10. The server uses Node 22's built-in `node:sqlite`, so older Node versions cannot run it.
 - **Windows + WSL note:** this checkout's `site/node_modules` was installed with **Windows** Node. If you work in a WSL shell, run npm through Windows so the native binaries match:
   ```bash
   cmd.exe /c "cd /d C:\LocalDrive\Learning\ai-practioner\site && npm run dev"
@@ -28,28 +28,46 @@ npm ci                 # install exact dependency versions
 npm run dev            # http://localhost:4321  (hot reload)
 ```
 
-Production build and preview (what learners actually use):
+`npm run dev` is for editing pages and content; it has no accounts and does not save progress. To use the course (what learners actually run):
 
 ```bash
-npm run build          # validators + diagrams → astro build → Pagefind search index (dist/)
-npm run preview        # serves dist/ on http://localhost:4321 (and on your LAN: host: true)
+npm start              # build (validators + diagrams → astro build → Pagefind index in dist/), then start the server
+npm run serve          # start the server on an existing dist/ (no rebuild)
 ```
 
-Search only works on `build` + `preview` (the index is generated at build time).
+Open http://localhost:4321, **Create account**, and start Day 1. Search only works on the built site (the index is generated at build time).
+
+### Server settings (environment variables)
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `PORT` | `4321` | HTTP port |
+| `HOST` | `0.0.0.0` | Listen address (all interfaces, so port forwarding and your LAN work); use `127.0.0.1` to allow this computer only |
+| `AIP_DB` | `site/data/aip.db` | SQLite database file (created with its schema on first start) |
+
+Example: `PORT=8080 AIP_DB=/path/to/aip.db npm run serve` (Windows `cmd`: `set PORT=8080&& npm run serve`).
+
+### Your data: the SQLite file
+
+- All accounts, progress and UI preferences (lesson view, side bars, slide position) live in **`site/data/aip.db`** (or wherever `AIP_DB` points). `site/data/` is gitignored — your progress never ends up in a commit.
+- **Backup:** stop the server, then copy the file (copy `aip.db-wal` / `aip.db-shm` too if they exist). Restore by copying it back while the server is stopped.
+- **Reset everything:** stop the server and delete the file (and its `-wal`/`-shm` files); a fresh empty database is created on the next start.
+- Per learner, **Settings → Export progress** still downloads a JSON copy, and **Import progress file** loads one.
 
 ### Use it on your phone / another device (port forwarding)
 
-1. `npm run build && npm run preview -- --host`
+1. `npm start` (the server already listens on all interfaces).
 2. VS Code → **Ports** panel → **Forward a Port** → `4321` → open the forwarded URL on the other device.
-3. Progress is stored **per address** (localhost and the forwarded URL are different origins). Move it with **Settings → Export progress** on one and **Import progress file** on the other.
+3. **Sign in** there with the same username and password: progress is stored on the server, so it is the same on every address and device (localhost, the forwarded URL, your LAN IP). Each address asks you to sign in once, because the browser keeps a separate login cookie per address.
 
 ## 3. Using the site
 
-- **Learners (profiles):** the avatar in the top-right opens **Who's learning?** — switch or add learners. **Settings → Learners** renames or deletes them. Each learner has separate progress, start date, quiz attempts and theme. No passwords: anyone using the browser can switch learners.
-- **Schedule:** a learner's course starts on the day the profile is created (browser date); Day N is planned for start + N − 1 and the course finishes 29 days later. The dashboard shows start, finish, today's plan day and whether you're ahead or behind; the outline shows a date for every day. Change it in **Settings → Your schedule**.
+- **Accounts:** **Create account** (username, display name, password of 8+ characters) or **Sign in**; the avatar menu in the top-right shows who is signed in and has **Settings** and **Log out**. One login = one learner: each account has its own progress, start date, quiz attempts, theme and UI preferences. **Settings → Account** changes the display name or password and deletes the account (password required). The dashboard, Settings and mock exams need you to be signed in; lessons, glossary, cheat sheets and search are readable signed out, where quizzes work but nothing is saved (a banner offers **Sign in to save your progress**).
+- **Progress from the old browser-only version:** the first time you sign in on a browser that still holds progress saved by the earlier version of the site, it offers **Import progress saved in this browser** once.
+- **Schedule:** a learner's course starts on the day the account is created; Day N is planned for start + N − 1 and the course finishes 29 days later. The dashboard shows start, finish, today's plan day and whether you're ahead or behind; the outline shows a date for every day. Change it in **Settings → Your schedule**.
 - **Lessons as slides:** each lesson section becomes screen-sized slides with big type, a visual on every slide and highlighted key terms. Navigate with the buttons, ←/→ keys or swipe; **Full page** switches back to the long view (used for printing and search).
 - **Quizzes and mocks:** answers save as you go; results explain every option and link back to the lesson section. Mock exams are timed (90 min) with a palette, flags and a review screen; scores use the 100–1000 scale (pass 700).
-- **Backup:** Settings → Export / Import (JSON, validated, ≤ 1 MB) and Reset (with confirmation) act on the current learner.
+- **Backup:** Settings → Export / Import (JSON, validated, ≤ 1 MB) and Reset (with confirmation) act on the signed-in learner; the whole database is backed up by copying the SQLite file (above).
 
 ## 4. Quality checks
 
@@ -61,8 +79,8 @@ All commands run from `site/`.
 | `npm run typecheck` | `astro check` (TypeScript + Astro) |
 | `npm run validate:content` | Lesson structure, timing (50–70 min), question sets, coverage per task statement, glossary/service cards |
 | `npx tsx scripts/validate-content.ts --final` | Release gate: also requires all 30 days, ≥ 900 unique questions, ≥ 3 questions per task statement |
-| `npm run test` | Unit tests (Vitest) |
-| `npm run test:e2e` | All browser tests (Playwright: desktop 1280×800 + mobile 375×812; builds and previews automatically) |
+| `npm run test` | Unit tests (Vitest), incl. the server (`tests/unit/server-*.test.ts`: in-process server, temp database) |
+| `npm run test:e2e` | All browser tests (Playwright: desktop 1280×800 + mobile 375×812). Builds the site and starts the real server with a fresh temporary database (`site/data/e2e/e2e-<port>-<run>.db`, older ones for the same port deleted at start); every test signs up its own random account |
 | `npm run test:visual` | Only the `@visual` specs (screenshots in `tests/e2e/__screenshots__/`) |
 | `npm run verify` | lint + typecheck + validate + unit + e2e |
 | `npm run audit:tasks` | Checks `tasks.md`: completed tasks have their test files and screenshots; lists unchecked tasks (`-- --final` fails on any) |
@@ -78,6 +96,8 @@ E2E_PORT=4441 npx playwright test                 # run on another port (paralle
 ```
 
 On Windows `cmd`, set the port with `set E2E_PORT=4441&& npx playwright test` (no space before `&&`).
+
+E2E specs import `test`/`expect` from `tests/e2e/fixtures.ts`, never from `@playwright/test`: the fixture signs up a fresh account per test and saves the Full page lesson view for it. Options: `test.use({ signedIn: false })` for signed-out behaviour, `test.use({ lessonView: null })` for the default slide view. `seed(page, progress)` (`progress-fixtures.ts`) saves progress on the server (`PUT /api/progress`) and must run before the first `page.goto`; `readProgress(page)` waits for the page's debounced saves and reads it back. The server never reuses a running instance (`reuseExistingServer: false`) — stop stray servers on the port first.
 
 ## 5. Editing content
 
@@ -97,12 +117,14 @@ site/
   src/
     content/        lessons (MDX), questions, glossary, services (YAML)
     data/           exam-guide.yaml, course.yaml (30-day calendar)
-    components/     lesson/, quiz/, mock/, review/, dashboard/, profiles/, settings/, lookup/
+    components/     lesson/, quiz/, mock/, review/, dashboard/, account/, settings/, lookup/
     layouts/        BaseLayout, LessonLayout, ReviewLayout, MockDayLayout
-    pages/          / · /day/[day] · /mock/[n] · /outline · /search · /glossary · /cheatsheet/* · /coverage · /settings · /design/* (mockups + test fixtures)
-    lib/            scoring, quiz-state, mock, schedule, progress/ (store, profiles, keys, io, section-tracker), validate
+    pages/          / · /login · /signup · /day/[day] · /mock/[n] · /outline · /search · /glossary · /cheatsheet/* · /coverage · /settings · /design/* (mockups + test fixtures)
+    lib/            scoring, quiz-state, mock, schedule, ui-state, progress/ (store, io, legacy import, section-tracker), validate
     schemas/        JSON Schemas (Ajv, compiled at build) + Zod collection schemas
     styles/         theme.css (design tokens), feature CSS
+  server/           Node server: static files from dist/, auth + sessions, JSON API, SQLite (contracts/server-api.md)
+  data/             aip.db (SQLite, gitignored; e2e runs use data/e2e/)
   scripts/          validate-content, render-diagrams, build-validators, audit-tasks, perf-check
   tests/unit/       Vitest
   tests/e2e/        Playwright specs, helpers, review + visual screenshots
@@ -123,17 +145,21 @@ New work: add tasks to `tasks.md` (next free `T###`), follow the gate, tick the 
 
 ## 8. Security and privacy
 
-- Static site; no server, no analytics, no external requests at runtime (fonts, diagrams and search are local).
+- A small local server (no analytics, no external requests at runtime — fonts, diagrams and search are local). Passwords are hashed with scrypt; sessions are random tokens in an `HttpOnly`, `SameSite=Lax` cookie (only their hash is stored); API writes require a CSRF header and same-origin requests; login and sign-up are rate-limited and errors never say whether the username or the password was wrong.
+- The server listens on all interfaces by default: anyone who can reach the port can create an account. Use `HOST=127.0.0.1` on untrusted networks.
 - Strict Content-Security-Policy (`default-src 'self'`, hashed scripts/styles); `/search` adds only `'wasm-unsafe-eval'` for Pagefind.
-- Progress never leaves the browser except through an explicit export. Imports are size-limited, parsed with `JSON.parse` and schema-validated, and require confirmation.
+- Progress is stored only in your SQLite file; it leaves it only through an explicit export. Saved progress and imports are size-limited, parsed with `JSON.parse` and schema-validated (imports also require confirmation).
 
 ## 9. Troubleshooting
 
 | Problem | Fix |
 |---|---|
 | `Error: Cannot find module @rollup/rollup-linux-…` / esbuild platform errors | `node_modules` was installed by another OS — run npm through the same OS that installed it (see Prerequisites) or reinstall. |
-| Search page says search is unavailable | Run `npm run build && npm run preview` (the index is built by Pagefind). |
-| E2E port already in use | Stop the other preview server, or set `E2E_PORT`. |
+| Search page says search is unavailable | Run `npm start` (the index is built by Pagefind during the build). |
+| Progress isn't saved | You are signed out (see the banner on lessons) — sign in; on a forwarded URL / other address sign in there too. |
+| Forgot a password | There is no e-mail reset (local app). Create a new account (old progress can be moved only from a JSON export), or start over by resetting the database file. |
+| `node:sqlite` not found / `DatabaseSync` errors | Use Node 22 (see Prerequisites). |
+| E2E port already in use | Stop the other server on that port (the suite never reuses one), or set `E2E_PORT`. |
 | Visual test fails after an intended UI change | Inspect `test-results/**/…-diff.png`, then `npx playwright test visual --update-snapshots=all`. |
 | Lesson time check fails in `validate:content` | Core reading time must be 50–70 min and within ±15 % of `estimatedMinutes` (words ÷ 130 + diagrams + 8 lab + 1/quiz question). |
 

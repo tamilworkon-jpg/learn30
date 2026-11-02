@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
-import { ROUTES, themeInit } from './routes';
+import { expect, test, type Page } from './fixtures';
+import { ROUTES, seedTheme } from './routes';
 
 // T174 — axe: zero serious/critical violations on every route, light + dark, desktop + mobile;
 // keyboard-only walkthrough of the mock exam (the daily quiz keyboard path is covered in quiz.spec Q-E1).
@@ -15,7 +15,7 @@ test.describe('accessibility (T174)', () => {
   for (const theme of ['light', 'dark'] as const) {
     for (const r of ROUTES) {
       test(`axe ${r.name} ${theme}`, async ({ page }) => {
-        await page.addInitScript(themeInit(theme));
+        await seedTheme(page, theme);
         await page.goto(r.path);
         await page.waitForLoadState('networkidle');
         await expect(page.locator('html')).toHaveAttribute('data-theme', theme);

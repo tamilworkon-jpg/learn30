@@ -1,7 +1,22 @@
+import { mkdirSync, readdirSync, rmSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
 
-// E2E_PORT lets parallel worktrees run their own build + preview without colliding on 4321.
+// E2E_PORT lets parallel worktrees run their own build + server without colliding on 4321.
 const port = Number(process.env.E2E_PORT ?? 4321);
+
+// Phase 13 (contracts/server-api.md §8): the suite runs against the Node server with a fresh SQLite file per run
+// (the server creates the schema). It lives under site/data/e2e/ (gitignored) rather than test-results/, which
+// Playwright empties after the web server has started. The run id is inherited by the worker processes (env), and
+// only the main process deletes older databases for this port (their servers are stopped: reuseExistingServer is off).
+const run = (process.env.AIP_E2E_RUN ??= String(Date.now()));
+const dbDir = resolve('data/e2e');
+const db = join(dbDir, `e2e-${port}-${run}.db`);
+if (!process.env.TEST_WORKER_INDEX) {
+  mkdirSync(dbDir, { recursive: true });
+  for (const f of readdirSync(dbDir)) if (f.startsWith(`e2e-${port}-`) && !f.startsWith(`e2e-${port}-${run}.`)) rmSync(join(dbDir, f), { force: true });
+  rmSync(db, { force: true });
+}
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -12,18 +27,19 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${port}`,
     screenshot: 'on',
-    // T182: lessons open as slides by default. Specs written for the long page start in the Full page view;
-    // slides.spec.ts clears this to test the default.
-    storageState: { cookies: [], origins: [{ origin: `http://localhost:${port}`, localStorage: [{ name: 'aip-ui:lesson-view', value: 'full' }] }] },
+    // No storageState: every test signs up a fresh account (tests/e2e/fixtures.ts), which also saves the Full page
+    // lesson view in that account's UiState unless the spec opts out (`test.use({ lessonView: null })`).
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },
     { name: 'mobile', use: { ...devices['Pixel 7'], viewport: { width: 375, height: 812 } } },
   ],
   webServer: {
-    command: `npm run build && npx astro preview --port ${port}`,
-    url: `http://localhost:${port}`,
-    reuseExistingServer: !process.env.CI && !process.env.E2E_PORT,
+    command: 'npm run build && npx tsx server/index.ts',
+    url: `http://localhost:${port}/login`,
+    env: { PORT: String(port), AIP_DB: db },
+    // A stale server on the port must never be reused silently (it would hold another database).
+    reuseExistingServer: false,
     timeout: 240_000,
   },
 });

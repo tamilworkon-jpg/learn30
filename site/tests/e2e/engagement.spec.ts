@@ -1,10 +1,10 @@
 import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 import { load } from 'js-yaml';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import type { Course } from '../../src/lib/types';
 import { noHorizontalScroll, shot, trackConsole } from './helpers';
-import { done, progress, readProgress, seed } from './progress-fixtures';
+import { done, editProgress, progress, readProgress, seed } from './progress-fixtures';
 
 // T107 — streak, badges, celebration, mobile layout.
 const course = load(readFileSync('src/data/course.yaml', 'utf8')) as Course;
@@ -53,12 +53,9 @@ test.describe('engagement (T107) @visual', () => {
     await expect(dash).toHaveAttribute('data-ready', 'true');
     await expect(dash.locator('[data-ratings]')).toHaveCount(0);
 
-    await page.evaluate(() => {
-      const p = JSON.parse(localStorage.getItem('aip-course:v1')!);
+    await editProgress(page, (p) => {
       p.ratings = { 'week-1': 4, 'week-2': 2 };
-      localStorage.setItem('aip-course:v1', JSON.stringify(p));
     });
-    await page.reload();
     await expect(dash).toHaveAttribute('data-ready', 'true');
     const ratings = dash.locator('[data-ratings]');
     await expect(ratings.getByRole('heading', { name: 'Your weekly ratings' })).toBeVisible();
@@ -97,7 +94,7 @@ test.describe('engagement (T107) @visual', () => {
     await page.screenshot({ path: `tests/e2e/__screenshots__/review/celebrate-${test.info().project.name}.png` });
     await cel.getByRole('button', { name: 'Close' }).click();
     await expect(cel).toHaveCount(0);
-    expect((await readProgress(page))?.badges).toContain('week-1');
+    await expect.poll(async () => (await readProgress(page))?.badges).toContain('week-1');
   });
 
   test('E7 celebration respects prefers-reduced-motion', async ({ page }) => {

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { load } from 'js-yaml';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import type { Question } from '../../src/lib/types';
 import { noHorizontalScroll, shotEl, trackConsole } from './helpers';
 
