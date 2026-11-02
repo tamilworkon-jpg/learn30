@@ -41,7 +41,7 @@ export default function ContinueCard({ plan, progress }: Props) {
   const t = continueTarget(progress, plan);
   const day = plan.days.find((d) => d.day === t.day)!;
   const section = t.sectionId ? day.sections.find((s) => s.id === t.sectionId) : undefined;
-  const cta = section ? `Resume at ${section.title} →` : t.resumed || (progress.days[String(day.day)]?.sectionsViewed.length ?? 0) > 0 ? 'Continue →' : 'Start →';
+  const cta = !day.available ? 'Preview →' : section ? `Resume at ${section.title} →` : t.resumed || (progress.days[String(day.day)]?.sectionsViewed.length ?? 0) > 0 ? 'Continue →' : 'Start →';
   return (
     <div class="grid-cards" data-continue>
       <Card p={progress} d={day} grad={GRADS[0]} href={t.href} cta={cta} />

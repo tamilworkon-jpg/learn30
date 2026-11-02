@@ -12,6 +12,7 @@ import Objectives from '../components/lesson/Objectives.astro';
 import QuizSlot from '../components/quiz/QuizSlot.astro';
 import SectionNav from '../components/lesson/SectionNav.astro';
 import MarkComplete from '../components/lesson/MarkComplete';
+import { weeksFromCourse } from '../lib/badges';
 import '../styles/dashboard.css';
 import { course, examGuide, pad } from '../lib/data';
 import { coreMinutes, getPrevNext } from '../lib/lesson-utils';
@@ -53,7 +54,7 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
         )
       }
       <Content components={{ Section, Diagram, Callout, HandsOnLab, Recap, Orientation, Objectives, QuizSlot }} />
-      <MarkComplete client:visible day={d.day} nextHref={next ? `/day/${pad(next)}` : undefined} />
+      <MarkComplete client:visible day={d.day} nextHref={next ? `/day/${pad(next)}` : undefined} weeks={weeksFromCourse(course)} totalDays={course.days.length} />
       <nav class="prevnext" aria-label="Day navigation">
         {prev ? <a class="btn btn-ghost" href={`/day/${pad(prev)}`}>← Previous: Day {prev}</a> : <span />}
         {next && <a class="btn" href={`/day/${pad(next)}`}>Next: Day {next} →</a>}

@@ -1,4 +1,5 @@
 import { EXAM_GUIDE_VERSION } from '../constants';
+import { localDate, recordStudyDay } from '../streak';
 import type { Attempt, Progress } from '../types';
 import validateProgress from '../../schemas/generated/validate-progress';
 
@@ -77,6 +78,7 @@ export function createStore(storage: Storage = localStorage) {
       const d = day(n);
       d.status = 'completed';
       d.completedAt = new Date().toISOString();
+      state.streak = recordStudyDay(state.streak, localDate());
       save();
     },
     unmarkDay(n: number) {
@@ -108,6 +110,12 @@ export function createStore(storage: Storage = localStorage) {
       }
       save();
       return attempt;
+    },
+    awardBadges(ids: string[]) {
+      const add = ids.filter((id) => !state.badges.includes(id));
+      if (!add.length) return;
+      state.badges = [...state.badges, ...add];
+      save();
     },
     setRating(week: string, value: number) {
       if (!/^week-[1-4]$/.test(week) || !Number.isInteger(value) || value < 1 || value > 5) throw new Error('Invalid rating');

@@ -363,16 +363,22 @@ If a model is unavailable, use any available model that differs from the author 
 
 **Goal**: Streaks, badges, celebration, mobile polish. **Independent test**: quickstart V13, V14.
 
-- [ ] T106 [P] [US7] Unit test site/tests/unit/streak.test.ts
+- [x] T106 [P] [US7] Unit test site/tests/unit/streak.test.ts
   - TC: E1 consecutive dates increment; E2 gap resets current, keeps longest; E3 same day no double count; E4 badges for week completion, mock pass, streak 7, course complete.
-- [ ] T107 [P] [US7] E2E site/tests/e2e/engagement.spec.ts (`@visual`)
+  - Done: 14 unit tests (E1–E4 + month/year boundary, lapsed display streak, store hooks `markDayComplete` → streak, `awardBadges` union).
+- [x] T107 [P] [US7] E2E site/tests/e2e/engagement.spec.ts (`@visual`)
   - TC: E5 seeded progress shows streak 7 + Week 1 badge; E6 every route at 375px has `scrollWidth <= clientWidth`; E7 celebration respects `prefers-reduced-motion`; screenshots `dashboard-badges` desktop+mobile.
-- [ ] T108 [US7] Implement site/src/lib/streak.ts and site/src/lib/badges.ts → T106 green
-- [ ] T109 [P] [US7] Create site/src/components/dashboard/Streak.tsx
-- [ ] T110 [P] [US7] Create site/src/components/dashboard/Badges.tsx
-- [ ] T111 [P] [US7] Create site/src/components/common/Celebrate.tsx
-- [ ] T112 [US7] Integrate into dashboard + MarkComplete; mobile fixes in theme.css → T107 green
-- [ ] T113 [US7] REVIEW US7; log
+  - Done: 6 tests (E6 mobile-only: `/`, `/outline`, `/settings`, all 30 `/day/NN`; desktop skipped) + lapsed-streak + dark badges; axe serious/critical = 0. Screenshots `dashboard-badges` (+dark) and `celebrate` (viewport) desktop+mobile inspected.
+- [x] T108 [US7] Implement site/src/lib/streak.ts and site/src/lib/badges.ts → T106 green
+  - Done: streak on local calendar dates; badges derived from progress (week-N = all days of the week completed; mock-pass = mock attempt scaled ≥ 700; streak-7 = longest ≥ 7; course-complete = all 30 days) and persisted via new `store.awardBadges()`.
+- [x] T109 [P] [US7] Create site/src/components/dashboard/Streak.tsx
+- [x] T110 [P] [US7] Create site/src/components/dashboard/Badges.tsx
+- [x] T111 [P] [US7] Create site/src/components/common/Celebrate.tsx
+  - Done: CSS-only confetti; not rendered when `prefers-reduced-motion: reduce` (plus CSS media-query guard; toast animation none); Esc/Close dismisses.
+- [x] T112 [US7] Integrate into dashboard + MarkComplete; mobile fixes in theme.css → T107 green
+  - Done: Streak inside the progress-ring card, Badges card in the dashboard aside; MarkComplete computes new badges + streak and shows Celebrate. No theme.css change needed — E6 passes on every route at 375px.
+- [x] T113 [US7] REVIEW US7; log
+  - Done: lint/typecheck/validate clean; unit 187/187; e2e 77 passed + 1 skipped (E6 is mobile-only). Logging left to the coordinator (review-log.md not touched).
 
 ---
 
