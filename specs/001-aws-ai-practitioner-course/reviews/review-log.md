@@ -75,3 +75,9 @@ Built in parallel: 3 code worktrees (US3+US7, US4+US5, US6), 7 lesson agents (Da
 - T185 README at repo root; commands re-run as written; re-baseline command corrected to `--update-snapshots=all` (plain mode skips changes within tolerance).
 - Tests: unit 373 passing; E2E 319 passing + 1 intentional skip; visual spec now freezes the browser clock (pages show dates) and waits for the profile menu. lint/typecheck clean; `validate:content --final` green.
 - Open/notes: phones get many slides (~85–110 per day); on slide view the page header is scrolled just above the viewport on load; T179 manual VS Code step still open.
+
+## T187 — learner feedback round 2 (short screens, highlights, collapsible side bars, slide position) — 2026-11-02
+
+- From the learner's 25 %-zoom screenshot + direct requests to the slides agent: slides now fit short, wide desktop windows with no page scroll (SL1 at 1280×600, 1366×650, 1536×730, 1920×900, 1280×800; 375×812 phone kept; extra phone sizes dropped at the learner's request — mobile out of scope for now); compact slide header (title wraps to 2 lines, planned date, toggle, slide count); marker highlight limited to prose (fixed red bars on Day 1 fact cards); reading width capped at 920 px; collapsible left navigation (icon rail) and "Today's sections" (vertical tab), persisted per browser, keyboard operable, axe clean; refresh/revisit reopens the learner's slide (per browser, per day); no re-paging on scrollbar changes.
+- Coordinator verification on main exposed a stale preview server on port 4321 being reused by Playwright (old build) → re-ran on a fresh build with E2E_PORT: unit 377, E2E 330 passed + 16 expected skips; lint/typecheck clean.
+- Open: phones get ~110–140 slides per day (deferred); slide position is per browser, not per learner/device (addressed by the requested SQLite backend).
