@@ -92,6 +92,24 @@
   html[data-lesson-view='slides'] .slide-off {
     display: none !important;
   }
+  /* Re-paging changes heights inside the deck; the browser must not "compensate" by scrolling. */
+  html[data-lesson-view='slides'] body {
+    overflow-anchor: none;
+  }
+  /* The skip-ahead notice moves into the deck in slide view: keep it compact. */
+  html[data-lesson-view='slides'] .slide-deck .skip-notice:not([hidden]) {
+    margin: 0 0 10px;
+    padding: 8px 8px 8px 14px;
+    gap: 6px 10px;
+    font-size: 14px;
+    flex-wrap: nowrap;
+  }
+  html[data-lesson-view='slides'] .slide-deck .skip-notice .btn {
+    padding: 4px 12px;
+    min-height: 32px;
+    font-size: 13px;
+    flex: none;
+  }
 
   /* ---------- the stage ---------- */
   html[data-lesson-view='slides'][data-deck-ready] .slide-deck article {
@@ -144,7 +162,11 @@
     html[data-lesson-view='slides'] .slide-deck .lesson-section > .sec-head {
     padding-right: 64px;
   }
-  .slide-part:not(:empty) {
+  /* Always out of flow: an empty label must not change how the heading wraps between measuring and showing. */
+  html[data-lesson-view='slides'] .slide-deck .slide-part:empty {
+    display: none;
+  }
+  .slide-part {
     position: absolute;
     top: 14px;
     right: 18px;
@@ -300,9 +322,6 @@
 
   /* ---------- controls ---------- */
   .deck-controls:not([hidden]) {
-    position: sticky;
-    bottom: 0;
-    z-index: 5;
     display: flex;
     align-items: center;
     justify-content: space-between;

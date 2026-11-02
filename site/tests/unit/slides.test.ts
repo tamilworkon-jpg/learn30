@@ -31,6 +31,13 @@ describe('paginate', () => {
     expect(pages).toEqual([['p1'], ['intro', 'table']]);
   });
 
+  it('does not shrink a block that only fails to fit together with a long lead-in', () => {
+    const shrunk = new Set<string>();
+    const pages = paginate([leaf('h', 20, { keepWithNext: true }), leaf('lead', 70, { keepWithNext: true }), leaf('li', 20)], fitsIn(100, shrunk), (el) => shrunk.add(el));
+    expect(pages).toEqual([['h', 'lead'], ['li']]);
+    expect(shrunk.size).toBe(0);
+  });
+
   it('keeps a splitIfNeeded block (table) whole when it fits a page, else continues it row by row', () => {
     const small: SlideBlock<string> = { el: 't1', splitIfNeeded: true, children: [leaf('r1', 20), leaf('r2', 20)] };
     H.t1 = 40;

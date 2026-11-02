@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { noHorizontalScroll, shot, shotEl, trackConsole } from './helpers';
+import { noHorizontalScroll, shotEl, trackConsole } from './helpers';
 import { readProgress } from './progress-fixtures';
 import { themeInit } from './routes';
 
@@ -9,6 +9,12 @@ import { themeInit } from './routes';
 test.use({ storageState: { cookies: [], origins: [] } });
 
 const VIEW_KEY = 'aip-ui:lesson-view';
+
+/** What the learner sees: a viewport screenshot (a full-page capture would resize the viewport and re-page). */
+async function viewShot(page: Page, name: string) {
+  await page.waitForLoadState('networkidle');
+  await page.screenshot({ path: `tests/e2e/__screenshots__/review/${name}-${test.info().project.name}.png` });
+}
 const article = (page: Page) => page.locator('article[data-lesson-day]');
 const next = (page: Page) => page.getByRole('button', { name: 'Next slide' });
 const prev = (page: Page) => page.getByRole('button', { name: 'Previous slide' });
@@ -38,8 +44,15 @@ const measure = (page: Page) =>
     const bar = document.querySelector('.deck-bar')!.getBoundingClientRect();
     const ctl = document.querySelector('.deck-controls')!.getBoundingClientRect();
     const p = [...a.querySelectorAll('p, li')].find((e) => shown(e) && !e.closest('.callout, .lab-banner, .quiz, figure, .console, .chip, table, [class*="text-sm"]'));
+    // Bottom of the lowest visible content inside the stage, in viewport coordinates.
+    const contentBottom = Math.max(...[...a.querySelectorAll('*')].filter((e) => e.getClientRects().length > 0).map((e) => e.getBoundingClientRect().bottom));
     return {
+      contentBottom,
+      contentTop: a.getBoundingClientRect().top,
+      navTop: ctl.top,
+      noticeShown: !!document.querySelector('#skip-notice:not([hidden])'),
       interactive: a.classList.contains('slide-scroll'),
+      quiz: !!a.querySelector('.quiz-slot')?.getClientRects().length,
       overflow: a.scrollHeight - a.clientHeight,
       visual,
       deckTop: bar.top,
@@ -50,36 +63,53 @@ const measure = (page: Page) =>
   });
 
 test.describe('slide lessons (T182) @visual', () => {
-  test('SL1 SL3 SL4 /day/02 opens as ≥ 11 slides; each fits the screen, has big type and a visual', async ({ page }, info) => {
-    const problems = trackConsole(page);
-    await openDeck(page);
-    await page.waitForLoadState('networkidle');
-    const n = await total(page);
-    expect(n).toBeGreaterThanOrEqual(11);
-    await expect(page.locator('.deck-count')).toHaveText(`Slide 1 of ${n}`);
-    await expect(prev(page)).toBeDisabled();
-    await shot(page, 'slide-first');
-    const minFont = info.project.name === 'mobile' ? 18 : 20;
-    for (let i = 1; i <= n; i++) {
-      if (i > 1) await next(page).click();
-      expect(await total(page), 'slide count stays stable').toBe(n);
-      expect(await slideNo(page)).toBe(i);
-      const m = await measure(page);
-      const where = `slide ${i} (${await article(page).getAttribute('data-slide-section')})`;
-      expect(m.visual, `${where} has a visual`).toBe(true);
-      if (i > 1) {
-        // After navigating, the whole deck is on screen.
+  for (const path of ['/day/02', '/day/15']) {
+    test(`SL1 SL3 SL4 ${path}: ≥ 11 slides; each fully visible above the controls, big type, a visual`, async ({ page }, info) => {
+      const problems = trackConsole(page);
+      await openDeck(page, path);
+      await page.waitForLoadState('networkidle');
+      const n = await total(page);
+      expect(n).toBeGreaterThanOrEqual(11);
+      await expect(page.locator('.deck-count')).toHaveText(`Slide 1 of ${n}`);
+      await expect(prev(page)).toBeDisabled();
+      // fresh learner: the skip-ahead notice is shown (inside the deck) on slide 1
+      await expect(page.locator('#skip-notice')).toBeVisible();
+      if (path === '/day/02') await viewShot(page, 'slide-first');
+      const minFont = info.project.name === 'mobile' ? 18 : 20;
+      for (let i = 1; i <= n; i++) {
+        if (i > 1) await next(page).click();
+        expect(await total(page), 'slide count stays stable').toBe(n);
+        expect(await slideNo(page)).toBe(i);
+        const m = await measure(page);
+        const where = `${path} slide ${i} (${await article(page).getAttribute('data-slide-section')})`;
+        if (i === 1) expect(m.noticeShown, 'notice visible on slide 1').toBe(true);
+        expect(m.visual, `${where} has a visual`).toBe(true);
+        // At the position the learner sees (first load included): toolbar, slide and controls are all on screen …
         expect(m.deckTop, where).toBeGreaterThanOrEqual(-1);
+        expect(m.contentTop, where).toBeGreaterThanOrEqual(0);
         expect(m.deckBottom, where).toBeLessThanOrEqual(m.viewport + 1);
+        // … and nothing of a reading slide is hidden under the controls or clipped (no inner scroll).
+        // Only the quiz slide may scroll inside the stage (one question at a time, but results grow).
+        if (!m.quiz) {
+          expect(m.contentBottom, `${where} content ends above the controls`).toBeLessThanOrEqual(m.navTop + 0.5);
+          expect(m.overflow, `${where} fits without inner scroll`).toBeLessThanOrEqual(0);
+          if (m.font !== null) expect(m.font, `${where} body font`).toBeGreaterThanOrEqual(minFont);
+        }
       }
-      // The quiz and the finish slide are interactive (results grow) and may scroll; every reading slide fits.
-      if (!m.interactive) expect(m.overflow, `${where} fits without inner scroll`).toBeLessThanOrEqual(0);
-      if (m.font !== null && !m.interactive) expect(m.font, `${where} body font`).toBeGreaterThanOrEqual(minFont);
-    }
-    await expect(next(page)).toBeDisabled();
-    await noHorizontalScroll(page);
-    expect(problems, problems.join('\n')).toEqual([]);
-  });
+      await expect(next(page)).toBeDisabled();
+      // and back again with the keyboard / a deep link
+      await page.keyboard.press('ArrowLeft');
+      const back = await measure(page);
+      expect(back.deckBottom).toBeLessThanOrEqual(back.viewport + 1);
+      await page.goto(`${path}#slide-3`);
+      await expect.poll(() => slideNo(page)).toBe(3);
+      const deep = await measure(page);
+      expect(deep.contentBottom).toBeLessThanOrEqual(deep.navTop + 0.5);
+      expect(deep.deckBottom).toBeLessThanOrEqual(deep.viewport + 1);
+      await noHorizontalScroll(page);
+      expect(problems, problems.join('\n')).toEqual([]);
+    });
+  }
 
   test('SL2 buttons, arrow/page keys, swipe, #slide-n deep links, focus + announcement', async ({ page }) => {
     await page.goto('/day/02#slide-5');
@@ -142,7 +172,7 @@ test.describe('slide lessons (T182) @visual', () => {
     // a lab-step slide: the console mock-up is the slide's visual
     while (!(await page.locator('#hands-on .lab-step').first().isVisible())) await next(page).click();
     await expect(page.locator('#hands-on .lab-step .console').first()).toBeVisible();
-    await shot(page, 'slide-lab');
+    await viewShot(page, 'slide-lab');
 
     await page.goto('/day/02#diagram');
     await expect(article(page)).toHaveAttribute('data-slide-section', 'diagram');
@@ -150,7 +180,7 @@ test.describe('slide lessons (T182) @visual', () => {
     await expect(img).toBeVisible();
     await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0)).toBe(true);
     await expect.poll(async () => (await measure(page)).overflow).toBeLessThanOrEqual(0);
-    await shot(page, 'slide-diagram');
+    await viewShot(page, 'slide-diagram');
 
     // the optional deep dive: a collapsed teaser slide that expands into its own slides
     await page.goto('/day/02#deep-dive');
@@ -267,10 +297,10 @@ test.describe('slide lessons (T182) @visual', () => {
       if (theme === 'dark') {
         await page.goto('/day/02');
         await expect(page.locator('html')).toHaveAttribute('data-deck-ready', 'true');
-        await shot(page, 'slide-first-dark');
+        await viewShot(page, 'slide-first-dark');
         await page.goto('/day/02#hands-on');
         while (!(await page.locator('#hands-on .lab-step').first().isVisible())) await next(page).click();
-        await shot(page, 'slide-lab-dark');
+        await viewShot(page, 'slide-lab-dark');
       }
       if (info.project.name === 'mobile' && theme === 'light') {
         await page.goto('/day/02#explanation');
