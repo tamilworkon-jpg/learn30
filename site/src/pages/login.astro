@@ -1,0 +1,12 @@
+---
+// T189 — sign in (contract §6–§7). Static page; the form island posts to /api/auth/login.
+// A signed-in visitor is redirected to `/` (or `next`) by the server before this page is served.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AuthForm from '../components/account/AuthForm';
+---
+
+<BaseLayout title="Sign in" accountUi={false} description="Sign in to save your AWS AI Practitioner course progress.">
+  <div class="auth-wrap">
+    <AuthForm mode="login" client:load />
+  </div>
+</BaseLayout>

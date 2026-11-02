@@ -1,14 +1,20 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { bindCollapse, isCollapsed } from '../../src/lib/ui-prefs';
+import { createUiState } from '../../src/lib/ui-state';
 
-// T187 — collapsible side bars: html data attribute + localStorage + button state.
+// T187/T189 — collapsible side bars: html data attribute + UiState (signed out: localStorage) + button state.
 describe('bindCollapse', () => {
   beforeEach(() => {
     localStorage.clear();
     delete document.documentElement.dataset.sidebar;
     document.body.replaceChildren(Object.assign(document.createElement('button'), { id: 'b', type: 'button' }));
   });
-  const opts = () => ({ button: document.getElementById('b') as HTMLButtonElement, key: 'aip-ui:sidebar', attr: 'sidebar' as const, labels: { collapse: 'Collapse navigation', expand: 'Expand navigation' } });
+  const opts = (ui = createUiState({ signedIn: false, storage: localStorage })) => ({
+    button: document.getElementById('b') as HTMLButtonElement,
+    attr: 'sidebar' as const,
+    labels: { collapse: 'Collapse navigation', expand: 'Expand navigation' },
+    ui,
+  });
 
   it('starts expanded and labels the button', () => {
     bindCollapse(opts());
@@ -17,7 +23,7 @@ describe('bindCollapse', () => {
     expect(b.getAttribute('aria-label')).toBe('Collapse navigation');
   });
 
-  it('toggles, persists and announces a layout change', () => {
+  it('toggles, persists (signed out: localStorage) and announces a layout change', () => {
     let changes = 0;
     document.addEventListener('layoutchange', () => changes++);
     bindCollapse(opts());
@@ -31,6 +37,14 @@ describe('bindCollapse', () => {
     expect(isCollapsed('sidebar')).toBe(false);
     expect(localStorage.getItem('aip-ui:sidebar')).toBeNull();
     expect(changes).toBe(2);
+  });
+
+  it('signed in: the choice goes to UiState, not localStorage', () => {
+    const ui = createUiState({ signedIn: true, fetchImpl: (async () => new Response(null, { status: 204 })) as typeof fetch });
+    bindCollapse(opts(ui));
+    document.getElementById('b')!.click();
+    expect(ui.get().sidebar).toBe('collapsed');
+    expect(localStorage.getItem('aip-ui:sidebar')).toBeNull();
   });
 
   it('reflects a state applied before paint', () => {

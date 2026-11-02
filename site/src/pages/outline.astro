@@ -1,7 +1,7 @@
 ---
 import '../styles/profiles.css';
 // T076 — course outline: weeks → days → sections, rendered at build time; a small script adds the
-// learner's status icons from localStorage.
+// learner's status icons from the progress store.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { buildPlan } from '../lib/course-plan';

@@ -2,16 +2,13 @@
 // The build-time HTML stays the full article (search, print, no-JS); this module only hides/shows
 // blocks. Nothing is moved, so hydrated islands (QuizRunner, MarkComplete) keep working.
 import { keyAction, keyTerms, paginate, parseSlideHash, swipeAction, type SlideBlock } from './slides';
+import { getUiState, type LessonView } from './ui-state';
 
-export const VIEW_KEY = 'aip-ui:lesson-view';
-export type LessonView = 'slides' | 'full';
+export type { LessonView } from './ui-state';
 
+/** The lesson view: the account's UiState (T189), or this browser's choice when signed out. */
 export function readView(): LessonView {
-  try {
-    return localStorage.getItem(VIEW_KEY) === 'full' ? 'full' : 'slides';
-  } catch {
-    return 'slides';
-  }
+  return getUiState().lessonView();
 }
 
 const ILLUSTRATION: Record<string, string> = {
@@ -373,6 +370,16 @@ export function initSlideDeck(deck: HTMLElement) {
     if (Math.abs(dy) > 1) window.scrollTo({ top: window.scrollY + dy, behavior: 'instant' });
   };
 
+  // T189 — the slide the learner was on last time (section + page within it, so it survives re-paging).
+  const savedSlide = (): number | null => {
+    const pos = getUiState().slide(day);
+    if (!pos) return null;
+    const first = slides.findIndex((x) => x.group.id === pos.sectionId);
+    if (first < 0) return null;
+    const parts = slides[first].parts;
+    return first + Math.min(pos.block, parts - 1);
+  };
+
   function go(i: number, opts: { focus: boolean; scroll: boolean; replace: boolean } = { focus: true, scroll: true, replace: true }) {
     if (!slides.length) return;
     if (opts.focus) settled = true;
@@ -412,6 +419,7 @@ export function initSlideDeck(deck: HTMLElement) {
     article.dataset.slideSection = s.group.type === 'finish' ? (groups?.[groups.length - 2]?.id ?? '') : s.group.id;
     article.dataset.slideIndex = String(index + 1);
     document.dispatchEvent(new CustomEvent('slidechange', { detail: { index, section: s.group.id } }));
+    if (settled) getUiState().setSlide(day, { sectionId: s.group.id, block: s.part - 1 });
     if (opts.replace) history.replaceState(history.state, '', `#slide-${index + 1}`);
     if (opts.focus) {
       live.textContent = `Slide ${index + 1} of ${n}: ${s.group.title}${s.parts > 1 ? `, part ${s.part} of ${s.parts}` : ''}`;
@@ -499,7 +507,7 @@ export function initSlideDeck(deck: HTMLElement) {
     index = 0;
     repaginate();
     const fromUrl = fromHash(location.hash);
-    go(fromUrl ?? 0, { focus: !initial, scroll: true, replace: !initial });
+    go(fromUrl ?? (initial ? savedSlide() : null) ?? 0, { focus: !initial, scroll: true, replace: !initial });
     root.dataset.deckReady = 'true';
   };
 
@@ -530,11 +538,7 @@ export function initSlideDeck(deck: HTMLElement) {
   const setView = (v: LessonView) => {
     if (v === view) return;
     view = v;
-    try {
-      localStorage.setItem(VIEW_KEY, v);
-    } catch {
-      /* private mode: the choice lasts for this page only */
-    }
+    getUiState().setLessonView(v);
     setButtons();
     if (v === 'slides') enterSlides(false);
     else enterFull(true);

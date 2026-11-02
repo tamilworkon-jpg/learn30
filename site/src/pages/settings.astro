@@ -1,17 +1,19 @@
 ---
-// T077 — settings: export / import / reset progress; T183/T184 learners + start date.
+// T077 — settings: export / import / reset progress; T183 start date; T189 account (replaces local learners).
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProgressIO from '../components/settings/ProgressIO';
-import LearnerSettings from '../components/settings/LearnerSettings';
+import ScheduleSettings from '../components/settings/ScheduleSettings';
+import AccountSettings from '../components/account/AccountSettings';
 import '../styles/dashboard.css';
 ---
 
 <BaseLayout title="Settings" active="settings">
   <h1 class="h1">Settings</h1>
   <p class="muted mt-0 max-w-3xl">
-    Progress is saved per learner, only in this browser, separately for each address you open the site on (for example <code>localhost</code> and a forwarded port URL). Use export
-    and import to move it between them or to keep a backup.
+    Your progress is saved to your account on the course server, so it follows you to any browser or device you sign in on. Export a copy to keep a backup, or import one you saved
+    earlier.
   </p>
   <ProgressIO client:load />
-  <LearnerSettings client:load />
+  <ScheduleSettings client:load />
+  <AccountSettings client:load />
 </BaseLayout>

@@ -81,7 +81,7 @@ export default function ProgressIO() {
     <div class="progress-io" data-progress-io data-ready={progress ? 'true' : undefined}>
       {recovered && (
         <p class="card callout-examTrap m-0" role="alert">
-          Your saved progress could not be read, so a fresh start was created. The unreadable data was kept as a backup in this browser.
+          Your saved progress could not be read, so a fresh start was created.
         </p>
       )}
 
@@ -149,7 +149,7 @@ export default function ProgressIO() {
         <h2 class="h2" id="io-reset-h">
           Reset
         </h2>
-        <p class="mt-0">Clear all completed days, quiz attempts, streaks and badges in this browser.</p>
+        <p class="mt-0">Clear all completed days, quiz attempts, streaks and badges in your account.</p>
         {confirmReset ? (
           <div class="confirm-panel danger" data-reset-confirm ref={dialogRef} tabIndex={-1} role="group" aria-labelledby="io-reset-confirm-h">
             <h3 class="m-0 font-semibold" id="io-reset-confirm-h">
