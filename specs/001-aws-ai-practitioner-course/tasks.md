@@ -501,7 +501,8 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) â
 - [x] T185 README.md at repo root â€” prerequisites (Windows Node 22 / WSL note), install, dev/build/preview, tests (unit, e2e, visual baselines), content authoring + validation, profiles/progress/export, port forwarding, project structure, spec-kit workflow
   - TC: every command in the README runs successfully as written.
   - Done 2026-11-02: README.md (prerequisites incl. Windows/WSL node_modules note, run/build/preview, port forwarding, profiles/schedule/slides usage, quality commands, content authoring, structure, Spec Kit workflow, security, troubleshooting); audit, perf-check and E2E_PORT commands re-run as written.
-- [ ] T186 REVIEW Phase 12: full regression, visual baselines refreshed after inspection, log
+- [x] T186 REVIEW Phase 12: full regression, visual baselines refreshed after inspection, log
+  - Done 2026-11-02: unit 373, e2e 319 (+1 skip) green after merging `slides`; slide-fit bug found in coordinator inspection and fixed; visual baselines refreshed with a frozen clock; logged in review-log.
 
 ## Dependencies & Execution Order
 
