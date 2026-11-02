@@ -25,7 +25,8 @@ Must be valid per [lesson-frontmatter.schema.json](lesson-frontmatter.schema.jso
 | `estimatedMinutes` | 30–120. Use about `90` (about 30 min reading plus the 55–60 question test). | 30–120. Use `120` (90 min mock plus remediation). |
 | `lastVerified` | `YYYY-MM-DD` | `YYYY-MM-DD` |
 | `examTraps` | Needed for every out-of-scope or not-listed service you name (same rule as lessons). | same |
-| `sources`, `deepDiveMinutes`, `keyPoints` | Leave them out. They are not used on these days. | Leave them out. |
+| `sources`, `deepDiveMinutes` | Leave them out. They are not used on these days. | Leave them out. |
+| `keyPoints` | **Required in practice**: 3–8 one-line takeaways of the week. The next lesson day's Recap (Days 8, 15, 22) shows them, and TC-L L5 needs ≥ 3. | Optional (no lesson day follows). |
 
 ## 2. Body rules (both kinds)
 

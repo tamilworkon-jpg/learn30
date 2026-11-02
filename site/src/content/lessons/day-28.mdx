@@ -1,0 +1,130 @@
+---
+day: 28
+kind: review
+title: 'Week 4 review'
+summary: 'Consolidate the whole course with the focus on responsible AI, transparency, security and governance: bias and fairness, Guardrails, Clarify and Model Monitor, Model Cards, shared responsibility, encryption and private access, data lineage and grounding, and the AWS governance services — then prove it on the cumulative test.'
+domains: [D4, D5]
+taskStatements: ['4.1', '4.2', '5.1', '5.2']
+objectives:
+  - 'Connect every topic from Days 1–27 on one concept map, grouped by exam domain'
+  - 'Recall the facts most likely to be tested on responsible AI, security and governance'
+  - 'Match each AWS responsible-AI, security and governance service to the job it does'
+  - 'Recognise out-of-scope security services used as distractors'
+  - 'Score 70% or more in every domain on the Week 4 cumulative test'
+estimatedMinutes: 90
+lastVerified: '2026-11-02'
+examTraps: ['AWS WAF', 'Amazon GuardDuty', 'AWS Shield', 'Amazon Cognito', 'AWS Security Hub', 'AWS Control Tower', 'AWS Audit Manager', 'AWS Backup']
+keyPoints:
+  - 'Responsible AI dimensions include fairness, inclusivity, robustness, safety, veracity, privacy, transparency, explainability, controllability and governance; most bias starts in the data.'
+  - 'Guardrails filter generative AI prompts and responses; SageMaker Clarify measures bias and explains predictions; SageMaker Model Monitor watches deployed models for drift.'
+  - 'SageMaker Model Cards document your models; AWS AI Service Cards document AWS AI services.'
+  - 'Shared responsibility: AWS secures the cloud, you secure IAM, data, prompts, guardrail settings and how outputs are used.'
+  - 'IAM least privilege, KMS encryption, PrivateLink endpoints, Macie and Secrets Manager protect AI workloads; CloudTrail and invocation logging audit them.'
+  - 'Config, Inspector, Artifact, CloudTrail, CloudWatch, Trusted Advisor and the Well-Architected Tool support governance; the Scoping Matrix sets your responsibility.'
+---
+
+<Section id="concept-map" type="conceptMap" title="Course concept map" minutes={10}>
+
+All topics from Days 1–27, grouped by exam domain — the whole exam on one page. The second map zooms into this week: which AWS tool answers which responsible-AI, security or governance question.
+
+<Diagram
+  caption="Concept map of Days 1 to 27 grouped by the five exam domains: AI and ML fundamentals, generative AI fundamentals, applications of foundation models, responsible AI, and security, compliance and governance"
+  code={`mindmap
+  root((Days 1-27))
+    D1 AI and ML
+      Day 1 AI family tree
+      Day 2 ML vocabulary and inference
+      Day 3 Data and learning types
+      Day 4 Neural networks
+      Day 5 Managed AI services
+      Day 6 ML lifecycle and metrics
+    D2 Generative AI
+      Day 8 Tokens and embeddings
+      Day 9 FM lifecycle and pricing
+      Day 10 Agents and MCP
+      Day 11 Strengths and limits
+      Day 12 AWS GenAI stack
+      Day 13 Cost trade-offs
+    D3 Applying FMs
+      Day 15 Model choice and parameters
+      Day 16 Prompt engineering
+      Day 18 RAG and vector stores
+      Day 19 Fine-tuning and distillation
+      Day 20 Evaluating FMs
+    D4 Responsible AI
+      Day 22 Responsible AI dimensions
+      Day 23 Guardrails Clarify Model Monitor
+      Day 24 Transparency and Model Cards
+    D5 Security and governance
+      Day 17 Prompt risks and defences
+      Day 25 Securing AI systems
+      Day 26 Secure data and grounding
+      Day 27 Governance and compliance`}
+/>
+
+<Diagram
+  caption="Week 4 service chooser: Guardrails for harmful generative content, Clarify for bias and explanations, Model Monitor for drift, Model Cards for documentation, IAM KMS and PrivateLink for protection, Macie for sensitive data, CloudTrail Config Inspector and Artifact for audit and compliance"
+  code={`flowchart LR
+  Q{What is the need?}
+  Q --> G[Harmful or off-topic chatbot content: Bedrock Guardrails]
+  Q --> C[Measure bias or explain predictions: SageMaker Clarify]
+  Q --> M[Drift in a deployed model: SageMaker Model Monitor]
+  Q --> MC[Document a model: SageMaker Model Cards]
+  Q --> I[Who can invoke which model: IAM least privilege]
+  Q --> K[Encrypt data at rest: AWS KMS]
+  Q --> P[Keep traffic private: PrivateLink endpoints]
+  Q --> MA[Find PII in S3: Amazon Macie]
+  Q --> CT[Who did what: CloudTrail]
+  Q --> CF[Configuration compliance: AWS Config]
+  Q --> IN[Software vulnerabilities: Amazon Inspector]
+  Q --> AR[AWS compliance reports: AWS Artifact]`}
+/>
+
+</Section>
+
+<Section id="top-facts" type="topFacts" title="Top facts" minutes={15}>
+
+1. Underfitting and overfitting are about bias and variance, and bias also means unfair treatment of groups — read the context (Day 2).
+2. On imbalanced data, recall catches more real cases, precision avoids false alarms and F1 balances both (Day 6).
+3. Bedrock Agents is managed, Strands Agents is an open-source SDK and AgentCore Identity and Policy control what agents can access and do (Day 10).
+4. Your prompts and data are not used to train Bedrock base models (Day 12).
+5. RAG grounds answers in your own documents and is the answer for current knowledge, fewer hallucinations and citations (Day 18).
+6. Prompt injection overrides the system prompt; indirect injection hides instructions in documents, web pages or tool results (Day 17).
+7. ROUGE suits summaries, BLEU suits translation and BERTScore compares meaning with embeddings (Day 20).
+8. Responsible AI dimensions are fairness, inclusivity, robustness, safety, veracity, privacy and security, transparency, explainability, controllability and governance (Day 22).
+9. Most AI bias starts in the data — sampling, historical, measurement and label bias — while automation bias is people trusting the model too much (Day 22).
+10. A good overall score can hide poor accuracy for a subgroup, so always evaluate per group (Day 22).
+11. Generative AI legal risks include IP infringement, biased outputs, loss of customer trust, end-user harm, hallucinations and data leakage (Day 22).
+12. Bedrock Guardrails apply content filters, denied topics, word filters, sensitive-information filters, contextual grounding checks and Automated Reasoning checks to prompts and responses, for any model via the ApplyGuardrail API (Day 23).
+13. SageMaker Clarify detects bias before training (in the data) and after training (in predictions) and explains predictions with SHAP feature attributions (Day 23).
+14. SageMaker Model Monitor watches endpoints for data quality, model quality, bias drift and feature attribution drift against a baseline (Day 23).
+15. Sustainable model selection means the smallest model that meets the need, distillation, efficient hardware such as Inferentia and Trainium, and no idle capacity (Day 23).
+16. Transparent models such as linear regression and decision trees are interpretable by design; opaque models such as deep neural networks need post-hoc explanations like SHAP (Day 24).
+17. SageMaker Model Cards document a model's intended uses, risk rating, training details and evaluation results; AWS AI Service Cards document AWS's own AI services (Day 24).
+18. Open-weight models increase transparency, but check the licence for commercial use, acceptable-use restrictions and attribution (Day 24).
+19. Under shared responsibility AWS secures the cloud infrastructure and managed model hosting, and you secure IAM, data, prompts, guardrail settings and how outputs are used (Day 25).
+20. IAM roles with least privilege control who can invoke which model and read which data; services use roles, not stored access keys (Day 25).
+21. Encrypt at rest with AWS KMS (customer managed keys add control and an audit trail) and in transit with TLS (Day 25).
+22. VPC interface endpoints powered by AWS PrivateLink keep Bedrock and SageMaker AI traffic off the public internet (Day 25).
+23. Amazon Macie finds sensitive data in S3, and AWS Secrets Manager stores and rotates credentials (Day 25).
+24. AWS Glue Data Catalog records what data exists and its schema; AWS Lake Formation adds fine-grained table, column, row and cell permissions (Day 26).
+25. Confidence scores with thresholds decide when to auto-accept an output and when to send it to a human reviewer (Day 26).
+26. AWS Config records resource configuration over time and checks it against rules; Amazon Inspector scans EC2, container images and Lambda for vulnerabilities (Day 27).
+27. AWS Artifact provides AWS compliance reports and agreements on demand; CloudTrail records API calls (who did what); CloudWatch watches metrics, logs and alarms (Day 27).
+28. Trusted Advisor checks an account against best practices; the Well-Architected Tool reviews a workload against the pillars and lenses such as Generative AI (Day 27).
+29. The Generative AI Security Scoping Matrix runs from Scope 1 consumer app to Scope 5 self-trained model — more scope, more responsibility (Day 27).
+
+</Section>
+
+<Section id="traps" type="traps" title="Exam traps" minutes={5}>
+
+- **"Delete the gender column to remove bias"** — proxy features such as name or postcode carry the same signal. Add representative data, evaluate per subgroup and monitor.
+- **"Use Clarify to block harmful chatbot replies"** — Clarify measures bias and explains predictions; Model Monitor watches a deployed model for drift; harmful or off-topic generative content is Bedrock Guardrails.
+- **"Clarify is the documentation tool"** — SageMaker Model Cards document your models and AWS AI Service Cards document AWS services; Clarify reports can be attached to a card.
+- **"AWS secures my prompts and IAM policies"** — under shared responsibility you own IAM, data, prompts, guardrail settings and how outputs are used.
+- **"Catalog, lineage, Model Card and Lake Formation are interchangeable"** — match the verb: find data (Glue Data Catalog), trace its flow (lineage), document the model (Model Card), restrict access (Lake Formation).
+- **"AWS WAF, Amazon GuardDuty, AWS Shield or Amazon Cognito secures the model"** — all are out of scope in guide v1.2 and usually distractors. Harmful prompts → Guardrails; private traffic → PrivateLink; access → IAM.
+- **"AWS Security Hub, AWS Control Tower, AWS Audit Manager or AWS Backup proves compliance"** — out of scope or not listed. Use Config for configuration compliance, Inspector for vulnerabilities, Artifact for AWS reports and CloudTrail for audit.
+- **"Full transparency is always safer"** — publishing everything can help attackers or expose data; balance transparency with safety and explain in terms the audience can act on.
+
+</Section>

@@ -1,0 +1,106 @@
+---
+day: 7
+kind: review
+title: 'Week 1 review'
+summary: 'Consolidate Week 1: the AI family tree, ML vocabulary and inference types, data and learning types, neural networks, AWS managed AI services, the ML lifecycle and model metrics — then prove it on the Week 1 cumulative test.'
+domains: [D1, D4]
+taskStatements: ['1.1', '1.2', '1.3', '4.1']
+objectives:
+  - 'Connect every Week 1 topic (Days 1–6) on one concept map, grouped by exam domain'
+  - 'Recall the facts most likely to be tested on AI and ML fundamentals'
+  - 'Spot the classic Week 1 exam traps: look-alike services, the two meanings of bias and misleading metrics'
+  - 'Score 70% or more in every domain on the Week 1 cumulative test'
+estimatedMinutes: 90
+lastVerified: '2026-11-02'
+examTraps: ['AWS DeepLens', 'Amazon Q', 'Amazon Forecast', 'Amazon Fraud Detector', 'Amazon Kendra']
+keyPoints:
+  - 'AI ⊃ machine learning ⊃ deep learning ⊃ generative AI; agentic AI uses generative models to plan and act with tools.'
+  - 'Underfitting = high bias, poor everywhere; overfitting = high variance, great on training data, poor on new data.'
+  - 'Supervised learning uses labels (classification = category, regression = number); unsupervised finds structure without labels (clustering).'
+  - 'Real-time, batch, asynchronous and serverless inference each fit a different latency, payload and traffic pattern.'
+  - 'Match the managed AI service to the job: Comprehend, Transcribe, Translate, Polly, Lex, Rekognition, Textract, Personalize — or SageMaker AI for a custom model.'
+  - 'On imbalanced data, accuracy misleads: use recall when misses are costly, precision when false alarms are costly, F1 to balance both.'
+---
+
+<Section id="concept-map" type="conceptMap" title="Week 1 concept map" minutes={10}>
+
+Everything from Days 1–6 on one map, grouped by exam domain. Start in the centre, then say one sentence for every branch out loud. If a branch feels vague, reopen that day's summary before you take the test.
+
+<Diagram
+  caption="Week 1 concept map: Domain 1 branches for the AI family tree, ML vocabulary and inference types, data and learning types, neural networks, AWS managed AI services and the ML lifecycle with metrics; Domain 4 branch for bias and fairness"
+  code={`mindmap
+  root((Week 1 Days 1-6))
+    D1 Fundamentals of AI and ML
+      Day 1 AI family tree
+        AI contains ML contains DL contains GenAI
+        Agentic AI plans and acts
+      Day 2 ML vocabulary
+        Train validate test
+        Underfit vs overfit
+        Real-time batch async serverless inference
+      Day 3 Data and learning types
+        Labelled vs unlabelled
+        Supervised unsupervised reinforcement
+        Self-supervised pre-training
+      Day 4 Neural networks
+        Backpropagation and gradient descent
+        CNN RNN transformer
+        Transfer learning
+      Day 5 Managed AI services
+        Comprehend Transcribe Translate Polly Lex
+        Rekognition Textract Personalize
+        When not to use AI
+      Day 6 ML lifecycle
+        Pipeline stages and MLOps
+        SageMaker AI features
+        Precision recall F1 RMSE
+    D4 Responsible AI
+      Day 2 Bias as unfairness
+        Representative data
+        Subgroup performance`}
+/>
+
+</Section>
+
+<Section id="top-facts" type="topFacts" title="Top facts" minutes={15}>
+
+1. AIF-C01 v1.2 has 65 questions (50 scored, 15 unscored) in 90 minutes, a pass mark of 700 on a 100–1000 scale and five domains weighted 20/24/28/14/14 (Day 1).
+2. AI ⊃ machine learning ⊃ deep learning ⊃ generative AI, and agentic AI uses generative models to plan and take actions with tools (Day 1).
+3. Machine learning learns patterns from data instead of following hand-written rules (Day 1).
+4. On AWS, pre-built AI services solve common tasks, Amazon SageMaker AI builds custom models and Amazon Bedrock serves foundation models for generative and agentic AI (Day 1).
+5. An algorithm learns from training data to produce a model; inference is using that model on new data (Day 2).
+6. Hyperparameters are set before training (for example learning rate or epochs); parameters such as weights are learned during training (Day 2).
+7. The training set teaches the model, the validation set tunes it and the test set gives an honest final score on unseen data (Day 2).
+8. Underfitting means high bias and poor results everywhere; overfitting means high variance — great on training data, poor on new data (Day 2).
+9. Real-time inference serves low-latency requests, batch scores large offline datasets, asynchronous handles big payloads or long processing via a queue and serverless suits intermittent traffic (Day 2).
+10. Labelled data has the answer attached and enables supervised learning; SageMaker Ground Truth helps produce labels (Day 3).
+11. Classification predicts a category and regression predicts a number — logistic regression is a classifier (Day 3).
+12. Clustering, dimensionality reduction (PCA) and anomaly detection are unsupervised: they find structure without labels (Day 3).
+13. Reinforcement learning learns by trial, error and reward, while foundation models are pre-trained with self-supervised learning (Day 3).
+14. A neural network learns by a forward pass, a loss function, backpropagation and gradient descent repeated over many epochs (Day 4).
+15. CNNs suit images, RNNs process sequences step by step and transformers use self-attention in parallel to power LLMs (Day 4).
+16. Transfer learning reuses a pre-trained model and fine-tunes it on a small labelled dataset, saving data, time and cost (Day 4).
+17. Avoid AI when the answer must be exact and rule-based, when errors are unacceptable without review or when a simple rule is cheaper (Day 5).
+18. Comprehend finds sentiment, entities and PII in text; Transcribe turns speech into text; Polly turns text into speech; Translate converts languages; Lex builds chatbots with intents and slots (Day 5).
+19. Rekognition analyses images and video, Textract extracts text, forms and tables from documents and Personalize produces recommendations (Day 5).
+20. Traditional ML suits structured data, strict explainability, low latency and low cost; foundation models suit unstructured data and content generation (Day 5).
+21. The ML pipeline runs business goal → data collection → preparation and feature engineering → training and tuning → evaluation → deployment → monitoring → retraining (Day 6).
+22. SageMaker AI features map to stages: Data Wrangler prepares data, Feature Store shares features, Pipelines automates, Model Registry versions and approves, Model Monitor detects drift (Day 6).
+23. Precision measures how many alerts are right, recall measures how many real cases are caught, F1 balances both and RMSE or MAE measure regression error (Day 6).
+24. Business metrics such as cost per user, ROI and customer feedback decide whether a model is worth running (Day 6).
+
+</Section>
+
+<Section id="traps" type="traps" title="Exam traps" minutes={5}>
+
+- **"Deep learning is a separate field from ML"** — no: deep learning is a subset of machine learning, and generative AI is a subset of deep learning.
+- **"Bias always means unfairness"** — read the context: with training versus test scores or model complexity, bias means systematic error (underfitting); with groups of people, it means unfair outcomes.
+- **"Logistic regression is regression"** — it predicts a category, so it is classification. Decide by the output, not the algorithm's name.
+- **"Deep learning is always the best choice"** — for a small structured table where explainability, low cost or regulation matter, traditional ML usually wins.
+- **"Transcribe reads text aloud"** — Transcribe is speech → text, Polly is text → speech, Translate is language → language, Comprehend understands text and Textract extracts text and structure from documents.
+- **"99% accuracy means a great fraud model"** — on rare positives accuracy hides a useless model. Missing a case is costly → recall; false alarms are costly → precision; both → F1.
+- **"Batch inference for a chatbot"** — interactive, low-latency use cases need real-time inference; batch is for large offline jobs.
+- **"Use Amazon Forecast, Amazon Fraud Detector or Amazon Kendra"** — none of these is in guide v1.2; prefer SageMaker AI for custom forecasting or fraud models and Bedrock Knowledge Bases for document search.
+- **"AWS DeepLens or Amazon Q is the answer"** — older courses show them, but DeepLens is discontinued and v1.2 names Amazon Quick and Kiro instead of Amazon Q.
+
+</Section>

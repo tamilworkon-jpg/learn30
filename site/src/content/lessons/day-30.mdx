@@ -1,0 +1,111 @@
+---
+day: 30
+kind: mock
+title: 'Mock exam 2, final revision & exam day'
+summary: 'Sit Mock exam 2 (and optionally Mock 3), close the last gaps with a time-boxed final revision plan, and walk into the AIF-C01 exam knowing the registration, delivery, format, scoring and pacing.'
+domains: [D1, D2, D3, D4, D5]
+taskStatements: ['1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '3.4', '4.1', '4.2', '5.1', '5.2']
+objectives:
+  - 'Complete Mock exam 2 and compare it with Mock 1'
+  - 'Reach 80% or more on your final mock before booking or sitting the exam'
+  - 'Follow a time-boxed final revision plan weighted by domain'
+  - 'Know the registration, delivery options, format and scoring of AIF-C01'
+  - 'Apply a pacing and flag-and-return strategy on exam day'
+estimatedMinutes: 120
+lastVerified: '2026-11-02'
+---
+
+<Section id="launch" type="launch" title="Mock exams 2 and 3" minutes={90}>
+
+Today's main event is Mock 2: another 65 new questions in 90 minutes, under the same conditions as Mock 1. That means one sitting, no notes, answer everything, and flag and return. Sit it only after you have worked through the Day 29 remediation loop.
+
+Mock 3 is an optional final retake. Use it 1–2 days later, after today's remediation, as your last readiness check before exam day.
+
+**Readiness target:** 80% or more (52 of 65) on your final mock. If you score between 70% and 80%, do one more remediation loop and then sit Mock 3. If you score under 70% on Mock 2, think about moving your exam date back by a few days. Your Pearson VUE booking can usually be rescheduled, but check the current deadlines in the candidate guide.
+
+<MockLaunch n={2} />
+
+<MockLaunch n={3} optional />
+
+</Section>
+
+<Section id="remediation" type="remediation" title="Remediation plan" minutes={10}>
+
+Your domains under 70% on Mock 2 appear below, weakest first, with links to the lessons to revisit.
+
+<Remediation mock={2} />
+
+1. **Compare with Mock 1.** A domain that is weak on both mocks is a real gap, so fix it first. A domain that was weak only once was probably bad luck or a misread.
+2. **Re-run the loop.** For each weak domain, read the *Exam tips & traps* and *Summary* sections of its revisit days, then retake those daily quizzes until you score 80% or more. The task-statement map in the [Day 29 remediation plan](/day/29#remediation) shows exactly which sections to read.
+3. **Read the traps.** Read the traps list of the matching weekly review: [Day 7](/day/07#traps) (D1), [Day 14](/day/14#traps) (D2), [Day 21](/day/21#traps) (D3) or [Day 28](/day/28#traps) (D4, D5).
+4. **Stop studying new material.** From now on you are consolidating what you already know.
+
+</Section>
+
+<Section id="final-revision" type="finalRevision" title="Final revision" minutes={10}>
+
+The exam weights tell you where the points are. Of the 50 scored questions, about this many come from each domain:
+
+| Domain | Weight | ≈ scored questions | Weekly review | Highest-yield lesson days |
+|--------|--------|--------------------|---------------|---------------------------|
+| D1 Fundamentals of AI and ML | 20% | 10 | [Day 7](/day/07#top-facts) | 2, 3, 5, 6 |
+| D2 Fundamentals of GenAI | 24% | 12 | [Day 14](/day/14#top-facts) | 8, 9, 12, 13 |
+| D3 Applications of foundation models | 28% | 14 | [Day 21](/day/21#top-facts) | 15, 16, 18, 19, 20 |
+| D4 Guidelines for responsible AI | 14% | 7 | [Day 28](/day/28#top-facts) | 22, 23, 24 |
+| D5 Security, compliance and governance | 14% | 7 | [Day 28](/day/28#top-facts) | 25, 26, 27 |
+
+#### Time-boxed plan for the last three days
+
+| When | Time | What to do |
+|------|------|------------|
+| Exam day − 3 | 60 min | Remediation loop for your weakest Mock 2 domain (25 min). Then read the top facts of [Day 21](/day/21#top-facts) and [Day 14](/day/14#top-facts), which cover D3 and D2, half of the exam (35 min). |
+| Exam day − 2 | 60–90 min | Optional Mock 3 (90 min), **or** read the top facts of [Day 7](/day/07#top-facts) and [Day 28](/day/28#top-facts) and retake the daily quizzes you scored lowest on (60 min). |
+| Exam day − 1 | 45 min | Read the traps lists of all four weekly reviews: [Day 7](/day/07#traps), [Day 14](/day/14#traps), [Day 21](/day/21#traps), [Day 28](/day/28#traps) (30 min). Read the look-alike pairs below (10 min). Check your booking, ID and, for online delivery, your system and room (5 min). Then stop and sleep. |
+| Exam morning | 15 min | Read the look-alike pairs once more. No new material and no full mocks. |
+
+#### Final-pass checklist: look-alike pairs
+
+- **Bedrock vs SageMaker AI**: managed API access to foundation models vs full control to build, train and host your own models (Day 12).
+- **RAG vs fine-tuning vs continued pre-training**: current data added at query time vs a new task or style from labelled examples vs domain vocabulary from unlabelled text (Days 18–19).
+- **On-demand vs batch vs provisioned throughput**: pay per token vs discounted offline jobs vs reserved hourly capacity (Day 13).
+- **Temperature vs top-p**: how random the next token is vs how much of the probability mass is sampled (Day 15).
+- **ROUGE vs BLEU vs BERTScore**: recall for summaries vs precision for translation vs meaning similarity from embeddings (Day 20).
+- **Precision vs recall**: avoiding false positives vs avoiding false negatives (Day 6).
+- **Overfitting vs underfitting**: high variance vs high bias (Day 2).
+- **Guardrails vs Clarify vs Model Cards**: filtering prompts and responses vs detecting bias and explaining predictions vs documenting a model (Days 23–24).
+- **Config vs CloudTrail vs Inspector vs Artifact**: configuration compliance vs API activity log vs vulnerability scanning vs AWS's own compliance reports (Day 27).
+- **Shared responsibility**: AWS secures the infrastructure; you secure identities, data, configuration and how outputs are used (Day 25).
+
+</Section>
+
+<Section id="exam-strategy" type="examStrategy" title="Exam-day strategy" minutes={10}>
+
+#### Before the exam
+
+- **Registration**: sign in to your AWS Certification account and register for the **AWS Certified AI Practitioner (AIF-C01)** exam. You then schedule it with **Pearson VUE**. Check the current price, available languages and any accommodation options when you book. For example, non-native English speakers can ask for extra time, so check the current candidate guide for how and when to request it.
+- **Delivery**: choose a **Pearson VUE test centre** or **online proctoring** from home or the office.
+  - *Test centre*: arrive early with the identification the candidate guide requires. Personal items such as your phone and watch are stored outside the testing room.
+  - *Online proctoring*: run the system test on the computer, webcam and network you will use, well before exam day. On the day, check in early. The check-in includes photos of your ID and your room, and a room scan. You need a quiet, private room with a clear desk and nobody else present. You cannot use paper notes, a second monitor or a phone during the exam.
+- **ID and rules**: the exact ID rules, check-in window, break policy and reschedule or cancellation deadlines can change. Read the current AWS Certification candidate guide and your Pearson VUE confirmation email a few days before the exam.
+
+#### Format and scoring
+
+- **65 questions in 90 minutes.** 50 questions are scored and 15 are unscored. The unscored questions are not marked, so treat every question as if it counts.
+- **Question types**: multiple choice (one correct answer out of four), **multiple response** (two or more correct answers out of five or more; the question says how many to choose), **ordering** (put 3–5 steps in the correct order) and **matching** (match 3–7 pairs). In multiple response, ordering and matching questions you must get every part right to earn credit.
+- **Scoring**: your result is a scaled score from 100 to 1000, and **700 passes**. The score is compensatory: you pass on your total score and do not need to pass each domain separately.
+- **No penalty for guessing**: an unanswered question is marked wrong, so answer every question.
+
+#### Pacing and tactics
+
+- **Pace**: 90 minutes ÷ 65 questions ≈ 83 seconds each. Aim for about 75 seconds so one full pass takes about 80 minutes and leaves 10 minutes for review. Pacing checkpoints: question 20 by about 25 minutes, question 40 by about 50 minutes, question 65 by about 80 minutes.
+- **Flag and return**: if a question is not clear after about 2 minutes, eliminate what you can, choose your best answer, **flag it** and move on. Never leave it blank. Return to flagged questions in the review time at the end.
+- **Read the last line first**: qualifiers such as *most cost-effective*, *least operational overhead*, *most secure* or *choose TWO* decide between two plausible answers.
+- **Eliminate first**: drop answers that name out-of-scope services, use absolute wording ("always", "guarantees", "eliminates") or solve a different problem.
+- **Change answers only for a reason**: in review, change an answer only when you spot a misread or remember a specific fact. Do not change it on a vague feeling.
+- **Stay calm**: if you meet a run of hard questions, remember that some are unscored. Flag them, keep your pace and move on.
+
+#### After the exam
+
+Your pass or fail result and score report appear in your AWS Certification account. They are often available soon after the exam, but can take a few business days. The certification is valid for three years. If you do not pass, the score report shows which domains to work on. Retakes have a waiting period, so check the current policy, then re-run the remediation loop on those domains.
+
+</Section>

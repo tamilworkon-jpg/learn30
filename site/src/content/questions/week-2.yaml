@@ -1,0 +1,944 @@
+- id: q-week-2-001
+  set: week-2
+  type: single
+  stem: "A developer counts the tokens in the same 300-word paragraph for two different foundation models in Amazon Bedrock. One model reports 410 tokens and the other reports 450. What is the MOST likely explanation?"
+  options:
+    - { id: a, text: "One of the models counts only output tokens", explanation: "Incorrect. Both counts are for the same input paragraph; the difference is in how the text is split." }
+    - { id: b, text: "Each model family uses its own tokenizer and vocabulary", explanation: "Correct. Tokenizers differ between model families, so the same text can produce a different number of tokens." }
+    - { id: c, text: "Tokens are always whole words, so one model must be miscounting", explanation: "Incorrect. Tokens are word pieces; common words may be one token, while rarer words are split into several." }
+    - { id: d, text: "The larger number includes the embedding dimensions", explanation: "Incorrect. Embedding dimensions describe the length of a vector, not the number of tokens in a text." }
+  answer: [b]
+  explanation: "A tokenizer splits text into tokens and maps each to an ID in the model's fixed vocabulary. Every model family has its own tokenizer, so token counts, and therefore cost and context-window usage, can differ for the same text. A rule of thumb for English is about four characters, or three-quarters of a word, per token."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: easy
+
+- id: q-week-2-002
+  set: week-2
+  type: single
+  stem: "A company is building a knowledge base over long, structured equipment manuals. It wants small passages for precise matching against questions, but wants the model to receive the larger surrounding section so that answers keep their context. Which chunking strategy fits BEST?"
+  options:
+    - { id: a, text: "No chunking, treating each manual as one chunk", explanation: "Incorrect. A whole manual as one chunk blurs its meaning and wastes context-window tokens; it suits only short documents such as single FAQs." }
+    - { id: b, text: "Fixed-size chunking with no overlap", explanation: "Incorrect. Uniform chunks without overlap can split ideas at boundaries and do not link small matches to larger context." }
+    - { id: c, text: "Hierarchical chunking", explanation: "Correct. Hierarchical chunking matches on small child chunks and returns the larger linked parent chunk for context." }
+    - { id: d, text: "Increasing the embedding dimensions", explanation: "Incorrect. Embedding dimensions affect how meaning is represented, not how documents are split into passages." }
+  answer: [c]
+  explanation: "Chunk size is a balancing act: too large blurs meaning, too small loses context. Hierarchical chunking solves both for long, structured documents by matching on precise child chunks and returning their parent chunk. Amazon Bedrock Knowledge Bases supports default, fixed-size, hierarchical, semantic and no-chunking options, plus custom chunking with Lambda."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: medium
+
+- id: q-week-2-003
+  set: week-2
+  type: single
+  stem: "Amazon Titan Text Embeddings V2 can be configured to output 256, 512 or 1,024 values for each input. What does this number represent?"
+  options:
+    - { id: a, text: "The maximum number of tokens in the input text", explanation: "Incorrect. Input length limits are a separate setting; these values describe the output vector." }
+    - { id: b, text: "The number of chunks created from each document", explanation: "Incorrect. Chunking happens before embedding and is configured separately." }
+    - { id: c, text: "The number of similar documents returned by a search", explanation: "Incorrect. The number of results returned is the k in k-nearest-neighbour search, not a property of the embedding model." }
+    - { id: d, text: "The number of dimensions in the embedding vector", explanation: "Correct. An embedding is a vector of numbers, and the count of values is its number of dimensions." }
+  answer: [d]
+  explanation: "An embedding model turns text, images or audio into a vector, a list of numbers that represents meaning. The number of values is the vector's dimensions. Content with similar meaning gets vectors that are close together, which enables semantic search."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: easy
+
+- id: q-week-2-004
+  set: week-2
+  type: single
+  stem: "A furniture retailer wants shoppers to upload a photo of a chair they like and see visually similar products from a catalogue that contains both product photos and text descriptions. Which component is MOST important for this search?"
+  options:
+    - { id: a, text: "A multimodal embedding model that places images and text in the same vector space", explanation: "Correct. Multimodal embeddings put images and text on the same 'map', so an uploaded photo can retrieve matching products by similarity." }
+    - { id: b, text: "A text-only LLM that generates product descriptions", explanation: "Incorrect. Generating descriptions does not let the system compare an uploaded photo with catalogue items." }
+    - { id: c, text: "A diffusion model that generates new chair images", explanation: "Incorrect. Diffusion models create new images; the requirement is to find existing products." }
+    - { id: d, text: "Keyword search over product titles", explanation: "Incorrect. A photo has no keywords to match, so keyword search cannot use it as the query." }
+  answer: [a]
+  explanation: "Multimodal embedding models, such as Amazon Nova multimodal embeddings, place text and images in one vector space. Stored in a vector database, they let a photo or a text query retrieve similar items by vector similarity, even when no words overlap."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: medium
+
+- id: q-week-2-005
+  set: week-2
+  type: single
+  stem: "An agent connects to an MCP server for a document-management system. The server offers 'create_folder' and 'share_document', and it also offers the contents of policy files that the application can read into the model's context. How does MCP classify these two kinds of capability?"
+  options:
+    - { id: a, text: "Both are prompts", explanation: "Incorrect. MCP prompts are reusable templates, not actions or data." }
+    - { id: b, text: "The actions are tools, and the readable files are resources", explanation: "Correct. MCP tools are actions the model can invoke; resources are data the application can read into context." }
+    - { id: c, text: "The actions are resources, and the files are tools", explanation: "Incorrect. This reverses the two roles." }
+    - { id: d, text: "Both are MCP clients", explanation: "Incorrect. A client is the component inside the host that connects to a server; it is not a capability the server offers." }
+  answer: [b]
+  explanation: "In the Model Context Protocol, a host (the AI application) runs one MCP client per server. Servers expose tools (actions the model can call), resources (data such as files or records to read into context) and prompts (reusable templates). The client discovers these at start-up."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: medium
+
+- id: q-week-2-006
+  set: week-2
+  type: single
+  stem: "During training, what does a diffusion model learn to do?"
+  options:
+    - { id: a, text: "Predict the next token in a sequence of text", explanation: "Incorrect. Next-token prediction is how transformer LLMs are pre-trained." }
+    - { id: b, text: "Compete against a discriminator that judges whether images are real", explanation: "Incorrect. A generator competing with a discriminator describes a GAN, an older generative family." }
+    - { id: c, text: "Predict and remove noise that was added to real images in many small steps", explanation: "Correct. In training, noise is added step by step to real images and the model learns to predict and remove it." }
+    - { id: d, text: "Group similar images into clusters", explanation: "Incorrect. Clustering is unsupervised grouping, not image generation." }
+  answer: [c]
+  explanation: "A diffusion model is trained by gradually adding noise to real images and learning to undo each step. To generate, it starts from random noise and removes noise step by step, steered by an embedding of the text prompt. Remember: text generation means transformer LLMs; image generation from noise means diffusion models."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: hard
+
+- id: q-week-2-007
+  set: week-2
+  type: single
+  stem: "Which stage of the foundation model lifecycle gives a model its broad general knowledge and language ability by training on an enormous unlabelled dataset with self-supervised next-token prediction?"
+  options:
+    - { id: a, text: "Fine-tuning", explanation: "Incorrect. Fine-tuning adapts an already pre-trained model with a smaller, often labelled, dataset." }
+    - { id: b, text: "Evaluation", explanation: "Incorrect. Evaluation measures quality, safety and bias before release; it does not teach the model." }
+    - { id: c, text: "Feedback", explanation: "Incorrect. Feedback collects real-world signals that feed the next iteration." }
+    - { id: d, text: "Pre-training", explanation: "Correct. Pre-training on huge unlabelled data, typically by predicting the next token, gives an FM its general knowledge." }
+  answer: [d]
+  explanation: "The FM lifecycle stages are data selection, model selection, pre-training, fine-tuning, evaluation, deployment and feedback. Pre-training needs thousands of GPUs for weeks or months and costs millions of dollars, so only a few providers do it; most companies start at model selection."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: easy
+
+- id: q-week-2-008
+  set: week-2
+  type: single
+  stem: "A document assistant handles 300,000 requests per month. Each request uses about 2,000 input tokens and 500 output tokens. The model costs $0.30 per million input tokens and $1.50 per million output tokens. What is the approximate monthly model cost?"
+  options:
+    - { id: a, text: "$180", explanation: "Incorrect. $180 is only the input cost: 600 million input tokens × $0.30 per million." }
+    - { id: b, text: "$225", explanation: "Incorrect. $225 is only the output cost: 150 million output tokens × $1.50 per million." }
+    - { id: c, text: "$1,125", explanation: "Incorrect. This prices all 750 million tokens at the output rate; input and output are priced separately." }
+    - { id: d, text: "$405", explanation: "Correct. Input: 300,000 × 2,000 = 600 million × $0.30 = $180. Output: 300,000 × 500 = 150 million × $1.50 = $225. Total $405." }
+  answer: [d]
+  explanation: "Monthly cost ≈ requests × (input tokens × input price + output tokens × output price). Input and output tokens are billed separately, and output tokens usually cost several times more per token."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#examples
+  difficulty: hard
+
+- id: q-week-2-009
+  set: week-2
+  type: single
+  stem: "A finance analyst asks why output tokens on Amazon Bedrock are usually priced several times higher than input tokens. Which explanation is MOST accurate?"
+  options:
+    - { id: a, text: "Output tokens are stored permanently by AWS for model training", explanation: "Incorrect. Bedrock does not use prompts and outputs to train base models." }
+    - { id: b, text: "Each output token needs another sequential pass through the model, while input tokens can be processed in parallel", explanation: "Correct. Generation happens one token at a time, so output consumes far more compute per token than reading the prompt." }
+    - { id: c, text: "Output tokens are longer than input tokens", explanation: "Incorrect. Tokens are produced by the same tokenizer; their size does not depend on direction." }
+    - { id: d, text: "Input tokens are free when the context window is not full", explanation: "Incorrect. Input tokens are always billed on on-demand pricing, whether or not the context window is full." }
+  answer: [b]
+  explanation: "When the model reads your prompt, all input tokens can be processed together. Every output token requires a further pass through the whole model, one after another. That is why output costs more, why long answers are slower, and why limiting maximum output tokens is an effective cost lever."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: medium
+
+- id: q-week-2-010
+  set: week-2
+  type: single
+  stem: "A team assembles each request from system instructions, tool definitions, a few retrieved chunks and the user's question. It wants prompt caching to work well and the model to focus on the right material. How should it order the context?"
+  options:
+    - { id: a, text: "Put the user's question first and the system instructions last", explanation: "Incorrect. Putting variable content first changes the prefix on every request, so caching cannot reuse it." }
+    - { id: b, text: "Randomise the order on each request so the model does not over-rely on position", explanation: "Incorrect. A changing order prevents prefix caching and makes behaviour less predictable." }
+    - { id: c, text: "Put stable content such as system instructions and tool definitions first, followed by the variable material and the question", explanation: "Correct. A stable prefix can be cached, and clearly ordered, structured sections help the model separate instructions from data." }
+    - { id: d, text: "Repeat the system instructions in every section to be safe", explanation: "Incorrect. Repetition adds tokens and cost without adding information." }
+  answer: [c]
+  explanation: "Context engineering covers what goes into the context window, in what form and order. Place stable content (instructions, tool definitions) first so prompt caching can reuse the prefix, use clear sections or tags, and put the question and the most important material where the model will attend to it."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: hard
+
+- id: q-week-2-011
+  set: week-2
+  type: multi
+  stem: "A company already stores embeddings of its support tickets and help articles in a vector database. Which additional use cases can these embeddings support directly? (Select TWO.)"
+  options:
+    - { id: a, text: "Detecting duplicate tickets that describe the same problem in different words", explanation: "Correct. Tickets with similar meaning have nearby vectors, so duplicates can be found by similarity." }
+    - { id: b, text: "Generating banner images from a text prompt", explanation: "Incorrect. Image generation needs a diffusion model, not stored text embeddings." }
+    - { id: c, text: "Recommending articles similar to the one a customer just read", explanation: "Correct. Items whose vectors are close to what a user viewed make natural recommendations." }
+    - { id: d, text: "Calculating exact refund amounts from a pricing formula", explanation: "Incorrect. Exact calculations belong in ordinary code; embeddings represent meaning, not formulas." }
+    - { id: e, text: "Converting customer phone calls into text", explanation: "Incorrect. Speech-to-text is done by a service such as Amazon Transcribe." }
+  answer: [a, c]
+  explanation: "Embeddings power much more than RAG: semantic search by meaning, recommendations of nearby items, clustering of similar tickets, duplicate detection and classification. They do not generate images, transcribe audio or perform exact calculations."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: easy
+
+- id: q-week-2-012
+  set: week-2
+  type: multi
+  stem: "A team is estimating the input-token cost of each call from its assistant to a model on Amazon Bedrock. Which items are billed as input tokens? (Select THREE.)"
+  options:
+    - { id: a, text: "The system prompt with rules and tone", explanation: "Correct. Everything sent to the model, including the system prompt, counts as input." }
+    - { id: b, text: "The retrieved document chunks inserted for RAG", explanation: "Correct. Retrieved passages are part of the prompt, so they are input tokens." }
+    - { id: c, text: "The model's generated answer", explanation: "Incorrect. The generated answer is billed as output tokens, usually at a higher price." }
+    - { id: d, text: "The definitions of the tools the model may call", explanation: "Correct. Tool definitions are sent with the request and count as input." }
+    - { id: e, text: "The model's internal parameters", explanation: "Incorrect. Parameters are the model's learned weights, not tokens you send or pay for per request." }
+    - { id: f, text: "The number of model units purchased", explanation: "Incorrect. Model units measure provisioned throughput capacity; they are not tokens in a request." }
+  answer: [a, b, d]
+  explanation: "Input tokens are everything you send: system prompt, instructions, examples, retrieved documents, conversation history, tool definitions and the user's question. Output tokens are what the model generates. Hidden input consumers such as long histories and verbose tool outputs often drive surprise bills."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: hard
+
+- id: q-week-2-013
+  set: week-2
+  type: multi
+  stem: "Which statements about the Model Context Protocol (MCP) are correct? (Select TWO.)"
+  options:
+    - { id: a, text: "A tool integration built once as an MCP server can be used by any MCP-compatible host", explanation: "Correct. MCP standardises integrations so one server serves many applications, avoiding M × N custom connectors." }
+    - { id: b, text: "MCP replaces tool use, so the model no longer emits tool-use requests", explanation: "Incorrect. MCP standardises how tools are described and reached; the model still requests tool calls that the host executes." }
+    - { id: c, text: "MCP is the protocol that connects one agent to other agents", explanation: "Incorrect. Agent-to-agent (A2A) protocols connect agents to agents; MCP connects agents to tools and data." }
+    - { id: d, text: "At start-up, the MCP client asks each server what it offers, so tools are discovered dynamically", explanation: "Correct. Dynamic discovery means tools do not have to be hard-coded into the agent." }
+    - { id: e, text: "MCP servers can run only on the user's local machine", explanation: "Incorrect. Servers can run locally over standard input/output or remotely over HTTP." }
+  answer: [a, d]
+  explanation: "MCP is an open standard, introduced by Anthropic in 2024 and adopted by AWS, that works like USB-C for AI tools. Hosts run MCP clients that connect to servers exposing tools, resources and prompts. Treat MCP servers like any integration: authenticate them and give them least privilege."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: medium
+
+- id: q-week-2-014
+  set: week-2
+  type: ordering
+  stem: "A help-centre assistant answers a user's question from documents already chunked and embedded in a vector store. Place the query-time steps in the correct order, from first to last."
+  options:
+    - { id: a, text: "Add the retrieved chunks and the question to the prompt", explanation: "Fourth: the relevant passages and the question are assembled into the model's context." }
+    - { id: b, text: "Convert the user's question into a vector with the same embedding model used for the documents", explanation: "First: the question must be embedded on the same 'map' as the stored chunks." }
+    - { id: c, text: "The LLM generates an answer grounded in the retrieved text", explanation: "Last: the model writes the answer using the supplied passages." }
+    - { id: d, text: "Run a k-nearest-neighbour similarity search in the vector store", explanation: "Second: the store finds the vectors closest to the question vector, for example by cosine similarity." }
+    - { id: e, text: "Return the top few matching chunks", explanation: "Third: only the most relevant passages are kept, which saves tokens and reduces noise." }
+  answer: [b, d, e, a, c]
+  explanation: "At query time the question is embedded with the same model as the documents, a similarity search finds the nearest vectors, the top chunks are retrieved and inserted into the prompt, and the LLM generates a grounded answer. Mixing embedding models breaks similarity search because the vectors are not comparable."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: medium
+
+- id: q-week-2-015
+  set: week-2
+  type: matching
+  stem: "Match each situation to the context engineering technique it illustrates."
+  options:
+    - { id: a, text: "Retrieve only the three most relevant chunks and pass only the tools the current step needs", explanation: "Select: include only what is relevant to this request." }
+    - { id: b, text: "Summarise conversation turns older than the last five and trim tool outputs to the needed fields", explanation: "Compress: shrink what you keep." }
+    - { id: c, text: "Save findings to an external memory store and bring them back only when they are needed", explanation: "Write and persist: keep information outside the context window until it is relevant." }
+    - { id: d, text: "Split a research task so that separate sub-agents each work with their own focused context", explanation: "Isolate: separate calls or agents keep focused contexts, and the results are combined." }
+  matchTargets:
+    - { id: t1, text: "Select" }
+    - { id: t2, text: "Compress" }
+    - { id: t3, text: "Write and persist" }
+    - { id: t4, text: "Isolate" }
+  answer: { a: t1, b: t2, c: t3, d: t4 }
+  explanation: "Context engineering finds the smallest set of high-value information for each call. The four technique families are select, compress, write and persist, and isolate. On AWS they map to Bedrock Knowledge Bases (select), AgentCore Memory (persist), prompt caching (stable prefix) and Prompt Management (versioned templates)."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: medium
+
+- id: q-week-2-016
+  set: week-2
+  type: single
+  stem: "A marketing team uses an LLM to brainstorm slogans and wants clearly different, creative ideas each time it runs the same prompt. Which setting supports this goal?"
+  options:
+    - { id: a, text: "A higher temperature", explanation: "Correct. Higher temperature makes sampling more random, which produces more varied and creative outputs." }
+    - { id: b, text: "A smaller context window", explanation: "Incorrect. The context window limits how many tokens fit in a request; it does not control creativity." }
+    - { id: c, text: "A lower temperature", explanation: "Incorrect. Lower temperature makes output more focused and repeatable, which is the opposite of the goal." }
+    - { id: d, text: "A maximum output tokens limit of one token", explanation: "Incorrect. A one-token limit would cut the response off rather than make it creative." }
+  answer: [a]
+  explanation: "Generation samples from a probability distribution over next tokens. Temperature controls randomness: higher values give more varied, creative output; lower values give more focused, repeatable output. Nondeterminism is useful for brainstorming but a problem when consistent answers are required."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: easy
+
+- id: q-week-2-017
+  set: week-2
+  type: single
+  stem: "An insurer asks its LLM-based assistant why it recommended rejecting a claim. The assistant gives a clear, convincing rationale. Why should auditors NOT treat this rationale as the true reason for the recommendation?"
+  options:
+    - { id: a, text: "The rationale is newly generated plausible text, not a trace of how the model actually reached its output", explanation: "Correct. Large models are black boxes; asking them to explain themselves produces a plausible explanation, not necessarily the real reason." }
+    - { id: b, text: "LLMs are unable to produce text longer than one sentence", explanation: "Incorrect. LLMs routinely produce long text." }
+    - { id: c, text: "The explanation is always copied from the training data", explanation: "Incorrect. The model generates new text; the issue is that it may not reflect the real reasoning." }
+    - { id: d, text: "Rationales are only accurate at a temperature of exactly 1.0", explanation: "Incorrect. No temperature setting turns a generated explanation into a faithful account of the model's computation." }
+  answer: [a]
+  explanation: "Interpretability is a key limitation of generative AI. Models with billions of parameters cannot point to the rule that produced an answer, and self-explanations are just more generated text. For decisions that must be explained, prefer transparent models or rules, log prompts and sources, and keep humans in the loop."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-week-2-018
+  set: week-2
+  type: single
+  stem: "A document-research assistant is expected to save $900,000 a year. Building and running it will cost $300,000 a year. What is the return on investment (ROI)?"
+  options:
+    - { id: a, text: "33%", explanation: "Incorrect. This divides cost by benefit; ROI divides net benefit by cost." }
+    - { id: b, text: "67%", explanation: "Incorrect. This divides the net benefit by the total benefit instead of by the cost." }
+    - { id: c, text: "300%", explanation: "Incorrect. This divides the benefit by the cost without first subtracting the cost." }
+    - { id: d, text: "200%", explanation: "Correct. ROI = (benefit − cost) ÷ cost = (900,000 − 300,000) ÷ 300,000 = 200%." }
+  answer: [d]
+  explanation: "ROI = (benefit − cost) ÷ cost. Count the full cost, including model usage, supporting services, people, evaluation and governance, and present hard savings ahead of soft benefits when building the business case."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-week-2-019
+  set: week-2
+  type: single
+  stem: "A bank launches a GenAI concierge to help customers stay with the bank for more years and buy more products over the whole relationship. Which business metric BEST captures this goal?"
+  options:
+    - { id: a, text: "Customer lifetime value (CLV)", explanation: "Correct. CLV is the total revenue a customer brings over the whole relationship, which better service and retention increase." }
+    - { id: b, text: "Conversion rate", explanation: "Incorrect. Conversion rate measures the share of visitors or leads who take one desired action, not long-term value." }
+    - { id: c, text: "Time to first token", explanation: "Incorrect. Time to first token is a model latency metric, not a business value metric." }
+    - { id: d, text: "ROUGE score", explanation: "Incorrect. ROUGE is a model quality metric for summaries, not a business metric." }
+  answer: [a]
+  explanation: "Business metrics show whether a GenAI project is worth the money: ROI, conversion rate, ARPU, customer lifetime value, efficiency, cost per interaction, CSAT and deflection rate. CLV is a lagging indicator, so teams also track faster-moving leading indicators."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: easy
+
+- id: q-week-2-020
+  set: week-2
+  type: single
+  stem: "A team is writing the business case for an AI claims assistant. A finance reviewer asks which of the expected benefits counts as a hard saving. Which benefit should the team point to?"
+  options:
+    - { id: a, text: "Customers feel more positive about the brand", explanation: "Incorrect. Improved brand perception is a soft benefit that is hard to quantify in money." }
+    - { id: b, text: "Faster time to market for new products", explanation: "Incorrect. Speed to market is valuable but is treated as a soft benefit." }
+    - { id: c, text: "Fewer contractor hours and a lower cost per processed claim", explanation: "Correct. Directly measurable reductions in spend, such as contractor hours and cost per claim, are hard savings." }
+    - { id: d, text: "Employees enjoy their work more", explanation: "Incorrect. Employee satisfaction is a soft benefit." }
+  answer: [c]
+  explanation: "Separate hard savings (fewer contractor hours, lower cost per ticket or claim) from soft benefits (happier customers, faster time to market). Finance teams trust hard savings more, so lead with them and present soft benefits as upside."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-week-2-021
+  set: week-2
+  type: single
+  stem: "A company is shortlisting foundation models for a contract-review assistant. It already knows it will need to fine-tune the chosen model on its own documents next year. Which model selection factor must it check now?"
+  options:
+    - { id: a, text: "Whether the model has the largest parameter count available", explanation: "Incorrect. Size is not a requirement here, and larger models cost more and respond more slowly." }
+    - { id: b, text: "Whether the model supports the customisation method the company plans to use", explanation: "Correct. Customisation options are a selection factor: not every model can be fine-tuned or distilled in every service." }
+    - { id: c, text: "Whether the model can generate images", explanation: "Incorrect. Image generation is irrelevant for text contract review." }
+    - { id: d, text: "Whether the model has the newest knowledge cut-off", explanation: "Incorrect. A recent cut-off can help, but it does not ensure the model can be fine-tuned." }
+  answer: [b]
+  explanation: "Model selection factors include modality, capability on your task, latency and throughput, cost, context window, language support, customisation options, compliance constraints, licensing and size. The best choice is usually the smallest model that meets quality, latency and compliance needs and supports the planned customisation."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: hard
+
+- id: q-week-2-022
+  set: week-2
+  type: single
+  stem: "For which use case is generative AI LEAST appropriate?"
+  options:
+    - { id: a, text: "Drafting first versions of product descriptions for a marketing team to edit", explanation: "Incorrect. Content generation with human review is a strong GenAI use case." }
+    - { id: b, text: "Summarising long meeting transcripts for attendees, who can check the transcript", explanation: "Incorrect. Summarising unstructured text with users able to verify is a good fit." }
+    - { id: c, text: "Translating FAQ pages into several languages before review", explanation: "Incorrect. Translation with review is a common, appropriate GenAI task." }
+    - { id: d, text: "Automatically setting medication doses for hospital patients with no clinician review", explanation: "Correct. Zero tolerance for error with no human check is a case where GenAI should not decide on its own." }
+  answer: [d]
+  explanation: "Use GenAI where variety, language and creativity are valuable and a 'pretty good, checkable' answer is acceptable. Avoid it for exact calculations, decisions that must be fully explainable, zero-tolerance safety-critical tasks without human review, and simple tabular predictions that traditional ML does better."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: easy
+
+- id: q-week-2-023
+  set: week-2
+  type: multi
+  stem: "A compliance team generates regulatory notices with an LLM and needs the wording to be as consistent and repeatable as possible across runs. Which measures help? (Select TWO.)"
+  options:
+    - { id: a, text: "Lower the temperature", explanation: "Correct. Lower temperature makes sampling more focused and repeatable." }
+    - { id: b, text: "Raise the temperature to explore more options", explanation: "Incorrect. Higher temperature increases randomness and variation." }
+    - { id: c, text: "Use a prompt template with a fixed, structured output format", explanation: "Correct. Templates and structured formats constrain output and make it easier to validate automatically." }
+    - { id: d, text: "Choose the model with the largest context window", explanation: "Incorrect. Context window size does not control variation between runs." }
+    - { id: e, text: "Remove all instructions so the model writes freely", explanation: "Incorrect. Fewer constraints lead to more variation, not less." }
+  answer: [a, c]
+  explanation: "Nondeterminism comes from sampling. Mitigations are a lower temperature, prompt templates, structured output formats and automatic validation of outputs. Other limitations need different mitigations: RAG for hallucinations, Guardrails for unsafe content and transparent models for interpretability."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-week-2-024
+  set: week-2
+  type: multi
+  stem: "A retailer launched a GenAI assistant last month. Customer lifetime value will take a year to show any change. Which leading indicators can the team track weekly to steer the project? (Select TWO.)"
+  options:
+    - { id: a, text: "Customer lifetime value", explanation: "Incorrect. CLV is a lagging indicator that takes months to move." }
+    - { id: b, text: "Answer acceptance rate", explanation: "Correct. The share of answers accepted without edits moves quickly and predicts longer-term value." }
+    - { id: c, text: "Share of conversations resolved without escalation to a human", explanation: "Correct. Resolution without escalation is a fast-moving signal of whether the assistant is helping." }
+    - { id: d, text: "Five-year return on investment", explanation: "Incorrect. Long-horizon ROI is a lagging measure." }
+    - { id: e, text: "Annual revenue", explanation: "Incorrect. Annual revenue moves slowly and is affected by many other factors." }
+  answer: [b, c]
+  explanation: "Lagging indicators such as CLV and annual revenue take months to change. Leading indicators move quickly and predict them: answer acceptance rate, resolution without escalation, thumbs-up ratings, time to first response and repeat-contact rate. Agree on baselines before launch."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-week-2-025
+  set: week-2
+  type: matching
+  stem: "Match each generative AI limitation to the mitigation that addresses it MOST directly."
+  options:
+    - { id: a, text: "Hallucinated answers about company policies", explanation: "Ground answers in trusted documents with RAG, for example Amazon Bedrock Knowledge Bases." }
+    - { id: b, text: "Noticeably different wording on every run", explanation: "Lower the temperature and use structured templates to reduce nondeterminism." }
+    - { id: c, text: "Toxic or unsafe responses", explanation: "Apply Amazon Bedrock Guardrails content filters and denied topics." }
+    - { id: d, text: "Regulators require the true reason behind each decision", explanation: "Use a transparent model or rules for the decision, and log inputs and outputs for audit." }
+  matchTargets:
+    - { id: t1, text: "Retrieval-augmented generation (RAG)" }
+    - { id: t2, text: "Lower temperature and output templates" }
+    - { id: t3, text: "Amazon Bedrock Guardrails content filters" }
+    - { id: t4, text: "Transparent model with audit logging" }
+  answer: { a: t1, b: t2, c: t3, d: t4 }
+  explanation: "Each limitation has a matching mitigation: grounding with RAG for hallucinations and outdated knowledge, lower temperature and templates for nondeterminism, Guardrails for toxicity and sensitive data, and transparent models plus logging for interpretability. Human review adds a safety net for high-stakes outputs."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-week-2-026
+  set: week-2
+  type: single
+  stem: "A hotel group wants a phone concierge that holds natural, real-time spoken conversations with guests, taking speech in and replying with speech. Which Amazon Nova model is designed for this?"
+  options:
+    - { id: a, text: "Amazon Nova Canvas", explanation: "Incorrect. Nova Canvas generates and edits images." }
+    - { id: b, text: "Amazon Nova Reel", explanation: "Incorrect. Nova Reel generates short videos." }
+    - { id: c, text: "Amazon Nova Micro", explanation: "Incorrect. Nova Micro is a fast, low-cost text-only understanding model." }
+    - { id: d, text: "Amazon Nova Sonic", explanation: "Correct. Nova Sonic is a speech-to-speech model for natural, real-time voice conversations." }
+  answer: [d]
+  explanation: "Learn the Nova family by job: Micro, Lite, Pro and Premier for understanding (from fastest and cheapest to most capable); Canvas for images; Reel for video; Sonic for speech-to-speech; Act for browser-using agents; and multimodal embeddings for search."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-12#explanation
+  difficulty: easy
+
+- id: q-week-2-027
+  set: week-2
+  type: single
+  stem: "A company plans to distil a large model into a smaller, cheaper one for a narrow task. Which Amazon Nova understanding model is the most capable in the family and is positioned as a teacher model for distillation?"
+  options:
+    - { id: a, text: "Amazon Nova Premier", explanation: "Correct. Nova Premier is the most capable Nova understanding model and serves as a teacher for distillation." }
+    - { id: b, text: "Amazon Nova Lite", explanation: "Incorrect. Nova Lite is a low-cost multimodal model, not the most capable one." }
+    - { id: c, text: "Amazon Nova Micro", explanation: "Incorrect. Nova Micro is the smallest, text-only model, more likely to be a student than a teacher." }
+    - { id: d, text: "Amazon Nova Act", explanation: "Incorrect. Nova Act is aimed at agents that perform actions in a web browser." }
+  answer: [a]
+  explanation: "Nova understanding models range from Micro (text only, fastest and lowest cost) through Lite (low-cost multimodal) and Pro (balanced) to Premier (most capable, teacher for distillation). In distillation, a large teacher's answers train a smaller student model."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-12#explanation
+  difficulty: medium
+
+- id: q-week-2-028
+  set: week-2
+  type: single
+  stem: "A data-analysis agent running on Amazon Bedrock AgentCore must run Python code that it writes itself, without risking the host environment. Which AgentCore capability provides this?"
+  options:
+    - { id: a, text: "AgentCore Identity", explanation: "Incorrect. Identity manages who can call the agent and the credentials the agent uses to reach other services." }
+    - { id: b, text: "AgentCore Memory", explanation: "Incorrect. Memory stores short-term and long-term context, not code execution." }
+    - { id: c, text: "The built-in Code Interpreter", explanation: "Correct. AgentCore provides a managed Code Interpreter sandbox so agents can run code safely." }
+    - { id: d, text: "AgentCore Gateway", explanation: "Incorrect. Gateway turns existing APIs and Lambda functions into MCP tools." }
+  answer: [c]
+  explanation: "Amazon Bedrock AgentCore runs agents securely at scale with any framework and model. Its components include Runtime, Memory, Gateway, Identity, Policy, Observability, Evaluations and built-in tools: a managed Browser and a Code Interpreter sandbox."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-12#explanation
+  difficulty: medium
+
+- id: q-week-2-029
+  set: week-2
+  type: single
+  stem: "A legal firm fine-tunes a base model in Amazon Bedrock on its confidential contracts. What happens to the base model and to the firm's data?"
+  options:
+    - { id: a, text: "The base model is updated for all Bedrock customers with the firm's data", explanation: "Incorrect. Bedrock does not use customer data to improve base models for others." }
+    - { id: b, text: "The firm's data is shared with the model provider for quality review", explanation: "Incorrect. Bedrock does not share prompts, outputs or training data with model providers." }
+    - { id: c, text: "The firm must download the model weights and host them on Amazon EC2", explanation: "Incorrect. Custom models stay in Bedrock; there is no requirement to self-host them." }
+    - { id: d, text: "Bedrock creates a private copy of the model that only the firm's account can use", explanation: "Correct. Customisation produces a private custom model; the base model is unchanged and the data stays private." }
+  answer: [d]
+  explanation: "Amazon Bedrock does not use your prompts and outputs to train base models and does not share them with model providers. Customising a model creates a private copy for your account. Data is encrypted in transit and at rest, access is controlled with IAM, and PrivateLink provides private connectivity."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-12#explanation
+  difficulty: medium
+
+- id: q-week-2-030
+  set: week-2
+  type: single
+  stem: "A compliance officer must obtain AWS audit reports, such as SOC and ISO reports, to show that services used by a new Amazon Bedrock application are covered by compliance programs. Where should the officer get them?"
+  options:
+    - { id: a, text: "AWS Artifact", explanation: "Correct. AWS Artifact provides on-demand access to AWS compliance and audit reports." }
+    - { id: b, text: "AWS Cost Explorer", explanation: "Incorrect. Cost Explorer analyses historical cost and usage." }
+    - { id: c, text: "Amazon Bedrock Guardrails", explanation: "Incorrect. Guardrails filters model inputs and outputs; it does not provide audit reports." }
+    - { id: d, text: "SageMaker Model Registry", explanation: "Incorrect. Model Registry catalogues model versions and approvals." }
+  answer: [a]
+  explanation: "AWS services, including Amazon Bedrock, are in scope for widely used compliance programs such as ISO and SOC, and many are HIPAA eligible. Audit reports are available in AWS Artifact, and choosing a Region supports data-residency requirements."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-12#explanation
+  difficulty: easy
+
+- id: q-week-2-031
+  set: week-2
+  type: single
+  stem: "A research lab needs to train a new large model for several weeks across hundreds of accelerators on a resilient, managed cluster. Which AWS option is designed for this?"
+  options:
+    - { id: a, text: "Amazon Bedrock on-demand inference", explanation: "Incorrect. On-demand inference calls existing models; it does not train new large models." }
+    - { id: b, text: "Amazon SageMaker HyperPod", explanation: "Correct. SageMaker HyperPod, part of SageMaker AI, provides resilient clusters for large-scale distributed training." }
+    - { id: c, text: "Amazon Quick", explanation: "Incorrect. Amazon Quick is an agentic workspace for business users." }
+    - { id: d, text: "Strands Agents", explanation: "Incorrect. Strands Agents is an open-source SDK for writing agents, not a training cluster." }
+  answer: [b]
+  explanation: "The ground floor of the AWS GenAI stack is infrastructure and model building: GPU instances, Trainium and Inferentia chips, and Amazon SageMaker AI, including SageMaker HyperPod for long, large-scale training runs. Higher floors trade control for less operational work."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-12#examples
+  difficulty: easy
+
+- id: q-week-2-032
+  set: week-2
+  type: single
+  stem: "A company has steady, high-volume traffic on one Amazon Bedrock model that will continue for at least the next year. It has decided to use provisioned throughput. How can it obtain the LOWEST hourly rate?"
+  options:
+    - { id: a, text: "Buy provisioned throughput with no commitment", explanation: "Incorrect. No-commitment provisioned throughput is available but at a higher hourly rate." }
+    - { id: b, text: "Switch to batch inference for live traffic", explanation: "Incorrect. Batch is asynchronous and returns results in hours, which does not suit live traffic." }
+    - { id: c, text: "Buy provisioned throughput with a 6-month commitment", explanation: "Correct. Longer commitments (1 month or 6 months) lower the hourly rate for model units." }
+    - { id: d, text: "Increase the maximum output tokens setting", explanation: "Incorrect. Output length affects token usage, not the hourly price of reserved capacity." }
+  answer: [c]
+  explanation: "Provisioned throughput reserves model units for a fixed hourly price, whether or not they are used. It can be bought with no commitment or with a 1-month or 6-month commitment for a lower rate. It suits steady, high-volume traffic and many custom models."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-week-2-033
+  set: week-2
+  type: single
+  stem: "A team hosts an open-weight model on an Amazon SageMaker AI real-time endpoint with GPU instances. Traffic is low and spiky, mostly during office hours. How does this cost compare with calling a similar model through Amazon Bedrock on-demand?"
+  options:
+    - { id: a, text: "The endpoint is billed per instance-hour even when idle, so at low or spiky utilisation it is usually more expensive than per-token on-demand pricing", explanation: "Correct. A self-hosted endpoint has a mostly fixed cost, while Bedrock on-demand cost is variable and falls to zero when unused." }
+    - { id: b, text: "The endpoint is always cheaper because there are no per-token charges", explanation: "Incorrect. Instance-hours are charged whether the endpoint serves one request or a million, so low utilisation makes each request expensive." }
+    - { id: c, text: "Both options charge exactly the same per token", explanation: "Incorrect. They have different cost shapes: fixed instance-hours versus variable tokens." }
+    - { id: d, text: "Bedrock on-demand charges a fixed hourly fee even with no requests", explanation: "Incorrect. On-demand has no commitment or minimum; hourly fees apply to provisioned throughput." }
+  answer: [a]
+  explanation: "Bedrock on-demand has a variable cost that rises with tokens and is zero when idle. A real-time endpoint on SageMaker AI, EC2, ECS or EKS has a mostly fixed cost per instance-hour plus operational effort. Self-hosting can be cheaper only at high, steady utilisation; serverless and asynchronous options can scale to zero."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: hard
+
+- id: q-week-2-034
+  set: week-2
+  type: single
+  stem: "Three applications in one AWS account call the same Amazon Bedrock model. Finance wants AWS Cost Explorer to show the model spend of each application separately. What should the team set up?"
+  options:
+    - { id: a, text: "A separate prompt cache for each application", explanation: "Incorrect. Prompt caching reduces cost for repeated prefixes; it does not attribute spend." }
+    - { id: b, text: "Application inference profiles with cost allocation tags", explanation: "Correct. Application inference profiles let you attach cost allocation tags to model usage, so Cost Explorer can group spend by application." }
+    - { id: c, text: "A higher maximum output tokens setting for each application", explanation: "Incorrect. Output limits change usage, not how costs are attributed." }
+    - { id: d, text: "Batch inference for all three applications", explanation: "Incorrect. Batch changes the price and timing of inference, not cost attribution." }
+  answer: [b]
+  explanation: "Tag usage by team, application or customer to make cost tools useful. Bedrock application inference profiles carry cost allocation tags, Cost Explorer analyses historical spend by tag, AWS Budgets alerts on thresholds, and CloudWatch shows near-real-time token metrics."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-week-2-035
+  set: week-2
+  type: multi
+  stem: "Under the AWS shared responsibility model, which tasks remain the CUSTOMER's responsibility when building a chatbot on Amazon Bedrock? (Select TWO.)"
+  options:
+    - { id: a, text: "Patching the GPU servers that run the foundation models", explanation: "Incorrect. AWS operates and patches the infrastructure behind the managed service." }
+    - { id: b, text: "Controlling with IAM who can access the application's data and models", explanation: "Correct. Customers manage access to their data and resources." }
+    - { id: c, text: "Physical security of the data centres", explanation: "Incorrect. Physical security is AWS's responsibility." }
+    - { id: d, text: "Deciding what data goes into prompts and how the model's outputs are used", explanation: "Correct. Customers are responsible for their prompts, application logic and the use of outputs." }
+    - { id: e, text: "Maintaining the hypervisors that isolate customer workloads", explanation: "Incorrect. Virtualisation infrastructure is managed by AWS." }
+  answer: [b, d]
+  explanation: "AWS secures the infrastructure and the managed service. Customers remain responsible for their data, who can access it, their prompts and application, and how outputs are used. The higher up the stack, the more AWS manages."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-12#explanation
+  difficulty: medium
+
+- id: q-week-2-036
+  set: week-2
+  type: multi
+  stem: "A company calls an Amazon Bedrock model through a geographic cross-Region inference profile. Which statements about this approach are correct? (Select TWO.)"
+  options:
+    - { id: a, text: "Requests can be routed to several Regions within the chosen geography", explanation: "Correct. An inference profile spreads requests across Regions in a geography such as the US or the EU." }
+    - { id: b, text: "It helps absorb traffic bursts and provides higher effective throughput", explanation: "Correct. Routing across Regions smooths bursts and reduces throttling." }
+    - { id: c, text: "Geographic profiles may send data to any Region worldwide", explanation: "Incorrect. Geographic profiles keep processing within that geography, which helps with data residency." }
+    - { id: d, text: "It guarantees a lower price per token than single-Region on-demand", explanation: "Incorrect. Cross-Region inference is about throughput and resilience, not a guaranteed discount." }
+    - { id: e, text: "It requires buying provisioned throughput first", explanation: "Incorrect. Cross-Region inference profiles are used with on-demand calls; no provisioned capacity is required." }
+  answer: [a, b]
+  explanation: "When choosing Regions, balance model availability, data residency, latency and resilience. Cross-Region inference uses an inference profile to route requests across Regions within a geography, increasing effective throughput while geographic profiles keep data in that geography."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: hard
+
+- id: q-week-2-037
+  set: week-2
+  type: ordering
+  stem: "A product team is preparing a cost estimate for a new GenAI assistant on Amazon Bedrock. Place these steps in the recommended order, from first to last."
+  options:
+    - { id: a, text: "Compare the on-demand estimate with the cost of reserved or self-hosted capacity, and add operational effort", explanation: "Third: only with an on-demand estimate can the team judge whether reserved capacity would be cheaper." }
+    - { id: b, text: "Measure real token counts per request in a pilot", explanation: "First: pilot measurements replace guesses, because retrieved passages and history are often larger than expected." }
+    - { id: c, text: "After launch, track cost per interaction and set AWS Budgets alerts", explanation: "Last: ongoing tracking connects the bill to business value and warns of overspend." }
+    - { id: d, text: "Build a cost model: users × requests per user × input and output tokens × price, plus supporting services", explanation: "Second: the measured tokens feed a monthly cost model." }
+  answer: [b, d, a, c]
+  explanation: "Estimate costs from measured token counts, build a cost model, compare on-demand with reserved or self-hosted options including operational effort, and then track cost per interaction with budgets after launch. For most teams starting out, on-demand wins."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-week-2-038
+  set: week-2
+  type: matching
+  stem: "Match each requirement to the Amazon Bedrock capability that addresses it."
+  options:
+    - { id: a, text: "Ingest company documents, create embeddings and retrieve relevant passages at question time", explanation: "Knowledge Bases provide managed RAG." }
+    - { id: b, text: "Redact card numbers and block off-topic requests in a chatbot", explanation: "Guardrails provide sensitive-information filters, denied topics and content filters." }
+    - { id: c, text: "Compare candidate models with automatic, human or LLM-as-a-judge scoring", explanation: "Model evaluation compares models and RAG applications." }
+    - { id: d, text: "Save, version and test prompt templates used by several applications", explanation: "Prompt management stores and versions prompts." }
+  matchTargets:
+    - { id: t1, text: "Knowledge Bases" }
+    - { id: t2, text: "Guardrails" }
+    - { id: t3, text: "Model evaluation" }
+    - { id: t4, text: "Prompt management" }
+  answer: { a: t1, b: t2, c: t3, d: t4 }
+  explanation: "Amazon Bedrock bundles building blocks around its models: Knowledge Bases for managed RAG, Agents for multi-step tasks, Guardrails for safety and PII, model customisation, model evaluation, and prompt management and flows. These managed pieces speed time to market."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-12#explanation
+  difficulty: medium
+
+- id: q-week-2-039
+  set: week-2
+  type: single
+  stem: "Two foundation models offer similar quality and similar per-token prices. Every request from the company's application starts with the same 5,000-token block of instructions and examples. Which selection criterion could make one model much cheaper to run for this workload?"
+  options:
+    - { id: a, text: "Whether the model supports image generation", explanation: "Incorrect. The workload is text; image generation is irrelevant." }
+    - { id: b, text: "Whether the model has the largest parameter count", explanation: "Incorrect. A larger model usually costs more per token, not less." }
+    - { id: c, text: "Whether the model supports prompt caching", explanation: "Correct. With caching, the repeated 5,000-token prefix is read from the cache at a large discount on later requests." }
+    - { id: d, text: "Whether the model was released most recently", explanation: "Incorrect. Release date does not change the cost of repeated prefixes." }
+  answer: [c]
+  explanation: "Task statement 3.1 includes prompt caching as an FM selection criterion. For workloads with a long, stable prefix, caching can cut the cost of cached input tokens by up to about 90% and reduce latency, so caching support can change a model's effective price considerably."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-week-2-040
+  set: week-2
+  type: single
+  stem: "A procurement assistant must check current stock levels at six warehouses, each through a different system, and then combine the results into one recommendation. The checks are independent of each other. Which multi-agent pattern fits BEST?"
+  options:
+    - { id: a, text: "Sequential pipeline", explanation: "Incorrect. A sequential pipeline runs agents one after another, which wastes time when the checks are independent." }
+    - { id: b, text: "Parallel fan-out and fan-in", explanation: "Correct. Independent sub-tasks run at the same time and a final step merges the results." }
+    - { id: c, text: "A single model call with no tools", explanation: "Incorrect. Without tools the model cannot query the warehouse systems." }
+    - { id: d, text: "Peer handoff (swarm)", explanation: "Incorrect. Peer handoff passes control from one agent to the next best-placed peer; it is not designed to run independent checks simultaneously." }
+  answer: [b]
+  explanation: "Multi-agent patterns include supervisor (orchestrator–workers), sequential pipeline, parallel fan-out and fan-in, peer handoff (swarm) and graph. Independent sub-tasks that can run simultaneously, followed by a merge step, are the classic fan-out and fan-in case."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-10#explanation
+  difficulty: hard
+
+- id: q-week-2-041
+  set: week-2
+  type: single
+  stem: "A logistics company uses a large foundation model to classify 30 million shipping emails a month into eight categories. It wants to keep accuracy close to the large model while cutting per-request cost and latency, and it is willing to pay for a one-time job. Which approach fits BEST?"
+  options:
+    - { id: a, text: "Continued pre-training of the large model on all company emails", explanation: "Incorrect. Continued pre-training is expensive and still leaves the company serving a large model." }
+    - { id: b, text: "Pre-training a new model from scratch", explanation: "Incorrect. Pre-training from scratch is by far the most expensive option and unnecessary for a narrow task." }
+    - { id: c, text: "Adding longer instructions to every prompt", explanation: "Incorrect. Longer prompts add input tokens on every request, increasing cost." }
+    - { id: d, text: "Model distillation into a smaller student model", explanation: "Correct. A large teacher model's answers train a smaller student that serves the task faster and at a fraction of the per-token price." }
+  answer: [d]
+  explanation: "Customisation usually climbs a cost ladder: prompt engineering, RAG, fine-tuning, continued pre-training, pre-training from scratch. Distillation is the exception that saves money at inference time: you pay once for the distillation job and save on every request afterwards."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-13#explanation
+  difficulty: hard
+
+- id: q-week-2-042
+  set: week-2
+  type: multi
+  stem: "A customer-service agent can issue refunds and send emails to customers. Which orchestration controls should the team add to the agent loop? (Select TWO.)"
+  options:
+    - { id: a, text: "A maximum number of loop iterations and a token budget per task", explanation: "Correct. Iteration limits and budgets stop runaway loops and uncontrolled cost." }
+    - { id: b, text: "Give the agent every tool in the company so that it never lacks a capability", explanation: "Incorrect. Extra tools increase risk and confusion; agents should have least privilege." }
+    - { id: c, text: "A human approval checkpoint before refunds and outgoing customer emails", explanation: "Correct. Human-in-the-loop checkpoints before high-impact actions reduce the risk of harmful actions." }
+    - { id: d, text: "Remove timeouts so long tasks can always finish", explanation: "Incorrect. Timeouts are a recommended guard rail for stuck or slow tool calls." }
+    - { id: e, text: "Let the model execute API calls directly without the application in between", explanation: "Incorrect. In tool use, the application executes tools, which is where controls and logging are applied." }
+  answer: [a, c]
+  explanation: "Good orchestration puts guard rails on the agent loop: maximum iterations, timeouts, error handling when tools fail, token budgets and human-in-the-loop checkpoints before payments, deletions or messages to customers. Least-privilege tool access limits the damage from manipulated prompts."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-10#explanation
+  difficulty: medium
+
+- id: q-week-2-043
+  set: week-2
+  type: single
+  stem: "A start-up serves a deep learning image model at very high volume and wants AWS-designed chips that lower the cost of inference. Which option fits BEST?"
+  options:
+    - { id: a, text: "AWS Trainium", explanation: "Incorrect. Trainium is designed for training models rather than low-cost inference." }
+    - { id: b, text: "Amazon S3", explanation: "Incorrect. S3 is object storage, not compute." }
+    - { id: c, text: "AWS Inferentia", explanation: "Correct. Inferentia is the AWS-designed chip for low-cost, high-performance inference." }
+    - { id: d, text: "AWS Glue", explanation: "Incorrect. Glue is a serverless data integration service." }
+  answer: [c]
+  explanation: "Deep learning training and inference run on GPU instances or AWS-designed chips: AWS Trainium for training and AWS Inferentia for low-cost inference, usually managed through Amazon SageMaker AI."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: easy
+
+- id: q-week-2-044
+  set: week-2
+  type: single
+  stem: "A marketing analyst has 50 numeric attributes for each customer and wants to plot all customers on a two-dimensional chart while keeping as much of the information as possible. Which technique fits BEST?"
+  options:
+    - { id: a, text: "Logistic regression", explanation: "Incorrect. Logistic regression is a supervised classification algorithm." }
+    - { id: b, text: "Principal component analysis (PCA)", explanation: "Correct. PCA is dimensionality reduction: it compresses many features into a few while keeping most of the information, which enables 2D or 3D visualisation." }
+    - { id: c, text: "Random Cut Forest", explanation: "Incorrect. Random Cut Forest detects anomalies." }
+    - { id: d, text: "Reinforcement learning", explanation: "Incorrect. Reinforcement learning trains an agent through rewards." }
+  answer: [b]
+  explanation: "Dimensionality reduction compresses many features into fewer. PCA, the best-known method, speeds up training, removes noise and redundancy, and lets you visualise high-dimensional data in two or three dimensions."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: medium
+
+- id: q-week-2-045
+  set: week-2
+  type: single
+  stem: "A plant-identification model overfits its 8,000 training photos. The team creates flipped, rotated and slightly recoloured copies of each training image. What is this technique, and why does it help?"
+  options:
+    - { id: a, text: "Data augmentation, which helps the model learn what matters instead of incidental details", explanation: "Correct. Realistic variations of training examples reduce overfitting by teaching the model to ignore orientation and lighting quirks." }
+    - { id: b, text: "Feature extraction, which freezes the network's layers", explanation: "Incorrect. Feature extraction is a transfer learning approach, not a way of creating new training examples." }
+    - { id: c, text: "Early stopping, which ends training sooner", explanation: "Incorrect. Early stopping watches the validation score; it does not create new images." }
+    - { id: d, text: "Dimensionality reduction, which removes pixels", explanation: "Incorrect. Dimensionality reduction compresses features; it does not create image variations." }
+  answer: [a]
+  explanation: "Overfitting fixes include more and more varied data, simpler models, regularisation, early stopping, dropout and data augmentation. Augmentation creates realistic variations, such as flipped images or paraphrased sentences, so the model learns the real pattern."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: easy
+
+- id: q-week-2-046
+  set: week-2
+  type: single
+  stem: "Which description matches the standard recipe used to build modern generative AI models?"
+  options:
+    - { id: a, text: "Supervised training from scratch on a small labelled dataset for each task", explanation: "Incorrect. That describes traditional task-specific ML, not foundation models." }
+    - { id: b, text: "Clustering of unlabelled data followed by rule writing", explanation: "Incorrect. Clustering and rules are not how foundation models are built." }
+    - { id: c, text: "Reinforcement learning only, with no pre-training", explanation: "Incorrect. RLHF is often used after pre-training and fine-tuning, not instead of them." }
+    - { id: d, text: "Self-supervised pre-training on huge unlabelled data, followed by supervised fine-tuning", explanation: "Correct. Models first learn general patterns by predicting hidden or next tokens, then are fine-tuned with labelled examples." }
+  answer: [d]
+  explanation: "Self-supervised learning creates its own labels from the data, for example by hiding the next word. Because no human labelling is needed, foundation models can learn from trillions of words. Self-supervised pre-training followed by supervised fine-tuning, often with RLHF, is the standard recipe."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: hard
+
+- id: q-week-2-047
+  set: week-2
+  type: single
+  stem: "During training, a neural network randomly switches off a share of its neurons at each step so that it cannot rely on any single path through the network. Which technique is this, and what problem does it address?"
+  options:
+    - { id: a, text: "Backpropagation, which addresses slow inference", explanation: "Incorrect. Backpropagation calculates each weight's contribution to the error; it does not switch neurons off." }
+    - { id: b, text: "Dropout, which addresses overfitting", explanation: "Correct. Dropout randomly disables neurons during training to reduce overfitting." }
+    - { id: c, text: "Pooling, which addresses underfitting", explanation: "Incorrect. Pooling shrinks feature maps in CNNs and is not a remedy for underfitting." }
+    - { id: d, text: "Positional encoding, which addresses data drift", explanation: "Incorrect. Positional encoding tells transformers the order of tokens." }
+  answer: [b]
+  explanation: "Dropout is an overfitting remedy for neural networks. Along with more data, regularisation, early stopping and data augmentation, it helps the model generalise rather than memorise the training data."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-week-2-048
+  set: week-2
+  type: multi
+  stem: "A student is labelling the parts of a neural network diagram. Which items are activation functions? (Select TWO.)"
+  options:
+    - { id: a, text: "ReLU", explanation: "Correct. ReLU keeps positive values and turns negative values into zero." }
+    - { id: b, text: "Gradient descent", explanation: "Incorrect. Gradient descent is the optimisation method that nudges weights to reduce the loss." }
+    - { id: c, text: "Epoch", explanation: "Incorrect. An epoch is one full pass through the training set." }
+    - { id: d, text: "Sigmoid", explanation: "Correct. Sigmoid squashes any value into the range 0 to 1, useful for probabilities." }
+    - { id: e, text: "Pooling", explanation: "Incorrect. Pooling is a CNN layer that shrinks feature maps." }
+  answer: [a, d]
+  explanation: "Each neuron multiplies inputs by weights, adds a bias and passes the total through an activation function such as ReLU, sigmoid or softmax. Activation functions add non-linearity; without them, stacked layers collapse into one linear model."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: easy
+
+- id: q-week-2-049
+  set: week-2
+  type: single
+  stem: "An electronics brand translates its product manuals into 15 languages with Amazon Translate. Product names and technical terms such as 'FlexDock' must always be translated the same way, or kept unchanged. Which feature should it use?"
+  options:
+    - { id: a, text: "Amazon Translate custom terminology", explanation: "Correct. Custom terminology keeps brand and technical terms translated consistently." }
+    - { id: b, text: "Amazon Polly lexicons", explanation: "Incorrect. Polly lexicons control pronunciation in speech, not translation." }
+    - { id: c, text: "Amazon Comprehend key phrase extraction", explanation: "Incorrect. Key phrase extraction finds important phrases but does not control translation." }
+    - { id: d, text: "Amazon Textract forms extraction", explanation: "Incorrect. Textract extracts key–value pairs from documents." }
+  answer: [a]
+  explanation: "Amazon Translate provides neural machine translation in real time or batch. Custom terminology ensures brand names and technical terms are translated consistently, which is important for catalogues, manuals and support content."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: easy
+
+- id: q-week-2-050
+  set: week-2
+  type: single
+  stem: "A developer is designing an Amazon Lex bot for booking car rentals. The bot must collect the pickup city, the pickup date and the car size before it can complete a booking. In Amazon Lex, what are these pieces of information called?"
+  options:
+    - { id: a, text: "Intents", explanation: "Incorrect. An intent is what the user wants to do, such as BookCar." }
+    - { id: b, text: "Utterances", explanation: "Incorrect. Utterances are sample phrases a user might say to express an intent." }
+    - { id: c, text: "Slots", explanation: "Correct. Slots are the details the bot must collect to fulfil an intent." }
+    - { id: d, text: "Lexicons", explanation: "Incorrect. Lexicons are an Amazon Polly feature for pronunciation." }
+  answer: [c]
+  explanation: "Amazon Lex bots are built from intents (what the user wants), sample utterances (ways to say it) and slots (details to collect, such as city and dates). Lex handles speech and language understanding and can call an AWS Lambda function to fulfil the request."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: easy
+
+- id: q-week-2-051
+  set: week-2
+  type: multi
+  stem: "A company wants insights from customer emails without training any model. Which tasks can Amazon Comprehend perform out of the box? (Select TWO.)"
+  options:
+    - { id: a, text: "Detect the dominant language of each email", explanation: "Correct. Comprehend detects the dominant language of text." }
+    - { id: b, text: "Extract table rows from scanned PDF invoices", explanation: "Incorrect. Extracting tables from scanned documents is an Amazon Textract feature." }
+    - { id: c, text: "Convert voicemail recordings into text", explanation: "Incorrect. Speech-to-text is done by Amazon Transcribe." }
+    - { id: d, text: "Detect personal information such as names and phone numbers", explanation: "Correct. Comprehend detects PII in text." }
+    - { id: e, text: "Generate new marketing images", explanation: "Incorrect. Image generation needs a generative model such as Amazon Nova Canvas." }
+  answer: [a, d]
+  explanation: "Amazon Comprehend detects sentiment, entities, key phrases, dominant language, PII and syntax, groups documents by topic modelling, and supports custom classification and entity recognition trained on your labels."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-week-2-052
+  set: week-2
+  type: single
+  stem: "Before building an AI solution that reads supplier invoices, a project sponsor asks what the team must agree on so it can later prove the project delivered value. What is the BEST answer?"
+  options:
+    - { id: a, text: "The number of layers the neural network will have", explanation: "Incorrect. Architecture details do not show whether the project moved a business number." }
+    - { id: b, text: "The exact training algorithm and its hyperparameters", explanation: "Incorrect. These are technical choices made later; they do not define business value." }
+    - { id: c, text: "Which programming language the developers will use", explanation: "Incorrect. Implementation language is unrelated to measuring business value." }
+    - { id: d, text: "How value will be measured, such as cost per processed invoice and hours saved, compared with the full cost of the solution", explanation: "Correct. A use case succeeds only if it moves an agreed business metric by more than its total cost." }
+  answer: [d]
+  explanation: "Before building, agree how value will be measured: hours saved, cost per processed document, response times, conversion, fraud losses or satisfaction. Compare the expected gain with the full cost, including data preparation, labelling, development, hosting, monitoring and human review."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-week-2-053
+  set: week-2
+  type: single
+  stem: "A transaction-monitoring model works on imbalanced data: missed fraud is costly, and false alarms also create significant work for analysts. Which single metric BEST balances both concerns?"
+  options:
+    - { id: a, text: "Accuracy", explanation: "Incorrect. Accuracy is misleading on imbalanced data because predicting the majority class scores highly." }
+    - { id: b, text: "F1 score", explanation: "Correct. F1 is the harmonic mean of precision and recall, so it balances false positives and false negatives." }
+    - { id: c, text: "Mean absolute error", explanation: "Incorrect. MAE is a regression metric." }
+    - { id: d, text: "R²", explanation: "Incorrect. R² describes how much variation a regression model explains." }
+  answer: [b]
+  explanation: "Prioritise recall when false negatives are costly, precision when false positives are costly, and F1 when the classes are imbalanced and both errors matter. AUC compares classifiers independent of the threshold, and accuracy is meaningful only for balanced classes with equal error costs."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: easy
+
+- id: q-week-2-054
+  set: week-2
+  type: single
+  stem: "Where in the AI lifecycle does Amazon Quick mainly fit?"
+  options:
+    - { id: a, text: "The use and insight stage, where business users explore dashboards, research and agents over company data", explanation: "Correct. Amazon Quick is an agentic workspace that brings BI dashboards, research, chat agents and automation to business users." }
+    - { id: b, text: "The labelling stage, where annotators mark training data", explanation: "Incorrect. Labelling is done with tools such as SageMaker Ground Truth." }
+    - { id: c, text: "The build stage, where developers turn specifications into code", explanation: "Incorrect. That is the role of Kiro, the agentic IDE." }
+    - { id: d, text: "The large-scale model training stage", explanation: "Incorrect. Large-scale training happens in SageMaker AI." }
+  answer: [a]
+  explanation: "Kiro serves the build stage for developers, turning requirements into specifications, designs, tasks and code. Amazon Quick serves the use and insight stage, where people consume AI results and make decisions. Bedrock and SageMaker AI cover the models in between."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: easy
+
+- id: q-week-2-055
+  set: week-2
+  type: single
+  stem: "A content-moderation model flags 200 posts. 150 of the flagged posts truly violate the policy, and the model misses another 100 violating posts. What is the model's recall?"
+  options:
+    - { id: a, text: "75%", explanation: "Incorrect. 150 ÷ 200 = 75% is precision, the share of flagged posts that were correct." }
+    - { id: b, text: "67%", explanation: "Incorrect. About 0.67 is the F1 score, the harmonic mean of 75% precision and 60% recall." }
+    - { id: c, text: "60%", explanation: "Correct. Recall = TP ÷ (TP + FN) = 150 ÷ (150 + 100) = 60%." }
+    - { id: d, text: "40%", explanation: "Incorrect. 40% is the share of violating posts that were missed (100 ÷ 250), not recall." }
+  answer: [c]
+  explanation: "TP = 150, FP = 50 and FN = 100. Recall asks 'of all real cases, how many did I catch?': 150 ÷ 250 = 60%. Precision asks 'of everything I flagged, how much was right?': 150 ÷ 200 = 75%."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#examples
+  difficulty: hard
+
+- id: q-week-2-056
+  set: week-2
+  type: multi
+  stem: "A team configures SageMaker Model Monitor for a production endpoint. Which problems can Model Monitor detect? (Select TWO.)"
+  options:
+    - { id: a, text: "Data drift between production inputs and the training data", explanation: "Correct. Model Monitor detects when live input data no longer looks like the training data." }
+    - { id: b, text: "Missing operating-system patches on the team's laptops", explanation: "Incorrect. Model Monitor watches models and data, not employee devices." }
+    - { id: c, text: "Decay in model quality and drift in bias over time", explanation: "Correct. Model Monitor tracks model-quality decay and bias drift in production." }
+    - { id: d, text: "Slow progress by the human labelling workforce", explanation: "Incorrect. Labelling workflows are managed in SageMaker Ground Truth." }
+    - { id: e, text: "Errors in the team's IAM password policy", explanation: "Incorrect. IAM configuration is not monitored by Model Monitor." }
+  answer: [a, c]
+  explanation: "Model monitoring is a core MLOps practice. SageMaker Model Monitor detects data drift, model-quality decay and bias drift in production, and alerts can trigger retraining through SageMaker Pipelines."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-week-2-057
+  set: week-2
+  type: matching
+  stem: "Match each scenario to the evaluation metric that should be prioritised."
+  options:
+    - { id: a, text: "A screening model for a serious disease, where missing a real case is dangerous", explanation: "Recall minimises false negatives." }
+    - { id: b, text: "A spam filter, where blocking legitimate emails annoys customers", explanation: "Precision minimises false positives." }
+    - { id: c, text: "A delivery-time model, where very large misses are especially harmful", explanation: "RMSE squares errors, so large misses dominate the score." }
+    - { id: d, text: "Comparing several classifiers before any decision threshold is chosen", explanation: "AUC measures separation across all thresholds." }
+  matchTargets:
+    - { id: t1, text: "Recall" }
+    - { id: t2, text: "Precision" }
+    - { id: t3, text: "RMSE" }
+    - { id: t4, text: "AUC" }
+  answer: { a: t1, b: t2, c: t3, d: t4 }
+  explanation: "Choose the metric from the business cost of errors: recall when misses are costly, precision when false alarms are costly, F1 to balance both on imbalanced data, AUC for threshold-independent comparison, RMSE when big numeric misses are especially bad, and MAE to report typical error in plain units."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium

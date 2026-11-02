@@ -1,0 +1,939 @@
+- id: q-week-1-001
+  set: week-1
+  type: single
+  stem: "A garden-centre chain installs irrigation controllers that switch the sprinklers on whenever soil moisture drops below 20% and off when it rises above 35%. The thresholds were set by a horticulturist and never change. How is this system BEST classified?"
+  options:
+    - { id: a, text: "Machine learning, because it reacts to sensor data", explanation: "Incorrect. Reacting to data is not the same as learning from data; nothing in the controller is learned from examples." }
+    - { id: b, text: "Deep learning, because it processes sensor signals", explanation: "Incorrect. Deep learning uses multi-layer neural networks; this controller is a pair of fixed thresholds." }
+    - { id: c, text: "Rule-based automation, not machine learning", explanation: "Correct. A person wrote fixed if-then thresholds and the system never learns or changes them, so it is rules, not ML." }
+    - { id: d, text: "Generative AI, because it produces an action", explanation: "Incorrect. Generative AI creates new content such as text or images; switching a valve on a threshold is not content generation." }
+  answer: [c]
+  explanation: "Machine learning learns patterns from data and produces a model. A system that applies thresholds hand-written by an expert is classic rule-based automation. The exam often tests whether a simple, fixed rule needs ML at all; it usually does not."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#examples
+  difficulty: easy
+
+- id: q-week-1-002
+  set: week-1
+  type: single
+  stem: "A streaming service wants an assistant that, when a viewer says 'set up a film night for Saturday', searches the catalogue, checks the viewer's subscription tier through an API, adds three films to a watchlist and schedules a reminder, all without the viewer guiding each step. Which type of AI does this BEST represent?"
+  options:
+    - { id: a, text: "Agentic AI", explanation: "Correct. The system plans steps toward a goal and calls tools (catalogue search, subscription API, watchlist, scheduler) to act, which defines an AI agent." }
+    - { id: b, text: "Supervised classification", explanation: "Incorrect. Classification assigns a category to an input; it does not plan and carry out a multi-step task." }
+    - { id: c, text: "Unsupervised clustering", explanation: "Incorrect. Clustering groups similar items without labels; it does not take actions on the user's behalf." }
+    - { id: d, text: "Computer vision", explanation: "Incorrect. Computer vision interprets images and video; nothing here involves visual input." }
+  answer: [a]
+  explanation: "Agentic AI uses a foundation model as its reasoning engine to break a goal into steps, call tools such as APIs and databases, check the results and continue. Words like 'take actions', 'call APIs' and 'complete a multi-step task' point to agentic AI rather than a chatbot that only answers."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: easy
+
+- id: q-week-1-003
+  set: week-1
+  type: single
+  stem: "Which system is an example of artificial intelligence that does NOT use machine learning?"
+  options:
+    - { id: a, text: "A decision tree trained on ten years of loan repayment records", explanation: "Incorrect. A decision tree learns its splits from data, so it is machine learning (though not deep learning)." }
+    - { id: b, text: "A 1980s expert system that encodes doctors' diagnostic knowledge as hand-written if-then rules", explanation: "Correct. Expert systems mimic human reasoning, so they are AI, but their rules are written by people rather than learned from data." }
+    - { id: c, text: "A convolutional neural network that classifies skin-lesion photos", explanation: "Incorrect. A CNN is deep learning, which is a subset of machine learning." }
+    - { id: d, text: "A k-means model that groups shoppers into segments", explanation: "Incorrect. K-means learns cluster centres from data, so it is unsupervised machine learning." }
+  answer: [b]
+  explanation: "AI is the umbrella term for systems that perform tasks associated with human intelligence. Not every AI system is ML: rule-based and expert systems are AI without learning. Not every ML model is deep learning (a decision tree is not a neural network)."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: medium
+
+- id: q-week-1-004
+  set: week-1
+  type: single
+  stem: "In a model review, a data scientist says 'this model has high bias', and later a compliance officer says 'this model is biased against older applicants'. Which statement BEST explains the two uses of the word?"
+  options:
+    - { id: a, text: "Both mean the model's training data contained too few rows", explanation: "Incorrect. Small datasets can contribute to problems, but neither meaning of bias is defined as a row count." }
+    - { id: b, text: "Both mean the model overfits the training data", explanation: "Incorrect. Statistical bias is linked to underfitting, not overfitting, and unfair treatment is a separate responsible-AI concept." }
+    - { id: c, text: "The data scientist means the model is unfair; the compliance officer means it is too simple", explanation: "Incorrect. This reverses the two meanings." }
+    - { id: d, text: "The data scientist means systematic error from overly simple assumptions; the compliance officer means unfair treatment of a group of people", explanation: "Correct. Statistical bias is error from a too-simple model (underfitting); responsible-AI bias is a model systematically disadvantaging certain people." }
+  answer: [d]
+  explanation: "The exam uses bias in two senses. In statistics, high bias means the model makes overly simple assumptions and underfits. In responsible AI, bias means outcomes that unfairly favour or disadvantage individuals or groups, often because the training data under-represents them. Read the context to know which is meant."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: medium
+
+- id: q-week-1-005
+  set: week-1
+  type: single
+  stem: "A telecom company builds a churn model from a table with the columns tenure in months, monthly spend, number of support calls and churned (yes or no). In machine learning terms, what are tenure, monthly spend and number of support calls?"
+  options:
+    - { id: a, text: "Labels", explanation: "Incorrect. The label is the answer being predicted, which here is the churned column." }
+    - { id: b, text: "Hyperparameters", explanation: "Incorrect. Hyperparameters are training settings chosen before training, such as the learning rate, not dataset columns." }
+    - { id: c, text: "Features", explanation: "Correct. Features are the input attributes the model uses to make its prediction." }
+    - { id: d, text: "Parameters", explanation: "Incorrect. Parameters are the internal values, such as weights, that the model learns during training." }
+  answer: [c]
+  explanation: "Features are the inputs (tenure, spend, support calls) and the label or target is the value to predict (churned). Parameters are learned by the model during training, and hyperparameters are set by people before training."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: easy
+
+- id: q-week-1-006
+  set: week-1
+  type: single
+  stem: "A clinic has only 1,200 labelled patient records. Holding back 30% of them for validation and testing leaves too few examples to train on. Which technique gives a reliable performance estimate while letting every example be used for both training and validation?"
+  options:
+    - { id: a, text: "Data augmentation", explanation: "Incorrect. Data augmentation creates variations of training examples to reduce overfitting; it does not change how the data is split for evaluation." }
+    - { id: b, text: "Early stopping", explanation: "Incorrect. Early stopping halts training when the validation score stops improving; it still needs a separate validation set." }
+    - { id: c, text: "Tuning hyperparameters on the test set", explanation: "Incorrect. Using the test set for tuning leaks information and produces an optimistic score." }
+    - { id: d, text: "K-fold cross-validation", explanation: "Correct. The training data is split into folds, the model is trained several times holding out a different fold each time, and the scores are averaged." }
+  answer: [d]
+  explanation: "Cross-validation splits the data into k folds and trains k times, each time validating on a different fold. Every example is used for both training and validation, and the averaged score is more reliable than a single split, which is valuable when data is scarce."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-week-1-007
+  set: week-1
+  type: single
+  stem: "A theatre group forecasts daily ticket sales. The data scientist randomly shuffles three years of daily records before splitting them into training and validation sets. Validation scores are excellent, but forecasts for the coming weeks are poor. What is the MOST likely cause?"
+  options:
+    - { id: a, text: "The model saw information from the future during training, so the validation score was unrealistically high", explanation: "Correct. Random shuffling puts later days in the training set while earlier days are validated, so the model effectively peeks at the future." }
+    - { id: b, text: "The model is too simple and underfits the data", explanation: "Incorrect. An underfit model would score poorly on validation too, but validation scores were excellent." }
+    - { id: c, text: "The validation set was too large", explanation: "Incorrect. Validation set size does not explain a gap between excellent validation scores and poor real forecasts." }
+    - { id: d, text: "Time-series data cannot be used for machine learning", explanation: "Incorrect. Time-series forecasting is a common ML task; the data must simply be split in time order." }
+  answer: [a]
+  explanation: "For time-series data, order matters. You must train on the past and validate on a later period. Random shuffling leaks future information into training, so validation looks great on paper and disappoints in production, a form of data leakage."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: hard
+
+- id: q-week-1-008
+  set: week-1
+  type: single
+  stem: "A product owner is planning the budget for a recommendation model that will run in production for three years. Which statement about training and inference is MOST accurate?"
+  options:
+    - { id: a, text: "Training happens every time a prediction is requested, so it dominates the budget", explanation: "Incorrect. Training is the learning phase done occasionally; predictions on new data are inference." }
+    - { id: b, text: "Inference happens constantly in production and usually accounts for most of the lifetime cost", explanation: "Correct. Training happens occasionally, but the model serves predictions continuously, so serving cost usually dominates over the model's life." }
+    - { id: c, text: "Inference updates the model's parameters with each new request", explanation: "Incorrect. Inference uses the learned parameters; changing them requires training or retraining." }
+    - { id: d, text: "Training is cheap and fast, so it can be ignored in planning", explanation: "Incorrect. Training is compute-heavy and can take minutes to weeks; it is simply less frequent than inference." }
+  answer: [b]
+  explanation: "Training is the expensive learning phase, run when the model is built or retrained. Inference is using the trained model on new data and happens all the time, often with latency requirements. Over a production model's lifetime most of the cost is usually inference, so how the model is served matters as much as how it is built."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: easy
+
+- id: q-week-1-009
+  set: week-1
+  type: single
+  stem: "A tax-advice firm hosts a small document classifier on Amazon SageMaker AI. It receives heavy traffic for six weeks of the filing season and almost none for the rest of the year. Requests are small, and users accept that the first request after a quiet period may be slower. Which inference option is MOST cost-effective with the least capacity management?"
+  options:
+    - { id: a, text: "A real-time endpoint on a GPU instance running all year", explanation: "Incorrect. A persistent endpoint is billed while it runs, so it would cost money through the long idle months." }
+    - { id: b, text: "Batch transform run once a day", explanation: "Incorrect. Users are waiting for each classification, so a daily offline batch would not meet the need." }
+    - { id: c, text: "Serverless inference", explanation: "Correct. Serverless inference scales automatically with intermittent traffic and bills only while requests are processed, accepting possible cold starts." }
+    - { id: d, text: "Asynchronous inference with results written to Amazon S3", explanation: "Incorrect. Asynchronous inference is designed for large payloads or long processing times; these requests are small and users want a direct response." }
+  answer: [c]
+  explanation: "Serverless inference suits intermittent or unpredictable traffic: AWS provisions and scales the compute, there is no idle cost, and the trade-off is a possible cold start after an idle period. Real-time endpoints fit steady, latency-critical traffic; batch fits offline jobs; asynchronous fits large payloads or long processing."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#examples
+  difficulty: medium
+
+- id: q-week-1-010
+  set: week-1
+  type: single
+  stem: "A geospatial company sends satellite images of about 800 MB each to a model hosted on Amazon SageMaker AI. Each image takes around 20 minutes to analyse, clients collect the results later, and the company wants compute to scale down to zero when no images are waiting. Which inference option fits BEST?"
+  options:
+    - { id: a, text: "Real-time inference", explanation: "Incorrect. Real-time endpoints are built for quick responses to small requests and keep instances running even when idle." }
+    - { id: b, text: "Serverless inference", explanation: "Incorrect. Serverless inference targets small, intermittent requests; it is not designed for payloads of hundreds of megabytes processed for many minutes." }
+    - { id: c, text: "Batch transform", explanation: "Incorrect. Batch transform processes a whole dataset on a schedule; here images arrive individually throughout the day and each needs its own result." }
+    - { id: d, text: "Asynchronous inference", explanation: "Correct. Asynchronous inference queues requests with payloads up to 1 GB and processing up to about an hour, writes results to S3, and can scale to zero when the queue is empty." }
+  answer: [d]
+  explanation: "Asynchronous inference places each request in a queue, processes it in the background and writes the result to Amazon S3, optionally sending a notification. It handles large payloads (up to 1 GB) and long processing times (up to about an hour) and can scale down to zero instances when idle."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-week-1-011
+  set: week-1
+  type: single
+  stem: "A photo-sharing app wants to tag every uploaded photo with each applicable label from a list that includes 'beach', 'dog', 'sunset' and 'people'. A single photo can receive several tags at once. Which type of ML task is this?"
+  options:
+    - { id: a, text: "Multi-label classification", explanation: "Correct. Multi-label classification allows several categories to apply to the same input, such as a photo containing both a dog and a beach." }
+    - { id: b, text: "Binary classification", explanation: "Incorrect. Binary classification chooses between exactly two classes." }
+    - { id: c, text: "Multi-class classification", explanation: "Incorrect. Multi-class classification picks exactly one class out of many for each input." }
+    - { id: d, text: "Regression", explanation: "Incorrect. Regression predicts a continuous number, not a set of categories." }
+  answer: [a]
+  explanation: "Classification predicts categories. Binary has two classes, multi-class picks one of many, and multi-label allows several categories at once. Regression predicts a continuous quantity."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: medium
+
+- id: q-week-1-012
+  set: week-1
+  type: single
+  stem: "An operations team stores application logs as JSON records. Records share some common fields, but different services add their own fields and there is no fixed schema. How is this data BEST described?"
+  options:
+    - { id: a, text: "Structured data", explanation: "Incorrect. Structured data fits rows and columns with a fixed schema, which these logs do not have." }
+    - { id: b, text: "Semi-structured data", explanation: "Correct. JSON, XML and log files have some organisation, such as named fields, but no rigid schema." }
+    - { id: c, text: "Unstructured data", explanation: "Incorrect. Unstructured data such as free text, images and audio has no predefined organisation at all; JSON records do have named fields." }
+    - { id: d, text: "Time-series image data", explanation: "Incorrect. The records are text-based logs, not images." }
+  answer: [b]
+  explanation: "Structured data has a fixed schema (database tables). Semi-structured data has some organisation but no rigid schema (JSON, XML, logs). Unstructured data has no predefined model (free text, images, audio, video, PDFs)."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: easy
+
+- id: q-week-1-013
+  set: week-1
+  type: single
+  stem: "A grocery chain wants to discover which products are often bought together in the same basket so that it can plan shelf placement. Its transaction data contains no outcome column. Which technique fits BEST?"
+  options:
+    - { id: a, text: "Linear regression", explanation: "Incorrect. Linear regression predicts a continuous number from labelled examples; there is no target to predict here." }
+    - { id: b, text: "Reinforcement learning", explanation: "Incorrect. Reinforcement learning trains an agent through actions and rewards; nothing here involves an agent acting in an environment." }
+    - { id: c, text: "Association rule learning", explanation: "Correct. Association rules find items that frequently occur together, the classic market-basket analysis." }
+    - { id: d, text: "Principal component analysis (PCA)", explanation: "Incorrect. PCA compresses many features into fewer; it does not find items that co-occur in baskets." }
+  answer: [c]
+  explanation: "Association rule learning is an unsupervised technique that discovers items that often appear together, for example 'customers who buy bread and butter also buy jam'. It needs no labels, which matches transaction data with no outcome column."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: medium
+
+- id: q-week-1-014
+  set: week-1
+  type: single
+  stem: "A team takes an image model pre-trained on millions of general photos, freezes all of its existing layers and trains only a newly added output layer on 2,000 labelled images of its own products. What is this approach called?"
+  options:
+    - { id: a, text: "Training from scratch", explanation: "Incorrect. Training from scratch starts with random weights; here the pre-trained layers are reused." }
+    - { id: b, text: "Self-supervised pre-training", explanation: "Incorrect. Self-supervised pre-training creates labels from the data itself on a huge dataset; the team is adapting an already pre-trained model with labelled data." }
+    - { id: c, text: "Reinforcement learning from human feedback", explanation: "Incorrect. RLHF uses human ratings as a reward signal to align a model's responses; it is not used to add a new image output layer." }
+    - { id: d, text: "Transfer learning by feature extraction", explanation: "Correct. Freezing the pre-trained layers and training only a new output layer is the feature-extraction form of transfer learning." }
+  answer: [d]
+  explanation: "Transfer learning reuses a model pre-trained on a large general dataset. In feature extraction, the pre-trained layers are frozen and only a new output layer is trained. In fine-tuning, some or all layers continue training with a small learning rate. Both need far less data and compute than training from scratch."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: medium
+
+- id: q-week-1-015
+  set: week-1
+  type: single
+  stem: "While training a neural network, the team sees the loss jump up and down from one step to the next and never settle, instead of decreasing steadily. Which change is MOST likely to help?"
+  options:
+    - { id: a, text: "Lower the learning rate", explanation: "Correct. A learning rate that is too high makes gradient descent overshoot the minimum and bounce around; smaller steps let the loss settle." }
+    - { id: b, text: "Raise the learning rate", explanation: "Incorrect. Larger steps would make the overshooting worse." }
+    - { id: c, text: "Remove the activation functions", explanation: "Incorrect. Without activation functions the network collapses into a linear model and loses the ability to learn complex patterns." }
+    - { id: d, text: "Replace backpropagation with batch transform", explanation: "Incorrect. Batch transform is a SageMaker AI inference option, not a training algorithm." }
+  answer: [a]
+  explanation: "Gradient descent nudges each weight in the direction that reduces the loss; the learning rate is the step size. Steps that are too big overshoot and bounce around, while steps that are too small make training very slow. The learning rate is a hyperparameter chosen before training."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: hard
+
+- id: q-week-1-016
+  set: week-1
+  type: single
+  stem: "A transformer reads all the tokens of a sentence at the same time instead of one after another. What does the architecture add so that the model still knows the order of the words?"
+  options:
+    - { id: a, text: "A hidden state passed from one step to the next", explanation: "Incorrect. A hidden state is how a recurrent neural network carries memory step by step; transformers do not process tokens sequentially." }
+    - { id: b, text: "Positional encoding", explanation: "Correct. Positional encoding adds information about where each token sits in the sequence, because parallel self-attention does not imply order on its own." }
+    - { id: c, text: "Pooling layers", explanation: "Incorrect. Pooling shrinks feature maps in convolutional neural networks for images." }
+    - { id: d, text: "A softmax output layer", explanation: "Incorrect. Softmax turns scores into probabilities; it does not encode word order." }
+  answer: [b]
+  explanation: "Self-attention lets every token look at every other token in parallel, which makes training scale and captures long-range context. Because the model no longer reads word by word, positional encoding is added to each token so the model knows its position in the sequence."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: medium
+
+- id: q-week-1-017
+  set: week-1
+  type: multi
+  stem: "An IT team is building an inventory of AI systems in the company. Which of these systems are examples of generative AI? (Select TWO.)"
+  options:
+    - { id: a, text: "A model that predicts next quarter's sales for each store", explanation: "Incorrect. Predicting a number is traditional ML regression, not content generation." }
+    - { id: b, text: "An assistant that writes SQL queries from analysts' plain-English questions", explanation: "Correct. Writing new code from a prompt is content generation by an LLM." }
+    - { id: c, text: "A model that scores card transactions for fraud risk", explanation: "Incorrect. Scoring or classifying transactions is traditional ML." }
+    - { id: d, text: "A tool that creates new banner images from a text description", explanation: "Correct. Producing new images from a prompt is generative AI, typically with a diffusion model." }
+    - { id: e, text: "A k-means model that groups customers into segments", explanation: "Incorrect. Clustering finds groups in existing data; it does not create new content." }
+  answer: [b, d]
+  explanation: "Traditional ML classifies, scores, predicts or groups. Generative AI creates new content such as text, code, images, audio or video that resembles its training data. Clue words are create, draft, write, summarise and generate."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#examples
+  difficulty: easy
+
+- id: q-week-1-018
+  set: week-1
+  type: multi
+  stem: "A delivery-time model scores 61% on its training data and 60% on its validation data. Which actions are MOST likely to improve it? (Select TWO.)"
+  options:
+    - { id: a, text: "Add more informative features, such as distance to the customer and time of day", explanation: "Correct. Poor scores on both sets mean underfitting, and more informative features give the model more signal to learn." }
+    - { id: b, text: "Increase regularisation strength", explanation: "Incorrect. Regularisation penalises complexity, which would make an underfit model even simpler." }
+    - { id: c, text: "Use a more expressive model or train for longer", explanation: "Correct. A richer model or more training helps a model that is too simple to capture the pattern." }
+    - { id: d, text: "Apply early stopping to end training sooner", explanation: "Incorrect. Early stopping prevents overfitting; an underfit model needs more learning, not less." }
+    - { id: e, text: "Add dropout to the network", explanation: "Incorrect. Dropout is an overfitting remedy that limits how much the network relies on individual paths." }
+  answer: [a, c]
+  explanation: "Low training and validation scores that are close together indicate underfitting (high bias). Fixes are more informative features, a more expressive model, longer training and less regularisation. Regularisation, early stopping and dropout are remedies for overfitting."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-week-1-019
+  set: week-1
+  type: multi
+  stem: "A payments team is preparing 2 million transactions to train a fraud classifier. Only 0.1% of the transactions are fraud. Which steps directly address this class imbalance? (Select TWO.)"
+  options:
+    - { id: a, text: "Oversample the fraud class or add synthetic fraud examples", explanation: "Correct. Increasing the share of the rare class helps the model learn its pattern instead of always predicting the majority class." }
+    - { id: b, text: "One-hot encode the merchant category column", explanation: "Incorrect. One-hot encoding converts categories into numbers; it does not change the balance between classes." }
+    - { id: c, text: "Judge the model with precision and recall rather than accuracy", explanation: "Correct. With 99.9% legitimate transactions, accuracy is misleading; precision and recall show whether fraud is actually caught." }
+    - { id: d, text: "Scale transaction amounts to a comparable range", explanation: "Incorrect. Scaling puts features on similar ranges; it does not address imbalance between classes." }
+    - { id: e, text: "Remove the fraud transactions as outliers", explanation: "Incorrect. The rare fraud cases are exactly what the model must learn; removing them makes the problem worse." }
+  answer: [a, c]
+  explanation: "When one class is rare, a model that always predicts the majority class scores very high accuracy and is useless. Remedies include collecting more minority examples, oversampling the rare class, undersampling the common class or creating synthetic examples, and evaluating with precision and recall instead of accuracy."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: hard
+
+- id: q-week-1-020
+  set: week-1
+  type: multi
+  stem: "A quality engineer is reviewing a convolutional neural network (CNN) that checks photos of circuit boards. Which statements correctly describe how a CNN works? (Select TWO.)"
+  options:
+    - { id: a, text: "Small filters slide across the image, and each learns to spot a pattern such as an edge or a curve", explanation: "Correct. Convolutional filters detect local patterns wherever they appear in the image." }
+    - { id: b, text: "It keeps a hidden state that carries memory from one word to the next", explanation: "Incorrect. A hidden state passed step by step describes a recurrent neural network for sequences." }
+    - { id: c, text: "Pooling layers shrink the feature maps while keeping the strongest signals", explanation: "Correct. Pooling reduces the size of feature maps and keeps the most important responses." }
+    - { id: d, text: "Self-attention compares every token with every other token in parallel", explanation: "Incorrect. Self-attention is the core mechanism of transformers." }
+    - { id: e, text: "It requires hand-engineered features such as the colour of each pixel region", explanation: "Incorrect. Deep networks such as CNNs learn features directly from raw pixels." }
+  answer: [a, c]
+  explanation: "A CNN slides small learned filters across an image to detect local patterns, uses pooling to shrink the feature maps, and builds a hierarchy from edges to shapes to whole objects. RNNs carry a hidden state through sequences, and transformers use self-attention."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: medium
+
+- id: q-week-1-021
+  set: week-1
+  type: ordering
+  stem: "Order these terms from the BROADEST category to the most specific, where each term is a subset of the one before it."
+  options:
+    - { id: a, text: "Deep learning", explanation: "Third: deep learning is the part of ML that uses multi-layer neural networks." }
+    - { id: b, text: "Artificial intelligence", explanation: "First: AI is the umbrella term for any technique that mimics human intelligence, including rules." }
+    - { id: c, text: "Generative AI", explanation: "Last: generative AI is built on deep learning, especially transformers, and creates new content." }
+    - { id: d, text: "Machine learning", explanation: "Second: ML is the part of AI that learns patterns from data." }
+  answer: [b, d, a, c]
+  explanation: "The terms nest: AI contains ML, ML contains deep learning, and deep learning contains generative AI. Agentic AI builds on generative AI by adding planning, tools and actions."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: easy
+
+- id: q-week-1-022
+  set: week-1
+  type: matching
+  stem: "Match each dataset to the data type that describes it BEST."
+  options:
+    - { id: a, text: "Readings from a smart meter recorded every 15 minutes for two years", explanation: "Time-series: values recorded in time order, where yesterday influences today." }
+    - { id: b, text: "Recordings of customer phone calls to a contact centre", explanation: "Audio: speech recordings, typically used for transcription." }
+    - { id: c, text: "A table of customer accounts with plan type, monthly spend and tenure", explanation: "Tabular: rows and columns of numbers and categories." }
+    - { id: d, text: "Thousands of free-text product reviews", explanation: "Text: documents and reviews, used for sentiment and entity extraction." }
+  matchTargets:
+    - { id: t1, text: "Tabular" }
+    - { id: t2, text: "Time-series" }
+    - { id: t3, text: "Text" }
+    - { id: t4, text: "Audio" }
+  answer: { a: t2, b: t4, c: t1, d: t3 }
+  explanation: "Task statement 1.1 names several data types. Tabular data suits credit scoring and churn; time-series suits forecasting and must not be shuffled; text suits Amazon Comprehend or Amazon Bedrock; audio suits Amazon Transcribe."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: easy
+
+- id: q-week-1-023
+  set: week-1
+  type: single
+  stem: "A contact centre wants to analyse recorded calls to see when the agent and when the customer were speaking, the sentiment of each speaker, talk time and interruptions, plus a short call summary. Which AWS option meets this need with the LEAST development effort?"
+  options:
+    - { id: a, text: "Amazon Polly with SSML", explanation: "Incorrect. Polly converts text to speech; it does not analyse recorded calls." }
+    - { id: b, text: "Amazon Lex with custom intents", explanation: "Incorrect. Lex builds conversational bots; it is not a call-recording analytics tool." }
+    - { id: c, text: "Amazon Transcribe Call Analytics", explanation: "Correct. Call Analytics adds call-centre insights such as sentiment per speaker, talk time, interruptions and call summaries on top of transcription." }
+    - { id: d, text: "Amazon Textract with queries", explanation: "Incorrect. Textract extracts text and structure from documents, not from audio." }
+  answer: [c]
+  explanation: "Amazon Transcribe converts speech to text with features such as speaker diarization and PII redaction. Transcribe Call Analytics is designed for contact centres and adds per-speaker sentiment, talk time, interruptions and call summaries, with no model training required."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: easy
+
+- id: q-week-1-024
+  set: week-1
+  type: single
+  stem: "A utility company wants to route incoming customer emails into its own 12 department categories. It has 5,000 previously routed emails as examples and no data scientists. Which solution fits BEST?"
+  options:
+    - { id: a, text: "Amazon Translate with custom terminology", explanation: "Incorrect. Translate converts text between languages; custom terminology keeps terms consistent but does not categorise emails." }
+    - { id: b, text: "Amazon Comprehend custom classification", explanation: "Correct. Comprehend can be trained with your own labelled examples to classify text into your own categories without ML expertise." }
+    - { id: c, text: "Amazon Textract queries", explanation: "Incorrect. Textract extracts text, forms and tables from documents; it does not route emails by topic." }
+    - { id: d, text: "Amazon Rekognition custom labels", explanation: "Incorrect. Rekognition analyses images and video, not email text." }
+  answer: [b]
+  explanation: "Amazon Comprehend detects sentiment, entities, key phrases, language and PII out of the box, and it supports custom classification and custom entity recognition trained on your own labelled examples. This is the managed, low-effort way to categorise text into company-specific classes."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-week-1-025
+  set: week-1
+  type: single
+  stem: "An e-learning company narrates its courses with Amazon Polly. The voices keep mispronouncing the company's invented product name 'Xylo'. Which feature should the team use to fix the pronunciation?"
+  options:
+    - { id: a, text: "Amazon Transcribe custom vocabulary", explanation: "Incorrect. Custom vocabularies help Transcribe recognise words when converting speech to text; they do not change how Polly speaks." }
+    - { id: b, text: "Amazon Translate custom terminology", explanation: "Incorrect. Custom terminology controls how terms are translated between languages, not how they are pronounced." }
+    - { id: c, text: "Amazon Comprehend custom entity recognition", explanation: "Incorrect. Custom entity recognition finds company-specific entities in text; it does not affect speech output." }
+    - { id: d, text: "A Polly lexicon or SSML pronunciation tags", explanation: "Correct. Polly lexicons define how specific words are pronounced, and SSML tags control pronunciation, pauses and emphasis." }
+  answer: [d]
+  explanation: "Amazon Polly turns text into lifelike speech. SSML tags control pronunciation, pauses and emphasis, and lexicons define how specific words are spoken. Remember the direction: Polly speaks, Transcribe listens."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-week-1-026
+  set: week-1
+  type: single
+  stem: "A pharmacy chain transcribes recorded calls with Amazon Transcribe. Drug names such as 'atorvastatin' are often transcribed incorrectly. Which feature addresses this with the LEAST effort?"
+  options:
+    - { id: a, text: "Custom vocabularies in Amazon Transcribe", explanation: "Correct. Custom vocabularies teach Transcribe product names, jargon and domain terms so they are recognised correctly." }
+    - { id: b, text: "Speaker diarization in Amazon Transcribe", explanation: "Incorrect. Diarization labels who spoke when; it does not improve recognition of specific words." }
+    - { id: c, text: "Lexicons in Amazon Polly", explanation: "Incorrect. Polly lexicons control how text is spoken aloud, not how speech is recognised." }
+    - { id: d, text: "Training a speech recognition model from scratch in SageMaker AI", explanation: "Incorrect. Building a custom speech model is far more effort than adding a custom vocabulary to a managed service." }
+  answer: [a]
+  explanation: "Amazon Transcribe offers custom vocabularies for product names and jargon, speaker diarization, automatic language identification, PII redaction and subtitles. Choosing a managed-service feature over building a custom model is usually the least operational overhead."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-week-1-027
+  set: week-1
+  type: single
+  stem: "An older study guide recommends Amazon Forecast for building a demand forecast from historical sales. For the AIF-C01 exam guide v1.2, which AWS option should a candidate associate with this task instead?"
+  options:
+    - { id: a, text: "Amazon Personalize", explanation: "Incorrect. Personalize builds recommendations from user interaction data, not time-series forecasts." }
+    - { id: b, text: "Amazon Kendra", explanation: "Incorrect. Kendra is enterprise search and is also not listed in guide v1.2." }
+    - { id: c, text: "Amazon SageMaker AI or SageMaker Canvas", explanation: "Correct. Forecast is not listed in guide v1.2; forecasting is regression on time-series data built with SageMaker AI or the no-code SageMaker Canvas." }
+    - { id: d, text: "Amazon Comprehend", explanation: "Incorrect. Comprehend extracts insights from text; it does not forecast numeric values." }
+  answer: [c]
+  explanation: "Amazon Forecast, Amazon Fraud Detector and Amazon Kendra appear in older courses but not in exam guide v1.2. For forecasting and fraud, think SageMaker AI or SageMaker Canvas; for searching company knowledge with generative answers, think Amazon Bedrock Knowledge Bases."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: easy
+
+- id: q-week-1-028
+  set: week-1
+  type: single
+  stem: "A logistics manager asks: 'How many pallets will each warehouse need next Tuesday?' The company has two years of daily pallet counts per warehouse. Which ML technique matches this question?"
+  options:
+    - { id: a, text: "Classification", explanation: "Incorrect. Classification answers 'which category?' or 'yes or no?', not 'how many?'." }
+    - { id: b, text: "Clustering", explanation: "Incorrect. Clustering finds natural groups in unlabelled data; here there is a known numeric target." }
+    - { id: c, text: "Association rule learning", explanation: "Incorrect. Association rules find items that occur together; they do not predict a quantity." }
+    - { id: d, text: "Regression", explanation: "Correct. 'How many?' asks for a number, and the history provides labelled examples, so this is regression on time-series data." }
+  answer: [d]
+  explanation: "Rewrite the business request as a question about the output. 'How much?' or 'how many?' means regression; 'which category?' or 'yes or no?' means classification; 'what natural groups exist?' with no labels means clustering. Forecasting is regression on time-series data."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: easy
+
+- id: q-week-1-029
+  set: week-1
+  type: single
+  stem: "A small architecture firm reviews about 30 supplier contracts a year by hand, which takes one person a few days in total. A consultant proposes building and hosting a custom ML model to review the contracts. What is the BEST recommendation?"
+  options:
+    - { id: a, text: "Build the model on SageMaker AI, because automation always pays back", explanation: "Incorrect. Automation pays back only when the benefit exceeds the cost of data, development, hosting and monitoring." }
+    - { id: b, text: "Keep the manual process, because the task is too small for a custom model to justify its cost", explanation: "Correct. A rare, low-volume task rarely repays the cost of collecting data, training, hosting and monitoring a model." }
+    - { id: c, text: "Label thousands of contracts with SageMaker Ground Truth first, then build the model", explanation: "Incorrect. Labelling at scale adds even more cost to a task that only happens 30 times a year." }
+    - { id: d, text: "Pre-train a new foundation model on legal text", explanation: "Incorrect. Pre-training a foundation model costs millions of dollars and is far out of proportion to the task." }
+  answer: [b]
+  explanation: "AI is not the right answer when the cost outweighs the benefit or the problem is rare or tiny. Always do a cost–benefit analysis that includes data preparation, labelling, development, hosting, monitoring and human review before building a model."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: hard
+
+- id: q-week-1-030
+  set: week-1
+  type: single
+  stem: "A factory needs to classify vibration readings from a sensor every few milliseconds on a small device on the production line. The device has no reliable internet connection, and the same reading must always produce the same result. Which approach fits BEST?"
+  options:
+    - { id: a, text: "A compact traditional ML model trained on labelled sensor data", explanation: "Correct. Millisecond latency, small devices, high volume and consistent outputs are operational constraints that point to traditional ML." }
+    - { id: b, text: "A large foundation model called through Amazon Bedrock for every reading", explanation: "Incorrect. An API call to a large model adds network dependency and seconds of latency, and outputs can vary between runs." }
+    - { id: c, text: "A diffusion model that generates synthetic vibration signals", explanation: "Incorrect. Diffusion models generate content such as images; they do not classify sensor readings in real time." }
+    - { id: d, text: "An Amazon Lex bot that asks the operator about each reading", explanation: "Incorrect. Lex builds conversational bots; a human conversation for every few-millisecond reading is impractical." }
+  answer: [a]
+  explanation: "Task statement 1.2 asks you to choose between traditional ML and foundation models. Structured data, one narrow prediction, millisecond latency, very high volume, small devices and a need for identical outputs all point to traditional ML. Foundation models fit unstructured data, generation and many tasks where seconds of latency are acceptable."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: hard
+
+- id: q-week-1-031
+  set: week-1
+  type: single
+  stem: "An insurer receives thousands of claim documents in many different layouts. For each document it wants to ask 'What is the policy number?' and 'What is the date of loss?' and receive the answer values. Which AWS service fits BEST?"
+  options:
+    - { id: a, text: "Amazon Rekognition text detection", explanation: "Incorrect. Rekognition can read text that appears in images, but it does not understand document structure or answer questions about fields." }
+    - { id: b, text: "Amazon Comprehend sentiment analysis", explanation: "Incorrect. Sentiment analysis says whether text is positive or negative; it does not extract field values from documents." }
+    - { id: c, text: "Amazon Transcribe", explanation: "Incorrect. Transcribe converts speech in audio to text." }
+    - { id: d, text: "Amazon Textract with queries", explanation: "Correct. Textract extracts text plus structure from documents and can answer natural-language queries about a document's content." }
+  answer: [d]
+  explanation: "Amazon Textract goes beyond plain OCR. It extracts printed and handwritten text, forms (key–value pairs), tables and signatures, and it answers queries you ask about a document. Specialised APIs handle invoices, receipts and identity documents."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-week-1-032
+  set: week-1
+  type: single
+  stem: "An online bookshop wants the results of its site search to be re-ordered for each signed-in customer, so that books matching that customer's past views and purchases appear first. The company has no ML team. Which AWS service fits BEST?"
+  options:
+    - { id: a, text: "Amazon Comprehend", explanation: "Incorrect. Comprehend extracts insights from text; it does not learn individual customers' preferences from interaction data." }
+    - { id: b, text: "Amazon Personalize", explanation: "Correct. Personalize builds personalised recommendations and personalised ranking of items from interaction data, with no ML expertise required." }
+    - { id: c, text: "Amazon Polly", explanation: "Incorrect. Polly converts text to speech." }
+    - { id: d, text: "Amazon Lex", explanation: "Incorrect. Lex builds chatbots with intents and slots; it does not rank search results per user." }
+  answer: [b]
+  explanation: "Amazon Personalize uses interaction data (views, clicks, purchases) and optional item and user data to train and host recommendation models. Use cases include 'recommended for you', 'customers who viewed this also viewed', personalised ranking of search results and user segmentation."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: easy
+
+- id: q-week-1-033
+  set: week-1
+  type: multi
+  stem: "A hotel chain wants a phone hotline where callers speak naturally to book rooms. The system must understand the booking request, ask for missing details such as dates, look up availability through an AWS Lambda function and speak the reply in a natural voice. Which AWS services should it use? (Select TWO.)"
+  options:
+    - { id: a, text: "Amazon Lex", explanation: "Correct. Lex handles the conversation: it recognises speech and intents, collects slots such as dates and calls a Lambda function to fulfil the request." }
+    - { id: b, text: "Amazon Textract", explanation: "Incorrect. Textract extracts data from documents, which is not needed for a phone conversation." }
+    - { id: c, text: "Amazon Personalize", explanation: "Incorrect. Personalize produces recommendations; it does not run conversations." }
+    - { id: d, text: "Amazon Polly", explanation: "Correct. Polly turns the reply text into lifelike speech for the caller." }
+    - { id: e, text: "Amazon Rekognition", explanation: "Incorrect. Rekognition analyses images and video, not phone calls." }
+  answer: [a, d]
+  explanation: "Amazon Lex builds voice and text bots using intents, utterances and slots, handles speech recognition and language understanding, and can call AWS Lambda to fulfil requests. Amazon Polly speaks the reply. Combining single-purpose managed services is a common exam pattern."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#examples
+  difficulty: medium
+
+- id: q-week-1-034
+  set: week-1
+  type: multi
+  stem: "A bank deploys an ML model that scores every one of its 40 million daily card transactions. Investigators see the fraud score next to each flagged transaction but still make the final decision. Which types of business value does this illustrate? (Select TWO.)"
+  options:
+    - { id: a, text: "Scalability", explanation: "Correct. Scoring 40 million transactions a day is a volume no human team could handle." }
+    - { id: b, text: "Personalisation", explanation: "Incorrect. Personalisation tailors experiences to each person, such as recommendations; fraud scoring does not." }
+    - { id: c, text: "Decision support", explanation: "Correct. The score gives investigators better information while the human still decides." }
+    - { id: d, text: "Removing the need for any human oversight", explanation: "Incorrect. Humans still make the final decision, which is the opposite of removing oversight." }
+    - { id: e, text: "Guaranteed, exact answers for every transaction", explanation: "Incorrect. ML predictions are probabilistic; they are right most of the time, not guaranteed." }
+  answer: [a, c]
+  explanation: "AI adds value through automation, scalability, decision support, personalisation, and consistency and availability. Here the model handles enormous volume (scalability) and informs human investigators (decision support). ML outputs remain probabilistic, which is why a human keeps the final say on costly decisions."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-week-1-035
+  set: week-1
+  type: multi
+  stem: "Which pairings of an AWS managed AI service with one of its capabilities are correct? (Select TWO.)"
+  options:
+    - { id: a, text: "Amazon Polly: speaker diarization of recorded meetings", explanation: "Incorrect. Speaker diarization is a feature of Amazon Transcribe; Polly converts text to speech." }
+    - { id: b, text: "Amazon Rekognition: detecting personal protective equipment in construction-site photos", explanation: "Correct. Rekognition can check images for personal protective equipment, along with labels, faces, text and unsafe content." }
+    - { id: c, text: "Amazon Translate: detecting the sentiment of customer reviews", explanation: "Incorrect. Sentiment detection is an Amazon Comprehend feature; Translate converts text between languages." }
+    - { id: d, text: "Amazon Textract: real-time speech translation", explanation: "Incorrect. Textract extracts text and structure from documents; it does not process speech." }
+    - { id: e, text: "Amazon Comprehend: detecting PII such as names and card numbers in text", explanation: "Correct. Comprehend detects personally identifiable information, as well as sentiment, entities, key phrases and language." }
+  answer: [b, e]
+  explanation: "Know one capability set per service: Comprehend for text insights including PII; Transcribe for speech to text with diarization; Translate for language translation; Polly for text to speech; Lex for bots; Rekognition for images and video including PPE detection; Textract for documents; Personalize for recommendations."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: hard
+
+- id: q-week-1-036
+  set: week-1
+  type: matching
+  stem: "Match each business scenario to the AWS option that fits it BEST."
+  options:
+    - { id: a, text: "Engineers ask questions in plain language and get answers drawn from 5,000 maintenance manuals", explanation: "Knowledge base: retrieval-augmented generation over company documents with Amazon Bedrock Knowledge Bases." }
+    - { id: b, text: "An assistant books a meeting room, emails the attendees and updates their calendars", explanation: "Agentic AI: a foundation model plans the steps and uses tools, for example with Amazon Bedrock Agents." }
+    - { id: c, text: "Predict next month's electricity demand per region from hourly history", explanation: "Forecasting: regression on time-series data built with SageMaker AI." }
+    - { id: d, text: "Show each shopper a personalised list of products on the home page", explanation: "Recommendation system: Amazon Personalize learns from interaction data." }
+  matchTargets:
+    - { id: t1, text: "Amazon Bedrock Knowledge Bases" }
+    - { id: t2, text: "Amazon Bedrock Agents" }
+    - { id: t3, text: "Amazon SageMaker AI" }
+    - { id: t4, text: "Amazon Personalize" }
+  answer: { a: t1, b: t2, c: t3, d: t4 }
+  explanation: "The exam guide's application families map to AWS options: knowledge bases to Amazon Bedrock Knowledge Bases, agentic AI to Bedrock Agents or AgentCore, forecasting and fraud detection to SageMaker AI or Canvas, and recommendations to Amazon Personalize."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-week-1-037
+  set: week-1
+  type: single
+  stem: "A data team has hundreds of CSV and Parquet files arriving in Amazon S3 from different applications. It wants to discover the schema of each dataset automatically and record the schemas in a central catalogue that other tools can query. Which AWS service should it use?"
+  options:
+    - { id: a, text: "AWS Data Exchange", explanation: "Incorrect. Data Exchange is for finding and subscribing to third-party datasets." }
+    - { id: b, text: "Amazon Redshift", explanation: "Incorrect. Redshift is a data warehouse for SQL analytics; it does not crawl S3 to discover schemas for a central catalogue." }
+    - { id: c, text: "AWS Glue crawlers and the Glue Data Catalog", explanation: "Correct. Glue crawlers discover data and its schema, and the Glue Data Catalog records the schemas centrally." }
+    - { id: d, text: "AWS Lake Formation", explanation: "Incorrect. Lake Formation builds and secures a data lake with fine-grained permissions; schema discovery is done by Glue crawlers." }
+  answer: [c]
+  explanation: "AWS Glue is serverless data integration: crawlers discover data, the Glue Data Catalog records schemas, and ETL jobs transform data. Lake Formation governs access to the data lake, Redshift is the data warehouse, and Data Exchange supplies third-party data."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: easy
+
+- id: q-week-1-038
+  set: week-1
+  type: single
+  stem: "A retailer's analysts already keep sales data in a cloud data warehouse and are fluent in SQL. They want to train a simple prediction model directly from the warehouse by using SQL statements. Which AWS option fits BEST?"
+  options:
+    - { id: a, text: "Amazon Redshift ML", explanation: "Correct. Amazon Redshift is the AWS data warehouse, and Redshift ML lets users train models from SQL." }
+    - { id: b, text: "AWS Glue DataBrew", explanation: "Incorrect. DataBrew is a visual, no-code data preparation tool; it does not train models." }
+    - { id: c, text: "Amazon EMR", explanation: "Incorrect. EMR runs big-data frameworks such as Spark; it is not a SQL-based model training feature of the warehouse." }
+    - { id: d, text: "SageMaker Ground Truth", explanation: "Incorrect. Ground Truth manages data labelling workflows." }
+  answer: [a]
+  explanation: "Amazon Redshift is the cloud data warehouse for SQL analytics on large structured datasets, and Redshift ML lets analysts create and train models with SQL. It fits teams whose data and skills already live in the warehouse."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-week-1-039
+  set: week-1
+  type: single
+  stem: "A lender wants a report BEFORE training on whether some age groups are under-represented in its data, and a report AFTER training that shows which features drove each prediction. Which SageMaker AI feature provides both?"
+  options:
+    - { id: a, text: "SageMaker Model Monitor", explanation: "Incorrect. Model Monitor watches models in production for drift; it is not the pre-training bias and explainability tool." }
+    - { id: b, text: "SageMaker Feature Store", explanation: "Incorrect. Feature Store stores and shares features; it does not report bias or explanations." }
+    - { id: c, text: "SageMaker Pipelines", explanation: "Incorrect. Pipelines automates workflow steps; it can call Clarify but does not itself analyse bias." }
+    - { id: d, text: "SageMaker Clarify", explanation: "Correct. Clarify detects bias before and after training and explains which features drove predictions." }
+  answer: [d]
+  explanation: "SageMaker Clarify covers bias and explainability: it can report class imbalance and other bias metrics in the data before training, measure bias in the trained model, and explain feature importance for predictions."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-week-1-040
+  set: week-1
+  type: single
+  stem: "A data science team runs hundreds of training experiments with different datasets and hyperparameters. It wants to record each run's parameters and metrics so that runs can be compared and the best one reproduced. Which SageMaker AI capability fits BEST?"
+  options:
+    - { id: a, text: "SageMaker Ground Truth", explanation: "Incorrect. Ground Truth is for labelling data." }
+    - { id: b, text: "Managed MLflow in SageMaker AI", explanation: "Correct. Managed MLflow tracks runs, parameters and metrics so experiments can be compared and reproduced." }
+    - { id: c, text: "SageMaker Model Monitor", explanation: "Incorrect. Model Monitor watches deployed models for drift, not training experiments." }
+    - { id: d, text: "SageMaker JumpStart", explanation: "Incorrect. JumpStart is a hub of pre-trained models." }
+  answer: [b]
+  explanation: "Experimentation is a core MLOps idea: track every run's data, code, parameters and metrics so results can be compared and reproduced. In SageMaker AI this is done with managed MLflow."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-week-1-041
+  set: week-1
+  type: single
+  stem: "A defect detector inspects 2,000 parts, of which 50 are truly defective. It flags 60 parts as defective, and 40 of those flagged parts really are defective. What is the model's recall?"
+  options:
+    - { id: a, text: "67%", explanation: "Incorrect. 40 ÷ 60 = 67% is precision: the share of flagged parts that were really defective." }
+    - { id: b, text: "73%", explanation: "Incorrect. About 0.73 is the F1 score, the harmonic mean of precision and recall." }
+    - { id: c, text: "80%", explanation: "Correct. Recall = TP ÷ (TP + FN) = 40 ÷ (40 + 10) = 80%; the model caught 40 of the 50 defective parts." }
+    - { id: d, text: "98.5%", explanation: "Incorrect. 98.5% is accuracy: (40 true positives + 1,930 true negatives) ÷ 2,000." }
+  answer: [c]
+  explanation: "TP = 40, FP = 20, FN = 10 and TN = 1,930. Recall = 40 ÷ 50 = 80% (of all real defects, how many were caught). Precision = 40 ÷ 60 = 67%. Accuracy = 98.5%, which looks impressive only because most parts are fine."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#examples
+  difficulty: hard
+
+- id: q-week-1-042
+  set: week-1
+  type: single
+  stem: "A fraud model outputs a probability for each transaction. The team lowers the decision threshold from 0.8 to 0.5, so more transactions are flagged. What is the MOST likely effect?"
+  options:
+    - { id: a, text: "Recall rises and precision falls", explanation: "Correct. Flagging more cases catches more real fraud (higher recall) but also more legitimate transactions (lower precision)." }
+    - { id: b, text: "Precision rises and recall falls", explanation: "Incorrect. That is the effect of raising the threshold." }
+    - { id: c, text: "Both precision and recall rise", explanation: "Incorrect. Moving the threshold trades one against the other; there is no free lunch." }
+    - { id: d, text: "AUC rises because the threshold changed", explanation: "Incorrect. AUC measures separation across all thresholds, so changing the threshold does not change it." }
+  answer: [a]
+  explanation: "A threshold turns a probability into a decision. Lowering it flags more cases: recall goes up, precision goes down. Raising it does the opposite. The right threshold depends on the business cost of false negatives versus false positives."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-week-1-043
+  set: week-1
+  type: single
+  stem: "A team has trained three binary classifiers and wants to compare how well each one separates the two classes, without first choosing a decision threshold. Which metric should it use?"
+  options:
+    - { id: a, text: "AUC (area under the ROC curve)", explanation: "Correct. AUC measures class separation across all thresholds; 0.5 is random guessing and 1.0 is perfect." }
+    - { id: b, text: "Mean absolute error (MAE)", explanation: "Incorrect. MAE is a regression metric for numeric predictions." }
+    - { id: c, text: "R²", explanation: "Incorrect. R² measures how much variation a regression model explains." }
+    - { id: d, text: "Accuracy", explanation: "Incorrect. Accuracy depends on the chosen threshold and is misleading with imbalanced classes." }
+  answer: [a]
+  explanation: "AUC summarises a classifier's ability to separate classes over every possible threshold, so it is the natural metric for comparing models independent of the threshold. Precision, recall, F1 and accuracy are all calculated at one chosen threshold."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-week-1-044
+  set: week-1
+  type: single
+  stem: "A start-up plans to download an open-source pre-trained model from a public model hub and deploy it inside a paid product. What should the team check FIRST about the model as a model source?"
+  options:
+    - { id: a, text: "Whether the model was trained with reinforcement learning", explanation: "Incorrect. The training method does not determine whether the start-up may use the model commercially." }
+    - { id: b, text: "Whether its licence permits commercial use", explanation: "Correct. Open-source models come with licences that may restrict commercial use, so the licence must be checked before building a product on the model." }
+    - { id: c, text: "Whether it has more parameters than any competing model", explanation: "Incorrect. Size alone does not make a model suitable and is not the first legal check." }
+    - { id: d, text: "Whether it can be accessed only through Amazon Bedrock", explanation: "Incorrect. Open-source models can be downloaded and self-hosted; Bedrock availability is not the first concern." }
+  answer: [b]
+  explanation: "Model sources include open-source pre-trained models (for example on Hugging Face or in SageMaker JumpStart), proprietary foundation models accessed by API through Amazon Bedrock, and custom models trained on your own data. For open-source models, check the licence, which may restrict commercial use."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: easy
+
+- id: q-week-1-045
+  set: week-1
+  type: single
+  stem: "A card-fraud model's input data in production looks statistically similar to its training data. However, fraudsters have changed tactics, so transaction patterns that used to be safe now often indicate fraud, and the model's accuracy is falling. What is this called?"
+  options:
+    - { id: a, text: "Data drift", explanation: "Incorrect. Data drift means the inputs themselves change; here the inputs look the same." }
+    - { id: b, text: "Underfitting", explanation: "Incorrect. Underfitting is a model too simple to learn the pattern even at training time; this model worked until the world changed." }
+    - { id: c, text: "Concept drift", explanation: "Correct. Concept drift means the relationship between the inputs and the correct answer has changed." }
+    - { id: d, text: "Class imbalance", explanation: "Incorrect. Class imbalance describes rare classes in the data, not a change in what the patterns mean over time." }
+  answer: [c]
+  explanation: "Data drift is a change in the input data, for example customers moving from desktop to mobile. Concept drift is a change in the relationship between inputs and outcome, for example what counts as fraud evolving as criminals adapt. Both are detected by monitoring and fixed by retraining on recent data."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: hard
+
+- id: q-week-1-046
+  set: week-1
+  type: single
+  stem: "A retailer has agreed on a business goal of reducing returns by 10%. The team now decides that the target will be 'item returned: yes or no', that this is a classification task, which data is needed and what accuracy would be good enough. Which ML lifecycle stage is this?"
+  options:
+    - { id: a, text: "Feature engineering", explanation: "Incorrect. Feature engineering selects and creates input features after the data has been collected and prepared." }
+    - { id: b, text: "Evaluation", explanation: "Incorrect. Evaluation measures a trained model's performance on held-out data." }
+    - { id: c, text: "Monitoring", explanation: "Incorrect. Monitoring watches a deployed model in production." }
+    - { id: d, text: "Framing the ML problem", explanation: "Correct. Framing translates the business goal into an ML task: the target, the task type, the data needed and the accuracy required." }
+  answer: [d]
+  explanation: "The lifecycle starts with identifying the business goal, then framing the ML problem (target, task type, data, success threshold), then collecting and pre-processing data, feature engineering, training and tuning, evaluation, deployment, monitoring and retraining."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: easy
+
+- id: q-week-1-047
+  set: week-1
+  type: multi
+  stem: "A team has built a model that predicts the selling price of used cars. Which metrics are appropriate for evaluating this model? (Select TWO.)"
+  options:
+    - { id: a, text: "F1 score", explanation: "Incorrect. F1 is a classification metric that balances precision and recall." }
+    - { id: b, text: "Root mean squared error (RMSE)", explanation: "Correct. RMSE measures how far numeric predictions are from the true values and punishes large errors more." }
+    - { id: c, text: "Recall", explanation: "Incorrect. Recall measures how many real positive cases a classifier caught." }
+    - { id: d, text: "Mean absolute error (MAE)", explanation: "Correct. MAE reports the average size of the error in the same units as the price." }
+    - { id: e, text: "AUC", explanation: "Incorrect. AUC measures how well a classifier separates classes." }
+  answer: [b, d]
+  explanation: "Predicting a price is regression, so use regression metrics: MAE (average absolute error), RMSE (squares errors so large misses dominate) and R² (share of variation explained). Precision, recall, F1, accuracy and AUC are classification metrics."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: easy
+
+- id: q-week-1-048
+  set: week-1
+  type: multi
+  stem: "A credit model has an excellent overall F1 score. Before approving it for production, which additional checks should the team perform? (Select THREE.)"
+  options:
+    - { id: a, text: "Performance for each subgroup, such as region and age group", explanation: "Correct. A model that scores well overall can still fail a subgroup; SageMaker Clarify helps with this analysis." }
+    - { id: b, text: "Inference latency and cost at the expected traffic", explanation: "Correct. A model that is too slow or too expensive to serve can still fail the business." }
+    - { id: c, text: "Which features drive predictions, and whether a regulator would accept that", explanation: "Correct. Explainability is part of evaluation, especially for regulated decisions such as credit." }
+    - { id: d, text: "Accuracy on the training set only", explanation: "Incorrect. Training-set scores do not show how the model generalises to new data." }
+    - { id: e, text: "The number of notebook cells used to build the model", explanation: "Incorrect. This says nothing about whether the model is fit for production." }
+    - { id: f, text: "Whether the model has more layers than the previous version", explanation: "Incorrect. Model size is not an approval criterion; performance, fairness, explainability, latency and cost are." }
+  answer: [a, b, c]
+  explanation: "Evaluation is more than one number. Before approval, check performance per subgroup, explainability, latency and cost at expected traffic, and robustness to unusual inputs. A model can have strong overall metrics and still fail on any of these."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: hard
+
+- id: q-week-1-049
+  set: week-1
+  type: multi
+  stem: "A company wants a controlled, repeatable path to production: every model must be built by the same automated steps, and only versions that a reviewer has approved may be deployed. Which SageMaker AI features support this? (Select TWO.)"
+  options:
+    - { id: a, text: "SageMaker Pipelines", explanation: "Correct. Pipelines defines the steps (process, train, evaluate, register) as a repeatable, automated workflow." }
+    - { id: b, text: "SageMaker Ground Truth", explanation: "Incorrect. Ground Truth manages human data labelling; it does not control the path to production." }
+    - { id: c, text: "SageMaker Canvas", explanation: "Incorrect. Canvas is a no-code tool for analysts to build models, not a release-control mechanism." }
+    - { id: d, text: "SageMaker Data Wrangler", explanation: "Incorrect. Data Wrangler prepares and transforms data before training." }
+    - { id: e, text: "SageMaker Model Registry", explanation: "Correct. Model Registry catalogues model versions with metrics and an approval status before deployment." }
+  answer: [a, e]
+  explanation: "MLOps applies software-engineering discipline to ML. Repeatable processes come from automating the workflow with SageMaker Pipelines; production readiness comes from versioning and approving models in SageMaker Model Registry. Model Monitor and retraining close the loop after deployment."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: hard
+
+- id: q-week-1-050
+  set: week-1
+  type: ordering
+  stem: "A churn model is managed with MLOps practices. Place these events of one automated refresh cycle in the correct order, from first to last."
+  options:
+    - { id: a, text: "The new model version is evaluated and registered in SageMaker Model Registry", explanation: "Third: the retrained model is evaluated and recorded as a new version with its metrics." }
+    - { id: b, text: "SageMaker Model Monitor detects that production input data has drifted", explanation: "First: monitoring notices that live data no longer looks like the training data." }
+    - { id: c, text: "The approved version is deployed to the production endpoint", explanation: "Last: only an approved version is put into production." }
+    - { id: d, text: "A SageMaker Pipelines workflow retrains the model on recent data", explanation: "Second: the drift triggers the automated pipeline to retrain on fresh data." }
+    - { id: e, text: "A risk manager reviews the metrics and approves the version", explanation: "Fourth: a human approval gate checks the new version before deployment." }
+  answer: [b, d, a, e, c]
+  explanation: "Monitoring detects drift, the pipeline retrains on recent data, the new version is evaluated and registered, a reviewer approves it, and the approved version is deployed. The lifecycle is a loop: monitoring feeds back into data collection and retraining."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-week-1-051
+  set: week-1
+  type: matching
+  stem: "Match each team need to the Amazon SageMaker AI feature that addresses it."
+  options:
+    - { id: a, text: "Radiologists must annotate thousands of scans, with easy ones labelled automatically", explanation: "SageMaker Ground Truth manages human and assisted labelling workflows." }
+    - { id: b, text: "The pricing team and the marketing team should reuse the same 'customer lifetime spend' values for training and inference", explanation: "SageMaker Feature Store is a central repository to store, share and reuse features." }
+    - { id: c, text: "Be alerted when the quality of a live model's predictions starts to decay", explanation: "SageMaker Model Monitor detects data drift, model-quality decay and bias drift in production." }
+    - { id: d, text: "Start from a pre-trained model and deploy or fine-tune it with a few clicks", explanation: "SageMaker JumpStart is a hub of pre-trained and foundation models." }
+  matchTargets:
+    - { id: t1, text: "SageMaker Ground Truth" }
+    - { id: t2, text: "SageMaker Feature Store" }
+    - { id: t3, text: "SageMaker Model Monitor" }
+    - { id: t4, text: "SageMaker JumpStart" }
+  answer: { a: t1, b: t2, c: t3, d: t4 }
+  explanation: "Learn SageMaker AI features by the lifecycle stage they serve: Ground Truth for labelling, Data Wrangler for preparation, Feature Store for features, JumpStart for pre-trained models, training jobs and Automatic Model Tuning for training, Clarify for bias and explainability, Pipelines and Model Registry for MLOps, and Model Monitor for production monitoring."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-week-1-052
+  set: week-1
+  type: single
+  stem: "A voice assistant's speech model is 95% accurate on average but only 78% accurate for speakers with a regional accent that was rare in the training data. Which action would MOST directly reduce this gap?"
+  options:
+    - { id: a, text: "Report only the 95% average, because it reflects most users", explanation: "Incorrect. A good average can hide poor performance for a subgroup; reporting only the average ignores the problem." }
+    - { id: b, text: "Increase regularisation so the model becomes simpler", explanation: "Incorrect. A simpler model would likely be less accurate for the under-represented group, not more." }
+    - { id: c, text: "Collect more representative recordings from speakers with that accent, retrain and evaluate accuracy per accent group", explanation: "Correct. The gap comes from under-representation in the data, so more representative data plus per-group evaluation addresses it directly." }
+    - { id: d, text: "Switch from real-time to batch inference", explanation: "Incorrect. The inference type affects latency and cost, not accuracy for a demographic group." }
+  answer: [c]
+  explanation: "In responsible AI, bias often comes from data that under-represents a group, so the model underfits and is less accurate for that group. The remedy is representative training data and subgroup analysis that measures performance for each group, both before launch and in production."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-week-1-053
+  set: week-1
+  type: single
+  stem: "A product manager argues that a hiring-screening model must be fair because its overall accuracy is 91%. Which statement BEST explains why this reasoning is flawed?"
+  options:
+    - { id: a, text: "Overall accuracy is always lower than subgroup accuracy", explanation: "Incorrect. Overall accuracy is an average; some subgroups can be higher and others lower." }
+    - { id: b, text: "Fairness can only be measured after the model is retired", explanation: "Incorrect. Fairness should be measured before launch and monitored during production." }
+    - { id: c, text: "Accuracy cannot be calculated for classification models", explanation: "Incorrect. Accuracy is a standard classification metric, although it can mislead." }
+    - { id: d, text: "A high average can hide much worse performance for under-represented groups", explanation: "Correct. A model can perform well on average while systematically failing a subgroup, so fairness must be measured per group." }
+  answer: [d]
+  explanation: "Fairness is measured, not assumed. Because an overall metric averages across everyone, poor accuracy for a small or under-represented group can be hidden by good results for the majority. Evaluate per subgroup and check that training data is representative."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-02#explanation
+  difficulty: easy
+
+- id: q-week-1-054
+  set: week-1
+  type: single
+  stem: "A health app's model was trained with very few examples from patients over 75. Each time the model is retrained on a slightly different sample, its predictions for this age group change a lot, and they are often wrong. Which description fits BEST?"
+  options:
+    - { id: a, text: "High variance for that subgroup, caused by too little representative data", explanation: "Correct. Predictions that swing with each training sample are a sign of high variance, and too few examples from the group cause it." }
+    - { id: b, text: "High bias for every group, caused by too many features", explanation: "Incorrect. The problem is specific to one age group, and adding features is not the cause described." }
+    - { id: c, text: "Concept drift, caused by changes in medical practice", explanation: "Incorrect. Nothing in the scenario says the relationship between inputs and outcomes changed over time." }
+    - { id: d, text: "A good fit, because the overall accuracy is acceptable", explanation: "Incorrect. Unstable and often wrong predictions for a group are not a good fit, whatever the average says." }
+  answer: [a]
+  explanation: "Task statement 4.1 asks you to describe the effects of bias and variance on demographic groups. With very few examples, a model can be unstable (high variance) or too simple (high bias) for that group, and either way the group receives worse outcomes. Representative data and subgroup evaluation are the remedies."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-02#explanation
+  difficulty: hard
+
+- id: q-week-1-055
+  set: week-1
+  type: single
+  stem: "A company's face-verification model works well for most users but fails far more often for people with darker skin tones. Which cause is MOST likely?"
+  options:
+    - { id: a, text: "The model uses asynchronous inference", explanation: "Incorrect. The inference option affects how predictions are delivered, not accuracy for a group." }
+    - { id: b, text: "The training data contained mostly images of people with lighter skin tones", explanation: "Correct. Unrepresentative training data is the most common cause of a model performing worse for an under-represented group." }
+    - { id: c, text: "The test set was used only once", explanation: "Incorrect. Using the test set once at the end is good practice." }
+    - { id: d, text: "The model's learning rate was too low", explanation: "Incorrect. A low learning rate slows training overall; it does not explain a gap for one demographic group." }
+  answer: [b]
+  explanation: "When training data under-represents or misrepresents a group, the model learns less about that group and performs worse for it. Checking that data is representative of everyone the model will serve, and measuring accuracy per group, are core responsible-AI practices."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-02#explanation
+  difficulty: easy
+
+- id: q-week-1-056
+  set: week-1
+  type: multi
+  stem: "A health insurer uses a model to decide which patients are offered a follow-up programme. It is concerned that the model may work less well for patients from rural areas. Which actions should it take? (Select TWO.)"
+  options:
+    - { id: a, text: "Measure the model's accuracy separately for rural and urban patients", explanation: "Correct. Subgroup analysis reveals whether the model performs worse for one group." }
+    - { id: b, text: "Rely on the overall accuracy because rural patients are a minority", explanation: "Incorrect. Relying on the average is exactly how unfair performance for a minority goes unnoticed." }
+    - { id: c, text: "Make sure the training data represents rural patients adequately", explanation: "Correct. Representative training data addresses the most common source of group-level bias." }
+    - { id: d, text: "Increase the model's complexity until training accuracy reaches 100%", explanation: "Incorrect. Pushing training accuracy to 100% invites overfitting and does not fix missing data for a group." }
+    - { id: e, text: "Remove the validation set to give the model more training data", explanation: "Incorrect. Without validation data the team cannot judge how the model generalises, for any group." }
+  answer: [a, c]
+  explanation: "To manage the effect of bias and variance on demographic groups, evaluate performance per subgroup and ensure the training data represents everyone the model serves. Continue to monitor per group after deployment."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-week-1-057
+  set: week-1
+  type: ordering
+  stem: "A bank discovers that its churn model, trained only on data from city branches, performs poorly for rural customers. Place the remediation steps in the order the bank should follow, from first to last."
+  options:
+    - { id: a, text: "Retrain the model on the combined, representative data", explanation: "Second: once representative data exists, the model is retrained on it." }
+    - { id: b, text: "Monitor accuracy for each customer segment after deployment", explanation: "Last: per-segment monitoring catches any new gap in production." }
+    - { id: c, text: "Collect representative data from every region, including rural branches", explanation: "First: the root cause is missing data, so it must be gathered before retraining." }
+    - { id: d, text: "Evaluate accuracy per customer segment before launch", explanation: "Third: subgroup analysis confirms the gap has closed before the model goes live." }
+  answer: [c, a, d, b]
+  explanation: "When a model is biased against a group it rarely saw, fix the data first, retrain, verify performance per segment before launch, and keep monitoring per segment afterwards. This combines statistical thinking (fit and variance) with responsible-AI thinking (fairness across groups)."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-02#real-world
+  difficulty: medium

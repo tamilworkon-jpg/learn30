@@ -1,0 +1,109 @@
+---
+day: 29
+kind: mock
+title: 'Mock exam 1 & remediation'
+summary: 'Sit a full 65-question, 90-minute mock under exam conditions, then turn every domain under 70% into a focused, time-boxed remediation plan that points to the exact lesson sections to revisit.'
+domains: [D1, D2, D3, D4, D5]
+taskStatements: ['1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '3.4', '4.1', '4.2', '5.1', '5.2']
+objectives:
+  - 'Complete Mock exam 1 in one 90-minute sitting under exam conditions'
+  - 'Read your scaled score and per-domain results'
+  - 'Classify every missed question as a knowledge gap, a misread or a trap'
+  - 'Map each weak domain and task statement to the lesson sections to revisit'
+  - 'Schedule remediation so you are ready for Mock exam 2'
+estimatedMinutes: 120
+lastVerified: '2026-11-02'
+---
+
+<Section id="launch" type="launch" title="Mock exam 1" minutes={90}>
+
+Today you sit your first full-length practice exam. It has the same shape as the real AIF-C01 exam: 65 questions in 90 minutes, split across the five domains in the official weights (13 / 16 / 18 / 9 / 9 questions for D1–D5). It uses all four question types: multiple choice, multiple response, ordering and matching.
+
+Treat it as the real thing. A mock you sit with notes open tells you nothing.
+
+- **One sitting.** Block out 90 minutes with no interruptions. The timer keeps running if you leave the page.
+- **No notes, no search, no AI assistant.** Close other tabs and put your phone in another room.
+- **Answer everything.** An unanswered question is marked wrong, and a wrong guess costs no more than a blank. Never leave a blank.
+- **Flag and move on.** If a question takes more than about 2 minutes, choose your best answer, flag it and continue. Use the review screen at the end to return to flagged questions.
+- **Read the last line first.** Look for qualifiers such as *most cost-effective*, *least operational overhead* or *choose TWO*. They decide which of two plausible answers is right.
+
+<MockLaunch n={1} />
+
+<Callout type="tip">
+Pacing: budget about 75 seconds per question, so one full pass takes about 80 minutes and you keep 10 minutes for flagged questions. Checkpoints: question 20 by about 25 minutes, question 40 by about 50 minutes, question 65 by about 80 minutes.
+</Callout>
+
+<Callout type="remember">
+The mock reports a scaled score of `100 + 900 × correct ÷ 65`. A pass (700) needs 44 correct answers. Treat 80% (52 correct) as your readiness target. The real exam has 50 scored and 15 unscored questions and uses its own scaling, so use this score to see your trend. It does not predict your exact exam score.
+</Callout>
+
+</Section>
+
+<Section id="remediation" type="remediation" title="Remediation plan" minutes={30}>
+
+After you submit Mock 1, your domains under 70% appear below, weakest first. Each one has "Revisit Day" links to the lessons behind the questions you missed.
+
+<Remediation mock={1} />
+
+#### Step 1: triage your misses (10 minutes, today)
+
+Open the review screen and put every wrong or flagged-but-lucky answer in one of three groups:
+
+1. **Knowledge gap**: you did not know the fact or service. Fix it with the map below.
+2. **Misread**: you knew the answer but missed a qualifier (*TWO*, *least*, *most cost-effective*). Fix it by reading the question's last line first.
+3. **Trap**: you chose a look-alike service or an absolute statement. Fix it with the weekly review's traps list.
+
+Only knowledge gaps need re-study. Misreads and traps need practice and a slower first read.
+
+#### Step 2: the remediation loop (20 minutes per weak domain, over the next day)
+
+<Diagram
+  caption="Remediation loop: for each weak domain, re-read the exam tips and summary of its lesson days, retake those daily quizzes until you reach 80 percent, then read the weekly review's top facts and traps before Mock 2"
+  code={`flowchart LR
+  A[Mock 1 results] --> B{Domain under 70%?}
+  B -- no --> F[Skim weekly review traps]
+  B -- yes --> C[Re-read exam tips and summary of the revisit days]
+  C --> D[Retake those daily quizzes]
+  D --> E{80% or more?}
+  E -- no --> C
+  E -- yes --> F
+  F --> G[Ready for Mock 2]`}
+/>
+
+1. **Re-read (8 minutes).** For each "Revisit Day" link, read the *Exam tips & traps* and *Summary* sections. Re-read the *Explanation* section only for the task statements you missed.
+2. **Retake (8 minutes).** Retake the daily quiz of each of those days. Repeat until you score 80% or more.
+3. **Consolidate (4 minutes).** Read the top facts and traps of the matching weekly review.
+4. **Start with the biggest domain.** If two domains are equally weak, fix the one with the higher exam weight first: D3 (28%), then D2 (24%), D1 (20%), D4 (14%) and D5 (14%).
+
+#### Step 3: the remediation map
+
+Use this table to find the right lesson for each task statement you missed. Each "tips" link opens that day's *Exam tips & traps*, and each "summary" link opens its *Summary*.
+
+| Domain | Task statement | Revisit (lesson sections) | Weekly review |
+|--------|----------------|---------------------------|---------------|
+| D1 (20%) | 1.1 AI concepts and terminology | Day 1 [tips](/day/01#exam-tips) · Day 2 [tips](/day/02#exam-tips) (fit, inference types) · Day 3 [summary](/day/03#summary) (data and learning types) · Day 4 [tips](/day/04#exam-tips) (neural networks) | [Day 7 facts](/day/07#top-facts) · [traps](/day/07#traps) |
+| D1 | 1.2 Practical AI use cases | Day 3 [tips](/day/03#exam-tips) · Day 5 [tips](/day/05#exam-tips) and [explanation](/day/05#explanation) (regression vs classification vs clustering; Comprehend, Transcribe, Translate, Lex, Polly, Rekognition) | [Day 7 facts](/day/07#top-facts) |
+| D1 | 1.3 ML development lifecycle | Day 6 [tips](/day/06#exam-tips) and [explanation](/day/06#explanation) (pipeline stages, MLOps, accuracy / precision / recall / F1, business metrics) | [Day 7 traps](/day/07#traps) |
+| D2 (24%) | 2.1 GenAI concepts | Day 8 [tips](/day/08#exam-tips) (tokens, chunking, embeddings, transformers, diffusion) · Day 9 [tips](/day/09#exam-tips) (FM lifecycle, token pricing, context engineering) · Day 10 [tips](/day/10#exam-tips) (agents, MCP, memory, tools) | [Day 14 facts](/day/14#top-facts) · [traps](/day/14#traps) |
+| D2 | 2.2 GenAI capabilities and limits | Day 11 [tips](/day/11#exam-tips) and [summary](/day/11#summary) (hallucination, nondeterminism, model selection factors, business metrics) | [Day 14 facts](/day/14#top-facts) |
+| D2 | 2.3 AWS GenAI infrastructure | Day 12 [tips](/day/12#exam-tips) (Bedrock vs SageMaker AI vs JumpStart vs Amazon Quick vs Kiro, Strands Agents, AgentCore) · Day 13 [tips](/day/13#exam-tips) (on-demand vs batch vs provisioned throughput, custom-model cost) | [Day 14 traps](/day/14#traps) |
+| D3 (28%) | 3.1 FM application design | Day 15 [tips](/day/15#exam-tips) (model selection, prompt caching, temperature / top-p) · Day 18 [tips](/day/18#exam-tips) (RAG, Knowledge Bases, vector stores) · Day 10 [summary](/day/10#summary) (agents) · Day 13 [summary](/day/13#summary) (customisation cost) | [Day 21 facts](/day/21#top-facts) · [traps](/day/21#traps) |
+| D3 | 3.2 Prompt engineering | Day 16 [tips](/day/16#exam-tips) (zero / few-shot, chain-of-thought, templates, Prompt Management) · Day 17 [tips](/day/17#exam-tips) (injection, hijacking, jailbreaking, poisoning, exposure) | [Day 21 facts](/day/21#top-facts) |
+| D3 | 3.3 Training and fine-tuning | Day 19 [tips](/day/19#exam-tips) and [summary](/day/19#summary) (pre-training vs continued pre-training vs fine-tuning vs distillation, RLHF, data preparation) | [Day 21 traps](/day/21#traps) |
+| D3 | 3.4 Evaluating FMs | Day 20 [tips](/day/20#exam-tips) (ROUGE, BLEU, BERTScore, LLM-as-a-judge, human evaluation, Bedrock Model Evaluation, RAG and agent evaluation) | [Day 21 facts](/day/21#top-facts) |
+| D4 (14%) | 4.1 Responsible AI development | Day 22 [tips](/day/22#exam-tips) (fairness, robustness, veracity, bias types, legal risks) · Day 23 [tips](/day/23#exam-tips) (Bedrock Guardrails, SageMaker Clarify, Model Monitor) · Day 2 [summary](/day/02#summary) (bias and variance) | [Day 28 facts](/day/28#top-facts) · [traps](/day/28#traps) |
+| D4 | 4.2 Transparency and explainability | Day 24 [tips](/day/24#exam-tips) and [summary](/day/24#summary) (transparent vs opaque models, SHAP, Model Cards, safety vs transparency trade-off) | [Day 28 facts](/day/28#top-facts) |
+| D5 (14%) | 5.1 Securing AI systems | Day 25 [tips](/day/25#exam-tips) (shared responsibility, IAM, KMS, PrivateLink, Macie, AgentCore Identity) · Day 26 [tips](/day/26#exam-tips) (secure data engineering, lineage, grounding) · Day 17 [summary](/day/17#summary) (prompt attacks) | [Day 28 traps](/day/28#traps) |
+| D5 | 5.2 Governance and compliance | Day 27 [tips](/day/27#exam-tips) and [summary](/day/27#summary) (Config vs Inspector vs Artifact vs CloudTrail vs Trusted Advisor, data governance, Generative AI Security Scoping Matrix) | [Day 28 facts](/day/28#top-facts) |
+
+<Callout type="examTrap">
+The most common mock-1 misses are look-alike pairs: **Comprehend vs Transcribe** (text analysis vs speech-to-text), **Config vs CloudTrail** (resource configuration vs who did what), **Artifact vs Inspector** (AWS compliance reports vs vulnerability scanning), **fine-tuning vs RAG** (changes the model vs adds current data at query time), and **precision vs recall** (false positives vs false negatives). If you missed any of these, put that pair at the top of your plan.
+</Callout>
+
+#### Step 4: before Mock 2
+
+- Do **not** retake Mock 1 straight away. You will remember the answers, and the score will mislead you.
+- Do the remediation loop for each weak domain within the next day. Then do a 15-minute skim of every weekly review's traps, including domains where you passed.
+- Sit Mock 2 (Day 30) after the loop is done, ideally within 48 hours, while the fixes are fresh.
+
+</Section>

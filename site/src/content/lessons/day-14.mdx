@@ -1,0 +1,119 @@
+---
+day: 14
+kind: review
+title: 'Week 2 review'
+summary: 'Consolidate Weeks 1–2: AI and ML fundamentals plus the generative AI building blocks — tokens, embeddings, foundation models, agents and MCP, GenAI strengths and limits, the AWS GenAI stack and GenAI cost trade-offs — then prove it on the cumulative test.'
+domains: [D1, D2]
+taskStatements: ['1.1', '1.2', '1.3', '2.1', '2.2', '2.3']
+objectives:
+  - 'Connect every topic from Days 1–13 on one concept map, grouped by exam domain'
+  - 'Recall the facts most likely to be tested, with the focus on generative AI fundamentals'
+  - 'Choose correctly between Amazon Bedrock, SageMaker AI and SageMaker JumpStart, and between pricing options'
+  - 'Spot the classic Week 2 exam traps'
+  - 'Score 70% or more in every domain on the Week 2 cumulative test'
+estimatedMinutes: 90
+lastVerified: '2026-11-02'
+examTraps: ['Amazon Q']
+keyPoints:
+  - 'Tokens measure context windows and prices; embeddings are vectors that capture meaning and are found by similarity search.'
+  - 'Foundation models are pre-trained on broad data and adapt to many tasks; diffusion models generate images by removing noise step by step.'
+  - 'An agent is an FM in a loop that reasons, calls tools and observes results; the application runs the tool, and MCP standardises tool and data connections.'
+  - 'GenAI strengths are adaptability and speed; its limits are hallucinations, nondeterminism and low interpretability — judge value with business metrics.'
+  - 'Amazon Bedrock = serverless FM API; SageMaker AI = full control to build your own; SageMaker JumpStart = pre-trained models in your own account.'
+  - 'On-demand is pay per token, batch is cheaper for offline jobs, provisioned throughput buys hourly guaranteed capacity and prompt caching discounts a repeated prefix.'
+---
+
+<Section id="concept-map" type="conceptMap" title="Weeks 1–2 concept map" minutes={10}>
+
+All topics from Days 1–13, grouped by exam domain. The first map is the whole course so far; the second zooms into this week's generative AI topics and how they connect.
+
+<Diagram
+  caption="Concept map of Days 1 to 13 grouped by domain: Domain 1 AI and ML fundamentals, Domain 2 generative AI fundamentals, Domain 3 agents and cost choices, Domain 4 bias and fairness"
+  code={`mindmap
+  root((Days 1-13))
+    D1 Fundamentals of AI and ML
+      Day 1 AI family tree
+      Day 2 ML vocabulary and inference types
+      Day 3 Data and learning types
+      Day 4 Neural networks and transformers
+      Day 5 Use cases and managed AI services
+      Day 6 ML lifecycle MLOps and metrics
+    D2 Fundamentals of GenAI
+      Day 8 Tokens chunking embeddings
+      Day 9 FM lifecycle and token pricing
+      Day 10 Agents and MCP
+      Day 11 Strengths limits business value
+      Day 12 AWS GenAI stack
+      Day 13 GenAI cost trade-offs
+    D3 Applications of FMs
+      Day 10 Agent design on AWS
+      Day 13 Model choice for cost
+    D4 Responsible AI
+      Day 2 Bias and fairness`}
+/>
+
+<Diagram
+  caption="Week 2 flow: text becomes tokens and embeddings, foundation models generate output, agents add tools and memory, and the AWS stack, cost options and business metrics decide how it runs"
+  code={`flowchart LR
+  T[Text] --> TK[Tokens]
+  T --> CH[Chunks] --> EM[Embeddings]
+  EM --> VS[Similarity search]
+  TK --> FM[Foundation model]
+  VS --> FM
+  FM --> AG[Agent loop with tools and memory]
+  AG --> MCP[MCP servers]
+  FM --> BR[Amazon Bedrock]
+  FM --> SM[SageMaker AI and JumpStart]
+  BR --> PR[On-demand batch provisioned caching]
+  PR --> BM[Business metrics ROI CSAT]`}
+/>
+
+</Section>
+
+<Section id="top-facts" type="topFacts" title="Top facts" minutes={15}>
+
+1. AI ⊃ machine learning ⊃ deep learning ⊃ generative AI; agentic AI uses generative models to plan and act with tools (Day 1).
+2. Underfitting means high bias and poor results everywhere; overfitting means high variance — great on training data, poor on new data (Day 2).
+3. Real-time inference is for low latency, batch for large offline datasets, asynchronous for big payloads or long processing and serverless for intermittent traffic (Day 2).
+4. Classification predicts a category, regression predicts a number and clustering groups unlabelled data (Day 3).
+5. Transformers use self-attention to process sequences in parallel and power LLMs (Day 4).
+6. Comprehend analyses text, Transcribe does speech → text, Polly does text → speech, Rekognition analyses images and video and Textract extracts forms and tables (Day 5).
+7. Precision avoids false positives, recall avoids false negatives and F1 balances both (Day 6).
+8. A managed API such as Amazon Bedrock means no servers and pay per use; self-hosting on a SageMaker AI endpoint gives more control but you run the infrastructure (Day 6).
+9. A token is a chunk of text — roughly three-quarters of an English word — and context windows and prices are counted in tokens (Day 8).
+10. Chunking splits long documents into smaller passages before embedding, and overlap stops ideas being cut in half (Day 8).
+11. An embedding is a vector that captures meaning; similar meanings sit close together and are found with similarity search such as cosine similarity (Day 8).
+12. Foundation models are pre-trained on broad data and adapt to many tasks; multimodal models handle more than one data type (Day 8).
+13. Diffusion models generate images by starting from random noise and removing it step by step, guided by a prompt (Day 8).
+14. The FM lifecycle runs data selection → model selection → pre-training → fine-tuning → evaluation → deployment → feedback, and most organisations start from an existing FM instead of pre-training (Day 9).
+15. On-demand pricing charges input and output tokens separately, and output tokens usually cost more (Day 9).
+16. Context engineering decides what enters the context window — instructions, retrieved knowledge, history, tool results and memory — within the token budget (Day 9).
+17. An agent is an FM in a loop: it reasons about a goal, calls tools, observes results and repeats until the task is done (Day 10).
+18. The model chooses a tool and its arguments, but the application or agent runtime actually runs the tool (Day 10).
+19. MCP is an open protocol in which hosts run MCP clients that connect to MCP servers exposing tools, resources and prompts (Day 10).
+20. Bedrock Agents provides managed agents, Strands Agents is an open-source SDK and Bedrock AgentCore runs agents securely at scale (Runtime, Gateway, Memory, Identity, Policy, Observability) (Day 10).
+21. Hallucinations are confident but false outputs, and nondeterminism means the same prompt can give different answers (Day 11).
+22. GenAI business value is measured with business metrics such as ROI, conversion rate, ARPU, customer lifetime value and cost per interaction (Day 11).
+23. Amazon Bedrock gives fully managed, serverless API access to foundation models from Amazon (Nova) and other providers (Day 12).
+24. SageMaker JumpStart is a hub of pre-trained models you deploy and fine-tune in your own account (Day 12).
+25. Amazon Quick serves business users, Kiro is a spec-driven agentic IDE for developers and AWS Transform handles migration and modernisation (Day 12).
+26. Your prompts and data are not used to train Bedrock base models (Day 12).
+27. Batch inference processes asynchronous jobs from Amazon S3 at around half the on-demand price for supported models (Day 13).
+28. Provisioned throughput buys reserved model units billed hourly for guaranteed capacity and is usually needed to serve custom models (Day 13).
+29. Prompt caching reuses a repeated prompt prefix to cut input cost and latency, and the smallest model that meets the need is the biggest price lever (Day 13).
+30. AWS Budgets alerts on spend, while AWS Cost Explorer analyses and forecasts it (Day 13).
+
+</Section>
+
+<Section id="traps" type="traps" title="Exam traps" minutes={5}>
+
+- **"Use an embedding model to write the summary"** — embedding models output vectors, not text. They help find relevant chunks; a text-generation FM writes the answer.
+- **"Pick the biggest context window and send every document"** — this raises cost and latency and can lower quality. Select relevant content (RAG), compress history or cache a repeated prefix instead.
+- **"The LLM calls the API directly"** — the model only returns which tool to call and with what arguments; the application, Lambda function or agent runtime runs it.
+- **"Model accuracy proves business value"** — accuracy, ROUGE and latency describe the model. Business value needs ROI, conversion, ARPU, CLV, efficiency or CSAT.
+- **"SageMaker AI for least operational overhead"** — serverless FM access through an API is Amazon Bedrock. SageMaker AI is for full control; JumpStart is for deploying pre-trained open models in your account.
+- **"Provisioned throughput is always cheaper"** — it is billed per hour even when idle. For variable or modest traffic on-demand is cheaper; for offline jobs use batch.
+- **"GenAI for tax calculations"** — when the answer must be exact, deterministic and auditable, use ordinary code or rules, not a generative model.
+- **"Amazon Q is the business assistant"** — guide v1.2 names Amazon Quick for business users and Kiro for developers; treat Amazon Q options with suspicion.
+
+</Section>

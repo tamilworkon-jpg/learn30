@@ -402,8 +402,8 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) �
 - [x] T117 [P] [US2] Author site/src/content/questions/day-05.yaml (20 Q, TS 1.2) — TC-Q
 - [x] T118 [P] [US1] Author site/src/content/lessons/day-06.mdx — ML pipeline, data services (S3, Glue, DataBrew, EMR, Lake Formation, Redshift, Data Exchange), SageMaker AI features, FM sources, managed API vs self-hosted, Amazon Quick & Kiro, MLOps, model + business metrics; Deep Dive "End-to-end MLOps on SageMaker AI" (TS 1.3) — TC-L
 - [x] T119 [P] [US2] Author site/src/content/questions/day-06.yaml (20 Q, TS 1.3) — TC-Q
-- [ ] T120 [US4] Author site/src/content/lessons/day-07.mdx (`kind: review`) — D1 concept map, top-20 facts, traps — TC: W1–W2 for day 07
-- [ ] T121 [US4] Author site/src/content/questions/week-1.yaml (57 new Q, TS 1.1–1.3 + 4.1) — TC-Q
+- [x] T120 [US4] Author site/src/content/lessons/day-07.mdx (`kind: review`) — D1 concept map, top-20 facts, traps — TC: W1–W2 for day 07
+- [x] T121 [US4] Author site/src/content/questions/week-1.yaml (57 new Q, TS 1.1–1.3 + 4.1) — TC-Q
 - [ ] T122 REVIEW Week 1 content: regression + screenshots Days 4–7
 
 ### Week 2
@@ -419,8 +419,8 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) �
 - [x] T132 [P] [US2] Author site/src/content/questions/day-12.yaml (20 Q, TS 2.3) — TC-Q
 - [x] T133 [P] [US1] Author site/src/content/lessons/day-13.mdx — on-demand/batch/provisioned throughput, custom models, prompt caching, regions, Budgets, Cost Explorer; Deep Dive "Cost model for 1M chats/month" (TS 2.3, 3.1) — TC-L
 - [x] T134 [P] [US2] Author site/src/content/questions/day-13.yaml (20 Q, TS 2.3, 3.1) — TC-Q
-- [ ] T135 [US4] Author site/src/content/lessons/day-14.mdx (`kind: review`, D1–D2) — TC: W1–W2
-- [ ] T136 [US4] Author site/src/content/questions/week-2.yaml (57 new Q, D1–D2) — TC-Q
+- [x] T135 [US4] Author site/src/content/lessons/day-14.mdx (`kind: review`, D1–D2) — TC: W1–W2
+- [x] T136 [US4] Author site/src/content/questions/week-2.yaml (57 new Q, D1–D2) — TC-Q
 - [ ] T137 REVIEW Week 2 content; log
 
 ### Week 3
@@ -436,8 +436,8 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) �
 - [x] T147 [P] [US2] Author site/src/content/questions/day-19.yaml (20 Q, TS 3.3) — TC-Q
 - [x] T148 [P] [US1] Author site/src/content/lessons/day-20.mdx — human eval, benchmarks, Bedrock Model Evaluation, ROUGE/BLEU/BERTScore, LLM-as-a-judge, RAG/agent evaluation, business alignment metrics (TS 3.4) — TC-L
 - [x] T149 [P] [US2] Author site/src/content/questions/day-20.yaml (20 Q, TS 3.4) — TC-Q
-- [ ] T150 [US4] Author site/src/content/lessons/day-21.mdx (`kind: review`, D1–D3) — TC: W1–W2
-- [ ] T151 [US4] Author site/src/content/questions/week-3.yaml (57 new Q, D1–D3) — TC-Q
+- [x] T150 [US4] Author site/src/content/lessons/day-21.mdx (`kind: review`, D1–D3) — TC: W1–W2
+- [x] T151 [US4] Author site/src/content/questions/week-3.yaml (57 new Q, D1–D3) — TC-Q
 - [ ] T152 REVIEW Week 3 content; log
 
 ### Week 4
@@ -453,17 +453,17 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) �
 - [x] T162 [P] [US2] Author site/src/content/questions/day-26.yaml (20 Q, TS 5.1) — TC-Q
 - [x] T163 [P] [US1] Author site/src/content/lessons/day-27.mdx — Config, Inspector, Artifact, CloudTrail, CloudWatch, Trusted Advisor, Well-Architected Tool, data lifecycle/residency/retention, Generative AI Security Scoping Matrix (TS 5.2) — TC-L
 - [x] T164 [P] [US2] Author site/src/content/questions/day-27.yaml (20 Q, TS 5.2) — TC-Q
-- [ ] T165 [US4] Author site/src/content/lessons/day-28.mdx (`kind: review`, D1–D5) — TC: W1–W2
-- [ ] T166 [US4] Author site/src/content/questions/week-4.yaml (57 new Q, D1–D5) — TC-Q
+- [x] T165 [US4] Author site/src/content/lessons/day-28.mdx (`kind: review`, D1–D5) — TC: W1–W2
+- [x] T166 [US4] Author site/src/content/questions/week-4.yaml (57 new Q, D1–D5) — TC-Q
 - [ ] T167 REVIEW Week 4 content; log
 
 ### Mocks
-- [ ] T168 [P] [US5] Author site/src/content/questions/mock-1.yaml (65 Q, split 13/16/18/9/9, all 4 types) — TC-Q
-- [ ] T169 [P] [US5] Author site/src/content/questions/mock-2.yaml (65 Q) — TC-Q
-- [ ] T170 [P] [US5] Author site/src/content/questions/mock-3.yaml (65 Q, emphasis on v1.2 additions) — TC-Q
-- [ ] T171 [US5] Author site/src/content/lessons/day-29.mdx (`kind: mock`) — Mock 1 launch + remediation plan
+- [x] T168 [P] [US5] Author site/src/content/questions/mock-1.yaml (65 Q, split 13/16/18/9/9, all 4 types) — TC-Q
+- [x] T169 [P] [US5] Author site/src/content/questions/mock-2.yaml (65 Q) — TC-Q
+- [x] T170 [P] [US5] Author site/src/content/questions/mock-3.yaml (65 Q, emphasis on v1.2 additions) — TC-Q
+- [x] T171 [US5] Author site/src/content/lessons/day-29.mdx (`kind: mock`) — Mock 1 launch + remediation plan
   - TC: M11 launch button opens `/mock/1`; remediation lists weak domains after an attempt.
-- [ ] T172 [US5] Author site/src/content/lessons/day-30.mdx (`kind: mock`) — Mock 2, optional Mock 3, final revision, exam-day strategy
+- [x] T172 [US5] Author site/src/content/lessons/day-30.mdx (`kind: mock`) — Mock 2, optional Mock 3, final revision, exam-day strategy
   - TC: M12 launch buttons for Mock 2 and 3; strategy section lists registration, delivery options, 90 min / 65 Q pacing, question types.
 - [ ] T173 REVIEW mocks: `npm run validate:content -- --final` → ≥ 900 unique, every TS ≥ 3, mock splits; Q7 on 100% of mock questions; log
 

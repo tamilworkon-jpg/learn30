@@ -1,0 +1,948 @@
+- id: q-week-4-001
+  set: week-4
+  type: single
+  stem: "A lender's credit model reports 92% overall accuracy. A review finds that applicants over 70, who make up 3% of the training data, are wrongly declined far more often than other groups. Which response is MOST appropriate?"
+  options:
+    - { id: a, text: "Evaluate performance per age group and add more representative data for older applicants", explanation: "Correct. Subgroup evaluation exposes the gap, and representative data addresses its cause." }
+    - { id: b, text: "Delete the age column and retrain on the same data", explanation: "Incorrect. Proxy features can still carry age information, and the small group is still under-represented." }
+    - { id: c, text: "Raise the overall accuracy target to 95%", explanation: "Incorrect. A higher average can still hide poor performance for a small group." }
+    - { id: d, text: "Accept the result, because 92% is a strong overall score", explanation: "Incorrect. Averages hide subgroup inaccuracy, which is a fairness and legal risk." }
+  answer: [a]
+  explanation: "Bias and variance hurt small groups first, and overall averages hide it. Evaluate per subgroup, fix data gaps (sampling bias) with inclusive, balanced data, and monitor fairness after deployment. Removing a sensitive column alone rarely removes bias."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#exam-tips
+  difficulty: hard
+
+- id: q-week-4-002
+  set: week-4
+  type: single
+  stem: "After launch, a bank's voice assistant cannot understand customers with speech impairments. The project team admits this group was never part of user research or testing. Which responsible AI dimension was MOST directly neglected?"
+  options:
+    - { id: a, text: "Robustness", explanation: "Incorrect. Robustness is about coping with noisy, unusual or adversarial input; the root cause here is that a group of users was never considered." }
+    - { id: b, text: "Inclusivity", explanation: "Correct. Inclusivity means designing for and testing with the full range of people who will use the system." }
+    - { id: c, text: "Veracity", explanation: "Incorrect. Veracity concerns whether outputs are true and accurate." }
+    - { id: d, text: "Controllability", explanation: "Incorrect. Controllability is the ability of humans to monitor, steer and override the system." }
+  answer: [b]
+  explanation: "'Works worse for one group' points to fairness; 'the group was never considered in design or testing' points to inclusivity. Inclusive design involves diverse users in research and tests the system with them before launch."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: easy
+
+- id: q-week-4-003
+  set: week-4
+  type: single
+  stem: "A recruitment model is trained on ten years of hiring decisions. During those years, managers rarely hired candidates from certain universities regardless of skill, and the model now scores those candidates lower. Which type of bias is this?"
+  options:
+    - { id: a, text: "Sampling bias", explanation: "Incorrect. Sampling bias means a group is missing or under-represented in the data; here the data records past unfair decisions." }
+    - { id: b, text: "Measurement bias", explanation: "Incorrect. Measurement bias comes from faulty or inconsistent ways of recording a feature." }
+    - { id: c, text: "Historical bias", explanation: "Correct. The data faithfully reflects past unfair decisions, and the model learns to repeat them." }
+    - { id: d, text: "High variance", explanation: "Incorrect. Variance is a statistical fit concept, not the cause of learning past unfair patterns." }
+  answer: [c]
+  explanation: "Historical bias: data reflects past unfair decisions. Sampling bias: a group is missing or under-represented. Measurement bias: features recorded inaccurately for some groups. Label bias: labellers' judgements are skewed. Most bias enters through data."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#exam-tips
+  difficulty: hard
+
+- id: q-week-4-004
+  set: week-4
+  type: multi
+  stem: "A media company's legal team is drafting a risk register for a new generative AI content tool. Which items are legal risks of generative AI as described in this course? (Select THREE.)"
+  options:
+    - { id: a, text: "Generated images that closely copy copyrighted characters", explanation: "Correct. Intellectual property infringement is a key legal risk of generative AI." }
+    - { id: b, text: "Faster response times than the previous tool", explanation: "Incorrect. Speed is a performance characteristic, not a legal risk." }
+    - { id: c, text: "Hallucinated facts that customers rely on", explanation: "Correct. Hallucinations can mislead users and create liability." }
+    - { id: d, text: "Outputs that stereotype or disadvantage groups of people", explanation: "Correct. Biased outputs create discrimination and reputational risk." }
+    - { id: e, text: "Token-based pricing for model usage", explanation: "Incorrect. Pricing is a cost consideration, not a legal risk." }
+    - { id: f, text: "A smaller context window than competing models", explanation: "Incorrect. Context window size is a technical limitation, not a legal risk." }
+  answer: [a, c, d]
+  explanation: "Legal risks of generative AI include IP infringement, biased outputs, loss of customer trust, end-user risk and hallucinations. They are managed with data provenance, output controls, grounding with citations, human oversight and documentation."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: easy
+
+- id: q-week-4-005
+  set: week-4
+  type: multi
+  stem: "A data science team building a credit model on SageMaker AI must check its training dataset for imbalance across age groups before training and, after deployment, explain to applicants which factors drove each decision. Which capabilities meet these needs? (Select TWO.)"
+  options:
+    - { id: a, text: "SageMaker Clarify pre-training bias metrics", explanation: "Correct. Clarify measures bias in the dataset before any model is trained." }
+    - { id: b, text: "Amazon Bedrock Guardrails denied topics", explanation: "Incorrect. Denied topics block subjects in generative AI conversations; they do not analyse datasets." }
+    - { id: c, text: "SageMaker Model Monitor data quality monitoring", explanation: "Incorrect. Data quality monitoring watches deployed input data for drift, not dataset bias or individual explanations." }
+    - { id: d, text: "SageMaker Clarify SHAP feature attributions", explanation: "Correct. SHAP attributions show how much each feature contributed to an individual prediction." }
+    - { id: e, text: "Amazon Macie", explanation: "Incorrect. Macie discovers sensitive data in S3; it does not measure bias or explain predictions." }
+  answer: [a, d]
+  explanation: "SageMaker Clarify detects pre-training bias in data, post-training bias in predictions, and explains predictions with SHAP. Model Monitor continues the job after deployment by tracking drift, including bias drift and feature attribution drift."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-23#exam-tips
+  difficulty: medium
+
+- id: q-week-4-006
+  set: week-4
+  type: single
+  stem: "A deployed SageMaker AI loan model passed its fairness review at launch. Six months later, the approval-rate gap between age groups has slowly widened. Which capability would have detected this automatically?"
+  options:
+    - { id: a, text: "A one-time SageMaker Clarify pre-training bias report", explanation: "Incorrect. A point-in-time report on training data cannot detect changes in production over time." }
+    - { id: b, text: "Amazon Bedrock Guardrails content filters", explanation: "Incorrect. Guardrails filter generative AI prompts and responses, not tabular model decisions." }
+    - { id: c, text: "AWS Artifact", explanation: "Incorrect. Artifact provides AWS's compliance reports, not model monitoring." }
+    - { id: d, text: "SageMaker Model Monitor bias drift monitoring", explanation: "Correct. Bias drift monitoring tracks Clarify bias metrics on live predictions and alerts when they move past a threshold." }
+  answer: [d]
+  explanation: "Clarify gives a point-in-time report; Model Monitor keeps checking deployed models over time for data quality, model quality, bias drift and feature attribution drift, and raises alerts through CloudWatch."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-23#explanation
+  difficulty: medium
+
+- id: q-week-4-007
+  set: week-4
+  type: matching
+  stem: "An MLOps engineer sets up SageMaker Model Monitor for a fraud model. Match each observed problem to the monitoring type that detects it."
+  options:
+    - { id: a, text: "The average transaction amount in live traffic doubles compared with the training baseline", explanation: "Data quality monitoring compares live input data with the training baseline." }
+    - { id: b, text: "Recall falls from 85% to 60% once confirmed fraud labels arrive", explanation: "Model quality monitoring compares predictions with ground-truth labels collected later." }
+    - { id: c, text: "The gap in flag rates between two customer regions widens", explanation: "Bias drift monitoring tracks Clarify bias metrics over time." }
+    - { id: d, text: "Merchant category suddenly becomes the most important driver of predictions", explanation: "Feature attribution drift monitoring tracks changes in feature importance." }
+  matchTargets:
+    - { id: t1, text: "Model quality" }
+    - { id: t2, text: "Data quality" }
+    - { id: t3, text: "Feature attribution drift" }
+    - { id: t4, text: "Bias drift" }
+  answer: { a: t2, b: t1, c: t4, d: t3 }
+  explanation: "Model Monitor has four monitoring types: data quality (input drift), model quality (metric decline, needs ground-truth labels), bias drift and feature attribution drift (both use Clarify). Alerts flow to CloudWatch and can trigger retraining."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-23#explanation
+  difficulty: medium
+
+- id: q-week-4-008
+  set: week-4
+  type: multi
+  stem: "A retailer wants its new product-tagging AI to meet accuracy targets while minimising environmental impact. Which choices support this goal? (Select TWO.)"
+  options:
+    - { id: a, text: "Use the smallest model that meets the accuracy requirement, or distil a larger one", explanation: "Correct. Smaller models need less compute and energy per request." }
+    - { id: b, text: "Always choose the largest available model to be safe", explanation: "Incorrect. Larger models use more energy and cost more, often without a needed gain." }
+    - { id: c, text: "Run on efficient hardware such as AWS Inferentia or Graviton and remove idle endpoints", explanation: "Correct. Efficient chips and no idle capacity reduce energy use and cost." }
+    - { id: d, text: "Retrain the model from scratch every week whether or not performance has changed", explanation: "Incorrect. Unnecessary retraining wastes compute; retrain when monitoring shows a need." }
+    - { id: e, text: "Keep extra endpoints running permanently in case traffic spikes", explanation: "Incorrect. Over-provisioned idle endpoints waste energy; use auto scaling or serverless options instead." }
+  answer: [a, c]
+  explanation: "Responsible model selection includes sustainability: the smallest suitable model, distillation, efficient hardware (Inferentia, Trainium, Graviton) and no idle endpoints. These choices also lower cost."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-23#explanation
+  difficulty: medium
+
+- id: q-week-4-009
+  set: week-4
+  type: single
+  stem: "An insurer automates claim triage with an ML model. For high-value claims where the model's confidence is below 80%, the company wants a person to make the decision. Which design meets this requirement?"
+  options:
+    - { id: a, text: "A confidence threshold that routes low-confidence predictions to a human review workflow", explanation: "Correct. Thresholds send uncertain or high-impact cases to people while confident cases flow automatically." }
+    - { id: b, text: "Raise the model's temperature for low-confidence claims", explanation: "Incorrect. Temperature applies to generative sampling and would not involve a person." }
+    - { id: c, text: "Discard low-confidence predictions and approve those claims automatically", explanation: "Incorrect. Auto-approving uncertain cases removes oversight exactly where it is needed." }
+    - { id: d, text: "Publish a SageMaker Model Card describing the model", explanation: "Incorrect. A Model Card documents the model; it does not route decisions to reviewers." }
+  answer: [a]
+  explanation: "Human review handles low-confidence and high-impact predictions. A confidence threshold decides which cases go to people; reviewers' decisions can also become new labelled data to improve the model."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-23#explanation
+  difficulty: easy
+
+- id: q-week-4-010
+  set: week-4
+  type: single
+  stem: "A regulator requires a building society to show exactly how each mortgage decision is reached from about 15 applicant attributes stored in a table. Accuracy only needs to match the current scorecard. Which modelling approach fits BEST?"
+  options:
+    - { id: a, text: "A deep neural network with no explanation layer", explanation: "Incorrect. Deep networks are opaque and would need post-hoc explanations that only approximate their reasoning." }
+    - { id: b, text: "A transparent model such as logistic regression or a small decision tree", explanation: "Correct. Transparent models can be read directly, which suits regulated tabular decisions that need clear reasons." }
+    - { id: c, text: "A large language model prompted with the application data", explanation: "Incorrect. LLMs are opaque, nondeterministic and not designed for auditable scoring." }
+    - { id: d, text: "An ensemble of thousands of trees", explanation: "Incorrect. Large ensembles are hard to read directly and need post-hoc explanation." }
+  answer: [b]
+  explanation: "Transparent models (linear and logistic regression, small decision trees, rules) can be read and audited directly. Opaque models (deep networks, large ensembles, LLMs) can be more accurate on complex data but need post-hoc techniques. When interpretability is required and accuracy is sufficient, choose the transparent model."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#exam-tips
+  difficulty: easy
+
+- id: q-week-4-011
+  set: week-4
+  type: single
+  stem: "A declined loan applicant asks: 'What would I need to change to be approved?' Which explanation technique answers this question MOST directly?"
+  options:
+    - { id: a, text: "A partial dependence plot of income", explanation: "Incorrect. Partial dependence shows how the average prediction changes with one feature across all applicants." }
+    - { id: b, text: "Global feature importance for the whole model", explanation: "Incorrect. Global importance summarises what matters overall, not what this applicant should change." }
+    - { id: c, text: "A counterfactual explanation", explanation: "Correct. A counterfactual states the smallest change to the input that would change the outcome." }
+    - { id: d, text: "A confusion matrix", explanation: "Incorrect. A confusion matrix summarises classification errors across many predictions." }
+  answer: [c]
+  explanation: "Counterfactual explanations ('if your debt ratio were below 40%, you would likely be approved') are very actionable for end users. SHAP gives local or global feature attributions, LIME approximates the model locally, and partial dependence plots show average effects."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: hard
+
+- id: q-week-4-012
+  set: week-4
+  type: single
+  stem: "Before production, a model approval board requires each internally built model to have a record of its intended use, risk rating, training details and evaluation results. Which AWS capability is designed for this?"
+  options:
+    - { id: a, text: "AWS AI Service Cards", explanation: "Incorrect. AI Service Cards are AWS's documentation of its own AI services, not of your models." }
+    - { id: b, text: "SageMaker Clarify", explanation: "Incorrect. Clarify computes bias metrics and explanations; its reports can be attached to documentation, but it is not the documentation tool." }
+    - { id: c, text: "AWS Artifact", explanation: "Incorrect. Artifact provides AWS compliance reports and agreements." }
+    - { id: d, text: "SageMaker Model Cards", explanation: "Correct. Model Cards document a model's intended use, risk rating, training and evaluation in one place." }
+  answer: [d]
+  explanation: "SageMaker Model Cards document your models for governance and audits. AWS AI Service Cards document AWS-managed AI services. Clarify produces the bias and explainability evidence that can be added to a model card."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#exam-tips
+  difficulty: easy
+
+- id: q-week-4-013
+  set: week-4
+  type: single
+  stem: "A procurement team is evaluating Amazon Rekognition for identity checks and wants AWS's own documentation of the service's intended use cases, limitations and responsible AI design choices. Where should the team look?"
+  options:
+    - { id: a, text: "AWS AI Service Cards", explanation: "Correct. AI Service Cards describe intended use cases, limitations and responsible AI considerations for AWS AI services." }
+    - { id: b, text: "SageMaker Model Cards", explanation: "Incorrect. Model Cards are for documenting models you build or customise yourself." }
+    - { id: c, text: "AWS Trusted Advisor", explanation: "Incorrect. Trusted Advisor checks an account against best practices for cost, security and quotas." }
+    - { id: d, text: "Amazon Inspector findings", explanation: "Incorrect. Inspector reports software vulnerabilities in workloads." }
+  answer: [a]
+  explanation: "Transparency on AWS works at two levels: AWS publishes AI Service Cards for its services, and customers document their own models with SageMaker Model Cards."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: medium
+
+- id: q-week-4-014
+  set: week-4
+  type: multi
+  stem: "A public-sector agency runs a RAG chatbot that answers questions about benefits. Which measures increase the transparency of the chatbot for citizens? (Select TWO.)"
+  options:
+    - { id: a, text: "Show citations to the source documents behind each answer", explanation: "Correct. Citations let users see where an answer came from and check it." }
+    - { id: b, text: "Hide the fact that answers are generated by AI to avoid confusion", explanation: "Incorrect. Transparency requires telling people they are dealing with AI." }
+    - { id: c, text: "Tell users clearly that they are interacting with an AI assistant and what it is for", explanation: "Correct. Disclosure of AI use and purpose is a core part of transparency." }
+    - { id: d, text: "Increase the temperature so answers sound more natural", explanation: "Incorrect. Temperature changes randomness, not transparency." }
+    - { id: e, text: "Disable invocation logging to protect the system design", explanation: "Incorrect. Removing logs reduces accountability and auditability." }
+  answer: [a, c]
+  explanation: "Full explanations of LLM outputs are not yet possible, so generative AI apps increase transparency with AI disclosure, citations from RAG, agent traces and documentation. Be careful: a model's self-described reasoning may not reflect how it actually produced the answer."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: medium
+
+- id: q-week-4-015
+  set: week-4
+  type: single
+  stem: "A start-up plans to build a commercial product on an open-weight foundation model downloaded from a public model hub. What should it do FIRST from a transparency and compliance perspective?"
+  options:
+    - { id: a, text: "Assume the training data is public, because the weights are open", explanation: "Incorrect. Open weights do not mean the training data is published." }
+    - { id: b, text: "Review the licence terms for commercial use, attribution and usage restrictions", explanation: "Correct. Open models carry licence obligations that must be checked before commercial use." }
+    - { id: c, text: "Assume no attribution is ever required for open models", explanation: "Incorrect. Many open licences require attribution or impose restrictions." }
+    - { id: d, text: "Avoid fine-tuning, because open-weight models cannot be customised", explanation: "Incorrect. Open-weight models can usually be fine-tuned, subject to their licence." }
+  answer: [b]
+  explanation: "Open models increase transparency because their weights (and sometimes code and data) can be inspected, but open-weight is not the same as open training data. Always check the licence for commercial use, attribution and restrictions."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#exam-tips
+  difficulty: hard
+
+- id: q-week-4-016
+  set: week-4
+  type: matching
+  stem: "A responsible AI team must explain several AI systems to different audiences. Match each explanation need to the technique that fits it BEST."
+  options:
+    - { id: a, text: "Show how much each input feature contributed to one specific credit decision", explanation: "SHAP feature attributions assign each feature a share of the credit for a prediction." }
+    - { id: b, text: "Show how average predicted risk changes as debt ratio rises, holding other features constant", explanation: "A partial dependence plot shows the average effect of one feature." }
+    - { id: c, text: "Tell an applicant the smallest change that would flip the decision", explanation: "A counterfactual explanation gives the minimal change to the input that changes the outcome." }
+    - { id: d, text: "Show which documents a generative AI answer was based on", explanation: "Citations from RAG make generative answers traceable to sources." }
+  matchTargets:
+    - { id: t1, text: "Counterfactual explanation" }
+    - { id: t2, text: "SHAP feature attributions" }
+    - { id: t3, text: "RAG citations" }
+    - { id: t4, text: "Partial dependence plot" }
+  answer: { a: t2, b: t4, c: t1, d: t3 }
+  explanation: "Opaque models need post-hoc explanations: SHAP and LIME for feature attributions, partial dependence plots for average effects, counterfactuals for actionable what-ifs. For generative AI, citations and agent traces add transparency."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: medium
+
+- id: q-week-4-017
+  set: week-4
+  type: single
+  stem: "A hospital's application runs in private subnets of a VPC with no internet gateway. Calls to Amazon Bedrock must not traverse the public internet. Which solution meets this requirement?"
+  options:
+    - { id: a, text: "Add a NAT gateway so the subnets can reach Bedrock", explanation: "Incorrect. A NAT gateway sends traffic to the service's public endpoint over the internet path." }
+    - { id: b, text: "Put AWS WAF in front of the application", explanation: "Incorrect. AWS WAF filters HTTP requests to web applications and is out of scope for this exam; it does not provide private connectivity." }
+    - { id: c, text: "Create a VPC interface endpoint for Amazon Bedrock using AWS PrivateLink", explanation: "Correct. Interface endpoints keep traffic between the VPC and Bedrock on the AWS network." }
+    - { id: d, text: "Attach an internet gateway and restrict it with a security group", explanation: "Incorrect. This still routes traffic over the internet." }
+  answer: [c]
+  explanation: "'Without traversing the internet' or 'private connectivity' → VPC interface endpoint powered by AWS PrivateLink. Endpoint policies can further restrict which models or actions are allowed through the endpoint."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-25#exam-tips
+  difficulty: easy
+
+- id: q-week-4-018
+  set: week-4
+  type: single
+  stem: "Before fine-tuning, a retailer wants to find out whether any of its 400 Amazon S3 buckets of chat exports contain names, card numbers or addresses. Which service should it use?"
+  options:
+    - { id: a, text: "Amazon Inspector", explanation: "Incorrect. Inspector scans compute workloads for software vulnerabilities." }
+    - { id: b, text: "Amazon GuardDuty", explanation: "Incorrect. GuardDuty is threat detection from logs and is out of scope for this exam." }
+    - { id: c, text: "Amazon Bedrock Guardrails", explanation: "Incorrect. Guardrails mask PII in live prompts and responses; they do not scan stored S3 data." }
+    - { id: d, text: "Amazon Macie", explanation: "Correct. Macie uses ML and pattern matching to discover sensitive data such as PII in S3 buckets." }
+  answer: [d]
+  explanation: "'Discover PII in S3' → Amazon Macie. 'Mask PII in model responses' → Guardrails sensitive information filter. Finding and treating sensitive data before training is part of securing AI systems."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-25#exam-tips
+  difficulty: medium
+
+- id: q-week-4-019
+  set: week-4
+  type: single
+  stem: "A bank's security policy requires it to control, rotate, disable and audit the use of the encryption keys that protect its fine-tuning data and custom model. Which option meets this requirement?"
+  options:
+    - { id: a, text: "An AWS KMS customer managed key", explanation: "Correct. Customer managed keys give you control over key policy, rotation and disabling, with usage logged in CloudTrail." }
+    - { id: b, text: "An AWS owned key", explanation: "Incorrect. AWS owned keys are managed entirely by AWS and cannot be controlled or audited by the customer." }
+    - { id: c, text: "AWS Secrets Manager", explanation: "Incorrect. Secrets Manager stores and rotates credentials such as API keys, not data encryption keys." }
+    - { id: d, text: "Storing a key in the application's source code", explanation: "Incorrect. Keys in code are a security risk and cannot be governed." }
+  answer: [a]
+  explanation: "KMS encrypts data at rest; choose customer managed keys when you need to control, rotate, revoke or audit key use. TLS protects data in transit. Bedrock supports customer managed keys for custom models, knowledge bases and agents."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-25#explanation
+  difficulty: medium
+
+- id: q-week-4-020
+  set: week-4
+  type: single
+  stem: "An AI agent's Lambda tool calls a partner's shipping API that requires an API key. The key must be rotated every 90 days and must never appear in code or prompts. Where should the key be stored?"
+  options:
+    - { id: a, text: "Hard-coded in the Lambda function", explanation: "Incorrect. Secrets in code are easily exposed and hard to rotate." }
+    - { id: b, text: "AWS Secrets Manager, retrieved by the function at run time", explanation: "Correct. Secrets Manager stores, encrypts and rotates credentials, and access is controlled with IAM." }
+    - { id: c, text: "In the agent's system prompt", explanation: "Incorrect. System prompts can leak through prompt attacks." }
+    - { id: d, text: "In a prompt template variable filled in by the user", explanation: "Incorrect. This exposes the key to users and the model." }
+  answer: [b]
+  explanation: "'Store and rotate credentials or API keys' → AWS Secrets Manager. The function's IAM role grants permission to read only that secret, following least privilege."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-25#exam-tips
+  difficulty: easy
+
+- id: q-week-4-021
+  set: week-4
+  type: multi
+  stem: "A company builds a customer-facing application on Amazon Bedrock. Under the shared responsibility model, which responsibilities belong to the company? (Select TWO.)"
+  options:
+    - { id: a, text: "Physical security of the data centres that host the models", explanation: "Incorrect. Security of the cloud, including facilities, is AWS's responsibility." }
+    - { id: b, text: "IAM policies that control who can invoke which models", explanation: "Correct. Identity and access configuration is always the customer's responsibility." }
+    - { id: c, text: "Patching the servers that run the foundation models", explanation: "Incorrect. Bedrock is a managed service; AWS maintains the underlying infrastructure." }
+    - { id: d, text: "Classifying the data sent in prompts and deciding how outputs are used", explanation: "Correct. Customers own their data and how they use model outputs." }
+    - { id: e, text: "Maintaining the Bedrock service's internal network", explanation: "Incorrect. AWS secures the service infrastructure." }
+  answer: [b, d]
+  explanation: "AWS is responsible for security OF the cloud (infrastructure, managed model hosting). The customer is responsible for security IN the cloud: identities and permissions, data, configuration such as guardrails and encryption choices, and how outputs are used."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-25#explanation
+  difficulty: hard
+
+- id: q-week-4-022
+  set: week-4
+  type: single
+  stem: "A productivity agent hosted on Amazon Bedrock AgentCore must read each user's calendar in a third-party SaaS product on that user's behalf, using OAuth tokens scoped to that user. Which capability is designed for this?"
+  options:
+    - { id: a, text: "IAM user access keys embedded in the agent code", explanation: "Incorrect. Long-term keys in code are insecure and are not per-user delegated access." }
+    - { id: b, text: "Policy in AgentCore", explanation: "Incorrect. Policy defines rules about which tools an agent may call; it does not manage users' OAuth credentials." }
+    - { id: c, text: "AgentCore Identity", explanation: "Correct. AgentCore Identity manages agent identities and scoped credentials such as OAuth tokens for acting on behalf of users." }
+    - { id: d, text: "Amazon Bedrock Guardrails", explanation: "Incorrect. Guardrails filter content; they do not handle authentication to external tools." }
+  answer: [c]
+  explanation: "'Agent acts on behalf of a user', 'OAuth tokens for tools' → AgentCore Identity. 'Rules on which tools an agent may call' → Policy in AgentCore. Both support least privilege for agents."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-25#exam-tips
+  difficulty: hard
+
+- id: q-week-4-023
+  set: week-4
+  type: single
+  stem: "A data lake on Amazon S3 holds customer records used for ML training. Data scientists may see purchase history but not names or email columns, and the EU team may only see EU rows. Which service provides these controls?"
+  options:
+    - { id: a, text: "AWS Glue Data Catalog", explanation: "Incorrect. The Data Catalog records what data exists and its schema; it does not enforce column- and row-level permissions on its own." }
+    - { id: b, text: "Amazon Macie", explanation: "Incorrect. Macie discovers sensitive data but does not grant fine-grained access." }
+    - { id: c, text: "AWS Config", explanation: "Incorrect. Config tracks resource configuration compliance." }
+    - { id: d, text: "AWS Lake Formation", explanation: "Correct. Lake Formation centralises fine-grained access control at database, table, column, row and cell level." }
+  answer: [d]
+  explanation: "'Fine-grained', 'column-level', 'row-level' access to a data lake → AWS Lake Formation, including tag-based access control. Services such as Redshift, EMR and Glue respect these permissions."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#exam-tips
+  difficulty: medium
+
+- id: q-week-4-024
+  set: week-4
+  type: single
+  stem: "A security review warns that anyone in the company can upload files to the S3 bucket feeding a customer-facing knowledge base, so an insider could plant false policy documents. Which measure BEST protects the integrity of this data?"
+  options:
+    - { id: a, text: "Restrict write access to the pipeline roles that need it and enable S3 Versioning", explanation: "Correct. Limiting writers prevents planted documents, and versioning allows changes to be traced and rolled back." }
+    - { id: b, text: "Grant column-level read permissions in Lake Formation", explanation: "Incorrect. Read permissions do not stop someone from writing poisoned documents." }
+    - { id: c, text: "Increase the chunk overlap in the knowledge base", explanation: "Incorrect. Chunking affects retrieval quality, not data integrity." }
+    - { id: d, text: "Add a Guardrails word filter for competitor names", explanation: "Incorrect. A word filter does not detect false documents in the source data." }
+  answer: [a]
+  explanation: "Data poisoning inserts misleading data into training sets or knowledge bases. Defences: restrict write access, S3 Versioning and Object Lock, checksums of approved datasets, vetted sources and review of new documents, and CloudTrail logging of changes."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#explanation
+  difficulty: hard
+
+- id: q-week-4-025
+  set: week-4
+  type: matching
+  stem: "A data protection officer is reviewing how a training pipeline handles personal data. Match each technique to its description."
+  options:
+    - { id: a, text: "Keep only the columns the churn model needs and drop names entirely", explanation: "Data minimisation keeps only the data the use case requires." }
+    - { id: b, text: "Show card numbers as 'card ending 1234'", explanation: "Masking replaces sensitive values with symbols or partial values." }
+    - { id: c, text: "Replace each customer ID with a consistent token, with the mapping stored separately", explanation: "Pseudonymisation lets records still be joined, but data can be re-linked through the protected mapping." }
+    - { id: d, text: "Add calibrated statistical noise so group results are useful but no individual can be inferred", explanation: "Differential privacy protects individuals while keeping aggregate results useful." }
+    - { id: e, text: "Generate artificial records that keep the statistical patterns of real data", explanation: "Synthetic data describes no real people and is useful for testing and some training." }
+  matchTargets:
+    - { id: t1, text: "Data minimisation" }
+    - { id: t2, text: "Masking" }
+    - { id: t3, text: "Pseudonymisation" }
+    - { id: t4, text: "Differential privacy" }
+    - { id: t5, text: "Synthetic data" }
+  answer: { a: t1, b: t2, c: t3, d: t4, e: t5 }
+  explanation: "Privacy-enhancing techniques reduce how identifiable data is: minimisation, masking and redaction, pseudonymisation and tokenisation, anonymisation and aggregation, differential privacy and synthetic data. Pseudonymised data can still be linked; anonymised data should not be re-identifiable."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#explanation
+  difficulty: medium
+
+- id: q-week-4-026
+  set: week-4
+  type: single
+  stem: "A governance team must continuously check that every S3 bucket holding training data has default encryption enabled and must keep a history of configuration changes to those buckets. Which AWS service fits BEST?"
+  options:
+    - { id: a, text: "Amazon CloudWatch", explanation: "Incorrect. CloudWatch monitors metrics, logs and alarms, not configuration compliance rules." }
+    - { id: b, text: "AWS Config", explanation: "Correct. Config records configuration changes and evaluates resources against compliance rules." }
+    - { id: c, text: "AWS Artifact", explanation: "Incorrect. Artifact provides AWS's own compliance reports." }
+    - { id: d, text: "Amazon Inspector", explanation: "Incorrect. Inspector finds software vulnerabilities, not misconfigured bucket settings." }
+  answer: [b]
+  explanation: "'Track configuration changes', 'evaluate compliance with rules' → AWS Config. Config rules can flag non-compliant resources and trigger remediation."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#exam-tips
+  difficulty: easy
+
+- id: q-week-4-027
+  set: week-4
+  type: single
+  stem: "An external auditor asks a healthcare start-up for AWS's SOC 2 and ISO 27001 reports covering the infrastructure that runs its AI workload. Where can the start-up download these documents?"
+  options:
+    - { id: a, text: "AWS Trusted Advisor", explanation: "Incorrect. Trusted Advisor gives best-practice recommendations for the account." }
+    - { id: b, text: "AWS CloudTrail", explanation: "Incorrect. CloudTrail records API activity in the customer's account." }
+    - { id: c, text: "AWS Artifact", explanation: "Correct. Artifact provides on-demand access to AWS compliance reports and agreements." }
+    - { id: d, text: "AWS Config", explanation: "Incorrect. Config evaluates the customer's resource configurations." }
+  answer: [c]
+  explanation: "'AWS compliance reports', 'SOC', 'ISO', 'agreements' → AWS Artifact. These reports cover AWS's side of the shared responsibility model; the customer still proves its own controls."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#exam-tips
+  difficulty: easy
+
+- id: q-week-4-028
+  set: week-4
+  type: single
+  stem: "A security team needs automated, continuous scanning of the container images and Lambda functions behind its inference API for known software vulnerabilities (CVEs). Which service should it use?"
+  options:
+    - { id: a, text: "AWS Config", explanation: "Incorrect. Config checks configuration settings, not software vulnerabilities." }
+    - { id: b, text: "Amazon Macie", explanation: "Incorrect. Macie finds sensitive data in S3." }
+    - { id: c, text: "AWS Artifact", explanation: "Incorrect. Artifact supplies compliance documents." }
+    - { id: d, text: "Amazon Inspector", explanation: "Correct. Inspector continuously scans EC2, container images and Lambda functions for vulnerabilities." }
+  answer: [d]
+  explanation: "'Vulnerabilities', 'CVEs', 'unpatched software' in EC2, containers or Lambda → Amazon Inspector. Findings are prioritised by risk so teams can patch the most critical issues first."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: medium
+
+- id: q-week-4-029
+  set: week-4
+  type: single
+  stem: "An architecture team wants to review its new generative AI workload against AWS best practices using a dedicated Generative AI lens, record risks and produce an improvement plan. Which service fits BEST?"
+  options:
+    - { id: a, text: "AWS Well-Architected Tool", explanation: "Correct. The Well-Architected Tool reviews workloads against best practices with lenses such as Generative AI and creates improvement plans." }
+    - { id: b, text: "AWS Trusted Advisor", explanation: "Incorrect. Trusted Advisor runs automated account-level checks; it does not conduct lens-based workload reviews." }
+    - { id: c, text: "AWS Config", explanation: "Incorrect. Config evaluates resource configurations against rules." }
+    - { id: d, text: "AWS Control Tower", explanation: "Incorrect. Control Tower sets up multi-account environments and is out of scope for this exam." }
+  answer: [a]
+  explanation: "'Review a workload against best practices', 'lenses', 'improvement plan' → AWS Well-Architected Tool. 'Recommendations on cost, security, fault tolerance, quotas' → Trusted Advisor."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#exam-tips
+  difficulty: medium
+
+- id: q-week-4-030
+  set: week-4
+  type: matching
+  stem: "A CISO is mapping five generative AI use cases to the Generative AI Security Scoping Matrix. Match each use case to its scope."
+  options:
+    - { id: a, text: "Staff use a free public chatbot website to draft emails", explanation: "Scope 1, consumer app: the company controls only what data it enters and its usage policy." }
+    - { id: b, text: "A CRM SaaS product with built-in generative AI features under an enterprise agreement", explanation: "Scope 2, enterprise app: the company controls contract terms, configuration and access." }
+    - { id: c, text: "The company's own app calls a foundation model through Amazon Bedrock", explanation: "Scope 3, pre-trained models: the company owns the application, prompts, data and guardrails." }
+    - { id: d, text: "The app uses a Bedrock model the company fine-tuned on its own data", explanation: "Scope 4, fine-tuned models: scope 3 responsibilities plus the fine-tuning data and custom model." }
+    - { id: e, text: "A model the company trained from scratch on its own data", explanation: "Scope 5, self-trained models: the company owns the whole stack." }
+  matchTargets:
+    - { id: t1, text: "Scope 1 — Consumer app" }
+    - { id: t2, text: "Scope 2 — Enterprise app" }
+    - { id: t3, text: "Scope 3 — Pre-trained models" }
+    - { id: t4, text: "Scope 4 — Fine-tuned models" }
+    - { id: t5, text: "Scope 5 — Self-trained models" }
+  answer: { a: t1, b: t2, c: t3, d: t4, e: t5 }
+  explanation: "Scopes 1 and 2 are buying; scopes 3 to 5 are building. Moving from 1 to 5 adds control and responsibility. For each scope, consider governance and compliance, legal and privacy, risk management, controls and resilience."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: medium
+
+- id: q-week-4-031
+  set: week-4
+  type: multi
+  stem: "A bank is setting up governance for generative AI across its business units. Which practices reflect effective AI governance processes? (Select TWO.)"
+  options:
+    - { id: a, text: "Create a cross-functional review board that approves high-risk AI use cases", explanation: "Correct. A board with business, legal, security, data science and risk members gives accountable oversight." }
+    - { id: b, text: "Complete a launch checklist once and skip further reviews", explanation: "Incorrect. Governance is continuous; models and risks change after launch." }
+    - { id: c, text: "Define a review cadence, such as quarterly reviews for high-risk models and after any incident", explanation: "Correct. A regular cadence keeps controls current." }
+    - { id: d, text: "Let each employee choose any public chatbot for customer data", explanation: "Incorrect. An acceptable use policy and training should prevent confidential data entering consumer tools." }
+    - { id: e, text: "Rely on CloudWatch dashboards as the only governance control", explanation: "Incorrect. Monitoring is one tool; governance also needs policies, owners, reviews and training." }
+  answer: [a, c]
+  explanation: "Governance processes include policies (acceptable use, model approval, data classification), named owners and a review board, a review cadence, staff training and up-to-date documentation such as Model Cards and risk assessments."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: medium
+
+- id: q-week-4-032
+  set: week-4
+  type: multi
+  stem: "A European health insurer must keep patient data processed by its Amazon Bedrock assistant inside the EU and must retain model invocation logs unchanged for seven years. Which measures meet these requirements? (Select TWO.)"
+  options:
+    - { id: a, text: "Deploy in an EU Region and use only EU-scoped cross-Region inference profiles if any", explanation: "Correct. Region choice controls data residency; cross-Region inference must stay within the required geography." }
+    - { id: b, text: "Use a global cross-Region inference profile for maximum throughput", explanation: "Incorrect. Global routing may process data outside the EU." }
+    - { id: c, text: "Store the logs in S3 with Object Lock and a seven-year retention period", explanation: "Correct. Object Lock keeps records unchangeable for the retention period." }
+    - { id: d, text: "Download AWS SOC reports from AWS Artifact", explanation: "Incorrect. Artifact supplies AWS's compliance reports; it does not control residency or retention." }
+    - { id: e, text: "Run AWS Trusted Advisor checks weekly", explanation: "Incorrect. Trusted Advisor gives best-practice recommendations; it does not enforce retention or residency." }
+  answer: [a, c]
+  explanation: "Data governance covers residency (Region choice, care with cross-Region inference), retention (S3 Lifecycle, Glacier, Object Lock, log retention settings), logging and monitoring."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#exam-tips
+  difficulty: hard
+
+- id: q-week-4-033
+  set: week-4
+  type: single
+  stem: "An accounts-payable system uses a foundation model to extract the invoice number, date and total from emails into JSON. The same email must always produce the same output. Which inference setting is MOST appropriate?"
+  options:
+    - { id: a, text: "A high temperature with a large top-p", explanation: "Incorrect. High randomness produces varied output, the opposite of what is needed." }
+    - { id: b, text: "A temperature of 0 or close to 0", explanation: "Correct. Low temperature makes the most likely token win almost every time, giving consistent extraction." }
+    - { id: c, text: "A higher top-k to widen token choices", explanation: "Incorrect. Widening token choices increases variability." }
+    - { id: d, text: "Removing all stop sequences", explanation: "Incorrect. Stop sequences help keep output in a fixed format; removing them does not improve consistency." }
+  answer: [b]
+  explanation: "'Deterministic', 'consistent', 'factual' → low temperature (or low top-p or top-k). Creative tasks use higher values. None of these parameters adds knowledge."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#exam-tips
+  difficulty: easy
+
+- id: q-week-4-034
+  set: week-4
+  type: single
+  stem: "A compliance team wants a RAG assistant that answers questions such as 'Which suppliers of part X are affected by regulation Y through their parent companies?', which require following links between entities. Which vector store choice supports this BEST?"
+  options:
+    - { id: a, text: "Amazon DocumentDB", explanation: "Incorrect. DocumentDB suits JSON documents, not multi-hop relationship queries." }
+    - { id: b, text: "Amazon RDS for PostgreSQL with pgvector", explanation: "Incorrect. pgvector suits relational data already in PostgreSQL; it does not provide graph traversal for GraphRAG." }
+    - { id: c, text: "Amazon Neptune Analytics with GraphRAG in Bedrock Knowledge Bases", explanation: "Correct. Neptune stores relationships and powers GraphRAG, which follows links between entities for multi-hop questions." }
+    - { id: d, text: "Amazon S3 with no vector store", explanation: "Incorrect. S3 stores the source documents but does not perform similarity search or graph traversal." }
+  answer: [c]
+  explanation: "'Relationships', 'knowledge graph', 'multi-hop' → Amazon Neptune with GraphRAG. OpenSearch suits search at scale, pgvector suits relational data and DocumentDB suits JSON documents."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: hard
+
+- id: q-week-4-035
+  set: week-4
+  type: single
+  stem: "A telecom company will run a FAQ chatbot that handles 3 million short questions a month. Quality tests show that several models meet the accuracy bar. Which choice is MOST appropriate?"
+  options:
+    - { id: a, text: "The largest reasoning model available, for maximum quality", explanation: "Incorrect. A larger model costs more and is slower without a needed quality gain." }
+    - { id: b, text: "The model with the largest context window", explanation: "Incorrect. Short questions do not need a very large context window." }
+    - { id: c, text: "A new model pre-trained from scratch on the FAQs", explanation: "Incorrect. Pre-training is the most expensive option and unnecessary when existing models meet the bar." }
+    - { id: d, text: "The smallest, fastest and cheapest model that met the accuracy bar", explanation: "Correct. When several models meet quality requirements, the smallest suitable model minimises cost and latency at high volume." }
+  answer: [d]
+  explanation: "Model size, speed and price go together. The best choice is the smallest model that meets quality, latency, cost and compliance requirements, which matters most at high volume."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: medium
+
+- id: q-week-4-036
+  set: week-4
+  type: single
+  stem: "A language-learning app's translation bot is manipulated by a user into writing promotional spam for an unrelated website instead of translating. Which prompt risk does this describe?"
+  options:
+    - { id: a, text: "Hijacking", explanation: "Correct. Hijacking replaces the application's intended task with the attacker's task." }
+    - { id: b, text: "Prompt leaking", explanation: "Incorrect. Prompt leaking reveals the hidden system prompt." }
+    - { id: c, text: "Poisoning", explanation: "Incorrect. Poisoning corrupts training or retrieval data." }
+    - { id: d, text: "Exposure", explanation: "Incorrect. Exposure reveals sensitive data such as personal information." }
+  answer: [a]
+  explanation: "Jailbreaking defeats safety rules; hijacking replaces the app's task; poisoning corrupts data; exposure reveals sensitive data; prompt leaking reveals the system prompt. Denied topics and prompt attack filters in Guardrails help keep the app on task."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-17#explanation
+  difficulty: easy
+
+- id: q-week-4-037
+  set: week-4
+  type: single
+  stem: "A developer writes 'Translate the following sentence into French:' followed by a sentence, with no examples, and the model translates it correctly. Which prompting technique is this?"
+  options:
+    - { id: a, text: "Few-shot prompting", explanation: "Incorrect. Few-shot prompting includes several examples." }
+    - { id: b, text: "Zero-shot prompting", explanation: "Correct. Zero-shot prompting gives only the instruction and input, with no examples." }
+    - { id: c, text: "Chain-of-thought prompting", explanation: "Incorrect. Chain-of-thought asks for step-by-step reasoning." }
+    - { id: d, text: "Fine-tuning", explanation: "Incorrect. Fine-tuning trains the model; this is just a prompt." }
+  answer: [b]
+  explanation: "Zero-shot prompting relies on the model's general training. Add one example (single-shot) or several (few-shot) when the format or task is unusual. Start simple, then add examples or reasoning steps as needed."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: easy
+
+- id: q-week-4-038
+  set: week-4
+  type: multi
+  stem: "A RAG assistant for an energy company must refuse answers that are not supported by its retrieved documents and must detect users trying to override its instructions. Which Amazon Bedrock Guardrails capabilities should be configured? (Select TWO.)"
+  options:
+    - { id: a, text: "Word filters", explanation: "Incorrect. Word filters block exact words or phrases; they cannot judge grounding or detect varied injection attempts." }
+    - { id: b, text: "Contextual grounding check", explanation: "Correct. The grounding check scores responses against the source passages and blocks unsupported answers." }
+    - { id: c, text: "Denied topics", explanation: "Incorrect. Denied topics block defined subjects, not unsupported answers or instruction overrides." }
+    - { id: d, text: "Prompt attack filter", explanation: "Correct. The prompt attack filter, part of content filters, detects jailbreak and prompt injection attempts." }
+    - { id: e, text: "Sensitive information filters", explanation: "Incorrect. These detect and mask or block PII." }
+  answer: [b, d]
+  explanation: "Hallucination in RAG → contextual grounding check (grounding and relevance thresholds). Jailbreak or prompt injection → prompt attack filter. Guardrails apply to both input and output."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-17#explanation
+  difficulty: medium
+
+- id: q-week-4-039
+  set: week-4
+  type: single
+  stem: "A model provider shows reviewers pairs of chatbot answers to the same prompt and records which answer they prefer. It uses these preferences to make the model more helpful and less harmful. Which technique is this data used for?"
+  options:
+    - { id: a, text: "Continued pre-training", explanation: "Incorrect. Continued pre-training uses unlabelled domain text." }
+    - { id: b, text: "Distillation", explanation: "Incorrect. Distillation uses a teacher model's answers to train a smaller student." }
+    - { id: c, text: "Reinforcement learning from human feedback (RLHF)", explanation: "Correct. Human preference rankings train a reward model that guides reinforcement learning." }
+    - { id: d, text: "Retrieval-augmented generation", explanation: "Incorrect. RAG retrieves documents at question time and does not use preference data." }
+  answer: [c]
+  explanation: "Human rankings of responses → RLHF: humans rank outputs, a reward model learns those preferences, and reinforcement learning updates the FM to earn higher reward. It aligns models with human values such as helpfulness and harmlessness."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#exam-tips
+  difficulty: medium
+
+- id: q-week-4-040
+  set: week-4
+  type: single
+  stem: "A board member asks which way of obtaining a foundation model requires the MOST data, compute and time. Which answer is correct?"
+  options:
+    - { id: a, text: "Fine-tuning an existing model", explanation: "Incorrect. Fine-tuning needs a relatively small labelled dataset and far less compute." }
+    - { id: b, text: "Retrieval-augmented generation", explanation: "Incorrect. RAG does not change model weights and costs far less." }
+    - { id: c, text: "Distillation", explanation: "Incorrect. Distillation trains a small student model and is much cheaper than building a model." }
+    - { id: d, text: "Pre-training a model from scratch", explanation: "Correct. Pre-training needs massive data and compute over weeks or months." }
+  answer: [d]
+  explanation: "Pre-training from scratch is the most expensive option and almost never the right business answer. Prefer prompting, then RAG, then fine-tuning, climbing only as far as the requirement demands."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#exam-tips
+  difficulty: easy
+
+- id: q-week-4-041
+  set: week-4
+  type: single
+  stem: "A retrieval-only evaluation of a legal RAG assistant shows that the retrieved chunks rarely contain the facts needed to answer the test questions. What should the team change FIRST?"
+  options:
+    - { id: a, text: "The chunking strategy, embedding model or retrieval settings", explanation: "Correct. Poor context relevance or coverage is a retrieval problem, fixed in chunking, embeddings, filters or reranking." }
+    - { id: b, text: "The generation model, replacing it with a larger one", explanation: "Incorrect. A larger model cannot answer from facts that were never retrieved." }
+    - { id: c, text: "The temperature, raising it for more varied answers", explanation: "Incorrect. Temperature does not affect what is retrieved." }
+    - { id: d, text: "A Guardrails word filter for legal terms", explanation: "Incorrect. Word filters block terms; they do not improve retrieval." }
+  answer: [a]
+  explanation: "Evaluate RAG retrieval and generation separately. Retrieval metrics (context relevance, coverage) point to chunking, embeddings and search settings; generation metrics (faithfulness, correctness, citations) point to prompt, model and grounding checks."
+  domain: D3
+  taskStatement: "3.4"
+  lessonRef: day-20#explanation
+  difficulty: hard
+
+- id: q-week-4-042
+  set: week-4
+  type: single
+  stem: "A hospital wants to confirm that a model's patient-education leaflets are medically accurate and written at the right reading level before choosing it. Which evaluation approach fits BEST?"
+  options:
+    - { id: a, text: "BLEU scores against a public dataset", explanation: "Incorrect. BLEU measures word overlap and cannot judge medical accuracy or tone." }
+    - { id: b, text: "Human evaluation using the hospital's own clinicians as the work team", explanation: "Correct. Expert accuracy and subjective qualities need human evaluation, which Bedrock supports with your own work team." }
+    - { id: c, text: "Model latency measurements in CloudWatch", explanation: "Incorrect. Latency is operational, not content quality." }
+    - { id: d, text: "A public benchmark leaderboard rank", explanation: "Incorrect. Benchmarks do not measure this hospital's specific leaflets." }
+  answer: [b]
+  explanation: "'Subjective quality, brand voice, expert accuracy' → human evaluation. Amazon Bedrock human evaluation lets you bring your own work team, define metrics and choose a rating method."
+  domain: D3
+  taskStatement: "3.4"
+  lessonRef: day-20#exam-tips
+  difficulty: medium
+
+- id: q-week-4-043
+  set: week-4
+  type: ordering
+  stem: "A team uses Amazon Bedrock Model Evaluation to choose between two models for summarising support cases. Place the steps in the correct order, from first to last."
+  options:
+    - { id: a, text: "Create an evaluation job that selects the models, task type and metrics", explanation: "Second: the job definition points to the dataset and chooses what to measure." }
+    - { id: b, text: "Review the report and per-prompt scores and choose a model", explanation: "Last: compare results and decide." }
+    - { id: c, text: "Prepare a prompt dataset of representative support cases in Amazon S3", explanation: "First: a representative dataset is needed before any job can run." }
+    - { id: d, text: "The job runs and writes its results to Amazon S3", explanation: "Third: Bedrock generates responses, scores them and stores the results." }
+  answer: [c, a, d, b]
+  explanation: "Bedrock evaluation jobs read a prompt dataset (built-in or your own JSONL in S3), run the selected models, score them with the chosen metrics and store a report in S3. Because jobs are repeatable, rerun them after every change to the model, prompt or retrieval."
+  domain: D3
+  taskStatement: "3.4"
+  lessonRef: day-20#explanation
+  difficulty: medium
+
+- id: q-week-4-044
+  set: week-4
+  type: single
+  stem: "A developer sends a 900-page technical standard to a model in one request and receives an error saying the input is too long. Which limit has the request exceeded?"
+  options:
+    - { id: a, text: "The maximum output tokens setting", explanation: "Incorrect. Maximum output tokens caps the response, not the input." }
+    - { id: b, text: "The embedding dimension", explanation: "Incorrect. Embedding dimension is the length of a vector, not a request limit." }
+    - { id: c, text: "The model's context window", explanation: "Correct. The context window is the maximum number of tokens the model can consider at once, prompt plus response." }
+    - { id: d, text: "The temperature range", explanation: "Incorrect. Temperature controls randomness, not input size." }
+  answer: [c]
+  explanation: "The context window, measured in tokens, limits prompt plus response. For very long documents, chunk and retrieve relevant parts (RAG), summarise in stages, or choose a model with a larger window, keeping cost and latency in mind."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#exam-tips
+  difficulty: medium
+
+- id: q-week-4-045
+  set: week-4
+  type: single
+  stem: "A design agency's image model starts from random noise and refines it over many steps into a picture that matches a text prompt. Which type of model is this?"
+  options:
+    - { id: a, text: "Recurrent neural network", explanation: "Incorrect. RNNs process sequences step by step and are not the basis of modern image generation." }
+    - { id: b, text: "Embedding model", explanation: "Incorrect. Embedding models output vectors, not images." }
+    - { id: c, text: "K-means clustering model", explanation: "Incorrect. K-means groups data; it does not generate images." }
+    - { id: d, text: "Diffusion model", explanation: "Correct. Diffusion models generate images by iteratively removing noise, guided by the prompt." }
+  answer: [d]
+  explanation: "Diffusion models learn to reverse a noising process: starting from noise, they remove it step by step until an image appears. Amazon Nova Canvas is an example of an image-generation model on Bedrock."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: easy
+
+- id: q-week-4-046
+  set: week-4
+  type: multi
+  stem: "A bank's support agent must remember each customer's preferred contact channel across separate conversations and hand billing disputes to a specialist billing agent. Which agentic AI concepts address these requirements? (Select TWO.)"
+  options:
+    - { id: a, text: "Short-term memory only", explanation: "Incorrect. Short-term memory covers only the current conversation." }
+    - { id: b, text: "Long-term memory", explanation: "Correct. Long-term memory stores facts such as preferences across sessions." }
+    - { id: c, text: "A higher temperature", explanation: "Incorrect. Temperature affects randomness, not memory or delegation." }
+    - { id: d, text: "Batch inference", explanation: "Incorrect. Batch inference processes offline jobs." }
+    - { id: e, text: "A supervisor pattern with multi-agent collaboration", explanation: "Correct. A supervisor agent delegates tasks to specialist agents." }
+  answer: [b, e]
+  explanation: "Remember across sessions → long-term memory; current conversation → short-term memory. One agent delegating to specialists → supervisor or multi-agent collaboration. AgentCore Memory and Bedrock multi-agent collaboration support these patterns."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#exam-tips
+  difficulty: medium
+
+- id: q-week-4-047
+  set: week-4
+  type: single
+  stem: "An online fashion store uses generative AI to write personalised product descriptions. Leadership wants a metric that shows whether this is creating business value. Which metric is MOST appropriate?"
+  options:
+    - { id: a, text: "Conversion rate of product pages", explanation: "Correct. Conversion rate shows whether visitors buy more, a direct business outcome." }
+    - { id: b, text: "ROUGE score of descriptions", explanation: "Incorrect. ROUGE measures text overlap with references, a model metric." }
+    - { id: c, text: "Model latency in milliseconds", explanation: "Incorrect. Latency is a technical metric, not business value." }
+    - { id: d, text: "Average number of output tokens", explanation: "Incorrect. Token counts relate to cost, not value created." }
+  answer: [a]
+  explanation: "Business value is measured with business metrics: conversion rate, ARPU, customer lifetime value, efficiency, cost per interaction and CSAT. Model metrics such as accuracy or ROUGE describe the model, not the outcome."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#exam-tips
+  difficulty: easy
+
+- id: q-week-4-048
+  set: week-4
+  type: single
+  stem: "An electronics retailer's chatbot confidently tells customers about a three-year warranty that the company has never offered. Which mitigation addresses this MOST effectively?"
+  options:
+    - { id: a, text: "Switch to a larger model", explanation: "Incorrect. Larger models still hallucinate when they lack the facts." }
+    - { id: b, text: "Ground answers in the official warranty documents with RAG and show citations", explanation: "Correct. Grounding gives the model the real policy text and citations let users verify it." }
+    - { id: c, text: "Increase the temperature", explanation: "Incorrect. Higher temperature increases the risk of invented content." }
+    - { id: d, text: "Increase the maximum output tokens", explanation: "Incorrect. Longer answers do not make them more accurate." }
+  answer: [b]
+  explanation: "A confident but false answer is a hallucination. Mitigate with RAG grounding and citations, Guardrails contextual grounding checks, clear instructions to answer only from context, and human review for high-impact answers."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-week-4-049
+  set: week-4
+  type: single
+  stem: "A contact-centre application sends a steady, high volume of requests to Amazon Bedrock around the clock and needs guaranteed throughput during peak hours. Which pricing option fits BEST?"
+  options:
+    - { id: a, text: "On-demand inference", explanation: "Incorrect. On-demand suits variable traffic but does not guarantee capacity." }
+    - { id: b, text: "Batch inference", explanation: "Incorrect. Batch inference is for offline jobs where results are not needed immediately." }
+    - { id: c, text: "Provisioned Throughput", explanation: "Correct. Provisioned Throughput reserves model capacity for steady, high-volume traffic with guaranteed performance." }
+    - { id: d, text: "Prompt caching on its own", explanation: "Incorrect. Prompt caching reduces cost of repeated prefixes but does not guarantee throughput." }
+  answer: [c]
+  explanation: "Provisioned Throughput buys guaranteed capacity billed per hour even when idle, so it suits steady, high-volume traffic. For variable or modest traffic, on-demand is usually cheaper."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#exam-tips
+  difficulty: medium
+
+- id: q-week-4-050
+  set: week-4
+  type: single
+  stem: "A sales operations team with no developers wants to ask questions about business data, build dashboards and create simple AI agents and automations. Which AWS offering fits BEST?"
+  options:
+    - { id: a, text: "Kiro", explanation: "Incorrect. Kiro is an agentic IDE for developers, with spec-driven development." }
+    - { id: b, text: "AWS Transform", explanation: "Incorrect. AWS Transform modernises and migrates applications such as mainframe, .NET and VMware workloads." }
+    - { id: c, text: "Strands Agents", explanation: "Incorrect. Strands Agents is an open-source SDK for developers writing agents in code." }
+    - { id: d, text: "Amazon Quick", explanation: "Correct. Amazon Quick gives business users insights, dashboards, no-code agents and automation." }
+  answer: [d]
+  explanation: "Business users, dashboards, insights and no-code agents → Amazon Quick. Developers in an IDE → Kiro. Application modernisation → AWS Transform. Code-first agents → Strands Agents, run in production on AgentCore."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-12#exam-tips
+  difficulty: easy
+
+- id: q-week-4-051
+  set: week-4
+  type: single
+  stem: "An enterprise wants AI agents to help modernise hundreds of legacy .NET Framework applications and move them to Linux. Which AWS service is designed for this?"
+  options:
+    - { id: a, text: "AWS Transform", explanation: "Correct. AWS Transform uses agentic AI to modernise and migrate workloads such as .NET, mainframe, VMware and Java." }
+    - { id: b, text: "Amazon Quick", explanation: "Incorrect. Quick serves business users with insights and automation." }
+    - { id: c, text: "Amazon Bedrock Knowledge Bases", explanation: "Incorrect. Knowledge Bases provides managed RAG, not code modernisation." }
+    - { id: d, text: "Amazon SageMaker Canvas", explanation: "Incorrect. Canvas is no-code ML for analysts." }
+  answer: [a]
+  explanation: "AWS Transform is the ready-made agentic application for modernisation and migration. Knowing which packaged application fits a persona is part of task statement 2.3."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-12#explanation
+  difficulty: medium
+
+- id: q-week-4-052
+  set: week-4
+  type: single
+  stem: "A large language model learned language by predicting the next word across billions of unlabelled web pages, with no human-written labels. Which kind of learning is this?"
+  options:
+    - { id: a, text: "Supervised learning with human labels", explanation: "Incorrect. No human labels were used." }
+    - { id: b, text: "Self-supervised learning", explanation: "Correct. The data provides its own labels (the next or missing word), which is self-supervised learning." }
+    - { id: c, text: "Reinforcement learning", explanation: "Incorrect. Reinforcement learning learns from rewards through trial and error." }
+    - { id: d, text: "Clustering", explanation: "Incorrect. Clustering groups similar items; it does not predict words." }
+  answer: [b]
+  explanation: "Foundation models are pre-trained with self-supervised learning: labels are created automatically from the data itself, such as the next token. This is why they can learn from huge unlabelled datasets."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#exam-tips
+  difficulty: medium
+
+- id: q-week-4-053
+  set: week-4
+  type: single
+  stem: "A delivery company's ETA model was accurate at launch. Eight months later its predictions are noticeably worse, although no code has changed; new suburbs and traffic patterns have appeared. What is the MOST likely cause and fix?"
+  options:
+    - { id: a, text: "Underfitting; switch to a simpler model", explanation: "Incorrect. A simpler model would not adapt to the new patterns." }
+    - { id: b, text: "A software bug; redeploy the same model", explanation: "Incorrect. Nothing changed in the code; redeploying the same model keeps the same problem." }
+    - { id: c, text: "Data drift; monitor inputs and retrain on recent data", explanation: "Correct. The world changed, so the model must be retrained with data that reflects it." }
+    - { id: d, text: "Overfitting; remove features", explanation: "Incorrect. The model performed well on new data at launch; the gap appeared over time." }
+  answer: [c]
+  explanation: "'Accuracy dropped months after launch with no code change' → drift. Monitor production data and performance (for example with SageMaker Model Monitor) and retrain when drift is detected."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#exam-tips
+  difficulty: medium
+
+- id: q-week-4-054
+  set: week-4
+  type: single
+  stem: "A streaming service wants to show each viewer a personalised row of recommended films based on viewing history, without building ML models itself. Which AWS service fits BEST?"
+  options:
+    - { id: a, text: "Amazon Comprehend", explanation: "Incorrect. Comprehend analyses text for sentiment, entities and topics." }
+    - { id: b, text: "Amazon Lex", explanation: "Incorrect. Lex builds conversational chatbots." }
+    - { id: c, text: "Amazon Rekognition", explanation: "Incorrect. Rekognition analyses images and video." }
+    - { id: d, text: "Amazon Personalize", explanation: "Correct. Personalize is a managed service for personalised recommendations." }
+  answer: [d]
+  explanation: "Recommendations → Amazon Personalize. Chatbot → Lex. Image and video analysis → Rekognition. Text analysis → Comprehend. Managed AI services offer the least operational overhead when no ML expertise is available."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#exam-tips
+  difficulty: easy
+
+- id: q-week-4-055
+  set: week-4
+  type: multi
+  stem: "A logistics company wants to pull line items and totals from scanned supplier invoices and then detect the sentiment and key entities in customer complaint emails. Which AWS services should it use? (Select TWO.)"
+  options:
+    - { id: a, text: "Amazon Polly", explanation: "Incorrect. Polly converts text to speech." }
+    - { id: b, text: "Amazon Textract", explanation: "Correct. Textract extracts text, tables and form fields from scanned documents." }
+    - { id: c, text: "Amazon Lex", explanation: "Incorrect. Lex builds chatbots." }
+    - { id: d, text: "Amazon Rekognition", explanation: "Incorrect. Rekognition analyses images and video, and its text detection does not extract document structure such as tables." }
+    - { id: e, text: "Amazon Comprehend", explanation: "Correct. Comprehend detects sentiment, entities and key phrases in text." }
+  answer: [b, e]
+  explanation: "Textract extracts text and structure (tables, forms) from documents; Comprehend understands text (sentiment, entities, PII). Together they automate document and email processing without building models."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#exam-tips
+  difficulty: medium
+
+- id: q-week-4-056
+  set: week-4
+  type: ordering
+  stem: "A company has automated MLOps for its demand-forecasting model on SageMaker AI. Place the steps that follow a drift alert in the correct order, from first to last."
+  options:
+    - { id: a, text: "SageMaker Pipelines retrains the model on recent data and evaluates it", explanation: "Third: the automated pipeline produces and tests a new candidate." }
+    - { id: b, text: "SageMaker Model Monitor detects that live data has drifted from the baseline", explanation: "First: monitoring detects the problem." }
+    - { id: c, text: "The approved model version is deployed to the endpoint", explanation: "Last: only an approved version reaches production." }
+    - { id: d, text: "An alarm triggers the retraining pipeline", explanation: "Second: the alert starts the automated workflow." }
+    - { id: e, text: "The new version is registered in Model Registry and awaits approval", explanation: "Fourth: the registry versions the model and records approval status." }
+  answer: [b, d, a, e, c]
+  explanation: "MLOps automates the loop: Model Monitor detects drift, CloudWatch alarms trigger Pipelines, Pipelines retrains and evaluates, Model Registry versions and gates approval, and the approved model is deployed. The ML lifecycle is a loop, not a line."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: hard
+
+- id: q-week-4-057
+  set: week-4
+  type: multi
+  stem: "A property platform has built a model that predicts house sale prices in dollars. Which metrics are appropriate for measuring its error? (Select TWO.)"
+  options:
+    - { id: a, text: "Mean absolute error (MAE)", explanation: "Correct. MAE is the average size of the errors in the same units as the price." }
+    - { id: b, text: "Precision", explanation: "Incorrect. Precision is a classification metric." }
+    - { id: c, text: "Recall", explanation: "Incorrect. Recall is a classification metric." }
+    - { id: d, text: "Root mean squared error (RMSE)", explanation: "Correct. RMSE measures regression error and penalises large errors more heavily." }
+    - { id: e, text: "Area under the ROC curve (AUC)", explanation: "Incorrect. AUC measures how well a classifier separates classes." }
+  answer: [a, d]
+  explanation: "Regression predicts numbers, so use error metrics such as MAE and RMSE. Classification uses accuracy, precision, recall, F1 and AUC."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#exam-tips
+  difficulty: medium
