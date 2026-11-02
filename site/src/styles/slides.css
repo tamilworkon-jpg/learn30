@@ -1,0 +1,403 @@
+/* T182 — slide view of a lesson (src/lib/slide-deck.ts). Everything is scoped to
+   html[data-lesson-view='slides'] on screen; print and the Full page view show the long article. */
+
+.slide-only {
+  display: none;
+}
+
+/* ---------- toolbar (both views) ---------- */
+.deck-bar:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin: 4px 0 12px;
+}
+.view-toggle {
+  display: inline-flex;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+.view-toggle button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+}
+.view-toggle button[aria-pressed='true'] {
+  background: var(--brand-purple);
+  color: #fff;
+}
+[data-theme='dark'] .view-toggle button[aria-pressed='true'] {
+  background: var(--brand-orange);
+  color: #1f1a3a;
+}
+.view-toggle button:focus-visible,
+.deck-btn:focus-visible {
+  outline: 3px solid var(--brand-orange);
+  outline-offset: 2px;
+}
+.deck-status {
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 15px;
+}
+.deck-progress {
+  width: 160px;
+  height: 10px;
+  appearance: none;
+  border: 0;
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--card);
+}
+.deck-progress::-webkit-progress-bar {
+  background: var(--card);
+  border-radius: 99px;
+}
+.deck-progress::-webkit-progress-value {
+  background: linear-gradient(90deg, var(--brand-purple2), var(--brand-orange));
+  border-radius: 99px;
+}
+.deck-progress::-moz-progress-bar {
+  background: linear-gradient(90deg, var(--brand-purple2), var(--brand-orange));
+  border-radius: 99px;
+}
+
+@media screen {
+  /* Before the pager runs: don't flash the long page. */
+  html[data-lesson-view='slides']:not([data-deck-ready]) .slide-deck article {
+    max-height: calc(100vh - 160px);
+    overflow: hidden;
+  }
+
+  html[data-lesson-view='slides'] .slide-deck .slide-only {
+    display: revert;
+  }
+  html[data-lesson-view='slides'] .slide-deck .deck-status.slide-only {
+    display: flex;
+  }
+  html[data-lesson-view='slides'] .slide-off {
+    display: none !important;
+  }
+
+  /* ---------- the stage ---------- */
+  html[data-lesson-view='slides'][data-deck-ready] .slide-deck article {
+    position: relative;
+    overflow: hidden;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-top: 6px solid var(--brand-purple2);
+    border-radius: 24px;
+    padding: 18px 28px 20px;
+    box-shadow: 0 10px 30px rgb(80 62 157 / 0.1);
+    font-size: 20px;
+    line-height: 1.65;
+  }
+  html[data-lesson-view='slides'] .slide-deck article.slide-scroll {
+    overflow-y: auto;
+  }
+  html[data-lesson-view='slides'] .slide-deck article p,
+  html[data-lesson-view='slides'] .slide-deck article li {
+    line-height: 1.65;
+  }
+  html[data-lesson-view='slides'] .slide-deck article > .lesson-section,
+  html[data-lesson-view='slides'] .slide-deck article > details.deep-dive {
+    margin-top: 0;
+    display: flow-root; /* contain the floated illustration */
+  }
+  html[data-lesson-view='slides'] .slide-deck article > :first-child {
+    margin-top: 0;
+    padding-right: 56px; /* room for the "1/3" part label */
+  }
+  html[data-lesson-view='slides'] .slide-deck .sec-head {
+    font-size: 28px;
+    line-height: 1.25;
+    margin: 0 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--brand-orange-soft);
+  }
+  html[data-lesson-view='slides'] .slide-deck .sec-head:focus {
+    outline: none;
+  }
+  html[data-lesson-view='slides'] .slide-deck .sec-head:focus-visible,
+  html[data-lesson-view='slides'] .slide-deck .deep-dive summary:focus-visible {
+    outline: 3px solid var(--brand-orange);
+    outline-offset: 4px;
+    border-radius: 8px;
+  }
+  html[data-lesson-view='slides'] .slide-deck .sec-head .text-sm {
+    font-size: 16px;
+  }
+    html[data-lesson-view='slides'] .slide-deck .lesson-section > .sec-head {
+    padding-right: 64px;
+  }
+  .slide-part:not(:empty) {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--card);
+    color: var(--muted);
+    border-radius: 99px;
+    padding: 2px 12px;
+  }
+  html[data-lesson-view='slides'] .slide-deck article h3 {
+    font-size: 23px;
+    font-weight: 700;
+    color: var(--brand-purple);
+    margin: 4px 0 10px;
+  }
+  html[data-theme='dark'][data-lesson-view='slides'] .slide-deck article h3 {
+    color: #d8ceff;
+  }
+  html[data-lesson-view='slides'] .slide-deck article p {
+    margin: 0 0 14px;
+  }
+  html[data-lesson-view='slides'] .slide-deck article ul,
+  html[data-lesson-view='slides'] .slide-deck article ol {
+    margin: 0 0 14px;
+  }
+  html[data-lesson-view='slides'] .slide-deck article ul:is(:not([class]), [class=''], [class='slide-off']) {
+    list-style: disc;
+    padding-left: 1.4em;
+  }
+  html[data-lesson-view='slides'] .slide-deck article ol:is(:not([class]), [class=''], [class='slide-off']) {
+    list-style: decimal;
+    padding-left: 1.6em;
+  }
+  html[data-lesson-view='slides'] .slide-deck article :is(ul, ol):is(:not([class]), [class=''], [class='slide-off']) > li::marker {
+    color: var(--brand-orange-strong);
+    font-weight: 700;
+  }
+  html[data-theme='dark'][data-lesson-view='slides'] .slide-deck article :is(ul, ol):is(:not([class]), [class=''], [class='slide-off']) > li::marker {
+    color: var(--brand-orange-soft);
+  }
+  html[data-lesson-view='slides'] .slide-deck article li + li {
+    margin-top: 6px;
+  }
+  html[data-lesson-view='slides'] .slide-deck article table {
+    font-size: 17px;
+    margin-bottom: 14px;
+  }
+  html[data-lesson-view='slides'] .slide-deck .diagram {
+    margin: 8px 0 12px;
+  }
+  html[data-lesson-view='slides'] .slide-deck .diagram img {
+    max-height: var(--slide-img-max, 480px);
+  }
+
+  @media (max-width: 1000px) {
+    /* The section list moves below the slides so the slide is the first thing on screen. */
+    html[data-lesson-view='slides'] .lesson-aside {
+      order: 1;
+    }
+  }
+
+  /* ---------- illustration (decorative; only on slides without a diagram/table/mock-up) ---------- */
+  html[data-lesson-view='slides'] .slide-deck .slide-illo {
+    float: right;
+    width: 200px;
+    height: 150px;
+    margin: 0 0 12px 20px;
+    shape-outside: margin-box;
+  }
+  /* Boxes with a background sit beside the illustration instead of under it. */
+  html[data-lesson-view='slides'] .slide-deck article :is(.callout, .card, .lab-banner, .objectives li) {
+    display: flow-root;
+  }
+  html[data-lesson-view='slides'] .slide-deck .slide-illo.illo-off {
+    display: none;
+  }
+  html[data-lesson-view='slides'] .slide-deck .deep-dive summary .slide-illo {
+    float: none;
+    order: 5;
+    margin: 8px 0 0 auto;
+  }
+  .deep-teaser {
+    flex-basis: 100%;
+    font-size: 18px;
+    color: var(--deep-text);
+  }
+
+  /* ---------- key points ---------- */
+  html[data-lesson-view='slides'] .slide-deck article strong {
+    background: linear-gradient(transparent 55%, rgb(253 164 132 / 0.65) 55%);
+    border-radius: 3px;
+    padding: 0 2px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  html[data-theme='dark'][data-lesson-view='slides'] .slide-deck article strong {
+    background: linear-gradient(transparent 55%, rgb(251 109 58 / 0.45) 55%);
+  }
+  html[data-lesson-view='slides'] .slide-deck .slide-keypoint {
+    position: relative;
+    font-size: 20px;
+    padding: 30px 22px 16px;
+    margin: 16px 0;
+    border-left-width: 10px;
+    box-shadow: 0 6px 20px rgb(31 26 58 / 0.12);
+  }
+  html[data-lesson-view='slides'] .slide-deck .slide-keypoint::before {
+    content: '★ Key point';
+    position: absolute;
+    top: -12px;
+    left: 16px;
+    background: var(--brand-purple);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: 99px;
+    padding: 3px 12px;
+  }
+  html[data-lesson-view='slides'] .slide-deck .slide-keypoint .callout-title {
+    font-size: 21px;
+  }
+  html[data-lesson-view='slides'] .slide-deck .key-strip:not([hidden]) {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 12px;
+    height: 40px;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    font-size: 14px;
+    border-top: 1px dashed var(--border);
+    padding-top: 6px;
+  }
+  .key-strip-label {
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .key-term {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 2px 10px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* ---------- controls ---------- */
+  .deck-controls:not([hidden]) {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    background: var(--panel);
+  }
+  .deck-btn {
+    min-height: 52px;
+    min-width: 160px;
+    justify-content: center;
+    font-size: 17px;
+  }
+  .deck-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .deck-count-mini {
+    font-weight: 600;
+  }
+
+  @media (max-width: 760px) {
+    html[data-lesson-view='slides'][data-deck-ready] .slide-deck article {
+      font-size: 18px;
+      padding: 14px 16px 16px;
+      border-radius: 20px;
+    }
+    html[data-lesson-view='slides'] .slide-deck .sec-head {
+      font-size: 23px;
+    }
+    /* Course-source line: useful on the long page, too costly on a phone slide. */
+    html[data-lesson-view='slides'] .slide-deck article > p.muted.text-sm {
+      display: none;
+    }
+    html[data-lesson-view='slides'] .slide-deck article h3 {
+      font-size: 20px;
+    }
+    html[data-lesson-view='slides'] .slide-deck article table {
+      font-size: 15px;
+    }
+    html[data-lesson-view='slides'] .slide-deck .slide-illo {
+      float: none;
+      display: block;
+      width: 100%;
+      height: 76px;
+      margin: 0 0 8px;
+    }
+    html[data-lesson-view='slides'] .slide-deck .slide-keypoint,
+    html[data-lesson-view='slides'] .slide-deck .slide-keypoint .callout-title {
+      font-size: 18px;
+    }
+    html[data-lesson-view='slides'] .slide-deck .key-strip:not([hidden]) {
+      left: 12px;
+      right: 12px;
+    }
+    .deck-btn {
+      min-width: 0;
+      flex: 1;
+      font-size: 16px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    .deck-count-mini {
+      display: none;
+    }
+    .deck-progress {
+      width: 56px;
+    }
+    .deck-bar:not([hidden]) {
+      flex-wrap: nowrap;
+      gap: 8px;
+    }
+    .view-toggle button {
+      padding: 6px 11px;
+      font-size: 13px;
+    }
+    .view-toggle button svg {
+      display: none;
+    }
+    .deck-status {
+      font-size: 13px;
+      gap: 6px;
+      white-space: nowrap;
+    }
+  }
+}
+
+@media print {
+  .deck-bar,
+  .deck-controls,
+  .slide-only {
+    display: none !important;
+  }
+  .slide-deck article {
+    height: auto !important;
+    overflow: visible !important;
+  }
+}

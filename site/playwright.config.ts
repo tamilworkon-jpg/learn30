@@ -12,6 +12,9 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${port}`,
     screenshot: 'on',
+    // T182: lessons open as slides by default. Specs written for the long page start in the Full page view;
+    // slides.spec.ts clears this to test the default.
+    storageState: { cookies: [], origins: [{ origin: `http://localhost:${port}`, localStorage: [{ name: 'aip-ui:lesson-view', value: 'full' }] }] },
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },
