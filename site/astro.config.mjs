@@ -5,6 +5,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   base: '/',
+  // Per-checkout cache (default lives in node_modules, which parallel worktrees share via a junction).
+  cacheDir: './.astro/cache',
   trailingSlash: 'ignore',
   integrations: [mdx(), preact()],
   // Shiki colours code with inline style attributes, which the strict CSP blocks; code blocks are styled in CSS instead.
