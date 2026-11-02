@@ -484,6 +484,20 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) �
 
 ---
 
+## Phase 12: Learner feedback — slide lessons, schedule dates, local profiles, README (2026-11-02)
+
+**Decisions (learner)**: local profiles (no server/login; FR-024 kept), lessons as screen-sized slides per section with a Full-page toggle, course start = profile creation date (browser local date), editable in Settings.
+
+- [ ] T182 [P] [US1] Slide lessons — site/src/components/lesson/SlideDeck (client pager over the rendered lesson: each section → ≥1 slide sized to the viewport, big type, Prev/Next + ←/→ + swipe, "Slide n of N" progress, `#slide-n` deep links, Full-page toggle remembered per browser; key terms (**bold**) and callouts highlighted; a visual on every slide: the section's diagram/lab mock-up/table, otherwise an owned section illustration SVG)
+  - TC: SL1 /day/02 opens in slide mode with N ≥ 11 slides, every slide fits 1280×800 and 375×812 without inner scroll; SL2 next/prev via buttons, arrow keys and swipe; deep link `#slide-5` opens slide 5; SL3 font-size ≥ 20px desktop; SL4 every slide contains an img/svg/figure/table/console visual; SL5 bold terms rendered as highlights; SL6 Full-page toggle restores the long page and persists across reloads; SL7 section tracker still marks sections viewed; SL8 axe clean + keyboard focus visible, light/dark, desktop/mobile; screenshots `slide-first`, `slide-diagram`, `slide-lab`, `slide-mobile`.
+- [ ] T183 [US3] Schedule dates — start date = progress.startedAt (profile creation, browser local date); Day N date = start + N−1; finish = start + 29; dashboard shows start/finish, today's planned day and days ahead/behind; outline shows each day's date; day page shows "Planned for <date>"; Settings lets the learner change the start date
+  - TC: SD1 unit: plannedDate/finishDate/status (ahead/on-track/behind) with fixed clock incl. month/DST boundaries; SD2 e2e with a mocked browser clock: dashboard shows the right dates; SD3 changing the start date in Settings updates dashboard + outline; screenshots `schedule-dashboard`, `schedule-settings`.
+- [ ] T184 [US3] Local profiles — "Who's learning?" switcher (add / rename / switch / delete with confirm); each profile has its own progress (incl. start date, theme, attempts); existing single-user data becomes the default profile; export/import act on the active profile
+  - TC: PR1 unit: profile index CRUD, per-profile storage keys, legacy `aip-course:v1` = default profile, deleting a profile removes only its data; PR2 e2e: two profiles keep separate progress, dashboards and start dates across reloads; PR3 import into profile B leaves A untouched; PR4 axe clean on the switcher; screenshots `profiles-menu`, `profiles-dashboard`.
+- [ ] T185 README.md at repo root — prerequisites (Windows Node 22 / WSL note), install, dev/build/preview, tests (unit, e2e, visual baselines), content authoring + validation, profiles/progress/export, port forwarding, project structure, spec-kit workflow
+  - TC: every command in the README runs successfully as written.
+- [ ] T186 REVIEW Phase 12: full regression, visual baselines refreshed after inspection, log
+
 ## Dependencies & Execution Order
 
 ```mermaid
