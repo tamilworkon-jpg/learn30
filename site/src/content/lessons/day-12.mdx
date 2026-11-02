@@ -62,9 +62,9 @@ Bedrock also includes the building blocks you need around a model — each one i
 | Bedrock capability | What it does | Course day |
 |---|---|---|
 | **Knowledge Bases** | Managed RAG: ingest documents, create embeddings, store them in a vector store, retrieve relevant passages at question time | Day 18 |
-| **Agents** | Fully managed agents that plan multi-step tasks and call your APIs (action groups) and knowledge bases | Day 10 |
+| **Agents** | Fully managed agents that plan multi-step tasks and call your APIs (action groups) and knowledge bases — closed to new customers since July 2026; new agents use AgentCore | Day 10 |
 | **Guardrails** | Content filters, denied topics, word filters, sensitive-information (PII) redaction, contextual grounding checks | Days 17, 23 |
-| **Model customisation** | Fine-tuning, continued pre-training and distillation to create a private custom model | Day 19 |
+| **Model customisation** | Supervised fine-tuning, reinforcement fine-tuning and distillation to create a private custom model | Day 19 |
 | **Model evaluation** | Automatic, human and LLM-as-a-judge evaluation of models and RAG applications | Day 20 |
 | **Prompt management and flows** | Save, version and test prompts; chain prompts, models and tools into workflows | Day 16 |
 | **Custom Model Import and Marketplace** | Bring supported open-weight models you have customised elsewhere; discover and deploy additional specialised models | Day 15 |
@@ -75,13 +75,14 @@ A key exam fact: **Bedrock does not use your prompts and outputs to train the ba
 
 **Amazon Nova** is Amazon's family of foundation models, available in Amazon Bedrock. Learn the family by job rather than by version number:
 
-- **Understanding models** (text, and for most of them images, documents and video as input; text output). They range from **Nova Micro** — text only, the fastest and lowest cost — through **Nova Lite** (low-cost multimodal) and **Nova Pro** (a balance of accuracy, speed and cost) to **Nova Premier**, the most capable, which also serves as a *teacher* model for distillation. A newer *Nova 2* generation continues the same idea of small-to-large choices.
-- **Creative content generation** — **Nova Canvas** generates and edits images; **Nova Reel** generates short videos from text and images. Both add an invisible watermark to support responsible use.
-- **Speech** — **Nova Sonic** is a speech-to-speech model for natural, real-time voice conversations.
-- **Agents that use a browser** — **Nova Act** is aimed at building agents that perform actions in a web browser, such as filling forms.
-- **Embeddings** — multimodal embedding models turn text, images and other content into vectors for search and RAG.
+- **Understanding models** (text, and for most of them images, documents and video as input; text output). They range from **Nova Micro** — text only, the fastest and lowest cost — through **Nova Lite** (low-cost multimodal) and **Nova Pro** (a balance of accuracy, speed and cost) to **Nova Premier**, the most capable, which also serves as a *teacher* model for distillation. A newer *Nova 2* generation continues the same idea of small-to-large choices; **Nova 2 Lite** adds step-by-step reasoning.
+- **Speech** — **Nova 2 Sonic** is a speech-to-speech model for natural, real-time voice conversations.
+- **Agents that use a browser** — **Amazon Nova Act** is an AWS service for building and running fleets of agents that perform actions in web browsers and user interfaces, such as filling forms.
+- **Embeddings** — **Nova Multimodal Embeddings** turns text, images, video and audio into vectors in one shared space for search and RAG.
 
-Exam angle: Nova models are positioned as **cost-effective and fast**, with a choice of sizes. "Lowest-cost, lowest-latency text model for simple tasks" points to a small Nova model such as Micro; "generate marketing images" points to Nova Canvas; "real-time voice conversation" points to Nova Sonic.
+What about images and video? The creative models **Nova Canvas** (images) and **Nova Reel** (video) were **retired from Amazon Bedrock in September 2026**, as was the first **Nova Sonic** — older exam questions may still name them. To generate images on Bedrock today, use another provider's image model in the catalogue, such as a **Stability AI** model.
+
+Exam angle: Nova models are positioned as **cost-effective and fast**, with a choice of sizes. "Lowest-cost, lowest-latency text model for simple tasks" points to a small Nova model such as Micro; "real-time voice conversation" points to Nova 2 Sonic; "generate marketing images" points to an image-generation model in Bedrock such as a Stability AI model.
 
 ### Amazon SageMaker AI and SageMaker JumpStart
 
@@ -121,7 +122,7 @@ A prototype agent on a laptop is easy. Running thousands of agent sessions safel
 - **AgentCore Observability** — traces and metrics for every step an agent takes, viewable in Amazon CloudWatch.
 - **AgentCore Evaluations** — continuous quality checks on agent behaviour.
 
-**Bedrock Agents vs AgentCore.** Bedrock Agents is a configuration-driven, fully managed agent: you describe instructions, action groups and knowledge bases in the console. AgentCore is for teams who write agents in code with any framework and need enterprise-grade hosting and controls. Both are part of Bedrock.
+**Bedrock Agents vs AgentCore.** Bedrock Agents is a configuration-driven, fully managed agent: you describe instructions, action groups and knowledge bases in the console. AgentCore is for teams who write agents in code with any framework and need enterprise-grade hosting and controls. Both are part of Bedrock. Note: since **30 July 2026** Bedrock Agents (now called *Bedrock Agents Classic*) is **closed to new customers** — existing agents keep working, but AWS recommends **AgentCore** (including its managed agent harness) for new agents. Older exam questions may still name Bedrock Agents.
 
 ### Ready-made applications: Amazon Quick, Kiro and AWS Transform
 
@@ -146,7 +147,7 @@ Task statement 2.3 also asks for the **advantages of AWS GenAI services** and th
 - **Security** — encryption at rest and in transit with AWS KMS keys, private connectivity with VPC and PrivateLink, fine-grained IAM permissions, logging with CloudTrail, and the Bedrock data-privacy commitments above.
 - **Compliance** — AWS services, including Bedrock, are in scope for widely used compliance programs (for example ISO and SOC, and HIPAA eligibility), with audit reports available in AWS Artifact; regional choice supports data-residency requirements.
 - **Shared responsibility** — AWS secures the infrastructure and the managed service; you remain responsible for your data, who can access it, your prompts and application, and how outputs are used. The higher up the stack, the more AWS manages.
-- **Safety and responsible AI** — Bedrock Guardrails, watermarking on generated images and video, and AWS AI Service Cards that document intended use and limitations.
+- **Safety and responsible AI** — Bedrock Guardrails (content filters, sensitive-information redaction, grounding checks) and AWS AI Service Cards that document intended use and limitations.
 - **Integration and scale** — GenAI services connect to your data already in Amazon S3, databases and analytics services, and run on global infrastructure with many Regions.
 
 </Section>
@@ -195,7 +196,7 @@ Task statement 2.3 also asks for the **advantages of AWS GenAI services** and th
 |---|---|---|
 | Start-up wants a chatbot over an API with no infrastructure | Amazon Bedrock | Serverless access to FMs, pay per use |
 | Lowest-cost, fastest text model for simple classification | Amazon Nova Micro | Smallest, text-only Nova model |
-| Marketing team wants to generate campaign images | Amazon Nova Canvas | Image generation model in Bedrock |
+| Marketing team wants to generate campaign images | An image-generation model in Bedrock (for example Stability AI) | Nova Canvas was retired in Sept 2026 |
 | Data scientists need to deploy an open model on chosen GPU instances in their VPC | SageMaker JumpStart | Deploy and fine-tune pre-trained models in your account |
 | Train a new large model for weeks on a resilient cluster | SageMaker HyperPod (SageMaker AI) | Large-scale distributed training |
 | Python developers want to build a tool-using agent quickly | Strands Agents | Open-source, model-driven agent SDK |
@@ -231,7 +232,7 @@ Security and compliance were settled early. The retailer's security team confirm
   goal="Find where each part of the AWS GenAI stack lives in the console: the Bedrock model catalogue and Nova models, a SageMaker JumpStart model, and the AgentCore services."
   asOf="November 2026"
   steps={[
-    { text: 'Open Amazon Bedrock and choose Model catalog. Filter by provider "Amazon" and modality to see the Nova family and their input and output types.', screen: { service: 'Amazon Bedrock', path: ['Discover', 'Model catalog'], menu: ['Overview', 'Model catalog', 'Playgrounds', 'Agents', 'Knowledge Bases', 'Guardrails'], active: 'Model catalog', fields: [{ label: 'Provider filter', value: 'Amazon' }, { label: 'Results', value: 'Nova Micro · Nova Lite · Nova Pro · Nova Premier · Nova Canvas · Nova Reel · Nova Sonic' }], highlight: 'Nova Micro' } },
+    { text: 'Open Amazon Bedrock and choose Model catalog. Filter by provider "Amazon" and modality to see the Nova family and their input and output types.', screen: { service: 'Amazon Bedrock', path: ['Discover', 'Model catalog'], menu: ['Overview', 'Model catalog', 'Playgrounds', 'Agents', 'Knowledge Bases', 'Guardrails'], active: 'Model catalog', fields: [{ label: 'Provider filter', value: 'Amazon' }, { label: 'Results', value: 'Nova Micro · Nova Lite · Nova Pro · Nova Premier · Nova 2 Lite · Nova 2 Sonic · Nova Multimodal Embeddings' }], highlight: 'Nova Micro' } },
     { text: 'Open the Nova Micro model card. Note the modalities (text in, text out), context window, supported Regions and the pricing link — the facts you use when selecting a model.', screen: { service: 'Amazon Bedrock', path: ['Model catalog', 'Amazon Nova Micro'], fields: [{ label: 'Input', value: 'Text' }, { label: 'Output', value: 'Text' }, { label: 'Use cases', value: 'Summarisation, classification, chat' }], highlight: 'Open in playground' } },
     { text: 'Switch to SageMaker AI Studio and open JumpStart. Pick an open text-generation model and see the Deploy, Fine-tune and Evaluate buttons — deployment creates an endpoint on an instance type you choose.', screen: { service: 'Amazon SageMaker AI Studio', path: ['JumpStart', 'Models', 'Open text-generation model'], menu: ['Home', 'JumpStart', 'Models', 'Endpoints'], active: 'JumpStart', fields: [{ label: 'Instance type', value: 'ml.g5.2xlarge' }, { label: 'Deploy into', value: 'Your account and VPC' }], highlight: 'Deploy' } },
     { text: 'Finally open Amazon Bedrock AgentCore. The left menu lists the managed services for production agents: Runtime, Memory, Gateway, Identity, Policy, built-in tools and Observability.', screen: { service: 'Amazon Bedrock AgentCore', path: ['AgentCore', 'Overview'], menu: ['Runtime', 'Memory', 'Gateway', 'Identity', 'Policy', 'Built-in tools', 'Observability'], active: 'Runtime', fields: [{ label: 'Framework', value: 'Strands Agents (any framework supported)' }, { label: 'Model', value: 'Any model' }], note: 'Write the agent anywhere; run it here' } },
@@ -256,7 +257,7 @@ Security and compliance were settled early. The retailer's security team confirm
 - Developers, spec-driven development, IDE, agent hooks → **Kiro**.
 - Mainframe, .NET, VMware or Java modernisation and migration → **AWS Transform**.
 - Open-source SDK to write agents → **Strands Agents**; run agents in production with isolation, memory, identity, policy, observability → **Bedrock AgentCore**.
-- Amazon's own models in Bedrock → **Amazon Nova** (Micro = smallest text-only; Canvas = images; Reel = video; Sonic = speech).
+- Amazon's own models in Bedrock → **Amazon Nova** (Micro = smallest text-only; Premier = most capable; Nova 2 Sonic = speech-to-speech; Nova Multimodal Embeddings = vectors). Nova Canvas, Reel and the first Nova Sonic were retired in Sept 2026 — for images use another Bedrock image model such as Stability AI.
 - Bedrock does **not** use your data to train base models or share it with model providers.
 - Shared responsibility: AWS secures the service; you secure your data, access and use of outputs.
 

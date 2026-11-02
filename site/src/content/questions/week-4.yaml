@@ -745,7 +745,7 @@
     - { id: c, text: "K-means clustering model", explanation: "Incorrect. K-means groups data; it does not generate images." }
     - { id: d, text: "Diffusion model", explanation: "Correct. Diffusion models generate images by iteratively removing noise, guided by the prompt." }
   answer: [d]
-  explanation: "Diffusion models learn to reverse a noising process: starting from noise, they remove it step by step until an image appears. Amazon Nova Canvas is an example of an image-generation model on Bedrock."
+  explanation: "Diffusion models learn to reverse a noising process: starting from noise, they remove it step by step until an image appears. Stability AI models are examples of image-generation models on Bedrock."
   domain: D2
   taskStatement: "2.1"
   lessonRef: day-08#explanation

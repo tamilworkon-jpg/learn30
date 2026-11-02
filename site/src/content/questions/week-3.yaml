@@ -136,14 +136,14 @@
 - id: q-week-3-009
   set: week-3
   type: single
-  stem: "An airline wants a virtual assistant that can check seat availability, change a booking and issue a new boarding pass by calling the airline's existing APIs in several steps. The team wants a fully managed AWS feature. Which option fits BEST?"
+  stem: "An airline wants a virtual assistant that can check seat availability, change a booking and issue a new boarding pass by calling the airline's existing APIs in several steps. The team wants managed AWS services and no servers to run. Which option fits BEST?"
   options:
     - { id: a, text: "Amazon Bedrock Knowledge Bases on its own", explanation: "Incorrect. Knowledge Bases retrieves information for answers; on its own it does not plan steps or call booking APIs." }
     - { id: b, text: "A prompt template stored in Amazon Bedrock Prompt Management", explanation: "Incorrect. Prompt Management stores and versions prompts; it does not orchestrate API calls." }
-    - { id: c, text: "Amazon Bedrock Agents with action groups that call the booking APIs", explanation: "Correct. Bedrock Agents plan multi-step tasks and invoke APIs or Lambda functions through action groups." }
+    - { id: c, text: "An agent on Amazon Bedrock AgentCore that calls the booking APIs as tools through AgentCore Gateway", explanation: "Correct. An agent plans multi-step tasks and invokes APIs or Lambda functions as tools; AgentCore hosts it as a managed service." }
     - { id: d, text: "Amazon SageMaker AI batch transform", explanation: "Incorrect. Batch transform scores large datasets offline; it cannot hold an interactive multi-step conversation." }
   answer: [c]
-  explanation: "When a scenario asks the model to complete a multi-step task by calling APIs, the answer is an agent. Amazon Bedrock Agents is the managed option: action groups define the APIs the agent can call and knowledge bases can be attached for information."
+  explanation: "When a scenario asks the model to complete a multi-step task by calling APIs, the answer is an agent. For new agents AWS recommends Amazon Bedrock AgentCore, whose Gateway turns APIs into tools; knowledge bases can be queried for information. Amazon Bedrock Agents (action groups) is closed to new customers since July 2026."
   domain: D3
   taskStatement: "3.1"
   lessonRef: day-18#explanation

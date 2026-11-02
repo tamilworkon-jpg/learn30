@@ -363,7 +363,7 @@ If a model is unavailable, use any available model that differs from the author 
 - [x] T104 [P] [US6] Author ~60 service cards in site/src/content/services/*.yaml (all v1.2 in-scope + trap cards: AWS WAF, GuardDuty, Security Hub, Shield, Cognito, DeepLens, Kendra, Amazon Q, A2I, Audit Manager — `inScope: false`, "Beyond the exam")
   - TC: K10 every in-scope service in exam-guide.yaml has a card; every `inScope` flag matches exam-guide.yaml.
   - Done: 75 cards (51 in-scope + 16 out-of-scope + 8 not-listed trap cards); inScope flags checked against exam-guide.yaml.
-- [ ] T105 [US6] REVIEW US6; log
+- [x] T105 [US6] REVIEW US6; log
 
 ---
 
@@ -480,7 +480,7 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) �
 - [ ] T179 Port-forwarding check — TC: `npm run preview -- --host`, forward 4321 in VS Code, forwarded URL loads, export on localhost → import on forwarded URL; screenshot `port-forward`
   - Automated 2026-11-02: tests/e2e/port-forward.spec.ts exports on localhost and imports on a second origin (127.0.0.1, separate storage, same preview server) → dashboard shows imported progress; screenshot `port-forward`. **Open (manual):** open the VS Code Ports-panel forwarded URL for 4321 and repeat export → import there.
 - [x] T180 Implement site/scripts/audit-tasks.ts (final task validation) — TC: A1 every task with `@visual` has screenshots on disk; A2 every task's test files exist and pass; A3 reports unchecked tasks
-- [ ] T181 Final validation: run quickstart.md V1–V15, `npm run verify`, `npm run audit:tasks`; run the single multi-model swarm review (matrix in Quality Gate) over the whole site incl. screenshots; fix findings; log once in reviews/review-log.md
+- [x] T181 Final validation: run quickstart.md V1–V15, `npm run verify`, `npm run audit:tasks`; run the single multi-model swarm review (matrix in Quality Gate) over the whole site incl. screenshots; fix findings; log once in reviews/review-log.md
 
 ---
 

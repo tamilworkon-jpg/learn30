@@ -61,7 +61,7 @@ The result is a *base model*: it can continue text, but it does not reliably fol
 - **Result:** the model learns the vocabulary, jargon and facts of that domain, such as what "EBITDA", "contraindication" or "estoppel" mean in context.
 - **Cost:** higher than fine-tuning because the dataset is large, far lower than pre-training from scratch.
 
-Amazon Bedrock supports continued pre-training for selected models: you upload the text to Amazon S3 and start a customisation job.
+On Amazon Bedrock, continued pre-training was offered only for a few older Amazon Titan text models (you uploaded the text to Amazon S3 and started a customisation job); current Bedrock customisation centres on supervised fine-tuning, reinforcement fine-tuning and distillation. The concept still matters for the exam, and you can run continued pre-training yourself on SageMaker AI.
 
 ### Fine-tuning: teaching a task with examples
 
@@ -123,7 +123,7 @@ Then **format** the data as the service expects — for Amazon Bedrock, JSON Lin
 
 ### Where customisation runs on AWS
 
-- **Amazon Bedrock custom models** — managed fine-tuning, continued pre-training and distillation for supported models. You start a customisation job with your S3 data, choose hyperparameters, and Bedrock produces a private **custom model**. Your data is not used to train the provider's base model. Custom models are served through **Provisioned Throughput**, and some can also be invoked on demand — check the model's documentation.
+- **Amazon Bedrock custom models** — managed supervised fine-tuning, reinforcement fine-tuning and distillation for supported models (continued pre-training was offered only for a few older Amazon Titan text models). You start a customisation job with your S3 data, choose hyperparameters, and Bedrock produces a private **custom model**. Your data is not used to train the provider's base model. Custom models are served through **Provisioned Throughput**, and some can also be invoked on demand — check the model's documentation.
 - **Amazon SageMaker AI** — full control: fine-tune open models from **SageMaker JumpStart** with a few clicks, run your own training scripts (including PEFT/LoRA), customise Amazon Nova models, or pre-train at scale with HyperPod.
 
 </Section>
@@ -202,14 +202,14 @@ The lesson: **match the technique to the problem and the data** — unlabelled d
   goal="Walk through creating a model customisation (fine-tuning) job in Amazon Bedrock: choose a base model, point to labelled training and validation data in S3, set hyperparameters and use the resulting custom model."
   asOf="November 2026"
   steps={[
-    { text: 'In the Amazon Bedrock console, open Custom models and choose Customize model. Notice the options: fine-tuning, continued pre-training and distillation.', screen: { service: 'Amazon Bedrock', path: ['Tune', 'Custom models', 'Customize model'], menu: ['Model catalog', 'Playgrounds', 'Knowledge Bases', 'Custom models', 'Evaluations'], active: 'Custom models', fields: [{ label: 'Create fine-tuning job', value: 'Labelled prompt-completion pairs' }, { label: 'Create continued pre-training job', value: 'Unlabelled domain text' }, { label: 'Create distillation job', value: 'Teacher and student models' }], highlight: 'Create fine-tuning job' } },
+    { text: 'In the Amazon Bedrock console, open Custom models and choose Customize model. Notice the options: supervised fine-tuning, reinforcement fine-tuning and distillation.', screen: { service: 'Amazon Bedrock', path: ['Tune', 'Custom models', 'Customize model'], menu: ['Model catalog', 'Playgrounds', 'Knowledge Bases', 'Custom models', 'Evaluations'], active: 'Custom models', fields: [{ label: 'Create fine-tuning job', value: 'Labelled prompt-completion pairs' }, { label: 'Create reinforcement fine-tuning job', value: 'Prompts plus a reward function' }, { label: 'Create distillation job', value: 'Teacher and student models' }], highlight: 'Create fine-tuning job' } },
     { text: 'Select the source (base) model and name the job and the custom model. Then point to the training data — a JSONL file of prompt-completion pairs in S3 — and an optional validation file.', screen: { service: 'Amazon Bedrock', path: ['Custom models', 'Create fine-tuning job', 'Input data'], fields: [{ label: 'Source model', value: 'An Amazon Nova text model' }, { label: 'Training data', value: 's3://acme-ml/support-tone/train.jsonl' }, { label: 'Validation data', value: 's3://acme-ml/support-tone/validation.jsonl' }], highlight: 'Validation data', note: 'Validation data reveals overfitting' } },
     { text: 'Set hyperparameters. Epochs, batch size and learning rate control how hard the model trains on your examples. Choose an S3 output location for metrics and a service role.', screen: { service: 'Amazon Bedrock', path: ['Custom models', 'Create fine-tuning job', 'Hyperparameters'], fields: [{ label: 'Epochs', value: '3' }, { label: 'Batch size', value: '8' }, { label: 'Learning rate multiplier', value: '1.0' }, { label: 'Output', value: 's3://acme-ml/support-tone/output/' }], highlight: 'Create fine-tuning job', note: 'Too many epochs on small data → overfitting' } },
     { text: 'When the job completes, review the training and validation loss metrics, then set up inference for the custom model (for example Provisioned Throughput) and test it in the playground.', screen: { service: 'Amazon Bedrock', path: ['Custom models', 'support-tone-v1'], fields: [{ label: 'Status', value: 'Completed' }, { label: 'Training loss', value: '0.41' }, { label: 'Validation loss', value: '0.47' }], highlight: 'Purchase Provisioned Throughput', note: 'Custom model is private to your account' } },
   ]}
-  expectedOutcome="You know that fine-tuning needs labelled JSONL pairs in S3, that validation data and epochs guard against overfitting, that continued pre-training uses unlabelled text, and that a custom model needs an inference option such as Provisioned Throughput."
+  expectedOutcome="You know that fine-tuning needs labelled JSONL pairs in S3, that validation data and epochs guard against overfitting, that continued pre-training uses unlabelled text (on SageMaker AI today; on Bedrock it was limited to older Titan models), and that a custom model needs an inference option such as Provisioned Throughput."
   checks={[
-    { q: 'You have 2 million unlabelled maintenance reports. Which customisation job type fits?', a: 'Continued pre-training, which learns from unlabelled domain text.' },
+    { q: 'You have 2 million unlabelled maintenance reports. Which customisation job type fits?', a: 'Continued pre-training, which learns from unlabelled domain text — run it on SageMaker AI, since Bedrock offered it only for a few older Titan models.' },
     { q: 'Training loss keeps dropping but validation loss started rising after epoch 2. What should you change?', a: 'Reduce epochs (stop around epoch 2) or add more varied data — the model is overfitting.' },
     { q: 'Is your fine-tuning data used to improve the provider’s base model for other customers?', a: 'No. Bedrock creates a private custom model; your data is not used to train the base model.' },
   ]}
@@ -256,7 +256,7 @@ An architect turning customisation into a repeatable process — not a one-off e
   GT["SageMaker Ground Truth: labels and rankings"] --> DS
   PREP --> DS[("Curated JSONL train and validation sets, KMS encrypted")]
   DS --> JOB{"Customisation job"}
-  JOB -->|managed| BR["Bedrock fine-tuning, continued pre-training or distillation"]
+  JOB -->|managed| BR["Bedrock fine-tuning, reinforcement fine-tuning or distillation"]
   JOB -->|full control| SM["SageMaker AI training with PEFT or JumpStart"]
   BR --> EV["Evaluation gate: test set, human review, safety checks"]
   SM --> EV

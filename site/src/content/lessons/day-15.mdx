@@ -50,7 +50,7 @@ Amazon Bedrock offers models from Amazon (the **Amazon Nova** family and Amazon 
 
 | Criterion | Question to ask | Example |
 |---|---|---|
-| **Modality** | What goes in and what must come out — text, image, audio, video, embeddings? | Product photos in, captions out needs a multimodal model; image creation needs an image-generation model such as Amazon Nova Canvas |
+| **Modality** | What goes in and what must come out — text, image, audio, video, embeddings? | Product photos in, captions out needs a multimodal model; image creation needs an image-generation model such as a Stability AI model in Bedrock |
 | **Task quality** | How well does it perform on *my* task and data, not just a public benchmark? | Run a model evaluation with your own prompts |
 | **Cost** | What is the price per input and output token (or per image), and how many requests per day? | A high-volume FAQ bot favours a small, cheap model |
 | **Latency** | How fast must the answer appear? | A live voice assistant needs low latency; an overnight report does not |
@@ -65,13 +65,13 @@ Two rules of thumb. First, **the largest model is not automatically the best** �
 
 ### Model size, speed and price go together
 
-Within one family, providers usually offer tiers. Amazon Nova, for example, includes a very small text-only model for fast, low-cost tasks, larger multimodal models that understand text, images and video, plus separate creative models for images (Nova Canvas), video (Nova Reel) and speech (Nova Sonic). Other providers follow the same pattern of small/fast and large/capable tiers. When a scenario says *"lowest cost"* or *"lowest latency"* for a *simple* task, the answer is usually the smaller tier; when it says *"complex reasoning"* or *"highest accuracy"*, a larger tier is justified.
+Within one family, providers usually offer tiers. Amazon Nova, for example, includes a very small text-only model for fast, low-cost tasks, larger multimodal models that understand text, images and video, plus a speech-to-speech model (Nova 2 Sonic) and multimodal embeddings. Its image and video generators (Nova Canvas and Nova Reel) were retired in September 2026, so image generation on Bedrock now means another provider's model, such as Stability AI. Other providers follow the same pattern of small/fast and large/capable tiers. When a scenario says *"lowest cost"* or *"lowest latency"* for a *simple* task, the answer is usually the smaller tier; when it says *"complex reasoning"* or *"highest accuracy"*, a larger tier is justified.
 
 ### Prompt caching: pay once for the part that repeats
 
 Many applications send the same long prefix with every request: a 4,000-word system prompt, a product manual, or a long document the user asks several questions about. Without caching, the model re-reads and you re-pay for that prefix every single time.
 
-**Prompt caching** in Amazon Bedrock lets you mark a *cache checkpoint* in the prompt. The first request processes the prefix and stores it; later requests that start with the identical prefix read it from the cache, which is billed at a much lower rate and returns the first token faster. The cache lives for a few minutes after its last use, so it suits bursts of related requests. Put the stable content (instructions, documents) *first* and the changing content (the user's question) *last*, because only an identical prefix can be reused. Prompt caching is supported on selected models, so it is one more selection criterion.
+**Prompt caching** in Amazon Bedrock lets you mark a *cache checkpoint* in the prompt. The first request processes the prefix and stores it; later requests that start with the identical prefix read it from the cache, which is billed at a much lower rate and returns the first token faster. How long the cache lives is model-specific — 5 minutes by default for many models, with longer options (such as 1 hour) on some — and each cache hit resets the timer, so it suits bursts of related requests. Put the stable content (instructions, documents) *first* and the changing content (the user's question) *last*, because only an identical prefix can be reused. Prompt caching is supported on selected models, so it is one more selection criterion.
 
 Do not confuse it with caching *answers*. Prompt caching does not return a stored response — the model still generates a fresh answer to each new question.
 

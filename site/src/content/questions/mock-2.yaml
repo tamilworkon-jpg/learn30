@@ -537,7 +537,7 @@
     - { id: c, text: "An embedding model", explanation: "Incorrect. Embedding models output vectors that represent meaning; they do not generate images." }
     - { id: d, text: "A k-means clustering model", explanation: "Incorrect. k-means groups unlabelled data and does not generate content." }
   answer: [b]
-  explanation: "Diffusion models learn to reverse a noising process. At generation time they start from noise and remove it step by step under the guidance of a prompt, producing images such as those from Amazon Nova Canvas."
+  explanation: "Diffusion models learn to reverse a noising process. At generation time they start from noise and remove it step by step under the guidance of a prompt, producing images such as those from Stability AI models in Amazon Bedrock."
   domain: D2
   taskStatement: "2.1"
   lessonRef: day-08#explanation
@@ -986,15 +986,15 @@
 - id: q-mock-2-061
   set: mock-2
   type: multi
-  stem: "An e-commerce company wants an assistant that checks order status through an internal API, creates return labels, and answers questions from the returns-policy documents, with as little custom orchestration code as possible. Which Amazon Bedrock features should it use? (Select TWO.)"
+  stem: "An e-commerce company wants an assistant that checks order status through an internal API, creates return labels, and answers questions from the returns-policy documents, without managing servers. Which Amazon Bedrock capabilities should it use? (Select TWO.)"
   options:
     - { id: a, text: "Model distillation", explanation: "Incorrect. Distillation reduces model cost; it does not add tool use or retrieval." }
     - { id: b, text: "Amazon Comprehend custom classification", explanation: "Incorrect. Comprehend classifies text; it does not call APIs or answer questions from documents." }
-    - { id: c, text: "Amazon Bedrock Agents with action groups backed by AWS Lambda functions", explanation: "Correct. A managed agent plans the steps and calls the order and returns APIs through action groups." }
-    - { id: d, text: "An Amazon Bedrock knowledge base attached to the agent", explanation: "Correct. The knowledge base grounds policy answers in the returns documents." }
+    - { id: c, text: "An agent on Amazon Bedrock AgentCore, with the order and returns APIs exposed as tools through AgentCore Gateway", explanation: "Correct. The agent plans the steps and calls the order and returns APIs as tools; AgentCore hosts it without servers to manage." }
+    - { id: d, text: "An Amazon Bedrock knowledge base that the agent queries", explanation: "Correct. The knowledge base grounds policy answers in the returns documents." }
     - { id: e, text: "Amazon Bedrock batch inference", explanation: "Incorrect. Batch inference processes offline jobs and cannot hold interactive, multi-step conversations." }
   answer: [c, d]
-  explanation: "AI agents complete multi-step tasks by calling tools. Amazon Bedrock Agents is the configuration-driven managed option: action groups (Lambda or API schemas) for actions and knowledge bases for grounded answers. AgentCore suits teams writing agents in code."
+  explanation: "AI agents complete multi-step tasks by calling tools. For new agents AWS recommends Amazon Bedrock AgentCore — Gateway turns APIs and Lambda functions into tools — with a knowledge base for grounded answers. Amazon Bedrock Agents (action groups) is closed to new customers since July 2026, though existing agents keep working."
   domain: D3
   taskStatement: "3.1"
   lessonRef: day-18#explanation

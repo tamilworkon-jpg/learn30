@@ -33,14 +33,14 @@
 - id: q-mock-3-003
   set: mock-3
   type: single
-  stem: "A furniture brand wants to generate lifestyle photographs of its sofas for a new campaign using one of Amazon's own foundation models in Amazon Bedrock. Which model should the team choose?"
+  stem: "A furniture brand wants to generate lifestyle photographs of its sofas for a new campaign by calling a foundation model through Amazon Bedrock. Which model should the team choose?"
   options:
-    - { id: a, text: "Amazon Nova Reel", explanation: "Incorrect. Nova Reel generates short videos, not still images." }
-    - { id: b, text: "Amazon Nova Sonic", explanation: "Incorrect. Nova Sonic is a speech-to-speech model for real-time voice conversations." }
+    - { id: a, text: "Amazon Nova Pro", explanation: "Incorrect. Nova Pro is an understanding model: it accepts text, images and video but replies in text, so it cannot create photographs." }
+    - { id: b, text: "Amazon Nova 2 Sonic", explanation: "Incorrect. Nova 2 Sonic is a speech-to-speech model for real-time voice conversations." }
     - { id: c, text: "Amazon Nova Micro", explanation: "Incorrect. Nova Micro is the smallest, text-only understanding model; it cannot produce images." }
-    - { id: d, text: "Amazon Nova Canvas", explanation: "Correct. Nova Canvas generates and edits images and adds an invisible watermark to support responsible use." }
+    - { id: d, text: "A Stability AI image-generation model in Amazon Bedrock", explanation: "Correct. Image creation needs an image-generation model; Bedrock offers Stability AI models for this. Amazon's own Nova Canvas was retired in September 2026." }
   answer: [d]
-  explanation: "Learn the Amazon Nova family by job: Micro, Lite, Pro and Premier are understanding models (Micro is text-only and cheapest), Canvas generates images, Reel generates video, Sonic handles real-time speech and Nova Act builds browser agents."
+  explanation: "Match the model to the output modality. Amazon Nova understanding models (Micro, Lite, Pro, Premier) reply in text, and Nova 2 Sonic handles speech. To generate images on Bedrock, choose an image-generation model from a provider such as Stability AI; Nova Canvas and Nova Reel were retired in September 2026."
   domain: D2
   taskStatement: "2.3"
   lessonRef: day-12#explanation
@@ -494,14 +494,14 @@
 - id: q-mock-3-031
   set: mock-3
   type: single
-  stem: "A telecom company wants its Amazon Bedrock assistant to check a customer's order status through an internal API and then create a return in the order system when the customer asks, with as little custom orchestration code as possible. Which approach BEST meets this requirement?"
+  stem: "A telecom company wants its Amazon Bedrock assistant to check a customer's order status through an internal API and then create a return in the order system when the customer asks, without managing any servers. Which approach BEST meets this requirement?"
   options:
-    - { id: a, text: "An Amazon Bedrock agent with action groups backed by AWS Lambda functions", explanation: "Correct. Bedrock Agents plan multi-step tasks and call APIs through action groups, with AWS running the orchestration." }
+    - { id: a, text: "An agent on Amazon Bedrock AgentCore Runtime, with the order APIs exposed as tools through AgentCore Gateway", explanation: "Correct. An agent plans the multi-step task and calls the APIs as tools; AgentCore hosts it serverlessly and Gateway turns the APIs into tools." }
     - { id: b, text: "An Amazon Bedrock knowledge base containing the order data", explanation: "Incorrect. Knowledge bases retrieve text for answers; they cannot create a return in another system." }
     - { id: c, text: "An Amazon Bedrock guardrail with denied topics", explanation: "Incorrect. Guardrails filter content; they do not take actions." }
     - { id: d, text: "A prompt template stored in Amazon Bedrock Prompt Management", explanation: "Incorrect. A template improves prompts but cannot call APIs." }
   answer: [a]
-  explanation: "When a task requires calling APIs in several steps, use an agent. Amazon Bedrock Agents is a configuration-driven managed agent: choose a model, write instructions and attach action groups (API schema plus Lambda), knowledge bases and guardrails. Teams writing agents in code can host them on AgentCore."
+  explanation: "When a task requires calling APIs in several steps, use an agent. For new agents AWS recommends Amazon Bedrock AgentCore: Runtime hosts the agent serverlessly and Gateway turns APIs and Lambda functions into tools. Amazon Bedrock Agents (action groups) still runs existing agents but has been closed to new customers since July 2026."
   domain: D3
   taskStatement: "3.1"
   lessonRef: day-18#exam-tips
@@ -942,7 +942,7 @@
 - id: q-mock-3-058
   set: mock-3
   type: multi
-  stem: "A marketer uses Amazon Nova Canvas to create banner images of a kitchen product, but the images keep including people and stray text. The marketer wants better images with the least effort. Which prompt techniques should the marketer use? (Select TWO.)"
+  stem: "A marketer uses an image-generation model in Amazon Bedrock to create banner images of a kitchen product, but the images keep including people and stray text. The marketer wants better images with the least effort. Which prompt techniques should the marketer use? (Select TWO.)"
   options:
     - { id: a, text: "Add a negative prompt listing elements to exclude, such as people and text", explanation: "Correct. Negative prompts tell an image model what to leave out." }
     - { id: b, text: "Write a specific instruction describing the product, setting, style and composition", explanation: "Correct. Clear, specific instructions and context are a core prompt best practice." }

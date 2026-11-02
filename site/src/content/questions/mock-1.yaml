@@ -578,14 +578,14 @@
 - id: q-mock-1-036
   set: mock-1
   type: single
-  stem: "An insurer wants an assistant that, given a claim number, looks up the policy through an internal API, checks coverage rules in a document collection and then files a claim update. The company wants to write as little orchestration code as possible. Which solution BEST fits?"
+  stem: "An insurer wants an assistant that, given a claim number, looks up the policy through an internal API, checks coverage rules in a document collection and then files a claim update. The company wants managed AWS services rather than servers it operates. Which solution BEST fits?"
   options:
-    - { id: a, text: "Amazon Bedrock Agents with action groups for the APIs and an attached knowledge base", explanation: "Correct. Bedrock Agents is a managed way to build agents that plan multi-step tasks, call APIs and query knowledge bases." }
+    - { id: a, text: "An agent on Amazon Bedrock AgentCore that calls the APIs as tools through AgentCore Gateway and queries a knowledge base", explanation: "Correct. An agent plans the multi-step task, calls the APIs as tools and queries the knowledge base; AgentCore runs it as a managed service." }
     - { id: b, text: "Amazon Comprehend custom classification", explanation: "Incorrect. Comprehend classifies text; it cannot plan steps or call business APIs." }
     - { id: c, text: "An Amazon Bedrock batch inference job", explanation: "Incorrect. Batch inference processes prompts offline; it does not orchestrate interactive tool calls." }
     - { id: d, text: "Amazon SageMaker Clarify", explanation: "Incorrect. Clarify detects bias and explains predictions." }
   answer: [a]
-  explanation: "AI agents plan, call tools and APIs, and query knowledge bases to complete multi-step tasks. Amazon Bedrock Agents provides this as a managed capability; Amazon Bedrock AgentCore runs and secures agents built with any framework."
+  explanation: "AI agents plan, call tools and APIs, and query knowledge bases to complete multi-step tasks. Amazon Bedrock AgentCore runs and secures agents built with any framework and is AWS's recommended path for new agents; Amazon Bedrock Agents provided this as a configured capability but has been closed to new customers since July 2026."
   domain: D3
   taskStatement: "3.1"
   lessonRef: day-18#explanation

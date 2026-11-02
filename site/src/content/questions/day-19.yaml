@@ -321,7 +321,7 @@
     - { id: d, text: "The custom model is automatically shared with other Bedrock customers", explanation: "Incorrect. Custom models are private to the account that created them." }
     - { id: e, text: "Fine-tuning jobs accept only unlabelled text", explanation: "Incorrect. Fine-tuning uses labelled prompt-completion pairs; unlabelled text is used for continued pre-training." }
   answer: [a, b]
-  explanation: "Amazon Bedrock offers managed fine-tuning, continued pre-training and distillation for supported models. You provide JSONL data in S3, choose hyperparameters and receive a private custom model, which then needs an inference option such as Provisioned Throughput."
+  explanation: "Amazon Bedrock offers managed supervised fine-tuning, reinforcement fine-tuning and distillation for supported models (continued pre-training was offered only for some older Titan models). You provide JSONL data in S3, choose hyperparameters and receive a private custom model, which then needs an inference option such as Provisioned Throughput."
   domain: D3
   taskStatement: "3.3"
   lessonRef: day-19#hands-on

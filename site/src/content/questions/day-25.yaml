@@ -118,8 +118,8 @@
   options:
     - { id: a, text: "AWS CloudTrail was not enabled in the account", explanation: "Incorrect. CloudTrail records API calls and metadata, not the full prompt and response text." }
     - { id: b, text: "The application did not use a guardrail", explanation: "Incorrect. Guardrails filter content; they are not the mechanism for storing prompts and responses." }
-    - { id: c, text: "Model invocation logging had not been enabled; it is off by default", explanation: "Correct. Bedrock does not store prompts and responses by default; you must enable model invocation logging to S3 or CloudWatch Logs." }
-    - { id: d, text: "Bedrock deletes stored prompts after seven days", explanation: "Incorrect. Bedrock does not store prompts and responses by default at all; there is no seven-day store to expire." }
+    - { id: c, text: "Model invocation logging had not been enabled; it is off by default", explanation: "Correct. Bedrock keeps no log of prompts and responses for you unless you enable model invocation logging to S3 or CloudWatch Logs." }
+    - { id: d, text: "Bedrock deletes stored prompts after seven days", explanation: "Incorrect. Bedrock keeps no retrievable record of prompts for you by default; there is no seven-day customer-readable store. (Some models may briefly retain data for abuse detection, configurable in Bedrock data-retention settings, but that is not a log you can read.)" }
   answer: [c]
   explanation: "Model invocation logging records prompts and responses and delivers them to Amazon CloudWatch Logs and/or Amazon S3. It is off by default. Because the logs may contain personal data, encrypt them and restrict access."
   domain: D5
@@ -292,7 +292,7 @@
     - { id: c, text: "Model providers can read prompts to monitor for abuse of their models", explanation: "Incorrect. Model providers do not have access to customers' prompts and completions in Bedrock." }
     - { id: d, text: "Prompts are shared with model providers unless the company uses AWS PrivateLink", explanation: "Incorrect. PrivateLink controls the network path; data privacy commitments apply regardless of how the API is reached." }
   answer: [b]
-  explanation: "Bedrock does not use prompts and completions to train base models, does not share them with model providers, and does not store them by default unless the customer enables invocation logging. A fine-tuned model is a private copy for the customer's account."
+  explanation: "Bedrock does not use prompts and completions to train base models, does not share them with model providers, and keeps no log of them for the customer unless invocation logging is enabled (some models may retain data briefly for abuse detection, configurable in data-retention settings). A fine-tuned model is a private copy for the customer's account."
   domain: D5
   taskStatement: "5.1"
   lessonRef: day-25#explanation

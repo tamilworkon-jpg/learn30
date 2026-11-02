@@ -26,7 +26,7 @@ keyPoints:
   - 'Bedrock Knowledge Bases is managed RAG: connect a data source, choose chunking and an embedding model, pick a vector store, then call Retrieve or RetrieveAndGenerate.'
   - 'Vector stores on the exam: OpenSearch Service (search + vectors), Aurora / RDS for PostgreSQL with pgvector (keep SQL data), Neptune (graphs, GraphRAG), DocumentDB (JSON documents).'
   - 'Cheapest to costliest customisation: prompt engineering / in-context learning, RAG, fine-tuning, continued pre-training, pre-training from scratch.'
-  - 'Agents plan, call tools and APIs, and query knowledge bases to complete multi-step tasks; Bedrock Agents is managed, AgentCore runs and secures agents built with any framework.'
+  - 'Agents plan, call tools and APIs, and query knowledge bases to complete multi-step tasks; AgentCore runs and secures agents built with any framework and is recommended for new agents; Bedrock Agents (managed) is closed to new customers since July 2026.'
 ---
 
 <Section id="recap" type="recap" title="Recap of Day 17" minutes={3}>
@@ -134,8 +134,8 @@ A chatbot with RAG answers questions. An **AI agent** goes further: it **reasons
 
 On AWS:
 
-- **Amazon Bedrock Agents** is the managed option. You give the agent instructions, a foundation model, **action groups** (operations defined by an OpenAPI schema or function definitions, usually fulfilled by AWS Lambda) and optional **knowledge bases**. The agent orchestrates the steps for you (a *reason-and-act* loop), can keep **memory** across sessions, can **return control** to your application instead of calling an API itself, and supports **multi-agent collaboration**, where a supervisor agent delegates to specialist agents. Traces show each reasoning step.
-- **Amazon Bedrock AgentCore** is a set of services for deploying and operating agents built with *any* framework (such as the open-source **Strands Agents** SDK) and any model: **Runtime** (secure, serverless hosting), **Memory**, **Gateway** (turns APIs and Lambda functions into tools agents can call), **Identity** (who the agent acts for and what it may access), **Policy** (rules on which tools and actions are allowed), built-in **Browser** and **Code Interpreter** tools, and **Observability** for traces and metrics.
+- **Amazon Bedrock Agents** is the managed option. You give the agent instructions, a foundation model, **action groups** (operations defined by an OpenAPI schema or function definitions, usually fulfilled by AWS Lambda) and optional **knowledge bases**. The agent orchestrates the steps for you (a *reason-and-act* loop), can keep **memory** across sessions, can **return control** to your application instead of calling an API itself, and supports **multi-agent collaboration**, where a supervisor agent delegates to specialist agents. Traces show each reasoning step. Since 30 July 2026 Bedrock Agents (now *Bedrock Agents Classic*) is closed to new customers — existing agents keep working, and AWS recommends AgentCore for new agents.
+- **Amazon Bedrock AgentCore** — the recommended path for new agents — is a set of services for deploying and operating agents built with *any* framework (such as the open-source **Strands Agents** SDK) and any model: **Runtime** (secure, serverless hosting), **Memory**, **Gateway** (turns APIs and Lambda functions into tools agents can call), **Identity** (who the agent acts for and what it may access), **Policy** (rules on which tools and actions are allowed), built-in **Browser** and **Code Interpreter** tools, and **Observability** for traces and metrics.
 
 Agents bring new risks: an agent that can call APIs can also do damage. Give each agent least-privilege permissions, require human confirmation for high-impact actions, and log every step — themes you will see again on Day 25.
 
@@ -239,7 +239,7 @@ If the scenario needs *current* or *proprietary knowledge*, *fewer hallucination
 - Embeddings capture **meaning**; the same embedding model must be used for documents and queries.
 - Chunks that are too large waste tokens and blur topics; too small lose context. Overlap and hierarchical chunking are the fixes.
 - Cost ladder: **prompting / in-context learning → RAG → fine-tuning → continued pre-training → pre-training**.
-- "Complete a multi-step task by calling APIs" → an **agent** (Bedrock Agents with action groups, or agents hosted on AgentCore).
+- "Complete a multi-step task by calling APIs" → an **agent** (for new builds, an agent hosted on AgentCore; existing Bedrock Agents with action groups also do this).
 - Stale answers from RAG → **re-sync** the knowledge base, not retrain the model.
 
 </Section>

@@ -267,12 +267,12 @@
   type: single
   stem: "An airline wants a virtual assistant that can move a customer's booking to another date. The assistant must look up the booking, search available flights, check the fare rules in a policy document and call a change API. Which solution BEST fits this requirement?"
   options:
-    - { id: a, text: "An Amazon Bedrock agent with action groups for the booking APIs and a knowledge base for the fare rules", explanation: "Correct. An agent plans steps and calls tools; action groups expose the APIs and the knowledge base supplies the policy text." }
+    - { id: a, text: "An agent hosted on Amazon Bedrock AgentCore that calls the booking APIs as tools through AgentCore Gateway and queries a knowledge base for the fare rules", explanation: "Correct. An agent plans steps and calls tools; AgentCore Gateway exposes the APIs as tools and the knowledge base supplies the policy text." }
     - { id: b, text: "A knowledge base with RetrieveAndGenerate only", explanation: "Incorrect. RAG answers questions from documents but cannot call booking APIs to complete the change." }
     - { id: c, text: "A fine-tuned model trained on past booking conversations", explanation: "Incorrect. Fine-tuning changes behaviour but does not give the model the ability to call live APIs." }
     - { id: d, text: "Amazon Translate to convert the request into the airline's booking language", explanation: "Incorrect. Translation changes language; it does not plan steps or call APIs." }
   answer: [a]
-  explanation: "AI agents reason about a goal, plan steps, call tools and observe results until a multi-step task is complete. In Amazon Bedrock Agents, action groups (OpenAPI schemas or function definitions, often fulfilled by AWS Lambda) expose operations and knowledge bases provide reference information."
+  explanation: "AI agents reason about a goal, plan steps, call tools and observe results until a multi-step task is complete. For new agents AWS recommends Amazon Bedrock AgentCore, where AgentCore Gateway turns APIs and Lambda functions into tools and a knowledge base provides reference information. (Existing Amazon Bedrock Agents do the same with action groups, but that feature is closed to new customers since July 2026.)"
   domain: D3
   taskStatement: "3.1"
   lessonRef: day-18#explanation

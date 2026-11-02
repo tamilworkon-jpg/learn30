@@ -65,7 +65,7 @@ Many models also accept a **system prompt**: instructions placed outside the con
 
 ### Negative prompts: saying what to avoid
 
-A **negative prompt** tells the model what *not* to do or include. In text prompts this is an instruction such as *"Do not mention competitor brands"*, *"Do not give medical advice"* or *"Avoid technical jargon."* In **image generation**, models such as Amazon Nova Canvas provide a dedicated negative prompt field: you describe the image you want in the main prompt and list unwanted elements — *"blurry, extra fingers, text, watermark"* — in the negative prompt.
+A **negative prompt** tells the model what *not* to do or include. In text prompts this is an instruction such as *"Do not mention competitor brands"*, *"Do not give medical advice"* or *"Avoid technical jargon."* In **image generation**, many models (for example Stability AI's image models in Amazon Bedrock) provide a dedicated negative prompt field: you describe the image you want in the main prompt and list unwanted elements — *"blurry, extra fingers, text, watermark"* — in the negative prompt.
 
 Two cautions. First, models generally follow positive instructions more reliably than negative ones, so where possible say what to do (*"Use plain English a 12-year-old can understand"*) as well as what to avoid. Second, with image models put unwanted items in the negative prompt field rather than writing "no cars" in the main prompt — mentioning "cars" in the main prompt can actually make cars appear.
 

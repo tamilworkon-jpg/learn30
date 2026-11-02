@@ -51,7 +51,7 @@
   type: single
   stem: "An airline runs critical COBOL applications on a mainframe and many .NET Framework applications on Windows servers. It wants AI agents to help analyse, plan and carry out the modernisation. Which AWS service is designed for this?"
   options:
-    - { id: a, text: "Amazon Nova Reel", explanation: "Incorrect. Nova Reel generates short videos; it does not modernise applications." }
+    - { id: a, text: "Amazon Nova 2 Sonic", explanation: "Incorrect. Nova 2 Sonic is a speech-to-speech model for voice conversations; it does not modernise applications." }
     - { id: b, text: "Amazon Bedrock Knowledge Bases", explanation: "Incorrect. Knowledge Bases provide managed RAG over documents, not application migration." }
     - { id: c, text: "Amazon Quick", explanation: "Incorrect. Amazon Quick targets business users with insights and automation, not code modernisation." }
     - { id: d, text: "AWS Transform", explanation: "Correct. AWS Transform is an agentic AI service for migration and modernisation, including mainframe, .NET, VMware and code-upgrade projects." }
@@ -86,7 +86,7 @@
     - { id: a, text: "AWS Transform", explanation: "Incorrect. AWS Transform is a managed service for migration and modernisation, not an agent SDK." }
     - { id: b, text: "Amazon SageMaker Canvas", explanation: "Incorrect. Canvas is a no-code tool for building ML predictions, not an agent framework." }
     - { id: c, text: "Strands Agents", explanation: "Correct. Strands Agents is an open-source, model-driven SDK: give it a model, tools and a prompt, and the model plans and calls tools." }
-    - { id: d, text: "Amazon Nova Sonic", explanation: "Incorrect. Nova Sonic is a speech-to-speech model, not a framework for writing agents." }
+    - { id: d, text: "Amazon Nova 2 Sonic", explanation: "Incorrect. Nova 2 Sonic is a speech-to-speech model, not a framework for writing agents." }
   answer: [c]
   explanation: "Strands Agents is an open-source SDK from AWS for building agents with a few lines of code. It works with Bedrock and other model providers, supports MCP tools and multi-agent patterns, and agents built with it can run on AgentCore, Lambda, containers or EC2."
   domain: D2
@@ -133,10 +133,10 @@
   options:
     - { id: a, text: "Amazon Nova Micro", explanation: "Correct. Nova Micro is the text-only Nova understanding model optimised for the lowest latency and cost." }
     - { id: b, text: "Amazon Nova Premier", explanation: "Incorrect. Nova Premier is the most capable Nova model and is not the lowest-cost choice for simple tasks." }
-    - { id: c, text: "Amazon Nova Canvas", explanation: "Incorrect. Nova Canvas generates and edits images; it does not route text tickets." }
-    - { id: d, text: "Amazon Nova Reel", explanation: "Incorrect. Nova Reel generates short videos." }
+    - { id: c, text: "Amazon Nova 2 Sonic", explanation: "Incorrect. Nova 2 Sonic is a speech-to-speech model for voice conversations, not a text router." }
+    - { id: d, text: "Amazon Nova Multimodal Embeddings", explanation: "Incorrect. This model turns content into vectors for search; it does not generate text replies or route tickets." }
   answer: [a]
-  explanation: "The Nova understanding models range from Micro (text only, fastest and cheapest) through Lite and Pro to Premier (most capable). Canvas creates images, Reel creates video and Sonic handles speech-to-speech conversation."
+  explanation: "The Nova understanding models range from Micro (text only, fastest and cheapest) through Lite and Pro to Premier (most capable). Nova 2 Sonic handles speech-to-speech conversation and Nova Multimodal Embeddings creates vectors for search."
   domain: D2
   taskStatement: "2.3"
   lessonRef: day-12#explanation
@@ -193,14 +193,14 @@
 - id: q-day-12-013
   set: day-12
   type: single
-  stem: "A marketing team wants to generate and edit campaign images using a model from Amazon's own family in Amazon Bedrock. Which model should it use?"
+  stem: "A marketing team wants to generate campaign images in Amazon Bedrock. It learns that Amazon Nova Canvas, Amazon's own image model, was retired in September 2026. Which option should it use now?"
   options:
-    - { id: a, text: "Amazon Nova Canvas", explanation: "Correct. Nova Canvas is the Amazon Nova model for generating and editing images, and it adds an invisible watermark." }
-    - { id: b, text: "Amazon Nova Sonic", explanation: "Incorrect. Nova Sonic is a speech-to-speech model for real-time voice conversations." }
-    - { id: c, text: "Amazon Nova Micro", explanation: "Incorrect. Nova Micro is a text-only understanding model." }
-    - { id: d, text: "Amazon Nova Act", explanation: "Incorrect. Nova Act is aimed at building agents that perform actions in a web browser." }
+    - { id: a, text: "An image-generation model from another provider in Amazon Bedrock, such as a Stability AI model", explanation: "Correct. Bedrock still offers image-generation models from other providers, such as Stability AI, through the same API." }
+    - { id: b, text: "Amazon Nova 2 Sonic", explanation: "Incorrect. Nova 2 Sonic is a speech-to-speech model for real-time voice conversations." }
+    - { id: c, text: "Amazon Nova Micro", explanation: "Incorrect. Nova Micro is a text-only understanding model; it cannot produce images." }
+    - { id: d, text: "Amazon Nova Act", explanation: "Incorrect. Nova Act is an AWS service for building fleets of agents that act in web browsers and user interfaces." }
   answer: [a]
-  explanation: "Learn Nova by job: Micro, Lite, Pro and Premier understand content; Canvas generates images; Reel generates video; Sonic handles speech; Nova Act targets browser agents."
+  explanation: "Learn Nova by job: Micro, Lite, Pro and Premier (and Nova 2 Lite) understand content; Nova 2 Sonic handles speech; Nova Multimodal Embeddings creates vectors; Nova Act runs browser agents. Nova Canvas and Nova Reel were retired in September 2026, so image generation on Bedrock now uses another provider's model, such as Stability AI."
   domain: D2
   taskStatement: "2.3"
   lessonRef: day-12#explanation
@@ -230,7 +230,7 @@
     - { id: a, text: "Policy in AgentCore", explanation: "Correct. Policy defines which tools an agent may use and under what conditions, enforced outside the agent's reasoning." }
     - { id: b, text: "AgentCore Identity", explanation: "Correct. Identity gives agents their own identity and manages access to AWS resources and third-party services, for example via OAuth." }
     - { id: c, text: "AgentCore Browser", explanation: "Incorrect. The managed Browser lets agents navigate websites; it does not restrict tools or manage identity." }
-    - { id: d, text: "Amazon Nova Reel", explanation: "Incorrect. Nova Reel is a video-generation model, unrelated to agent permissions." }
+    - { id: d, text: "Amazon Nova Multimodal Embeddings", explanation: "Incorrect. This is an embedding model for search, unrelated to agent permissions." }
     - { id: e, text: "Amazon SageMaker HyperPod", explanation: "Incorrect. HyperPod provides clusters for large-scale model training." }
   answer: [a, b]
   explanation: "AgentCore Identity handles who the agent is and how it accesses resources on a user's behalf; Policy in AgentCore controls what tools it may use. Both are part of securing agents in production (revisited in Domain 5)."

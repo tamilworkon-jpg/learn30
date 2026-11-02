@@ -44,3 +44,24 @@ One entry per task (Constitution III). Template:
 - Static: lint clean, `astro check` 0 errors, `validate:content` clean (60 questions).
 - Content: 60 questions (each day 14 single / 4 multi / 1 ordering / 1 matching; answer positions spread). Blind answer-key solve by Claude Sonnet: 60/60 agreement; one wording fix, two lessonRefs moved off the optional deep dive.
 - Screenshots inspected: `quiz-single`, `quiz-ordering`, `quiz-matching`, `quiz-results` desktop + mobile (light). Fixed on mobile: ordering text column squeezed by unbreakable words and the ↓ button touching the card edge; Next button wrapping onto its own line. Not yet captured: dark theme of the quiz (components use theme variables only) — covered by T175 visual regression.
+
+## Final validation + multi-model swarm review — Phases 5–11 (T063–T181) — 2026-11-02
+
+Built in parallel: 3 code worktrees (US3+US7, US4+US5, US6), 7 lesson agents (Days 4–27), 5 question-set agents (week-1..4, mock-1..3), review-day and mock-day agents; merged and re-verified on main by the coordinator (author: Claude Opus).
+
+- Final state: 30/30 day pages (24 lessons, 4 review days, 2 mock days); 903 unique questions (24 × 20 daily, 4 × 57 weekly, 3 × 65 mocks with the exact 13/16/18/9/9 split); 166 glossary terms; 75 service cards.
+- Tests: unit 347 passing; E2E 293 passing + 1 intentional skip (mobile-only route check), incl. axe on every route × light/dark × desktop/mobile, keyboard-only quiz + mock, 52 approved visual baselines, perf (interactive < 2 s at 4× CPU, search < 1 s, lesson JS < 200 KB gz), security (CSP on every route, same-origin requests only, no raw-HTML sinks). `validate:content --final` green; lint/typecheck clean.
+- Issues found during integration and fixed: Shiki inline styles blocked by CSP (syntax highlighting disabled, CSS code blocks); shared Astro content cache across worktrees (test-infra only); stale "coming soon" assertions after content landed; 375px overflow on /day/29 tables; focus race in quiz e2e; W4 ratings missing from dashboard; text links distinguishable by colour only; dark-theme console-mock contrast; unlabelled Pagefind input; non-focusable scrollable tables.
+- T105 (US6 review): lookup pages/content reviewed via the spec, a11y and UX passes below; lessonRefs to day pages (not sections) for Days 4–27 accepted.
+- T178: live AIF-C01 guide verified (v1.2, 2026-10-29; domains, 14 task statements + objective counts, 51/51 in-scope services, curated out-of-scope/not-listed lists); 5 paraphrased task titles made verbatim.
+
+### Swarm review (reviewer models differ from the author; GPT-6.1 Sol / Gemini 4 Argon unavailable → fallback per Quality Gate)
+
+| Perspective | Model | Verdict | Notes |
+|-------------|-------|---------|-------|
+| Spec + Security | Claude Sonnet 5.5 | PASS WITH NOTES | All FR-001–026, SC, US acceptance scenarios and quickstart V1–V15 mapped to code + tests. Fixed: store crashes when storage blocked/full (memory fallback, first backup kept), FR-003 allocation test added. Accepted: `npm audit` flags astro ≤ 7.3 advisories (XSS/SSRF/image) — not reachable in this static build without SSR/image optimisation; fix requires Astro 5 → 7 major upgrade (follow-up). Accepted: progress-import schema loose on nested objects (self-inflicted DoS only; Ajv standalone needs runtime helpers for the stricter version). |
+| Exam content — answer keys (Q7) | Claude Sonnet 5.5 | PASS | Blind solves: 60/60 daily Days 1–3 (Phase 4), 195/195 mocks, 227/228 weekly; the one disagreement (q-week-2-037 ambiguous ordering) reworded. |
+| Exam content — facts | Claude Fable 5.1 | PASS after fixes | 37 flagged claims: 27 correct, 8 imprecise, 2 outdated. Fixed: Nova Canvas/Reel/Sonic v1 retired Sept 2026 (lessons, 9 questions with changed correct answers, glossary, Nova card); Bedrock Agents closed to new customers since 30 Jul 2026 → AgentCore for new agents; prompt-caching TTL; 4 service tiers; continued pre-training availability; prompt-retention wording; Trusted Advisor plan name. |
+| UX / Visual + Accessibility | Claude Fable 5.1 | PASS WITH NOTES | Fixed HIGH: search placeholder 1.3:1 → theme muted colour; white titles on gradient cards 2.4–4.3:1 → 40 % overlay (≥ 5.4:1). Fixed MEDIUM: exam-guide card in dark theme, split section durations, Outline active on day/mock pages, legend swatch border, outlined pressed Flag. Follow-ups (not fixed): 6-tab mobile bar with ~10 px labels, glossary A–Z target size, prose paragraph spacing on mock intro, "This week" card titles clamp, footer 11 px. |
+
+- Open: T179 manual step — open the VS Code Ports-panel forwarded URL for 4321 and repeat export → import (automated cross-origin equivalent passes in tests/e2e/port-forward.spec.ts).

@@ -420,12 +420,12 @@
   type: single
   stem: "A hotel group wants a phone concierge that holds natural, real-time spoken conversations with guests, taking speech in and replying with speech. Which Amazon Nova model is designed for this?"
   options:
-    - { id: a, text: "Amazon Nova Canvas", explanation: "Incorrect. Nova Canvas generates and edits images." }
-    - { id: b, text: "Amazon Nova Reel", explanation: "Incorrect. Nova Reel generates short videos." }
+    - { id: a, text: "Amazon Nova Multimodal Embeddings", explanation: "Incorrect. This model turns text, images, video and audio into vectors for search; it does not hold conversations." }
+    - { id: b, text: "Amazon Nova Premier", explanation: "Incorrect. Nova Premier is the most capable understanding model, but it replies in text, not speech." }
     - { id: c, text: "Amazon Nova Micro", explanation: "Incorrect. Nova Micro is a fast, low-cost text-only understanding model." }
-    - { id: d, text: "Amazon Nova Sonic", explanation: "Correct. Nova Sonic is a speech-to-speech model for natural, real-time voice conversations." }
+    - { id: d, text: "Amazon Nova 2 Sonic", explanation: "Correct. Nova 2 Sonic is a speech-to-speech model for natural, real-time voice conversations (the successor to the first Nova Sonic, retired in September 2026)." }
   answer: [d]
-  explanation: "Learn the Nova family by job: Micro, Lite, Pro and Premier for understanding (from fastest and cheapest to most capable); Canvas for images; Reel for video; Sonic for speech-to-speech; Act for browser-using agents; and multimodal embeddings for search."
+  explanation: "Learn the Nova family by job: Micro, Lite, Pro and Premier for understanding (from fastest and cheapest to most capable); Nova 2 Sonic for speech-to-speech; Nova Act for browser-using agents; and Nova Multimodal Embeddings for search."
   domain: D2
   taskStatement: "2.3"
   lessonRef: day-12#explanation
@@ -439,7 +439,7 @@
     - { id: a, text: "Amazon Nova Premier", explanation: "Correct. Nova Premier is the most capable Nova understanding model and serves as a teacher for distillation." }
     - { id: b, text: "Amazon Nova Lite", explanation: "Incorrect. Nova Lite is a low-cost multimodal model, not the most capable one." }
     - { id: c, text: "Amazon Nova Micro", explanation: "Incorrect. Nova Micro is the smallest, text-only model, more likely to be a student than a teacher." }
-    - { id: d, text: "Amazon Nova Act", explanation: "Incorrect. Nova Act is aimed at agents that perform actions in a web browser." }
+    - { id: d, text: "Amazon Nova Act", explanation: "Incorrect. Nova Act is an AWS service for building agents that perform actions in web browsers, not a teacher model." }
   answer: [a]
   explanation: "Nova understanding models range from Micro (text only, fastest and lowest cost) through Lite (low-cost multimodal) and Pro (balanced) to Premier (most capable, teacher for distillation). In distillation, a large teacher's answers train a smaller student model."
   domain: D2
@@ -601,7 +601,7 @@
     - { id: a, text: "Compare the on-demand estimate with the cost of reserved or self-hosted capacity, and add operational effort", explanation: "Third: only with an on-demand estimate can the team judge whether reserved capacity would be cheaper." }
     - { id: b, text: "Measure real token counts per request in a pilot", explanation: "First: pilot measurements replace guesses, because retrieved passages and history are often larger than expected." }
     - { id: c, text: "After launch, track cost per interaction and set AWS Budgets alerts", explanation: "Last: ongoing tracking connects the bill to business value and warns of overspend." }
-    - { id: d, text: "Build a cost model: users × requests per user × input and output tokens × price, plus supporting services", explanation: "Second: the measured tokens feed a monthly cost model." }
+    - { id: d, text: "Use the measured token counts to build a cost model: users × requests per user × input and output tokens × price, plus supporting services", explanation: "Second: the measured tokens feed a monthly cost model." }
   answer: [b, d, a, c]
   explanation: "Estimate costs from measured token counts, build a cost model, compare on-demand with reserved or self-hosted options including operational effort, and then track cost per interaction with budgets after launch. For most teams starting out, on-demand wins."
   domain: D2
@@ -833,7 +833,7 @@
     - { id: b, text: "Extract table rows from scanned PDF invoices", explanation: "Incorrect. Extracting tables from scanned documents is an Amazon Textract feature." }
     - { id: c, text: "Convert voicemail recordings into text", explanation: "Incorrect. Speech-to-text is done by Amazon Transcribe." }
     - { id: d, text: "Detect personal information such as names and phone numbers", explanation: "Correct. Comprehend detects PII in text." }
-    - { id: e, text: "Generate new marketing images", explanation: "Incorrect. Image generation needs a generative model such as Amazon Nova Canvas." }
+    - { id: e, text: "Generate new marketing images", explanation: "Incorrect. Image generation needs a generative image model, such as a Stability AI model in Amazon Bedrock." }
   answer: [a, d]
   explanation: "Amazon Comprehend detects sentiment, entities, key phrases, dominant language, PII and syntax, groups documents by topic modelling, and supports custom classification and entity recognition trained on your labels."
   domain: D1

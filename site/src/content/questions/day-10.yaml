@@ -145,14 +145,14 @@
 - id: q-day-10-010
   set: day-10
   type: single
-  stem: "A small team with little coding experience wants a managed agent that it can configure in the console with instructions, tools backed by Lambda functions, a knowledge base and guardrails. Which AWS option fits BEST?"
+  stem: "A company configured a customer-service agent in Amazon Bedrock Agents in 2025, with instructions, Lambda-backed action groups, a knowledge base and guardrails. In late 2026 another team wants to build a new production agent on AWS. Which option does AWS recommend for the new agent?"
   options:
     - { id: a, text: "Train a custom foundation model on Amazon SageMaker AI", explanation: "Incorrect. Training a model from scratch is costly and unnecessary; the team needs an agent built on an existing model." }
     - { id: b, text: "Amazon Bedrock batch inference jobs", explanation: "Incorrect. Batch inference runs offline prompts; it does not provide an interactive agent with tools." }
-    - { id: c, text: "Build an orchestration loop from scratch on Amazon EC2", explanation: "Incorrect. This requires substantial coding and operations, which the team wants to avoid." }
-    - { id: d, text: "Amazon Bedrock Agents", explanation: "Correct. Bedrock Agents is a fully managed way to configure agents with a model, instructions, action groups, knowledge bases and guardrails." }
+    - { id: c, text: "Build an orchestration loop from scratch on Amazon EC2", explanation: "Incorrect. This requires substantial coding and operations, and gives none of the managed security and observability services." }
+    - { id: d, text: "Amazon Bedrock AgentCore", explanation: "Correct. AWS recommends AgentCore (including its managed agent harness) for new agents. Bedrock Agents, now called Bedrock Agents Classic, has been closed to new customers since 30 July 2026, although the existing agent keeps working." }
   answer: [d]
-  explanation: "Amazon Bedrock Agents lets you build an agent with little code: choose a model, write instructions, attach action groups (tools backed by Lambda), knowledge bases and guardrails, and enable memory or multi-agent collaboration. AWS runs the orchestration."
+  explanation: "Amazon Bedrock Agents lets you configure an agent with little code — model, instructions, Lambda-backed action groups, knowledge bases and guardrails — and existing agents keep running. Since 30 July 2026 it is closed to new customers, and AWS recommends Amazon Bedrock AgentCore for new agents: it runs agents from any framework with Runtime, Memory, Gateway, Identity, Policy and Observability."
   domain: D3
   taskStatement: "3.1"
   lessonRef: day-10#explanation

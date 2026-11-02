@@ -72,7 +72,7 @@
     - { id: c, text: "Increase the maximum tokens", explanation: "Incorrect. Maximum tokens limits text length and is not how image content is controlled." }
     - { id: d, text: "Use chain-of-thought prompting", explanation: "Incorrect. Chain-of-thought helps with reasoning tasks, not with excluding visual elements." }
   answer: [a]
-  explanation: "Negative prompts tell a model what to avoid. Image models such as Amazon Nova Canvas provide a separate negative prompt field; put unwanted elements there rather than in the main description."
+  explanation: "Negative prompts tell a model what to avoid. Many image models, such as Stability AI models in Amazon Bedrock, provide a separate negative prompt field; put unwanted elements there rather than in the main description."
   domain: D3
   taskStatement: "3.2"
   lessonRef: day-16#explanation

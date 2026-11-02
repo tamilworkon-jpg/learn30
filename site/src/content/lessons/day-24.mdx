@@ -99,7 +99,7 @@ Results, including scores and example responses, are saved to Amazon S3 and show
 Generative AI raises its own transparency questions, because users often cannot tell whether text, an image or a voice was produced by a person or a model. Practical measures include:
 
 - **Disclosure** — tell users when they are talking to an AI assistant and when content is AI-generated, and offer a route to a human.
-- **Provenance and watermarking** — AWS image-generation models such as Amazon Nova Canvas add an invisible watermark to generated images, and industry content-credential standards attach metadata describing how media was created. These help others detect synthetic content.
+- **Provenance and watermarking** — some image-generation models embed an invisible watermark in generated images (AWS's former image models, Titan Image Generator and Nova Canvas, did so before they were retired), and industry content-credential standards attach metadata describing how media was created. These help others detect synthetic content.
 - **Source attribution** — show the documents behind a RAG answer so users can verify it themselves; this improves both transparency and veracity.
 - **Documented limitations** — state what the assistant should not be used for (for example legal or medical advice) and where it is known to be weak.
 - **Data lineage** — record which datasets, documents and model versions produced a system, so you can answer "where did this answer come from?" during an audit (Day 26 returns to lineage and cataloguing).

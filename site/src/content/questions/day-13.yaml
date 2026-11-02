@@ -216,7 +216,7 @@
     - { id: c, text: "A user asking ten questions about the same 80-page contract in a short session", explanation: "Incorrect. The long contract is a repeated prefix, so caching saves cost and latency on each follow-up." }
     - { id: d, text: "An agent that sends the same tool definitions on every reasoning step", explanation: "Incorrect. Repeated tool definitions are a good caching candidate." }
   answer: [b]
-  explanation: "Prompt caching pays off when the identical prefix is reused frequently, because the cache expires after a few minutes without hits and some models charge slightly more to write to it. Unique, infrequent prompts gain nothing."
+  explanation: "Prompt caching pays off when the identical prefix is reused frequently, because the cache expires after a model-specific time without hits (5 minutes by default for many models, longer on some) and some models charge slightly more to write to it. Unique, infrequent prompts gain nothing."
   domain: D3
   taskStatement: "3.1"
   lessonRef: day-13#explanation

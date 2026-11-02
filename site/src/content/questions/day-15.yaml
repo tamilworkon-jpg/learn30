@@ -282,7 +282,7 @@
     - { id: a, text: "It reduces the cost of processing a repeated prompt prefix", explanation: "Correct. Cached prefix tokens are read from the cache and billed at a lower rate than processing them again." }
     - { id: b, text: "It returns a stored answer instead of generating a new one", explanation: "Incorrect. Prompt caching caches the input prefix; the model still generates a fresh response to each request." }
     - { id: c, text: "It reduces the time to the first token for requests that share the cached prefix", explanation: "Correct. Skipping reprocessing of the long prefix makes the response start sooner." }
-    - { id: d, text: "It permanently updates the model with the cached content", explanation: "Incorrect. Caching does not change model weights, and cache entries expire a few minutes after last use." }
+    - { id: d, text: "It permanently updates the model with the cached content", explanation: "Incorrect. Caching does not change model weights, and cache entries expire after a model-specific time (often 5 minutes) without use." }
     - { id: e, text: "It works best when the beginning of every prompt is different", explanation: "Incorrect. Only an identical prefix can be reused, so the stable content must come first." }
   answer: [a, c]
   explanation: "Prompt caching stores a prompt prefix up to a cache checkpoint so later requests with the same prefix are cheaper and faster. It suits long, repeated instructions or documents and is supported on selected models."

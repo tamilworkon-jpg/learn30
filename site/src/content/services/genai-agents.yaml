@@ -2,7 +2,7 @@
   aka: [Bedrock]
   category: Generative AI & agents
   purpose: "Fully managed, serverless access to foundation models from Amazon and leading providers through one API, plus tools to build GenAI apps."
-  examCue: "Choose this for GenAI without managing infrastructure: model choice, Knowledge Bases (RAG), Agents, Guardrails, Model Evaluation, Prompt Management, fine-tuning, batch or provisioned throughput."
+  examCue: "Choose this for GenAI without managing infrastructure: model choice, Knowledge Bases (RAG), Agents (closed to new customers since July 2026; new agents → AgentCore), Guardrails, Model Evaluation, Prompt Management, fine-tuning, batch or provisioned throughput."
   notThis: "Not for training classic ML models from scratch (that's SageMaker AI) and not a single model itself (Nova is Amazon's FM family on Bedrock)."
   inScope: true
   taskStatements: ['2.3', '3.1', '3.2', '3.4', '4.1', '5.1']
@@ -11,7 +11,7 @@
   aka: [AgentCore]
   category: Generative AI & agents
   purpose: "Services to deploy and operate AI agents securely at scale: Runtime, Memory, Gateway, Identity, Policy, Observability, Code Interpreter, Browser."
-  examCue: "Choose this when the scenario asks how to run agents in production securely with any framework or model: session isolation, agent identity and access, tool gateway, memory, tracing."
+  examCue: "Choose this for new agents (AWS recommends it over Bedrock Agents Classic) and when the scenario asks how to run agents in production securely with any framework or model: session isolation, agent identity and access, tool gateway, memory, tracing."
   notThis: "Not an agent-writing SDK (that's Strands Agents) and not a foundation model; it is the runtime and operations layer for agents."
   inScope: true
   taskStatements: ['2.3', '3.1', '5.1']
@@ -19,8 +19,8 @@
 - name: Amazon Nova
   aka: [Nova]
   category: Generative AI & agents
-  purpose: "Amazon's own family of foundation models on Bedrock: understanding (text, image, video), creative (image and video generation) and speech models."
-  examCue: "Choose this when the scenario wants a cost-effective, fast Amazon-built FM in Bedrock, or Amazon image/video generation or speech-to-speech models."
+  purpose: "Amazon's foundation models on Bedrock: Nova Micro, Lite, Pro, Premier and Nova 2 Lite (understanding), Nova 2 Sonic (speech) and Nova Multimodal Embeddings. Canvas and Reel retired Sept 2026."
+  examCue: "Choose this when the scenario wants a cost-effective, fast Amazon-built FM in Bedrock, a speech-to-speech model (Nova 2 Sonic) or multimodal embeddings. For image generation today, use another Bedrock provider such as Stability AI."
   notThis: "Not a separate platform you host yourself; Nova models are consumed through Amazon Bedrock."
   inScope: true
   taskStatements: ['2.3', '3.1']

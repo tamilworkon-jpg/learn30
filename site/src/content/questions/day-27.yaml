@@ -72,7 +72,7 @@
     - { id: c, text: "Amazon Inspector", explanation: "Incorrect. Inspector scans for software vulnerabilities; it does not check costs or quotas." }
     - { id: d, text: "AWS Artifact", explanation: "Incorrect. Artifact provides compliance reports and agreements." }
   answer: [a]
-  explanation: "Trusted Advisor inspects your account against best practices and recommends improvements. A core set of checks is available to everyone, with the full set on Business-level support plans and above."
+  explanation: "Trusted Advisor inspects your account against best practices and recommends improvements. All support plans get a core set of checks; the full set comes with Business Support+ and higher plans."
   domain: D5
   taskStatement: "5.2"
   lessonRef: day-27#explanation

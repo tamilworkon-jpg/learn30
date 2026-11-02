@@ -576,16 +576,16 @@
   stem: "Match each business scenario to the AWS option that fits it BEST."
   options:
     - { id: a, text: "Engineers ask questions in plain language and get answers drawn from 5,000 maintenance manuals", explanation: "Knowledge base: retrieval-augmented generation over company documents with Amazon Bedrock Knowledge Bases." }
-    - { id: b, text: "An assistant books a meeting room, emails the attendees and updates their calendars", explanation: "Agentic AI: a foundation model plans the steps and uses tools, for example with Amazon Bedrock Agents." }
+    - { id: b, text: "An assistant books a meeting room, emails the attendees and updates their calendars", explanation: "Agentic AI: a foundation model plans the steps and uses tools, for example an agent running on Amazon Bedrock AgentCore." }
     - { id: c, text: "Predict next month's electricity demand per region from hourly history", explanation: "Forecasting: regression on time-series data built with SageMaker AI." }
     - { id: d, text: "Show each shopper a personalised list of products on the home page", explanation: "Recommendation system: Amazon Personalize learns from interaction data." }
   matchTargets:
     - { id: t1, text: "Amazon Bedrock Knowledge Bases" }
-    - { id: t2, text: "Amazon Bedrock Agents" }
+    - { id: t2, text: "Amazon Bedrock AgentCore" }
     - { id: t3, text: "Amazon SageMaker AI" }
     - { id: t4, text: "Amazon Personalize" }
   answer: { a: t1, b: t2, c: t3, d: t4 }
-  explanation: "The exam guide's application families map to AWS options: knowledge bases to Amazon Bedrock Knowledge Bases, agentic AI to Bedrock Agents or AgentCore, forecasting and fraud detection to SageMaker AI or Canvas, and recommendations to Amazon Personalize."
+  explanation: "The exam guide's application families map to AWS options: knowledge bases to Amazon Bedrock Knowledge Bases, agentic AI to Bedrock AgentCore (the recommended path for new agents), forecasting and fraud detection to SageMaker AI or Canvas, and recommendations to Amazon Personalize."
   domain: D1
   taskStatement: "1.2"
   lessonRef: day-05#explanation
