@@ -1,0 +1,90 @@
+---
+// T093 — mock day (kind: mock, days 29–30): authored MDX (launch → remediation → [finalRevision → examStrategy]).
+// Without MDX the day still offers its mock launch cards. Contract: specs/001-aws-ai-practitioner-course/contracts/review-and-mock-days.md
+import BaseLayout from './BaseLayout.astro';
+import MockLaunch from '../components/mock/MockLaunch.astro';
+import { course, examGuide, pad } from '../lib/data';
+import { getPrevNext } from '../lib/lesson-utils';
+import { MOCK_LAUNCHES } from '../lib/validate';
+import { weekOfDay } from '../lib/review';
+import type { CourseDay } from '../lib/types';
+import '../styles/review.css';
+
+interface Props {
+  cd: CourseDay;
+  hasContent: boolean;
+  title?: string;
+}
+const { cd, hasContent, title = cd.title } = Astro.props;
+const week = weekOfDay(course, cd.day)!;
+const { prev, next } = getPrevNext(cd.day, course);
+---
+
+<BaseLayout title={`Day ${cd.day}: ${title}`}>
+  <p class="muted text-sm m-0">Week {week.number} · {week.title} › Day {cd.day}</p>
+  <h1 class="h1">{title}</h1>
+  <div class="flex flex-wrap items-center gap-2 mb-2">
+    {examGuide.domains.map((d) => <span class={`chip chip-${d.id}`}>{d.id}</span>)}
+    <span class="pill pill-accent">Mock day · {examGuide.format.totalQuestions} Q · {examGuide.format.minutes} min</span>
+  </div>
+  <div class="mockday" data-mock-day={cd.day}>
+    {
+      hasContent ? (
+        <article class="mockday-body" data-pagefind-body>
+          <slot />
+        </article>
+      ) : (
+        <>
+          <div class="card mt-4" data-coming-soon="mock-day">
+            <p class="m-0 font-semibold">🚧 Remediation plan and exam-day guide coming soon</p>
+            <p class="m-0 muted">You can already launch the mock {(MOCK_LAUNCHES[cd.day] ?? []).length > 1 ? 'exams' : 'exam'} below.</p>
+          </div>
+          {(MOCK_LAUNCHES[cd.day] ?? []).map((n) => (
+            <MockLaunch n={n} optional={n === 3} />
+          ))}
+        </>
+      )
+    }
+    <nav class="prevnext" aria-label="Day navigation">
+      {prev ? <a class="btn btn-ghost" href={`/day/${pad(prev)}`}>← Previous: Day {prev}</a> : <span />}
+      {next && <a class="btn" href={`/day/${pad(next)}`}>Next: Day {next} →</a>}
+    </nav>
+  </div>
+</BaseLayout>
+
+<style>
+  .mockday :global(.lesson-section) {
+    margin-top: 32px;
+    scroll-margin-top: 16px;
+  }
+  .mockday :global(.sec-head) {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 6px;
+  }
+  .mockday-body :global(p),
+  .mockday-body :global(li) {
+    line-height: 1.75;
+  }
+  .mockday-body :global(ol:not([class])) {
+    list-style: decimal;
+    padding-left: 1.6em;
+  }
+  .mockday-body :global(ul:not([class])) {
+    list-style: disc;
+    padding-left: 1.4em;
+  }
+  .mockday-body :global(li::marker) {
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .prevnext {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+</style>

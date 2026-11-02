@@ -313,18 +313,19 @@ If a model is unavailable, use any available model that differs from the author 
 
 **Goal**: 65 Q / 90 min mocks with flagging, review, auto-submit, scaled score. **Independent test**: quickstart V8, V9.
 
-- [ ] T085 [P] [US5] Unit test site/tests/unit/mock.test.ts
+- [x] T085 [P] [US5] Unit test site/tests/unit/mock.test.ts
   - TC: M1 deadline = start + 90 min; M2 remaining time after reload; M3 expired → auto-submit `autoSubmitted: true`; M4 unanswered incorrect; M5 scaled + pass at 700; M6 readiness flag at ≥ 80%.
-- [ ] T086 [P] [US5] E2E site/tests/e2e/mock.spec.ts (`@visual`, fixture mock)
+- [x] T086 [P] [US5] E2E site/tests/e2e/mock.spec.ts (`@visual`, fixture mock)
   - TC: M7 65 Q, timer 90:00, palette nav, flag/unflag; M8 review screen lists flagged + unanswered; M9 submit → scaled, PASS/FAIL, domains; M10 inject `deadline` = now+3 s, reload → auto-submitted; screenshots `mock-question`, `mock-review`, `mock-results`.
-- [ ] T087 [US5] Implement site/src/lib/mock.ts → T085 green
-- [ ] T088 [P] [US5] Create site/src/components/mock/Timer.tsx (amber < 10 min, red < 2 min, aria-live every 5 min)
-- [ ] T089 [P] [US5] Create site/src/components/mock/Palette.tsx
-- [ ] T090 [P] [US5] Create site/src/components/mock/ReviewScreen.tsx
-- [ ] T091 [US5] Create site/src/components/mock/MockRunner.tsx
-- [ ] T092 [US5] Create site/src/pages/mock/[n].astro (n = 1..3) → T086 green
-- [ ] T093 [US5] Create site/src/layouts/MockDayLayout.astro; render `kind: mock` in day route
-- [ ] T094 [US5] REVIEW US5; log
+- [x] T087 [US5] Implement site/src/lib/mock.ts → T085 green
+- [x] T088 [P] [US5] Create site/src/components/mock/Timer.tsx (amber < 10 min, red < 2 min, aria-live every 5 min)
+- [x] T089 [P] [US5] Create site/src/components/mock/Palette.tsx
+- [x] T090 [P] [US5] Create site/src/components/mock/ReviewScreen.tsx
+- [x] T091 [US5] Create site/src/components/mock/MockRunner.tsx
+- [x] T092 [US5] Create site/src/pages/mock/[n].astro (n = 1..3) → T086 green
+- [x] T093 [US5] Create site/src/layouts/MockDayLayout.astro; render `kind: mock` in day route
+- [x] T094 [US5] REVIEW US5; log
+  - Done 2026-11-02: unit 169 passing (mock.test.ts M1–M6 + timer helpers), full E2E 62 passing (mock.spec 12: M7–M10 on the test-only fixture route /design/fixture-mock with 65 synthetic questions and the real 90-min clock, deadline injected for M10; M11–M12 on /design/fixture-mock-day-29|30 rendering the documented example MDX; real /mock/N and /day/29–30 show "coming soon" + launch cards); lint/typecheck/validate:content clean; screenshots mock-question/review/results/autosubmitted/timer-warn/exam-dark/day-29/day-30 desktop+mobile inspected (fixed: bullets on the remediation list, mobile action row wrapping → shorter "Flag" label with static aria-label). Decisions: the deadline lives in `inProgress['mock-N'].deadline` (resume on reload; expired on load → auto-submit); readiness = ≥ 80% (SC-005); MDX contract for review/mock days in contracts/review-and-mock-days.md, enforced by `checkReviewOrMockDay` in validate.ts (mock days list all 14 task statements; course.yaml keeps []). Fixture routes reuse the real assessment ids (`week-1`, `mock-1`) because progress-schema restricts ids; they are not linked from learner navigation.
 
 ---
 

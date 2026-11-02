@@ -3,9 +3,12 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import LessonLayout from '../../layouts/LessonLayout.astro';
 import ReviewLayout from '../../layouts/ReviewLayout.astro';
+import MockDayLayout from '../../layouts/MockDayLayout.astro';
 import Section from '../../components/lesson/Section.astro';
 import Diagram from '../../components/lesson/Diagram.astro';
 import Callout from '../../components/lesson/Callout.astro';
+import MockLaunch from '../../components/mock/MockLaunch.astro';
+import RemediationSlot from '../../components/mock/RemediationSlot.astro';
 import { course, pad } from '../../lib/data';
 import { weeklySetId } from '../../lib/review';
 import type { Question } from '../../lib/types';
@@ -30,6 +33,10 @@ const weekly: Question[] = weeklySet
     <ReviewLayout cd={cd} questions={weekly} hasContent={Boolean(Content)} title={entry?.data.title}>
       {Content && <Content components={{ Section, Diagram, Callout }} />}
     </ReviewLayout>
+  ) : cd.kind === 'mock' ? (
+    <MockDayLayout cd={cd} hasContent={Boolean(Content)} title={entry?.data.title}>
+      {Content && <Content components={{ Section, Diagram, Callout, MockLaunch, Remediation: RemediationSlot }} />}
+    </MockDayLayout>
   ) : entry ? (
     <LessonLayout entry={entry} />
   ) : (

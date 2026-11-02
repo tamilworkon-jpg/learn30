@@ -245,3 +245,13 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+@media (max-width: 520px) {
+  .mock-actions > .btn {
+    flex: 1 1 0;
+    justify-content: center;
+    gap: 4px;
+    padding-inline: 8px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+}
