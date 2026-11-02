@@ -1,0 +1,11 @@
+---
+// T189 — create an account (contract §4, §6–§7). The form island posts to /api/auth/signup.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AuthForm from '../components/account/AuthForm';
+---
+
+<BaseLayout title="Create account" accountUi={false} description="Create an account to save your AWS AI Practitioner course progress.">
+  <div class="auth-wrap">
+    <AuthForm mode="signup" client:load />
+  </div>
+</BaseLayout>

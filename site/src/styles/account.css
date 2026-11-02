@@ -1,0 +1,288 @@
+/* T189 — account menu, sign-in / sign-up forms, Settings → Account, import offer, signed-out banner,
+   save-status indicator. Colours come from theme tokens (AA in light + dark). */
+.account-menu {
+  position: relative;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+.account-trigger {
+  background: none;
+  border: 0;
+  padding: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.account-trigger:focus-visible,
+.account-item:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.account-avatar {
+  color: #fff;
+  background: var(--brand-purple);
+  font-size: 14px;
+}
+[data-theme='dark'] .account-avatar {
+  background: #6d5bc4;
+}
+.account-signin {
+  white-space: nowrap;
+  padding: 8px 16px;
+}
+.account-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 60;
+  width: min(280px, calc(100vw - 32px));
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.18);
+  padding: 14px;
+  display: grid;
+  gap: 4px;
+}
+.account-name {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.account-username {
+  margin: 0 0 8px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.account-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.account-item:hover {
+  background: var(--card);
+}
+.account-item:disabled {
+  cursor: progress;
+}
+
+/* Sign in / sign up */
+.auth-wrap {
+  display: grid;
+  place-items: start center;
+  padding: 8px 0 24px;
+}
+.auth-form {
+  width: min(440px, 100%);
+  display: grid;
+  gap: 16px;
+  border: 1px solid var(--border);
+}
+.auth-title {
+  margin: 0;
+}
+.auth-field {
+  display: grid;
+  gap: 6px;
+}
+.auth-field label {
+  font-weight: 600;
+  font-size: 15px;
+}
+.auth-input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 2px solid var(--muted);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+}
+.auth-input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+.auth-input[aria-invalid='true'] {
+  border-color: var(--d5);
+}
+[data-theme='dark'] .auth-input[aria-invalid='true'] {
+  border-color: #fca5a5;
+}
+.password-row {
+  display: flex;
+  gap: 8px;
+}
+.password-row .auth-input {
+  flex: 1;
+}
+.password-toggle {
+  min-height: 44px;
+  flex: none;
+  border: 2px solid var(--border);
+}
+.auth-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.auth-error,
+.account-msg.is-error {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #b91c1c;
+}
+[data-theme='dark'] .auth-error,
+[data-theme='dark'] .account-msg.is-error {
+  color: #fca5a5;
+}
+.auth-form-error:empty,
+.account-msg:empty {
+  display: none;
+}
+.auth-form-error {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--trap-bg);
+  color: var(--trap-text);
+  font-weight: 500;
+}
+.auth-submit {
+  justify-content: center;
+  min-height: 48px;
+}
+.auth-submit:disabled,
+.account-form .btn:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+.auth-switch {
+  margin: 0;
+  text-align: center;
+}
+.auth-switch a,
+.signed-out-banner a {
+  color: var(--link);
+  font-weight: 600;
+}
+
+/* Settings → Account */
+.account-form {
+  display: grid;
+  gap: 12px;
+  max-width: 520px;
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.account-sub {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+.account-msg {
+  margin: 8px 0 0;
+  font-size: 14px;
+}
+.account-msg.is-ok {
+  color: var(--tip-text);
+  background: var(--tip-bg);
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+
+/* One-time legacy import offer */
+.import-offer {
+  margin: 0 0 20px;
+  border: 2px solid var(--accent);
+  background: var(--panel);
+}
+.import-offer:focus {
+  outline: none;
+}
+.import-offer:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.import-offer-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.import-choices {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.import-choices legend {
+  margin-bottom: 8px;
+}
+.import-choice {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.import-choice input {
+  margin-top: 5px;
+  accent-color: var(--button);
+}
+
+/* Signed-out banner: shown by CSS only when the before-paint script marked html[data-auth="out"]. */
+.signed-out-banner {
+  display: none;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0 0 20px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: var(--hands-bg);
+  color: var(--hands-text);
+}
+html[data-auth='out'] .signed-out-banner {
+  display: flex;
+}
+.signed-out-banner a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* Non-blocking save indicator in the top bar */
+.save-status {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.save-status:not(:empty) {
+  padding: 6px 12px;
+  background: var(--real-bg);
+  color: var(--real-text);
+}
+@media (max-width: 639px) {
+  /* No room in the phone top bar: float above the bottom navigation instead (never covers content for long). */
+  .save-status:not(:empty) {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 76px;
+    z-index: 70;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 0.2);
+  }
+}

@@ -1,14 +1,20 @@
 ---
-import ProfileMenu from '../components/profiles/ProfileMenu';
+import AccountMenu from '../components/account/AccountMenu';
+import ImportOffer from '../components/account/ImportOffer';
 import '../styles/theme.css';
+import '../styles/account.css';
 import { examGuide } from '../lib/data';
+import { loginHref } from '../lib/auth';
 
 interface Props {
   title: string;
   active?: 'home' | 'outline' | 'search' | 'glossary' | 'cheatsheet' | 'settings' | 'none';
   description?: string;
+  /** false on /login and /signup: no signed-out banner / import offer there. */
+  accountUi?: boolean;
 }
-const { title, active = 'none', description = 'A 30-day, one-hour-a-day course for the AWS Certified AI Practitioner (AIF-C01) exam.' } = Astro.props;
+const { title, active = 'none', description = 'A 30-day, one-hour-a-day course for the AWS Certified AI Practitioner (AIF-C01) exam.', accountUi = true } = Astro.props;
+const signInHref = loginHref(Astro.url.pathname.replace(/\/$/, '') || '/');
 
 const icons: Record<string, string> = {
   home: 'M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z',
@@ -36,19 +42,11 @@ const nav = [
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title} · AIP 30</title>
-    <script is:inline>
-      try {
-        // Active learner profile's progress key (mirrors src/lib/progress/keys.ts), read before paint to avoid a theme flash.
-        let key = 'aip-course:v1';
-        const idx = JSON.parse(localStorage.getItem('aip-profiles:v1') || 'null');
-        if (idx && typeof idx.active === 'string' && idx.active !== 'default' && Array.isArray(idx.profiles) && idx.profiles.some((x) => x && x.id === idx.active)) key = 'aip-course:v1:p:' + idx.active;
-        const p = JSON.parse(localStorage.getItem(key) || '{}');
-        if (p.settings && p.settings.theme === 'dark') document.documentElement.dataset.theme = 'dark';
-      } catch (e) {}
-    </script>
-    <script is:inline src="/scripts/ui-prefs.js"></script>
+    <!-- The Node server inserts <script type="application/json" id="aip-bootstrap"> here (contract §5). -->
   </head>
   <body>
+    <!-- Before paint, after the bootstrap JSON has been parsed: theme, collapsed bars, html[data-auth]. -->
+    <script is:inline src="/scripts/ui-prefs.js"></script>
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="app">
       <aside class="sidebar" aria-label="Primary">
@@ -82,11 +80,21 @@ const nav = [
             <span class="hidden sm:inline">Search lessons, terms, services…</span><span class="sm:hidden">Search…</span>
           </a>
           <span class="flex-1"></span>
+          <p class="save-status" data-save-status role="status"></p>
           <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch to dark theme" title="Toggle theme">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"></path></svg>
           </button>
-          <ProfileMenu client:load />
+          {accountUi && <AccountMenu client:load />}
         </div>
+        {
+          accountUi && (
+            <p class="signed-out-banner" data-signed-out-banner>
+              <span>You're not signed in — lessons and quizzes work, but nothing is saved.</span>
+              <a href={signInHref}>Sign in to save your progress</a>
+            </p>
+          )
+        }
+        {accountUi && <ImportOffer client:idle />}
         <slot />
         <footer class="site-footer">
           Exam guide v{examGuide.version} · last verified {examGuide.lastVerified} · {examGuide.examCode}. Independent study aid — not affiliated with AWS.
@@ -95,16 +103,19 @@ const nav = [
     </div>
     <script>
       import { getStore } from '../lib/progress/store';
+      import { readLocalTheme, writeLocalTheme } from '../lib/ui-state';
       const btn = document.getElementById('theme-toggle')!;
       const store = getStore();
       const apply = (t: 'light' | 'dark') => {
         document.documentElement.dataset.theme = t;
         btn.setAttribute('aria-label', t === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
       };
-      apply(store.get().settings.theme ?? 'light');
+      // Signed in: the account's progress.settings.theme; signed out: this browser's UI fallback.
+      apply(store.signedIn ? (store.get().settings.theme ?? 'light') : readLocalTheme());
       btn.addEventListener('click', () => {
         const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
         store.setTheme(next);
+        if (!store.signedIn) writeLocalTheme(next);
         apply(next);
       });
     </script>
@@ -112,7 +123,7 @@ const nav = [
       // T187 — collapse the primary navigation to an icon rail (desktop).
       import { bindCollapse } from '../lib/ui-prefs';
       const rail = document.getElementById('rail-toggle');
-      if (rail instanceof HTMLButtonElement) bindCollapse({ button: rail, key: 'aip-ui:sidebar', attr: 'sidebar', labels: { collapse: 'Collapse navigation', expand: 'Expand navigation' } });
+      if (rail instanceof HTMLButtonElement) bindCollapse({ button: rail, attr: 'sidebar', labels: { collapse: 'Collapse navigation', expand: 'Expand navigation' } });
     </script>
       <script>
       // Wide tables / code blocks scroll horizontally on small screens: make them keyboard-focusable (WCAG 2.1.1).

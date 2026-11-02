@@ -1,4 +1,4 @@
-// T075 — dashboard island: reads progress from localStorage after mount (static page) and lays out
+// T075 — dashboard island: reads progress from the store after mount (static page) and lays out
 // the Phase 0 dashboard: continue cards + this week (main), progress ring + streak, focus areas, badges (side).
 import { useEffect, useState } from 'preact/hooks';
 import { earnedBadges } from '../../lib/badges';

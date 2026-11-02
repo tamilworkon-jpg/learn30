@@ -88,7 +88,7 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
 
   // T187 — collapse "Today's sections" to a thin strip (desktop); the lesson takes the full width.
   const secToggle = document.getElementById('sections-toggle');
-  if (secToggle instanceof HTMLButtonElement) bindCollapse({ button: secToggle, key: 'aip-ui:sections', attr: 'sections', labels: { collapse: "Hide today's sections", expand: "Show today's sections" } });
+  if (secToggle instanceof HTMLButtonElement) bindCollapse({ button: secToggle, attr: 'sections', labels: { collapse: "Hide today's sections", expand: "Show today's sections" } });
 
   // T068 — record sections viewed + resume position.
   const lessonEl = document.querySelector<HTMLElement>('[data-lesson-day]');
