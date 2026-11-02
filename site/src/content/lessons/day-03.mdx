@@ -1,0 +1,275 @@
+---
+day: 3
+kind: lesson
+title: 'Data types & ways machines learn'
+summary: 'Recognise the kinds of data AI models use — labelled and unlabelled, structured and unstructured, tabular, time-series, text, image and audio — and the main learning approaches: supervised (classification, regression), unsupervised (clustering, dimensionality reduction, anomaly detection), reinforcement, semi-supervised and self-supervised learning.'
+domains: [D1]
+taskStatements: ['1.1', '1.2']
+sources:
+  - { provider: udemy, title: 'Supervised Learning; Unsupervised Learning; Clustering; Dimensionality Reduction; Reinforcement Learning' }
+  - { provider: skillbuilder, title: 'Fundamentals of Machine Learning and Artificial Intelligence' }
+  - { provider: aws-docs, title: 'Amazon SageMaker AI built-in algorithms', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html' }
+objectives:
+  - Classify data as labelled or unlabelled, structured or unstructured, and by type (tabular, time-series, text, image, audio, video)
+  - Explain supervised learning and choose between classification and regression
+  - Explain unsupervised learning and its uses (clustering, dimensionality reduction, anomaly detection)
+  - Describe reinforcement, semi-supervised and self-supervised learning with an example of each
+  - Select the right learning approach for a business problem
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'Labelled data has the answer attached; unlabelled data does not. Labelling is often the most expensive step (SageMaker Ground Truth helps).'
+  - 'Structured = rows and columns (tabular, time-series); unstructured = text, images, audio, video.'
+  - 'Supervised learning uses labels: classification predicts a category, regression predicts a number.'
+  - 'Unsupervised learning finds structure without labels: clustering, dimensionality reduction (PCA), anomaly detection.'
+  - 'Reinforcement learning learns by trial, error and reward; foundation models are pre-trained with self-supervised learning.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 2" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="Kinds of data, kinds of learning" minutes={13}>
+
+### Why data comes first
+
+A model can only learn what its data contains. Before choosing an algorithm, a practitioner asks three questions: *What form is the data in? Do we know the right answers for past examples? What do we want the model to produce?* The answers decide almost everything else, and the exam often hides the correct option inside these clues.
+
+### Labelled vs unlabelled data
+
+- **Labelled data** includes the answer for each example: emails marked *spam* or *not spam*, house records with sale prices, X-rays annotated with *fracture* or *no fracture*.
+- **Unlabelled data** has no answer attached: a folder of customer reviews, millions of website clicks, raw sensor readings.
+
+Most of the world's data is unlabelled, and labelling is slow and costly because it often needs human experts. **Amazon SageMaker Ground Truth** helps by managing human labelling workforces (your own team, vendors or a public crowd) and can use *active learning* to label easy examples automatically so humans focus on the hard ones.
+
+### Structured, semi-structured and unstructured data
+
+- **Structured data** fits neatly into rows and columns with a fixed schema — a database table of customers or transactions. It is easy to query with SQL and is the classic input for traditional ML.
+- **Semi-structured data** has some organisation but no rigid schema — JSON documents, log files, XML.
+- **Unstructured data** has no predefined model — free text, images, audio, video, PDFs. Around 80–90% of enterprise data is unstructured, and deep learning and generative AI are what made it usable at scale.
+
+### Data types named in task statement 1.1
+
+| Type | What it looks like | Typical tasks | AWS examples |
+|---|---|---|---|
+| **Tabular** | Rows and columns of numbers and categories | Credit scoring, churn, pricing | SageMaker AI (XGBoost), SageMaker Canvas |
+| **Time-series** | Values recorded in time order | Demand forecasting, sensor anomaly detection | SageMaker AI forecasting algorithms, SageMaker Canvas |
+| **Text** | Documents, chats, emails, reviews | Sentiment, entity extraction, summarisation | Amazon Comprehend, Amazon Bedrock |
+| **Image** | Photos, scans, diagrams | Classification, object detection, OCR | Amazon Rekognition, Amazon Textract |
+| **Audio** | Speech, call recordings | Transcription, speaker identification | Amazon Transcribe |
+| **Video** | Sequences of images with audio | Content moderation, activity detection | Amazon Rekognition Video |
+
+Time-series is special because order matters: yesterday's value influences today's. You must never shuffle it randomly or let the model peek at the future during training.
+
+### Supervised learning: learning with an answer key
+
+In **supervised learning** the model trains on *labelled* examples and learns to map inputs to the known answer. There are two main kinds of supervised task:
+
+- **Classification** predicts a **category**. *Binary* classification has two classes (fraud / not fraud, churn / stay). *Multi-class* classification has more (which of 12 product categories). *Multi-label* allows several at once (a photo can contain both a dog and a beach).
+- **Regression** predicts a **continuous number** — a house price, tomorrow's temperature, next month's sales, the expected minutes until delivery.
+
+A quick test: if the answer is a word or a group, it is classification; if the answer is a quantity on a scale, it is regression. Common algorithms include linear regression (regression), logistic regression (despite the name, a *classification* algorithm), decision trees and gradient-boosted trees such as **XGBoost** (both), k-nearest neighbours and neural networks. Amazon SageMaker AI provides many of these as **built-in algorithms**, so you do not have to write them yourself.
+
+### Unsupervised learning: finding structure without labels
+
+**Unsupervised learning** works with *unlabelled* data and looks for hidden structure.
+
+- **Clustering** groups similar items together. *K-means* is the classic algorithm: you choose the number of groups (*k*), and it assigns each item to the nearest group centre, adjusting centres until they settle. Use it for **customer segmentation**, grouping similar documents or organising a product catalogue. The model does not know what the groups *mean* — a human interprets them ("budget-conscious families", "frequent business travellers").
+- **Dimensionality reduction** compresses many features into fewer while keeping most of the information. **Principal component analysis (PCA)** is the best-known method. It speeds up training, removes noise and redundancy, and lets you visualise high-dimensional data in two or three dimensions.
+- **Anomaly detection** finds items that do not fit the normal pattern — a sudden spike in server errors, an unusual login location, a sensor drifting out of range. SageMaker AI offers the *Random Cut Forest* algorithm for this.
+- **Association rule learning** finds items that often occur together — the classic "customers who buy bread and butter also buy jam" market-basket analysis.
+
+The Udemy course also covers **distance measures** — how "close" two items are, for example Euclidean distance (straight line) or cosine similarity (angle between vectors). Keep cosine similarity in mind: on Day 8 it reappears as the way generative AI compares embeddings.
+
+### Reinforcement learning: learning by trial, error and reward
+
+In **reinforcement learning (RL)** an **agent** takes **actions** in an **environment**, receives a **reward** or penalty, and gradually learns a **policy** — a strategy that maximises total reward over time. Nobody provides the correct answer for each step; the agent discovers good behaviour by experimenting. RL powers game-playing systems, robotics, warehouse routing, dynamic pricing and autonomous driving simulations. Its most important appearance on this exam is **reinforcement learning from human feedback (RLHF)**: people rate a model's answers, and those ratings become the reward signal that teaches a foundation model to be more helpful and less harmful (Day 19).
+
+The Udemy course splits RL into further types (value-based, policy-based, model-based); the AI Practitioner exam only expects the core idea — agent, environment, action, reward, policy — and good use cases.
+
+### Semi-supervised and self-supervised learning
+
+- **Semi-supervised learning** combines a small amount of labelled data with a large amount of unlabelled data. For example, a team labels 2,000 support tickets by hand, trains a model, uses it to label 200,000 more automatically, and keeps the confident labels to retrain a better model.
+- **Self-supervised learning** creates its own labels from the data's structure. A language model hides the next word in a sentence and learns to predict it; an image model hides part of a picture and learns to fill it in. No human labelling is needed, which is why foundation models can learn from trillions of words. Self-supervised *pre-training* followed by supervised *fine-tuning* is the standard recipe for modern generative AI.
+
+### Data quality: the step that decides success
+
+Whatever learning type you choose, poor data produces a poor model. Before training, practitioners clean and prepare data. You will not perform these steps on the exam (feature engineering is explicitly out of scope for the candidate), but you must recognise *why* they matter.
+
+- **Missing values** — a customer's age or income is blank. Options: remove the rows, fill the gap with a typical value (mean, median, most frequent), or let an algorithm that tolerates gaps handle it. Removing too many rows can make the data unrepresentative.
+- **Duplicates and errors** — the same transaction recorded twice, a height of 17 metres, dates in two different formats. These distort patterns and should be fixed or removed.
+- **Outliers** — extreme but genuine values (a billionaire in a salary dataset). They can drag regression models off course; sometimes they are exactly what you are looking for (fraud).
+- **Class imbalance** — 99.8% of transactions are legitimate and 0.2% are fraud. A model that always says "legitimate" is 99.8% accurate and completely useless. Remedies include collecting more minority examples, *oversampling* the rare class, *undersampling* the common class, or generating synthetic examples — and, crucially, judging the model with metrics such as precision and recall rather than accuracy (Day 6).
+- **Encoding categories** — algorithms need numbers, so text categories such as "Gold / Silver / Bronze" are converted, for example into separate yes/no columns (*one-hot encoding*).
+- **Scaling** — income in tens of thousands and age in tens can confuse some algorithms; scaling puts features on comparable ranges.
+- **Representativeness** — does the data reflect everyone the model will serve? A face-analysis dataset made mostly of one skin tone, or a voice dataset with few regional accents, will produce a model that works worse for under-represented groups. This is where data quality meets responsible AI (Domain 4).
+
+On AWS, **SageMaker Data Wrangler** (also available inside SageMaker Canvas) provides hundreds of built-in transformations and data-quality reports; **AWS Glue DataBrew** offers visual, no-code cleaning for analysts; and **SageMaker Clarify** can report class imbalance and other bias metrics *before* training. You will meet the full pipeline on Day 6.
+
+### Matching algorithms to tasks (recognition level only)
+
+| Task | Algorithms you may see named | Notes |
+|---|---|---|
+| Classification | Logistic regression, decision trees, random forest, XGBoost, k-nearest neighbours, neural networks | XGBoost is a frequent winner on tabular data |
+| Regression | Linear regression, XGBoost, random forest, neural networks | Output is a continuous number |
+| Clustering | K-means | You choose *k*; groups need human interpretation |
+| Dimensionality reduction | PCA | Fewer features, most information kept |
+| Anomaly detection | Random Cut Forest, isolation forest | Rare, unusual events |
+| Recommendations | Collaborative filtering, factorization machines | Amazon Personalize packages this as a service |
+| Images and text | Convolutional and transformer neural networks | Deep learning (Day 4) |
+
+The exam will not ask you to tune these algorithms. It may ask you to recognise which *family* a named algorithm belongs to, or which managed service hides the algorithm entirely (for example, Amazon Personalize for recommendations).
+
+### Choosing the approach: the decision questions
+
+1. **Do you have labels for the outcome you care about?** Yes → supervised. No → unsupervised (or create labels).
+2. **Is the output a category or a number?** Category → classification. Number → regression.
+3. **Is the goal to discover groups or oddities rather than predict a known answer?** → clustering or anomaly detection.
+4. **Does the system learn by acting and getting feedback over time?** → reinforcement learning.
+5. **Do you need to generate content or handle many tasks with little labelled data?** → a pre-trained foundation model (Week 2).
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="Choosing a learning approach from the data and the desired output"
+  code={`flowchart TD
+  Q["What is the goal?"] --> L{"Labelled examples of the answer?"}
+  L -->|Yes| O{"Output type?"}
+  O -->|Category| CL["Supervised: classification. e.g. fraud yes or no"]
+  O -->|Number| RG["Supervised: regression. e.g. house price"]
+  L -->|No| U{"Find what?"}
+  U -->|Groups| CU["Unsupervised: clustering. e.g. customer segments"]
+  U -->|Fewer features| PC["Dimensionality reduction: PCA"]
+  U -->|Unusual items| AN["Anomaly detection"]
+  Q --> RL["Learns by acting and reward: reinforcement learning"]
+  Q --> FM["Generate content or many tasks: pre-trained foundation model"]`}
+/>
+
+<Diagram
+  caption="Reinforcement learning loop: the agent acts, the environment responds with a new state and a reward"
+  code={`flowchart LR
+  A["Agent with policy"] -->|action| E["Environment"]
+  E -->|new state| A
+  E -->|reward or penalty| A`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Business problem | Approach | Why |
+|---|---|---|
+| Predict whether a customer will cancel next month | Supervised classification | Past customers are labelled *stayed* or *left* |
+| Estimate delivery time in minutes | Supervised regression | Output is a continuous number |
+| Group 2 million shoppers into marketing segments | Unsupervised clustering | No labels; we want natural groups |
+| Flag unusual spikes in factory sensor data | Anomaly detection | Rare events, few or no labels |
+| Reduce 300 survey questions to a handful of themes before modelling | Dimensionality reduction (PCA) | Compress many correlated features |
+| Teach a warehouse robot the fastest picking route | Reinforcement learning | Learns from trial and reward |
+| Suggest "frequently bought together" items | Association rules | Find items that co-occur |
+| Train a model on 1,000 labelled and 100,000 unlabelled chat logs | Semi-supervised | Small labelled set, large unlabelled set |
+
+**Worked example.** *An insurer wants to predict the cost of each new claim. It has five years of claims with the final amount paid.* The data is labelled (the amount paid) and the output is a number, so this is **supervised regression**. If the insurer instead wanted to know whether a claim is fraudulent, with past claims marked fraud or not, it would be **supervised classification**. If it had no fraud labels at all, it might start with **anomaly detection** to surface unusual claims for investigators — and use their decisions to build labels for a future supervised model.
+
+**Worked example.** *A streaming service has viewing histories but no ratings.* It can cluster viewers by behaviour (unsupervised) to discover audience segments, then use those segments as features in a supervised model that predicts what each viewer will watch next. Combining approaches like this is common in practice.
+
+**Worked example — imbalanced data.** *A bank trains a fraud classifier and reports 99.7% accuracy. Only 0.3% of transactions are fraud.* Should you celebrate? No. A model that never predicts fraud would also score 99.7%. The team must check how many real frauds the model catches (recall) and how many of its alerts are genuine (precision), and may need to rebalance the training data. Questions that mention a rare event plus a suspiciously high accuracy are testing exactly this.
+
+**Spot the clue — quick drill.** Cover the right-hand side and answer before reading it:
+
+- "Historical tickets tagged by category; route new tickets automatically" → supervised multi-class classification.
+- "Predict kilowatt-hours used tomorrow from the last two years of hourly readings" → supervised regression on time-series data.
+- "No labels; find natural groupings of stores by sales pattern" → clustering.
+- "Compress 500 genetic markers into 10 summary features" → dimensionality reduction (PCA).
+- "Learn to play a game by maximising the score" → reinforcement learning.
+- "A model pre-trained by predicting masked words in billions of sentences" → self-supervised learning.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={2}>
+
+<Callout type="realWorld" title="An energy company uses every learning type">
+A utility company forecasts electricity demand for each region every hour using **supervised regression on time-series data** (past demand, weather, holidays). It **clusters** smart-meter customers into usage profiles to design new tariffs. **Anomaly detection** watches transformer sensor readings and raises an alert days before likely failures. Field-inspection photos are checked with **computer vision** to spot corroded equipment. And in a simulator, a **reinforcement learning** agent learns when to charge and discharge large batteries to balance the grid at the lowest cost.
+</Callout>
+
+Notice how the *data* drove each choice. Demand history is labelled (the actual demand is recorded every hour), so supervised regression fits. Customer usage profiles have no "right answer", so clustering fits. Failures are rare and poorly labelled, so anomaly detection is the practical starting point. Battery control involves sequences of decisions with delayed consequences, which is exactly what reinforcement learning is designed for. The exam will give you a short scenario like each of these and ask which technique applies; look for clues about labels, output type and whether the system learns by acting.
+
+A second lesson from the utility: labelling was the bottleneck. Inspection photos needed engineers to mark corrosion, which was slow and expensive. The team used SageMaker Ground Truth with a small expert workforce and active learning, so the model labelled the obvious images and engineers reviewed only the uncertain ones — cutting labelling effort substantially while keeping quality high.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: build a no-code prediction in SageMaker Canvas" minutes={8}>
+
+<HandsOnLab
+  goal="See how Amazon SageMaker Canvas detects the problem type from your target column — classification or regression — and builds a model without code."
+  asOf="November 2026"
+  steps={[
+    { text: 'Open SageMaker Canvas and import a CSV of past customers from Amazon S3. Canvas shows column types and a preview of the tabular data.', screen: { service: 'Amazon SageMaker Canvas', path: ['Datasets', 'Import', 'customers.csv'], menu: ['My models', 'Datasets', 'Ready-to-use models', 'Data Wrangler'], active: 'Datasets', fields: [{ label: 'Rows', value: '48,210' }, { label: 'Columns', value: 'tenure · plan · monthly_spend · support_calls · churned' }] } },
+    { text: 'Create a new model and choose the target column “churned” (Yes/No). Canvas recognises a 2-category target and selects binary classification.', screen: { service: 'Amazon SageMaker Canvas', path: ['My models', 'churn-model', 'Build'], fields: [{ label: 'Target column', value: 'churned' }, { label: 'Model type', value: '2 category prediction (binary classification)' }], highlight: 'Quick build', note: 'Category target → classification' } },
+    { text: 'If you changed the target to “monthly_spend”, Canvas would switch to numeric prediction — regression.', screen: { service: 'Amazon SageMaker Canvas', path: ['My models', 'spend-model', 'Build'], fields: [{ label: 'Target column', value: 'monthly_spend' }, { label: 'Model type', value: 'Numeric prediction (regression)' }], note: 'Number target → regression' } },
+    { text: 'After the build, Canvas shows accuracy and the impact of each column, then lets you predict for single records or a whole batch.', screen: { service: 'Amazon SageMaker Canvas', path: ['My models', 'churn-model', 'Analyze'], fields: [{ label: 'Accuracy', value: '89.4%' }, { label: 'Top column impact', value: 'support_calls · tenure' }], highlight: 'Predict' } },
+  ]}
+  expectedOutcome="You can explain that the target column decides the learning task: a category gives classification, a number gives regression, and no target at all would mean an unsupervised approach."
+  checks={[
+    { q: 'The target column contains values such as 12.50, 48.99, 120.00. Which model type will Canvas choose?', a: 'Numeric prediction — regression, because the target is a continuous number.' },
+    { q: 'A business analyst with no coding skills needs a churn model from a spreadsheet. Which AWS tool fits best?', a: 'Amazon SageMaker Canvas — no-code ML for business users.' },
+    { q: 'You have customer data but no column describing an outcome. Can you use supervised learning?', a: 'Not directly. Use an unsupervised approach such as clustering, or first create labels (for example with SageMaker Ground Truth).' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={1}>
+
+<Callout type="examTrap" title="Logistic regression is classification">
+Despite its name, logistic regression predicts categories (usually yes/no). Do not pick "regression" just because the word appears in an algorithm's name — decide by the *output*.
+</Callout>
+
+- Labels present + category output → **classification**; labels present + number output → **regression**.
+- "Segment customers", "group similar items", "no labels" → **clustering** (unsupervised).
+- "Reduce the number of features" → **dimensionality reduction / PCA**.
+- "Rare, unusual events" → **anomaly detection**.
+- "Trial and error", "reward", "agent learns a policy" → **reinforcement learning**.
+- "Foundation models learn from unlabelled text by predicting missing words" → **self-supervised** pre-training.
+- Need human labels at scale → **SageMaker Ground Truth**. No-code ML for analysts → **SageMaker Canvas**.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+Data can be labelled or unlabelled and structured (tabular, time-series) or unstructured (text, images, audio, video). Supervised learning learns from labels — classification for categories, regression for numbers. Unsupervised learning finds structure without labels — clustering, dimensionality reduction, anomaly detection and association rules. Reinforcement learning learns from rewards by acting, and RLHF uses human ratings to align foundation models. Semi-supervised learning stretches a few labels over lots of data, and self-supervised learning is how foundation models pre-train. Tomorrow you will look inside neural networks and deep learning.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={3} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="From raw data to the right model on AWS" minutes={15} optional>
+
+An end-to-end view links data types to the AWS services that store, prepare, label and learn from them. Raw data lands in Amazon S3 (structured exports, documents, images, audio). AWS Glue catalogs and transforms structured data; AWS Glue DataBrew offers visual data preparation; Amazon EMR handles very large processing jobs. Unstructured data that needs labels goes through SageMaker Ground Truth. The prepared data then feeds SageMaker AI built-in algorithms (XGBoost, k-means, PCA, Random Cut Forest), SageMaker Canvas for no-code models, pre-trained AI services for common perception tasks, or a foundation model on Amazon Bedrock when the task is generative or the team has little labelled data.
+
+<Diagram
+  caption="Data-to-model map: storage, preparation, labelling and the learning approach for each data type"
+  code={`flowchart LR
+  src["Sources: databases, apps, sensors, documents, media"] --> s3[("Amazon S3")]
+  s3 --> glue["AWS Glue and Glue DataBrew: catalog and prepare"]
+  s3 --> emr["Amazon EMR: large-scale processing"]
+  s3 --> gt["SageMaker Ground Truth: human labelling"]
+  glue --> sup["Supervised: XGBoost, linear learner"]
+  glue --> uns["Unsupervised: k-means, PCA, Random Cut Forest"]
+  gt --> sup
+  glue --> canvas["SageMaker Canvas: no-code"]
+  s3 --> ai["AI services: Rekognition, Comprehend, Transcribe, Textract"]
+  s3 --> fm["Amazon Bedrock foundation models"]`}
+/>
+
+**Trade-offs.** Labelling cost often decides between supervised and unsupervised approaches. Pre-trained AI services avoid labelling entirely for common tasks. Foundation models reduce labelled-data needs through prompting and light fine-tuning, but cost more per prediction than a small tabular model. For a tabular churn problem with plenty of labels, a gradient-boosted tree is usually cheaper, faster and easier to explain than a large language model — remember this when the exam asks you to choose between traditional ML and foundation models.
+
+</Section>

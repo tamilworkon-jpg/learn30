@@ -1,0 +1,253 @@
+---
+day: 2
+kind: lesson
+title: 'ML vocabulary, fit & inference types'
+summary: 'Learn the words the exam uses for the ML journey — model, algorithm, features, labels, training, validation, inference — and how to recognise underfitting, overfitting, bias and variance. Then compare real-time, batch, asynchronous and serverless inference.'
+domains: [D1, D4]
+taskStatements: ['1.1', '4.1']
+sources:
+  - { provider: udemy, title: 'Introduction to Machine Learning AI; Supervised Learning' }
+  - { provider: skillbuilder, title: 'Fundamentals of Machine Learning and Artificial Intelligence' }
+  - { provider: aws-docs, title: 'Amazon SageMaker AI — Deploy models for inference', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/deploy-model.html' }
+objectives:
+  - Define model, algorithm, parameters, hyperparameters, features and labels
+  - Explain the purpose of training, validation and test datasets
+  - Recognise underfitting and overfitting and relate them to bias and variance
+  - Choose between real-time, batch, asynchronous and serverless inference for a scenario
+estimatedMinutes: 60
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'An algorithm learns from training data to produce a model; inference is using the model on new data.'
+  - 'Training, validation and test sets: learn, tune, then give an honest final score on unseen data.'
+  - 'Underfitting = too simple (high bias, poor everywhere); overfitting = memorised noise (high variance, great on training, poor on new data).'
+  - 'Real-time = low latency per request; batch = large offline datasets; asynchronous = big payloads or long processing via a queue; serverless = intermittent traffic, no servers to manage.'
+  - 'Bias also means unfair treatment of groups — check data representativeness and subgroup performance.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 1" minutes={4}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="The language of machine learning" minutes={15}>
+
+### From data to a working model
+
+Imagine you want to predict the price of a house. You collect 10,000 past sales. Each row describes a house — size, number of bedrooms, postcode, age — and the price it sold for. That spreadsheet is your **dataset**. Machine learning turns it into something that can price a house it has never seen.
+
+- **Features** are the input columns the model uses (size, bedrooms, postcode). Choosing and preparing them is called *feature engineering*.
+- **Label** (or *target*) is the answer you want to predict — here, the sale price. Data that includes the answer is **labelled**; data without it is **unlabelled**.
+- **Algorithm** is the learning method, such as linear regression or XGBoost. It defines *how* to learn.
+- **Model** is the result of running the algorithm on your data: a function with learned values that maps features to a prediction.
+- **Parameters** are the values the model learns by itself during training (for example, the weight given to "size").
+- **Hyperparameters** are settings *you* choose before training that control how learning happens — learning rate, number of trees, number of training passes (*epochs*). Searching for good hyperparameters is *hyperparameter tuning*. (The AI Practitioner exam expects you to know the term, not to tune them yourself.)
+
+### Training, validation and test data
+
+If you judge a student only on the exact questions they practised, you learn nothing about whether they understand the subject. Models are the same. Before training, you split the data:
+
+- **Training set** (often ~70–80%) — the examples the model learns from.
+- **Validation set** (~10–15%) — used *during* development to compare models and choose hyperparameters.
+- **Test set** (~10–15%) — kept locked away until the end and used once to give an honest estimate of how the model will perform on new, real-world data.
+
+The golden rule: **the model must never see test data during training**. If it does — called *data leakage* — your score looks great on paper and disappoints in production.
+
+When data is scarce, holding back 30% feels wasteful. **Cross-validation** solves this: split the training data into, say, five equal parts (*folds*), train five times — each time holding out a different fold for validation — and average the five scores. Every example is used for both training and validation, and the averaged score is more reliable than a single split. For **time-series** data (sales by day, sensor readings), never shuffle randomly: train on the past and validate on the future, otherwise the model “cheats” by seeing tomorrow when predicting today.
+
+### Training vs inference
+
+**Training** is the learning phase. The algorithm repeatedly makes predictions on training data, measures how wrong it is with a *loss function*, and nudges the parameters to reduce the error. Training is compute-heavy, may run for minutes or weeks, and happens occasionally — when you first build the model or retrain it on fresh data.
+
+**Inference** is using the trained model to make predictions on new data: pricing a house listed today, scoring a card payment, labelling a photo. Inference happens constantly and often needs to be fast and cheap. In production, most of the cost of an ML system over its lifetime is usually inference, not training — so how you *serve* the model matters as much as how you build it.
+
+### Fit: underfitting, good fit, overfitting
+
+**Fit** describes how well a model captures the true pattern in the data.
+
+- **Underfitting** — the model is too simple to capture the pattern. Imagine drawing a straight line through data that clearly curves. It performs poorly on the training data *and* on new data. Causes: too few or uninformative features, too simple an algorithm, too little training.
+- **Good fit** — the model captures the real pattern and ignores random noise. It performs well on training data and almost as well on new data.
+- **Overfitting** — the model memorises the training data, including its noise and quirks. It looks excellent on the training set but performs badly on new data. Causes: a model that is too complex for the amount of data, training for too long, or too few examples.
+
+**How to spot it:** compare the training score with the validation or test score. Both low → underfitting. Training high but validation much lower → overfitting.
+
+**How to fix it:**
+
+| Problem | Typical fixes |
+|---|---|
+| Underfitting | Add more informative features, use a more expressive model, train longer, reduce regularisation |
+| Overfitting | Get more (and more varied) training data, simplify the model, use *regularisation* (a penalty for complexity), *early stopping*, data augmentation, remove noisy features |
+
+### Bias and variance (statistical meaning)
+
+The exam links fit to two kinds of error:
+
+- **Bias** is error from overly simple assumptions. A high-bias model consistently misses the target in the same direction — it *underfits*.
+- **Variance** is error from being too sensitive to the particular training data. A high-variance model changes a lot if you train it on a slightly different sample — it *overfits*.
+
+The **bias–variance trade-off** says that making a model more complex usually lowers bias but raises variance, and vice versa. The goal is the sweet spot with the lowest total error on new data. Think of darts: high bias means all your darts land together but far from the bullseye; high variance means they are spread all over the board.
+
+**How the common fixes work, intuitively.**
+
+- *More data* is the most reliable cure for overfitting: with more varied examples, random noise averages out and only the real pattern remains.
+- *Regularisation* adds a penalty for complexity to the training objective, so the model prefers simpler explanations unless the data strongly supports a complex one. (You may see the names L1 and L2 regularisation; you do not need the maths.)
+- *Early stopping* watches the validation score during training and stops as soon as it stops improving — before the model starts memorising.
+- *Data augmentation* creates realistic variations of training examples — flipped or rotated images, paraphrased sentences — so the model learns what matters rather than incidental details.
+- *Dropout* (for neural networks) randomly switches off some neurons during training so the network cannot rely on any single path.
+- *Feature selection* removes inputs that carry noise rather than signal; for underfitting, *feature engineering* adds more informative inputs, such as “distance to the nearest school” instead of raw coordinates.
+
+### Models do not stay good forever: drift and retraining
+
+A model learns the world as it was in its training data. When the world changes, accuracy decays. **Data drift** means the inputs change (customers start shopping on mobile instead of desktop); **concept drift** means the relationship between inputs and the answer changes (what counts as fraud evolves as criminals adapt). The cure is to **monitor** predictions and input data in production and **retrain** on recent data when quality drops. Amazon SageMaker Model Monitor automates these checks; you will see them again on Day 6 as part of MLOps.
+
+### Bias (responsible-AI meaning) — why this lesson touches Domain 4
+
+Task statement 4.1 asks you to describe the effects of bias and variance, including on **demographic groups**. In responsible AI, *bias* means a model systematically favours or disadvantages certain people. It often comes from data: if a loan model was trained mostly on applicants from one region or age group, it may underfit — and be less accurate — for everyone else. A model can have a good *average* accuracy while performing badly for a subgroup. That is why you should evaluate performance per subgroup (sometimes called *subgroup analysis*) and check that training data is **representative and balanced**. Overfitting can also amplify quirks of a small, unrepresentative dataset. Amazon SageMaker Clarify, which you will meet on Day 23, measures this kind of bias.
+
+### Four ways to run inference on AWS
+
+Once a model is trained, you must decide how predictions are requested and delivered. Task statement 1.1 names four types; Amazon SageMaker AI supports each of them.
+
+1. **Real-time inference** — a persistent endpoint answers individual requests within milliseconds. Use it when a user or system is waiting for the answer: fraud checks during checkout, product recommendations on a web page. You pay for the endpoint while it runs, even when idle.
+2. **Batch inference** (SageMaker AI *batch transform*) — process a large dataset in one go, offline, and write all predictions to Amazon S3. Use it when nobody is waiting: scoring every customer overnight for churn risk, re-pricing a whole catalogue weekly. No endpoint stays running, so it is usually the most cost-effective option for large, scheduled jobs.
+3. **Asynchronous inference** — requests are placed in a queue and processed in the background; the result is written to S3 and you can be notified when it is ready. Use it for **large payloads** (up to 1 GB) or **long processing times** (up to about an hour), such as analysing a long video or a high-resolution medical scan. It can scale down to zero instances when the queue is empty.
+4. **Serverless inference** — AWS provisions and scales compute automatically and you pay only while requests are processed. Use it for **intermittent or unpredictable traffic** where you do not want to manage instances, accepting that the first request after an idle period may be slower (a *cold start*).
+
+Generative AI services follow similar patterns: Amazon Bedrock offers on-demand (real-time) invocation and **batch inference** for large offline jobs at a lower price, and you will meet provisioned throughput on Day 13.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="Fit and the bias–variance trade-off: compare training and validation scores to diagnose the model"
+  code={`flowchart LR
+  D["Training data"] --> M{"Model complexity"}
+  M -->|too simple| U["Underfit: high bias. Poor on training AND new data"]
+  M -->|balanced| G["Good fit: low total error. Good on training and new data"]
+  M -->|too complex| O["Overfit: high variance. Great on training, poor on new data"]
+  U --> F1["Fix: more features, more expressive model, train longer"]
+  O --> F2["Fix: more data, simpler model, regularisation, early stopping"]`}
+/>
+
+<Diagram
+  caption="Choosing an inference type: start from who is waiting, how big the payload is and how steady the traffic is"
+  code={`flowchart TD
+  S["Need predictions"] --> W{"Is someone waiting for each answer?"}
+  W -->|No, large dataset on a schedule| B["Batch inference: SageMaker AI batch transform or Bedrock batch"]
+  W -->|Yes| P{"Large payload or long processing?"}
+  P -->|Yes, up to 1 GB or about 1 hour| A["Asynchronous inference: queue plus S3 output"]
+  P -->|No| T{"Steady traffic and strict low latency?"}
+  T -->|Yes| R["Real-time endpoint"]
+  T -->|No, spiky or intermittent| SV["Serverless inference: pay per use, possible cold start"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Scenario | Diagnosis or choice | Reason |
+|---|---|---|
+| Training accuracy 99%, test accuracy 62% | Overfitting (high variance) | Memorised training data, fails to generalise |
+| Training accuracy 58%, test accuracy 57% | Underfitting (high bias) | Too simple to capture the pattern anywhere |
+| Score 40 million products every Sunday night | Batch inference | Large offline job, no one waiting |
+| Approve or decline a card payment at checkout | Real-time inference | Customer waiting, milliseconds matter |
+| Analyse 45-minute call recordings uploaded during the day | Asynchronous inference | Large payload, long processing, queue-friendly |
+| Internal tool used a few times per hour with unpredictable spikes | Serverless inference | Intermittent traffic, no idle cost |
+| A hiring model is 92% accurate overall but 70% for applicants over 50 | Responsible-AI bias | Under-representation; needs subgroup analysis and better data |
+
+**Worked example — reading a training chart.** A data scientist plots error against training time. Training error keeps falling, but validation error falls and then starts to rise after epoch 30. What happened? After epoch 30 the model began to overfit — it kept improving on data it had seen while getting worse on data it had not. *Early stopping* at around epoch 30 would give the best model.
+
+**Worked example — choosing hyperparameters fairly.** A team tries 50 hyperparameter combinations and picks the one with the best *test* score. Why is that a problem? The test set has effectively been used for tuning, so the final score is optimistic. They should tune on the validation set and touch the test set only once.
+
+**Worked example — matching inference to cost.** A startup's image-tagging feature receives about 300 requests a day, mostly during office hours, and users accept a one- or two-second wait. A real-time endpoint on a GPU instance would sit idle almost all day while still being billed. Serverless inference bills only while requests are processed and scales to zero overnight, so it is the better fit. If traffic later grows to thousands of requests per minute with strict latency targets, a right-sized real-time endpoint with auto scaling becomes cheaper per prediction and more predictable.
+
+**Worked example — drift.** A demand-forecasting model was 94% accurate when launched in January. By July its error has doubled, though the code has not changed. The most likely cause is drift: customer behaviour (seasonality, a new competitor, a price change) differs from the training data. The fix is not a bigger model but monitoring plus retraining on recent data.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={3}>
+
+<Callout type="realWorld" title="A bank uses all four inference types">
+A retail bank runs a **real-time** fraud model behind its card network: every swipe gets a risk score in under 100 milliseconds. Each night a **batch** job scores all 8 million customers for churn risk and writes the results to Amazon S3 for the marketing team. Mortgage applications include scanned documents of up to 200 pages, so a document-analysis model runs **asynchronously**, notifying the case worker when the analysis is ready. An internal "explain this transaction" tool is used only by a handful of analysts, so it runs on **serverless** inference and costs almost nothing when idle.
+</Callout>
+
+The bank also learned a lesson about fit and fairness. Its first churn model was trained only on two years of data from city branches. It scored brilliantly in testing — the test set came from the same city branches — but performed poorly for rural customers once deployed. The model had *overfit* to city behaviour and was *biased* against a group it had rarely seen. The fix was to collect representative data from every region, evaluate accuracy per customer segment before launch and monitor it after deployment. This combination of statistical thinking (fit, variance) and responsible-AI thinking (representative data, subgroup analysis) is exactly what the exam tests in Domains 1 and 4.
+
+**A second story: radiology at a hospital network.** A hospital network uses a deep learning model to flag possible fractures on X-rays. Each image is large and the analysis takes tens of seconds, and radiologists review the flags later in the day rather than waiting in front of the screen — a natural fit for **asynchronous inference**, with results written to storage and a notification sent to the reporting system. When the network added a new brand of X-ray machine, the model's accuracy on those images dropped: the new images were brighter and sharper than anything in the training data. That is **data drift** caught by monitoring. The team collected and labelled a few thousand images from the new machines, retrained, re-validated on a test set that included every machine type, and redeployed. Clinicians stayed in the loop throughout: the model only *flags* images; a radiologist always makes the final call. Expect the exam to reward this pattern — monitoring, retraining on representative data, and human review where decisions affect people's health or rights.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: choose an endpoint type in SageMaker AI" minutes={8}>
+
+<HandsOnLab
+  goal="Walk through deploying a trained model in Amazon SageMaker AI and see where you choose real-time, serverless, asynchronous or batch inference."
+  asOf="November 2026"
+  steps={[
+    { text: 'In SageMaker AI Studio, open the model registry and select a trained, approved model version — for example a churn classifier.', screen: { service: 'Amazon SageMaker AI Studio', path: ['Models', 'Registered models', 'churn-classifier', 'Version 3'], menu: ['Home', 'Data', 'Jobs', 'Models', 'Deployments'], active: 'Models', fields: [{ label: 'Status', value: 'Approved' }, { label: 'Validation AUC', value: '0.91' }], highlight: 'Deploy' } },
+    { text: 'Choose Deploy. The first decision is the inference option. Real-time keeps instances running; serverless scales automatically and bills per use.', screen: { service: 'Amazon SageMaker AI Studio', path: ['Deploy model', 'Inference options'], fields: [{ label: 'Option', value: 'Real-time · Serverless · Asynchronous' }, { label: 'Instance type', value: 'ml.m5.large (real-time only)' }], highlight: 'Serverless', note: 'Intermittent internal tool → serverless' } },
+    { text: 'For asynchronous inference you also choose an S3 output location and, optionally, a notification topic so you know when results are ready.', screen: { service: 'Amazon SageMaker AI Studio', path: ['Deploy model', 'Asynchronous configuration'], fields: [{ label: 'S3 output path', value: 's3://bank-ml/async-results/' }, { label: 'Notification', value: 'SNS topic: scan-ready' }], note: 'Large payloads, long processing' } },
+    { text: 'Batch scoring is not an endpoint at all: you create a batch transform job pointing at input data in S3 and an output prefix.', screen: { service: 'Amazon SageMaker AI', path: ['Inference', 'Batch transform jobs', 'Create'], menu: ['Endpoints', 'Endpoint configurations', 'Batch transform jobs'], active: 'Batch transform jobs', fields: [{ label: 'Input', value: 's3://bank-ml/customers/2026-11-02/' }, { label: 'Output', value: 's3://bank-ml/churn-scores/' }], highlight: 'Create job' } },
+  ]}
+  expectedOutcome="You know that real-time, serverless and asynchronous are endpoint options, batch transform is a job, and you can match each to a traffic pattern."
+  checks={[
+    { q: 'A nightly job scores 8 million customers. Endpoint or batch transform?', a: 'Batch transform — no one is waiting and no endpoint needs to run all day.' },
+    { q: 'An app needs predictions within 50 ms all day long with steady traffic. Which option?', a: 'A real-time endpoint sized for the load.' },
+    { q: 'Users upload 500 MB video files and can wait several minutes. Which option?', a: 'Asynchronous inference — large payloads and long processing via a queue, with results in S3.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="Two meanings of “bias”">
+If the question talks about training vs test scores or model complexity, *bias* means systematic error (underfitting). If it talks about groups of people, fairness or demographics, *bias* means unfair outcomes. Read the context before answering.
+</Callout>
+
+- "Performs well on training data but poorly on new data" → **overfitting / high variance**. "Performs poorly on both" → **underfitting / high bias**.
+- "Most cost-effective for a large dataset, results not needed immediately" → **batch inference**.
+- "Large payloads" or "processing takes up to an hour" → **asynchronous inference**.
+- "Unpredictable or intermittent traffic, no infrastructure management" → **serverless inference**.
+- "Low latency, interactive" → **real-time inference**.
+- The test set is used once, at the end; tuning uses the validation set.
+- "Accuracy dropped months after launch with no code change" → **drift**; the answer involves **monitoring and retraining**, not re-deploying the same model.
+- Parameters are *learned*; hyperparameters are *set before training*. Expect a question that swaps them.
+- More data helps overfitting; it rarely fixes underfitting on its own — a too-simple model stays too simple.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+An algorithm learns from labelled or unlabelled data to produce a model; parameters are learned, hyperparameters are chosen. Split data into training, validation and test sets so your final score is honest. Underfitting (high bias) is poor everywhere; overfitting (high variance) is great on training data and poor on new data — fix the first with a richer model and the second with more data, simplification or regularisation. "Bias" can also mean unfair treatment of people, so evaluate subgroups and use representative data. Finally, match inference to the situation: real-time for waiting users, batch for large offline jobs, asynchronous for big or slow requests, serverless for spiky traffic. Tomorrow: the different kinds of data and the different ways machines learn.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={2} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Choosing an inference pattern end to end" minutes={15} optional>
+
+An architect designing a churn-and-fraud platform would combine all four patterns behind one data platform. Real-time requests come through an API layer to a SageMaker AI endpoint with auto scaling; nightly batch transform jobs read customer snapshots from Amazon S3 and write scores back to S3, where analysts query them; document scans land in S3 and trigger asynchronous inference with a notification on completion; and a low-traffic analyst tool uses a serverless endpoint. Amazon CloudWatch tracks latency, errors and invocation counts for every endpoint, and SageMaker Model Monitor compares live input data with the training data to detect drift — a sign that the model should be retrained.
+
+<Diagram
+  caption="Reference architecture: real-time, batch, asynchronous and serverless inference sharing one model registry and data lake"
+  code={`flowchart LR
+  app["Checkout app"] --> api["API layer"] --> rt["Real-time endpoint with auto scaling"]
+  s3in[("S3 customer snapshots")] --> bt["Batch transform job, nightly"] --> s3out[("S3 scores")]
+  docs[("S3 document uploads")] --> async["Asynchronous endpoint"] --> s3res[("S3 results")] --> sns["Notification to case worker"]
+  tool["Analyst tool"] --> sl["Serverless endpoint"]
+  reg["Model registry: approved versions"] --> rt
+  reg --> bt
+  reg --> async
+  reg --> sl
+  rt --> mon["CloudWatch metrics and Model Monitor drift checks"]`}
+/>
+
+**Trade-offs.** Real-time endpoints give the lowest latency but cost money 24/7 — right-size instances and use auto scaling. Batch is cheapest per prediction but results are hours old. Asynchronous inference handles heavy payloads and can scale to zero, but callers must handle delayed results. Serverless removes capacity planning but adds cold-start latency. Choosing well can cut inference cost dramatically without changing the model at all.
+
+</Section>

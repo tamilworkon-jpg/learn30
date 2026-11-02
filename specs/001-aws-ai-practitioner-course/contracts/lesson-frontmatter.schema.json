@@ -27,7 +27,8 @@
     "estimatedMinutes": { "type": "integer", "minimum": 30, "maximum": 120 },
     "deepDiveMinutes": { "type": "integer", "minimum": 0 },
     "lastVerified": { "type": "string", "format": "date" },
-    "examTraps": { "type": "array", "items": { "type": "string" } }
+    "examTraps": { "type": "array", "items": { "type": "string" } },
+    "keyPoints": { "type": "array", "minItems": 3, "maxItems": 8, "items": { "type": "string" } }
   },
   "allOf": [
     {

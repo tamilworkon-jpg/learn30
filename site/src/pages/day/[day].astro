@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LessonLayout from '../../layouts/LessonLayout.astro';
+import { course, pad } from '../../lib/data';
+
+export async function getStaticPaths() {
+  const lessons = await getCollection('lessons');
+  return course.days.map((cd) => ({
+    params: { day: pad(cd.day) },
+    props: { cd, entry: lessons.find((l) => l.data.day === cd.day) },
+  }));
+}
+const { cd, entry } = Astro.props;
+---
+
+{
+  entry ? (
+    <LessonLayout entry={entry} />
+  ) : (
+    <BaseLayout title={`Day ${cd.day}: ${cd.title}`}>
+      <p class="muted text-sm m-0">Day {cd.day}</p>
+      <h1 class="h1">{cd.title}</h1>
+      <div class="card mt-4">
+        <p class="m-0 font-semibold">🚧 Coming soon</p>
+        <p class="m-0 muted">This day is being written. Continue with the latest available day from the dashboard.</p>
+      </div>
+      {cd.day > 1 && (
+        <p class="mt-4">
+          <a href={`/day/${pad(cd.day - 1)}`}>← Day {cd.day - 1}</a>
+        </p>
+      )}
+    </BaseLayout>
+  )
+}

@@ -5,6 +5,7 @@ describe('build-time diagrams (T030)', () => {
   it('hash is stable and whitespace-insensitive at the ends', () => {
     expect(diagramHash('graph TD; A-->B')).toBe(diagramHash('  graph TD; A-->B \n'));
     expect(diagramHash('graph TD\r\n  A-->B')).toBe(diagramHash('graph TD\n  A-->B'));
+    expect(diagramHash('graph TD\n    A-->B')).toBe(diagramHash('graph TD\nA-->B'));
     expect(diagramHash('graph TD; A-->B')).not.toBe(diagramHash('graph TD; A-->C'));
     expect(diagramSrc('graph TD; A-->B')).toMatch(/^\/diagrams\/[0-9a-f]{16}\.svg$/);
   });

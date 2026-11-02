@@ -1,6 +1,13 @@
 import { createHash } from 'node:crypto';
 
-const normalize = (code: string) => code.replace(/\r\n?/g, '\n').trim();
+// MDX strips indentation inside JSX attribute expressions, so the hash ignores per-line whitespace.
+const normalize = (code: string) =>
+  code
+    .replace(/\r\n?/g, '\n')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .join('\n');
 export const diagramHash = (code: string) => createHash('sha256').update(normalize(code)).digest('hex').slice(0, 16);
 export const diagramSrc = (code: string) => `/diagrams/${diagramHash(code)}.svg`;
 

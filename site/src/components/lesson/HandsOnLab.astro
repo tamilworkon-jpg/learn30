@@ -1,0 +1,84 @@
+---
+import ConsoleMock, { type Screen } from './ConsoleMock.astro';
+
+interface Props {
+  goal: string;
+  asOf: string;
+  steps: { text: string; screen: Screen; caption?: string }[];
+  expectedOutcome: string;
+  checks: { q: string; a: string }[];
+}
+const { goal, asOf, steps, expectedOutcome, checks } = Astro.props;
+---
+
+<div class="lab">
+  <div class="lab-banner"><span aria-hidden="true">🛠️</span> No AWS account needed — this is a guided read-through. As of {asOf}; console layouts change, so focus on the options, not button positions.</div>
+  <p class="font-semibold mb-1">Goal</p>
+  <p class="mt-0">{goal}</p>
+  <ol class="lab-steps">
+    {
+      steps.map((s, i) => (
+        <li class="lab-step">
+          <span class="num-icon">{i + 1}</span>
+          <div class="min-w-0 flex-1">
+            <p class="m-0">{s.text}</p>
+            <figure class="lab-visual">
+              <ConsoleMock screen={s.screen} />
+              <figcaption class="muted text-sm">{s.caption ?? `Step ${i + 1} mock-up: ${s.screen.service} › ${s.screen.path.join(' › ')} (as of ${asOf})`}</figcaption>
+            </figure>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+  <div class="lab-outcome card"><strong>✅ Expected outcome:</strong> {expectedOutcome}</div>
+  <p class="font-semibold mt-4 mb-1">What would you choose?</p>
+  {
+    checks.map((c) => (
+      <details class="lab-check">
+        <summary>{c.q}</summary>
+        <p class="m-0 mt-2">{c.a}</p>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .lab-banner {
+    background: var(--hands-bg);
+    color: var(--hands-text);
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .lab-steps {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .lab-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .lab-visual {
+    margin: 8px 0 0;
+  }
+  .lab-visual figcaption {
+    margin-top: 6px;
+  }
+  .lab-check {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 10px 14px;
+    margin-top: 8px;
+  }
+  .lab-check summary {
+    cursor: pointer;
+    font-weight: 500;
+  }
+</style>

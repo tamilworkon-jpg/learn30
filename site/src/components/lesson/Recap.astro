@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content';
+import { getRecapData } from '../../lib/lesson-utils';
+import { pad } from '../../lib/data';
+
+interface Props {
+  day: number;
+}
+const { day } = Astro.props;
+const lessons = (await getCollection('lessons')).map((e) => e.data);
+const r = getRecapData(day, lessons);
+---
+
+{
+  r.kind === 'recap' && (
+    <div class="card recap-card">
+      <p class="m-0 font-semibold">
+        Yesterday — <a href={`/day/${pad(r.day)}`}>Day {r.day}: {r.title}</a>
+      </p>
+      <ul class="mt-2 mb-0">
+        {r.keyPoints.map((k) => <li>{k}</li>)}
+      </ul>
+      <p class="muted text-sm mb-0">Can you explain each point out loud in one sentence? If not, revisit Day {r.day} before moving on.</p>
+    </div>
+  )
+}
+{
+  r.kind === 'missing' && (
+    <div class="card recap-card">
+      <p class="m-0">Day {r.day} content is not available yet — continue with today's lesson.</p>
+    </div>
+  )
+}

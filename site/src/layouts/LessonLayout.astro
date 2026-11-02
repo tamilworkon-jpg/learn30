@@ -1,0 +1,189 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import Section from '../components/lesson/Section.astro';
+import Diagram from '../components/lesson/Diagram.astro';
+import Callout from '../components/lesson/Callout.astro';
+import HandsOnLab from '../components/lesson/HandsOnLab.astro';
+import Recap from '../components/lesson/Recap.astro';
+import Orientation from '../components/lesson/Orientation.astro';
+import Objectives from '../components/lesson/Objectives.astro';
+import QuizSlot from '../components/quiz/QuizSlot.astro';
+import SectionNav from '../components/lesson/SectionNav.astro';
+import { course, examGuide, pad } from '../lib/data';
+import { coreMinutes, getPrevNext } from '../lib/lesson-utils';
+import { parseLesson } from '../lib/lesson-parse';
+
+interface Props {
+  entry: CollectionEntry<'lessons'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const sections = parseLesson(entry.body ?? '').sections;
+const core = coreMinutes(sections);
+const deep = sections.find((s) => s.optional);
+const { prev, next } = getPrevNext(d.day, course);
+const week = course.weeks.find((w) => d.day >= w.days[0] && d.day <= w.days[1])!;
+const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.name ?? id;
+---
+
+<BaseLayout title={`Day ${d.day}: ${d.title}`}>
+  <p class="muted text-sm m-0">Week {week.number} · {week.title} › Day {d.day}</p>
+  <h1 class="h1">{d.title}</h1>
+  <div role="status" class="skip-notice card" id="skip-notice" hidden data-day={d.day}>
+    <span>👋 You haven't finished <strong>Day {d.day - 1}</strong> yet. That's okay — you can study in any order.</span>
+    <button class="btn btn-ghost" type="button" id="skip-dismiss" aria-label="Dismiss notice">Dismiss</button>
+  </div>
+  <div class="lesson">
+    <article data-pagefind-body>
+      <div class="flex flex-wrap items-center gap-2 mb-2">
+        {d.domains.map((id) => <span class={`chip chip-${id}`}>{id} · {domainName(id)}</span>)}
+        <span class="pill pill-accent">⏱ {core} min core</span>
+        {deep && <span class="pill pill-soft">+{deep.minutes} min optional deep dive</span>}
+      </div>
+      {
+        d.sources && (
+          <p class="muted text-sm mt-1">
+            Matches: {d.sources.map((s) => `${s.provider === 'udemy' ? 'Udemy' : s.provider === 'skillbuilder' ? 'Skill Builder' : 'AWS docs'} “${s.title}”`).join(' · ')}
+          </p>
+        )
+      }
+      <Content components={{ Section, Diagram, Callout, HandsOnLab, Recap, Orientation, Objectives, QuizSlot }} />
+      <nav class="prevnext" aria-label="Day navigation">
+        {prev ? <a class="btn btn-ghost" href={`/day/${pad(prev)}`}>← Previous: Day {prev}</a> : <span />}
+        {next && <a class="btn" href={`/day/${pad(next)}`}>Next: Day {next} →</a>}
+      </nav>
+    </article>
+    <aside class="lesson-aside">
+      <SectionNav sections={sections} />
+      <div class="card mt-4 pastel-a">
+        <strong>Exam guide v{examGuide.version}</strong>
+        <p class="m-0 text-sm">Task statements {d.taskStatements.join(', ')} · verified {d.lastVerified}</p>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
+
+<script>
+  const notice = document.getElementById('skip-notice');
+  if (notice) {
+    const day = Number(notice.dataset.day);
+    let prevDone = day === 1;
+    try {
+      const p = JSON.parse(localStorage.getItem('aip-course:v1') || '{}');
+      prevDone ||= p.days?.[String(day - 1)]?.status === 'completed';
+    } catch {
+      /* treat as not completed */
+    }
+    if (!prevDone && sessionStorage.getItem(`skip-dismissed-${day}`) !== '1') notice.hidden = false;
+    document.getElementById('skip-dismiss')?.addEventListener('click', () => {
+      notice.hidden = true;
+      sessionStorage.setItem(`skip-dismissed-${day}`, '1');
+    });
+  }
+
+</script>
+
+<style>
+  .lesson {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 32px;
+    margin-top: 8px;
+  }
+  .lesson-aside {
+    position: sticky;
+    top: 16px;
+    align-self: start;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+  }
+  article :global(.lesson-section) {
+    margin-top: 32px;
+    scroll-margin-top: 16px;
+  }
+  article :global(.sec-head) {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 6px;
+  }
+  article :global(p),
+  article :global(li) {
+    line-height: 1.75;
+  }
+  article :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    display: block;
+    overflow-x: auto;
+  }
+  article :global(th),
+  article :global(td) {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  article :global(th) {
+    background: var(--card);
+  }
+  article :global(code) {
+    background: var(--card);
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: 0.9em;
+  }
+  article :global(.deep-dive) {
+    background: var(--deep-bg);
+    color: var(--deep-text);
+    border-radius: 20px;
+    padding: 14px 18px;
+  }
+  article :global(.deep-dive summary) {
+    cursor: pointer;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .pill-soft {
+    background: var(--card);
+    color: var(--text);
+  }
+  .pastel-a {
+    background: #efeafd;
+    color: #1f1a3a;
+  }
+  .skip-notice:not([hidden]) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--real-bg);
+    color: var(--real-text);
+    margin: 8px 0;
+  }
+  .prevnext {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 1000px) {
+    .lesson {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .lesson-aside {
+      position: static;
+      order: -1;
+      max-height: none;
+    }
+  }
+</style>

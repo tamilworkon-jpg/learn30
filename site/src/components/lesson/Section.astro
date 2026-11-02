@@ -1,0 +1,30 @@
+---
+import DeepDive from './DeepDive.astro';
+import { sectionTypeLabel } from '../../lib/lesson-utils';
+
+interface Props {
+  id: string;
+  type: string;
+  title?: string;
+  minutes?: number;
+  optional?: boolean;
+}
+const { id, type, title, minutes } = Astro.props;
+const heading = title ?? sectionTypeLabel[type] ?? type;
+---
+
+{
+  type === 'deepDive' ? (
+    <DeepDive id={id} heading={heading} minutes={minutes}>
+      <slot />
+    </DeepDive>
+  ) : (
+    <section class={`lesson-section sec-${type}`} id={id} data-section-type={type} aria-labelledby={`${id}-h`}>
+      <h2 class="h2 sec-head" id={`${id}-h`}>
+        <span>{heading}</span>
+        {minutes ? <span class="muted text-sm font-normal">· {minutes} min</span> : null}
+      </h2>
+      <slot />
+    </section>
+  )
+}

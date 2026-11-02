@@ -1,6 +1,8 @@
-import { load } from 'js-yaml';
 import { errorText, validateLesson, validateQuestion } from '../schemas';
+import { parseLesson, type ParsedLesson, type ParsedSection } from './lesson-parse';
 import type { Course, ExamGuide, Question } from './types';
+
+export { parseLesson, type ParsedLesson, type ParsedSection };
 
 export const READING_WPM = 130;
 export const LAB_MINUTES = 8;
@@ -8,31 +10,9 @@ export const MINUTES_PER_QUESTION = 1;
 export const LESSON_SECTION_ORDER = ['recap', 'objectives', 'explanation', 'diagram', 'examples', 'realWorld', 'handsOn', 'examTips', 'summary', 'quiz'];
 export const MOCK_SPLIT: Record<string, number> = { D1: 13, D2: 16, D3: 18, D4: 9, D5: 9 };
 
-export interface ParsedSection {
-  id: string;
-  type: string;
-  optional: boolean;
-  content: string;
-}
-export interface ParsedLesson {
-  frontmatter: Record<string, unknown>;
-  sections: ParsedSection[];
-}
 export interface QuestionSet {
   set: string;
   questions: Question[];
-}
-
-const attr = (attrs: string, name: string) => new RegExp(`${name}="([^"]*)"`).exec(attrs)?.[1] ?? '';
-
-export function parseLesson(source: string): ParsedLesson {
-  const m = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source);
-  const frontmatter = (m ? load(m[1]) : {}) as Record<string, unknown>;
-  const sections: ParsedSection[] = [];
-  for (const s of source.matchAll(/<Section\s+([^>]*)>([\s\S]*?)<\/Section>/g)) {
-    sections.push({ id: attr(s[1], 'id'), type: attr(s[1], 'type'), optional: /\boptional\b/.test(s[1]), content: s[2] });
-  }
-  return { frontmatter, sections };
 }
 
 const countDiagrams = (text: string) => (text.match(/<Diagram\b/g) ?? []).length;

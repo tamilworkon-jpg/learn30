@@ -1,0 +1,134 @@
+---
+// Annotated, owned mock-up of an AWS console screen (no real screenshots; dated by `asOf`).
+export interface Screen {
+  service: string;
+  path: string[];
+  menu?: string[];
+  active?: string;
+  fields?: { label: string; value: string }[];
+  highlight?: string;
+  note?: string;
+}
+interface Props {
+  screen: Screen;
+}
+const { screen } = Astro.props;
+---
+
+<div class="console" role="img" aria-label={`Mock-up of ${screen.service}: ${screen.path.join(' › ')}${screen.highlight ? `, highlighted: ${screen.highlight}` : ''}`}>
+  <div class="console-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="console-title">{screen.service}</span></div>
+  <div class="console-body">
+    {
+      screen.menu && (
+        <ul class="console-menu">
+          {screen.menu.map((m) => (
+            <li class={m === screen.active ? 'on' : ''}>{m}</li>
+          ))}
+        </ul>
+      )
+    }
+    <div class="console-main">
+      <p class="crumbs">{screen.path.join(' › ')}</p>
+      {
+        screen.fields?.map((f) => (
+          <div class="field">
+            <span>{f.label}</span>
+            <code>{f.value}</code>
+          </div>
+        ))
+      }
+      {screen.highlight && <span class="hl">{screen.highlight}</span>}
+      {screen.note && <p class="note">👉 {screen.note}</p>}
+    </div>
+  </div>
+</div>
+
+<style>
+  .console {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    color: #1f1a3a;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  .console-bar {
+    background: #232f3e;
+    color: #fff;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 99px;
+    background: #ff9900;
+  }
+  .console-title {
+    margin-left: 6px;
+    font-weight: 600;
+  }
+  .console-body {
+    display: flex;
+    min-height: 90px;
+  }
+  .console-menu {
+    list-style: none;
+    margin: 0;
+    padding: 8px;
+    background: #f2f3f3;
+    min-width: 130px;
+  }
+  .console-menu li {
+    padding: 4px 6px;
+    border-radius: 6px;
+  }
+  .console-menu li.on {
+    background: #fff1ea;
+    font-weight: 600;
+    color: #9a3412;
+  }
+  .console-main {
+    padding: 10px 12px;
+    flex: 1;
+    min-width: 0;
+  }
+  .crumbs {
+    margin: 0 0 6px;
+    color: #4b5563;
+  }
+  .field {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 3px 0;
+  }
+  .field span {
+    color: #4b5563;
+    min-width: 110px;
+  }
+  .hl {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 5px 12px;
+    border-radius: 8px;
+    background: #ff9900;
+    color: #1f1a3a;
+    font-weight: 700;
+    outline: 3px dashed #c2410c;
+    outline-offset: 3px;
+  }
+  .note {
+    margin: 8px 0 0;
+    color: #9a3412;
+    font-weight: 500;
+  }
+  @media (max-width: 520px) {
+    .console-menu {
+      display: none;
+    }
+  }
+</style>

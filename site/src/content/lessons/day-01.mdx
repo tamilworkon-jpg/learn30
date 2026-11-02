@@ -1,0 +1,278 @@
+---
+day: 1
+kind: lesson
+title: 'Orientation & the AI family tree'
+summary: 'Meet the AIF-C01 exam (v1.2) and learn how AI, machine learning, deep learning, generative AI and agentic AI nest inside each other — plus where each layer lives on AWS.'
+domains: [D1]
+taskStatements: ['1.1']
+sources:
+  - { provider: udemy, title: 'Definition and Brief History of AI; Importance and Applications of AI' }
+  - { provider: skillbuilder, title: 'Fundamentals of Machine Learning and Artificial Intelligence' }
+  - { provider: aws-docs, title: 'AWS Certified AI Practitioner (AIF-C01) exam guide v1.2', url: 'https://docs.aws.amazon.com/aws-certification/latest/ai-practitioner-01/ai-practitioner-01.html' }
+objectives:
+  - Describe the AIF-C01 exam format, domains and how this 30-day course maps to them
+  - Define AI, machine learning, deep learning, generative AI and agentic AI
+  - Explain how these terms nest inside each other, with one example of each
+  - Name the AWS service layers for AI (AI services, SageMaker AI, Bedrock and agent tooling, infrastructure)
+estimatedMinutes: 60
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+examTraps: ['AWS DeepLens', 'Amazon Q']
+keyPoints:
+  - 'AIF-C01 v1.2: 65 questions (50 scored), 90 minutes, pass 700/1000, five domains weighted 20/24/28/14/14.'
+  - 'AI ⊃ machine learning ⊃ deep learning ⊃ generative AI; agentic AI uses generative models to plan and act with tools.'
+  - 'Machine learning learns patterns from data instead of following hand-written rules.'
+  - 'Generative AI creates new content (text, images, code, audio) using foundation models trained on huge datasets.'
+  - 'On AWS: pre-built AI services, Amazon SageMaker AI for custom ML, Amazon Bedrock (+ AgentCore) for generative and agentic AI.'
+---
+
+<Section id="orientation" type="orientation" title="Welcome & exam orientation" minutes={4}>
+
+Welcome to Day 1 of your 30-day plan for the **AWS Certified AI Practitioner (AIF-C01)** exam. Every day follows the same rhythm, so you always know what comes next: a short recap, the core ideas explained from first principles, diagrams, worked examples, a real-world story, a read-through lab, exam tips and a 20-question quiz. An optional *Architect deep dive* at the end goes further for anyone who wants the end-to-end picture.
+
+<Orientation />
+
+**How this course maps to the exam.** Weeks 1–4 each finish with a review day (Days 7, 14, 21 and 28) and Days 29–30 are full mock exams. Study time follows the exam weights, so Domain 3 (applications of foundation models, 28%) gets the most days.
+
+<Callout type="tip" title="Your daily routine">Study at the same time every day, take the quiz *before* re-reading, and write down every question you got wrong. Those notes become your revision sheet in Week 5.</Callout>
+
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="What AI really means" minutes={15}>
+
+### Start with a question: how do computers "decide"?
+
+For most of computing history, software followed rules a programmer wrote by hand: *if the account balance is below zero, block the payment*. This works when the rules are simple and known. But try writing rules that recognise a cat in a photo, detect a fraudulent transaction hidden among millions of normal ones, or translate a sentence into Japanese. The rules become impossible to write by hand. **Artificial intelligence (AI)** is the broad field of building systems that perform tasks we normally associate with human intelligence — perceiving, reasoning, learning, understanding language, making decisions.
+
+AI is an umbrella term. Underneath it sit several more specific ideas that the exam expects you to tell apart.
+
+### Machine learning (ML): learning from data instead of rules
+
+**Machine learning** is the part of AI where a system *learns patterns from data* rather than following hand-coded rules. You show an ML algorithm thousands of past transactions labelled "fraud" or "not fraud", and it works out the patterns that separate them. The result of that learning is a **model** — a mathematical function that takes new input and produces a prediction.
+
+Three words you will see on every exam:
+
+- **Algorithm** — the learning procedure (for example, linear regression, decision trees, XGBoost). Think of it as the *recipe*.
+- **Model** — what you get after the algorithm has learned from data. Think of it as the *cooked dish*.
+- **Training vs inference** — *training* is the learning phase (expensive, done occasionally); *inference* is using the trained model to make predictions on new data (done constantly, often in real time).
+
+ML shines when patterns are too complex to write down but there is plenty of historical data that shows them.
+
+### Deep learning (DL): machine learning with neural networks
+
+**Deep learning** is a subset of ML that uses **neural networks** with many layers ("deep" refers to the number of layers). Each layer learns a slightly more abstract representation: in an image model, early layers detect edges, middle layers detect shapes like eyes or wheels, and later layers recognise whole objects. Deep learning made huge leaps possible in **computer vision (CV)** — understanding images and video — and **natural language processing (NLP)** — understanding and generating human language. The trade-off: deep learning usually needs much more data and compute (often GPUs) than classic ML, and its decisions are harder to explain.
+
+### Generative AI (GenAI): models that create
+
+Traditional ML models *classify* or *predict*: "this email is spam", "sales next month will be 12,000 units". **Generative AI** models *create new content* — text, images, audio, video, code — that resembles the data they learned from. Generative AI is built on deep learning, especially the **transformer** architecture introduced in 2017.
+
+The engines of generative AI are **foundation models (FMs)**: very large models pre-trained on enormous, broad datasets so they can be adapted to many tasks. A **large language model (LLM)** is a foundation model specialised in text: it reads a prompt and predicts the next token (a word piece) over and over to produce an answer. Other foundation models generate images (diffusion models) or handle several kinds of input at once (multimodal models). You will study these in detail in Week 2.
+
+### Agentic AI: models that plan and act
+
+The newest term on the exam guide (added in v1.2) is **agentic AI**. An **AI agent** uses a foundation model as its "brain" to *reason about a goal, break it into steps, call tools* (APIs, databases, search, other agents) and act — then check the result and continue. A chatbot answers your question about flight times; an agent can search flights, compare prices against your calendar, book the ticket through an API and email you the receipt. Agentic AI adds **planning, tool use, memory and orchestration** on top of generative AI. Day 10 is dedicated to agents, the Model Context Protocol (MCP) and multi-agent systems.
+
+### Putting the family tree together
+
+The terms nest inside each other: **AI ⊃ ML ⊃ deep learning ⊃ generative AI**, and **agentic AI** builds on generative AI by adding the ability to act. Not every AI system is ML (a rules-based expert system is AI without learning), not every ML model is deep learning (a decision tree is not a neural network), and not every deep learning model is generative (an image classifier is deep learning but only labels images).
+
+### A short history (why the exam mentions "evolution")
+
+- **1950** — Alan Turing proposes the *imitation game* (Turing test) to ask whether machines can think.
+- **1956** — The Dartmouth workshop coins the term "artificial intelligence".
+- **1960s–1980s** — Rule-based and **expert systems** encode human knowledge as if-then rules; they are brittle and expensive to maintain.
+- **1970s & late 1980s** — "AI winters": funding drops when promises outrun results.
+- **1990s–2000s** — Statistical machine learning takes over: spam filters, recommendations, search ranking.
+- **2012** — A deep neural network (AlexNet) wins the ImageNet competition by a wide margin, launching the deep learning era, powered by GPUs and big data.
+- **2017** — The transformer architecture ("Attention Is All You Need") enables modern LLMs.
+- **2022–2023** — Generative AI goes mainstream with chat assistants; Amazon Bedrock becomes generally available in 2023.
+- **2024–2026** — Agentic AI: models that use tools and collaborate, supported on AWS by services such as Amazon Bedrock AgentCore and Strands Agents.
+
+### Narrow AI vs general AI
+
+Every system you will meet on the exam is **narrow AI**: it performs specific tasks, sometimes better than people, but cannot transfer that skill to unrelated problems the way humans do. *Artificial general intelligence (AGI)* — human-level intelligence across any task — does not exist today and is not tested.
+
+### Key vocabulary from task statement 1.1
+
+The exam guide lists the terms below by name. Learn a one-sentence definition for each — many questions simply test whether you can match a term to its meaning.
+
+- **Neural network** — a model made of layers of connected "neurons" (simple mathematical units). Each connection has a weight that is adjusted during training. Many layers = deep learning.
+- **Computer vision (CV)** — AI that interprets images and video: classification ("is this a cat?"), object detection ("where are the cars?"), face analysis, reading text in images.
+- **Natural language processing (NLP)** — AI that works with human language: sentiment analysis, entity extraction, translation, summarisation, question answering.
+- **Training data** — the examples a model learns from. Its quality, quantity and representativeness set an upper limit on how good the model can be ("garbage in, garbage out").
+- **Features and labels** — features are the input attributes (house size, location); the label is the answer you want to predict (price). Labelled data has the answer attached; unlabelled data does not.
+- **Fit** — how well a model captures the real pattern. *Underfitting* means it is too simple and misses the pattern; *overfitting* means it memorised the training data, including noise, and fails on new data. Day 2 covers this in depth.
+- **Bias** — has two meanings on the exam. In statistics, bias is systematic error from overly simple assumptions (linked to underfitting). In responsible AI, bias means a model treats groups of people unfairly, often because the training data under-represents or misrepresents them.
+- **Fairness** — the goal that a model's outcomes do not disadvantage individuals or groups based on attributes such as gender, age or ethnicity. Fairness is measured, not assumed (Week 4).
+- **Large language model (LLM)** — a foundation model trained on vast amounts of text to understand and generate language one token at a time.
+- **Prompt** — the input text (instructions, context, examples) you give a generative model. Writing good prompts is *prompt engineering* (Day 16).
+- **Hallucination** — when a generative model produces fluent but false or invented content. It is the most-tested limitation of generative AI.
+
+### What AI is good at — and where it struggles
+
+AI creates value when a task is **repetitive at large scale** (reviewing millions of transactions), **needs speed** (responding in milliseconds), **benefits from consistency** (applying the same standard every time) or **involves patterns humans cannot see** (subtle signals across hundreds of variables). It also **assists human decisions**, for example by ranking support tickets so agents handle the urgent ones first.
+
+AI struggles — and may be the wrong choice — when there is **too little relevant data**, when a decision must be **fully explainable or exactly deterministic** (calculating tax owed should follow the law's formula, not a prediction), when **errors are very costly and cannot be reviewed**, or when the **cost of building and running a model is higher than the value** it creates. A recurring exam question describes a simple, rules-based problem and asks for the best solution; the correct answer is often *not* to use machine learning at all. Day 5 returns to this cost-benefit thinking.
+
+Generative models add their own limits: they can hallucinate, give different answers to the same prompt (they are *non-deterministic*), and may reflect biases in their training data. These risks are why the exam spends two whole domains (responsible AI, and security, compliance and governance) on controls such as guardrails, human review and monitoring.
+
+### Where AI lives on AWS
+
+AWS organises its AI offerings in layers. Learn this picture now; every later day adds detail to it.
+
+1. **AI services (pre-trained, API-based)** — ready-made models for common tasks, no ML expertise required: Amazon Rekognition (images and video), Amazon Comprehend (text insights), Amazon Transcribe (speech to text), Amazon Polly (text to speech), Amazon Translate, Amazon Textract (documents), Amazon Lex (chatbots), Amazon Personalize (recommendations).
+2. **ML platform — Amazon SageMaker AI** — build, train, tune, deploy and monitor *your own* models, including no-code tools such as SageMaker Canvas and a model hub, SageMaker JumpStart.
+3. **Generative and agentic AI** — **Amazon Bedrock** gives API access to many foundation models (including Amazon's own **Amazon Nova** models) with features such as Knowledge Bases, Guardrails and Agents; **Amazon Bedrock AgentCore** runs agents securely at scale; **Strands Agents** is an open-source SDK for building agents; **Kiro** is an AI-powered, spec-driven development environment; **Amazon Quick** brings agentic AI to business users for research, analytics and automation.
+4. **Infrastructure** — compute (Amazon EC2 with GPUs and AWS-designed AI chips, AWS Lambda, containers), storage (Amazon S3) and networking that everything above runs on.
+
+The exam rewards picking the *highest* layer that solves the problem: if a managed AI service already does the job, you do not need to train a model in SageMaker AI.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="The AI family tree: each circle is a subset of the one around it; agentic AI builds on generative AI"
+  code={`flowchart TB
+  subgraph AI["Artificial intelligence: any technique that mimics human intelligence"]
+    direction TB
+    R["Rule-based / expert systems"]
+    subgraph ML["Machine learning: learns patterns from data"]
+      direction TB
+      C["Classic ML: regression, decision trees, clustering"]
+      subgraph DL["Deep learning: multi-layer neural networks"]
+        direction TB
+        V["Computer vision and NLP classifiers"]
+        subgraph GEN["Generative AI: foundation models create content"]
+          L["LLMs, diffusion and multimodal models"]
+          AG["Agentic AI: plans, uses tools, acts"]
+        end
+      end
+    end
+  end`}
+/>
+
+<Diagram
+  caption="AI layers on AWS: choose the highest layer that solves the problem"
+  code={`flowchart TB
+  U["Your application or business user"] --> S1
+  subgraph S1["Generative and agentic AI"]
+    B["Amazon Bedrock: foundation models incl. Amazon Nova"]
+    AC["Amazon Bedrock AgentCore and Strands Agents"]
+    Q["Amazon Quick and Kiro"]
+  end
+  U --> S2["AI services: Rekognition, Comprehend, Transcribe, Polly, Translate, Textract, Lex, Personalize"]
+  U --> S3["Amazon SageMaker AI: build, train, deploy your own models"]
+  S1 --> I["Infrastructure: EC2 GPUs and AI chips, Lambda, S3"]
+  S2 --> I
+  S3 --> I`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples: which term fits?" minutes={3}>
+
+| System | Best label | Why |
+|---|---|---|
+| A thermostat that turns on heating below 19 °C | Not ML (rules) | A fixed if-then rule, nothing is learned |
+| An email filter trained on millions of labelled spam messages | Machine learning | Learns spam patterns from labelled data |
+| An app that recognises plant species from a photo | Deep learning (computer vision) | Neural network classifies images |
+| A tool that writes a product description from three bullet points | Generative AI | Creates new text with an LLM |
+| An assistant that reads a support ticket, checks the order database, issues a refund through an API and replies to the customer | Agentic AI | Plans steps and uses tools to act |
+| A credit-risk score predicted from income and history | Machine learning (supervised) | Predicts a value from historical examples |
+
+Notice the pattern the exam uses: words like *predict*, *classify* and *score* point to ML; *recognise images or speech* points to deep learning; *create, draft, summarise, generate* points to generative AI; *take actions, call APIs, complete multi-step tasks* points to agentic AI.
+
+**Common confusions to avoid**
+
+1. *“All chatbots are generative AI.”* Not necessarily. A classic Amazon Lex bot recognises the user's intent and fills in slots (date, city) to trigger a fixed workflow — that is NLP and ML, not content generation. A bot that writes free-form answers with an LLM is generative AI.
+2. *“Deep learning and machine learning are different fields.”* Deep learning is a subset of machine learning. The exam may phrase it as “which statement is true” — the subset relationship is the safe answer.
+3. *“A foundation model is the same as an LLM.”* Every LLM is a foundation model, but foundation models also include image, audio and multimodal models.
+4. *“An agent is just a better chatbot.”* The difference is action: an agent decides which tools to call, in which order, and can complete a task without a human typing each step.
+5. *“More AI is always better.”* If a simple rule or a SQL query answers the question reliably, adding ML adds cost and uncertainty without benefit.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={3}>
+
+<Callout type="realWorld" title="One retailer, five kinds of AI">
+A large online retailer uses **rules** to block orders shipped to embargoed countries; **machine learning** to forecast demand for each warehouse and to flag fraudulent payments; **deep learning** (Amazon Rekognition) to check that product photos meet image guidelines; **generative AI** (an LLM on Amazon Bedrock) to draft product descriptions and summarise thousands of reviews into "what customers say"; and an **AI agent** that handles "where is my order?" requests end-to-end by looking up tracking data, rescheduling delivery and confirming with the customer. Each problem is solved at the right layer: the retailer does not train a custom image model when a managed service already does the job.
+</Callout>
+
+**Other industries follow the same pattern.** In **healthcare**, deep learning models help radiologists by highlighting suspicious regions on scans, while generative AI drafts clinical notes from a recorded consultation that a clinician then reviews and signs. In **financial services**, ML models score transactions for fraud in milliseconds, and an agent can gather documents for a loan application, check them for completeness and route exceptions to a human underwriter. In **media and entertainment**, recommendation models decide which shows appear on your home screen, and generative models create trailers, artwork variations and subtitles in dozens of languages. In **manufacturing**, computer vision inspects products on the line and ML predicts which machine will fail next so maintenance can be scheduled before it breaks.
+
+The lesson for the exam is not the industry itself, but the reasoning: identify the *task* (predict, recognise, generate, act), check whether a *managed* service already does it, and only then consider building something custom. Keep a human in the loop whenever mistakes are expensive or affect people's rights — a theme that returns in Domain 4.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: tour the AI layers in the console" minutes={8}>
+
+<HandsOnLab
+  goal="Recognise where the three main AI layers live in the AWS Management Console so later labs feel familiar."
+  asOf="November 2026"
+  steps={[
+    { text: 'Open the console search bar and type “Bedrock”. Amazon Bedrock is the home of foundation models for generative and agentic AI.', screen: { service: 'AWS Management Console', path: ['Search', 'Amazon Bedrock'], highlight: 'Amazon Bedrock', note: 'Generative AI layer' } },
+    { text: 'In Amazon Bedrock, open the model catalog. You would see providers such as Amazon (Nova), Anthropic, Meta, Mistral and others, each with modalities and context window details.', screen: { service: 'Amazon Bedrock', path: ['Discover', 'Model catalog'], menu: ['Overview', 'Model catalog', 'Playgrounds', 'Knowledge Bases', 'Guardrails', 'Agents'], active: 'Model catalog', fields: [{ label: 'Provider', value: 'Amazon · Anthropic · Meta · Mistral …' }, { label: 'Modality', value: 'Text · Image · Multimodal' }], note: 'Pick a model by task, cost, latency and context length' } },
+    { text: 'Now search for “SageMaker AI”. This is where you would build, train and deploy your own models — including no-code SageMaker Canvas and the SageMaker JumpStart model hub.', screen: { service: 'Amazon SageMaker AI', path: ['Home'], menu: ['Studio', 'Canvas', 'JumpStart', 'Training jobs', 'Endpoints', 'Model registry'], active: 'Studio', highlight: 'Open Studio', note: 'ML platform layer' } },
+    { text: 'Finally search for “Rekognition”. Pre-trained AI services like this are called with a single API — no training required.', screen: { service: 'Amazon Rekognition', path: ['Demos', 'Label detection'], menu: ['Label detection', 'Face analysis', 'Text in image', 'Custom Labels'], active: 'Label detection', fields: [{ label: 'Labels', value: 'Dog 98% · Grass 95% · Ball 91%' }], note: 'AI services layer: upload an image, get labels back' } },
+  ]}
+  expectedOutcome="You can point to where generative AI (Bedrock), custom ML (SageMaker AI) and pre-built AI services (Rekognition and friends) live, and you know you would start from the highest layer that solves a problem."
+  checks={[
+    { q: 'A marketing team wants product descriptions written automatically. Which layer do you start with?', a: 'Generative AI — a foundation model on Amazon Bedrock. No custom training is needed to draft text.' },
+    { q: 'You need to detect objects in photos and Rekognition already supports the labels you need. Do you train a model in SageMaker AI?', a: 'No. Use the pre-trained AI service; build in SageMaker AI only when no managed service fits.' },
+    { q: 'Your data scientists must train a model on proprietary sensor data with a custom algorithm. Which layer?', a: 'Amazon SageMaker AI — the ML platform for building, training and deploying your own models.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="Legacy services from older courses">
+Some older training (including the Udemy course) still shows **AWS DeepLens**, a deep-learning video camera. It is discontinued and not part of the v1.2 exam. Similarly, the guide now names **Amazon Quick** and **Kiro** where older material said **Amazon Q** — learn the v1.2 names.
+</Callout>
+
+- If a question says *create, draft, summarise or generate*, think **generative AI**; if it says *take actions across systems* or *multi-step tasks with tools*, think **agentic AI**.
+- "Least operational overhead" usually means the **managed, pre-built** option (an AI service or Bedrock) rather than training your own model.
+- Inference happens far more often than training, so inference cost and latency matter a lot in real designs.
+- Remember the nesting: every generative AI model is a deep learning model, but not every deep learning model is generative.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+AI is the broad goal of making machines act intelligently. Machine learning reaches that goal by learning patterns from data; deep learning does so with multi-layer neural networks; generative AI uses huge foundation models to create new content; and agentic AI lets those models plan and act with tools. On AWS, start from the highest layer that solves the problem: AI services, then Amazon Bedrock and its agent tooling, then Amazon SageMaker AI for custom models — all running on AWS infrastructure. Tomorrow you will learn the vocabulary of ML itself: models, training, fit, bias, variance and the four ways to run inference.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={1} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Where each AI layer runs on AWS" minutes={15} optional>
+
+An architect looks at the same layers as a *request path*. A customer-facing assistant typically flows like this: the web or mobile app calls an API; the API calls Amazon Bedrock (or an agent hosted on Amazon Bedrock AgentCore); the model may retrieve company knowledge from a vector store (RAG, Day 18) and call tools such as an order database through secure gateways; every call is authorised by IAM, encrypted with AWS KMS and logged with AWS CloudTrail and Amazon CloudWatch. Meanwhile, a data science team trains a demand-forecasting model in SageMaker AI from data in Amazon S3 and deploys it to an endpoint the agent can call as a tool.
+
+<Diagram
+  caption="Reference architecture: one application using generative AI, an agent, a custom ML model and pre-built AI services"
+  code={`flowchart LR
+  user["Customer app"] --> api["API layer"]
+  api --> agent["Agent on Amazon Bedrock AgentCore"]
+  agent --> fm["Foundation model on Amazon Bedrock"]
+  agent --> kb["Knowledge base: vector store"]
+  agent --> tool1["Order database tool"]
+  agent --> ml["SageMaker AI endpoint: demand forecast"]
+  api --> ai["AI services: Transcribe, Translate, Comprehend"]
+  s3[("Amazon S3 data lake")] --> train["SageMaker AI training"] --> ml
+  s3 --> kb
+  sec["IAM, KMS, CloudTrail, CloudWatch"] -.-> agent
+  sec -.-> api`}
+/>
+
+**Design trade-offs to notice.** Pre-built services minimise effort but limit customisation. Bedrock gives fast access to many FMs with pay-per-token pricing and no infrastructure to manage. SageMaker AI gives full control (and full responsibility) for custom models. Most real systems mix all three — the skill the exam tests is choosing the right one for each part of the problem.
+
+</Section>

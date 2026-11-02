@@ -51,6 +51,7 @@ export const lessonZod = z
         return !Number.isNaN(d.getTime()) && d.toISOString().startsWith(s);
       }, 'invalid calendar date'),
     examTraps: z.array(z.string()).optional(),
+    keyPoints: z.array(z.string()).min(3).max(8).optional(),
   })
   .superRefine((l, ctx) => {
     if (l.kind !== 'lesson') return;

@@ -195,35 +195,36 @@ If a model is unavailable, use any available model that differs from the author 
 
 ### Tests first
 
-- [ ] T033 [P] [US1] Unit tests in site/tests/unit/lesson-utils.test.ts
-  - TC: U1 `getRecap(n)` returns Day n−1 title + key points; Day 1 → `orientation`; U2 `coreMinutes()` excludes `optional`; U3 `estimateMinutes(content)` = words÷200 + diagrams×1 + lab 8 + quiz 10; U4 `getPrevNext`.
-- [ ] T034 [P] [US1] Parametrised content spec site/tests/e2e/content-day.spec.ts (`@visual`) implementing TC-L L2–L5, L8 for every day whose content exists
+- [x] T033 [P] [US1] Unit tests in site/tests/unit/lesson-utils.test.ts
+  - TC: U1 `getRecap(n)` returns Day n−1 title + key points; Day 1 → `orientation`; U2 `coreMinutes()` excludes `optional`; U3 `estimateMinutes(content)` (in validate.ts) = core words÷130 + diagrams×1 + lab 8 + 1 min per quiz question, optional sections excluded (matches L6 accepted deviation); U4 `getPrevNext`.
+- [x] T034 [P] [US1] Parametrised content spec site/tests/e2e/content-day.spec.ts (`@visual`) implementing TC-L L2–L5, L8 for every day whose content exists
   - TC: TC-L.
-- [ ] T035 [P] [US1] Unit spec site/tests/unit/question-sets.test.ts implementing TC-Q Q1–Q6 for every existing set
+- [x] T035 [P] [US1] Unit spec site/tests/unit/question-sets.test.ts implementing TC-Q Q1–Q6 for every existing set
   - TC: TC-Q.
-- [ ] T036 [P] [US1] E2E site/tests/e2e/lesson-ui.spec.ts (`@visual`)
+- [x] T036 [P] [US1] E2E site/tests/e2e/lesson-ui.spec.ts (`@visual`)
   - TC: U5 sticky section nav highlights current section; U6 Deep Dive collapsed + "Optional" label; U7 prev/next; U8 skip-ahead notice on `/day/03` with Day 2 incomplete, dismissible, non-blocking; U9 Day 1 orientation shows 65 Q / 90 min / pass 700 / 4 question types; screenshots `lesson-nav`, `lesson-deepdive-open`, `day1-orientation`.
 
 ### Implementation
 
-- [ ] T037 [US1] Implement site/src/lib/lesson-utils.ts → T033 green
-- [ ] T038 [P] [US1] Create site/src/components/lesson/Recap.astro and site/src/components/lesson/Orientation.astro (facts from exam-guide.yaml)
-- [ ] T039 [P] [US1] Create site/src/components/lesson/SectionNav.astro (sticky desktop, collapsible mobile)
-- [ ] T040 [P] [US1] Create site/src/components/lesson/HandsOnLab.astro (`goal`, `steps[{text, visual, caption}]`, `expectedOutcome`, `asOf`, `checks[]`, "No AWS account needed" banner)
-- [ ] T041 [P] [US1] Create site/src/components/lesson/DeepDive.astro (`<details>`, "Optional · Architect Deep Dive · N min")
-- [ ] T042 [P] [US1] Create site/src/components/lesson/Section.astro (id, type, heading, minutes badge, domain accent)
-- [ ] T043 [US1] Create site/src/layouts/LessonLayout.astro (hero, domain chips, objectives, minutes, sources list, section slots, prev/next, skip-ahead island)
-- [ ] T044 [US1] Create site/src/pages/day/[day].astro (`getStaticPaths` from course.yaml; renders LessonLayout for `kind: lesson`, "Coming soon" card for pending days)
+- [x] T037 [US1] Implement site/src/lib/lesson-utils.ts → T033 green
+- [x] T038 [P] [US1] Create site/src/components/lesson/Recap.astro and site/src/components/lesson/Orientation.astro (facts from exam-guide.yaml)
+- [x] T039 [P] [US1] Create site/src/components/lesson/SectionNav.astro (sticky desktop, collapsible mobile)
+- [x] T040 [P] [US1] Create site/src/components/lesson/HandsOnLab.astro (`goal`, `steps[{text, visual, caption}]`, `expectedOutcome`, `asOf`, `checks[]`, "No AWS account needed" banner)
+- [x] T041 [P] [US1] Create site/src/components/lesson/DeepDive.astro (`<details>`, "Optional · Architect Deep Dive · N min")
+- [x] T042 [P] [US1] Create site/src/components/lesson/Section.astro (id, type, heading, minutes badge, domain accent)
+- [x] T043 [US1] Create site/src/layouts/LessonLayout.astro (hero, domain chips, objectives, minutes, sources list, section slots, prev/next, skip-ahead island)
+- [x] T044 [US1] Create site/src/pages/day/[day].astro (`getStaticPaths` from course.yaml; renders LessonLayout for `kind: lesson`, "Coming soon" card for pending days)
   - Verify (T038–T044): T036 green; screenshots vs. Phase 0 lesson mockup.
-- [ ] T045 [US1] Author site/src/content/lessons/day-01.mdx + labs site/public/labs/day-01/*.svg — Orientation (exam v1.2 format & domains, study method), AI vs ML vs DL vs GenAI vs agentic AI (nested diagram), history timeline; real-world (recommendations, fraud detection); lab "Tour of Bedrock & SageMaker AI consoles"; Deep Dive "Where each AI layer runs on AWS" (TS 1.1)
+- [x] T045 [US1] Author site/src/content/lessons/day-01.mdx + labs site/public/labs/day-01/*.svg — Orientation (exam v1.2 format & domains, study method), AI vs ML vs DL vs GenAI vs agentic AI (nested diagram), history timeline; real-world (recommendations, fraud detection); lab "Tour of Bedrock & SageMaker AI consoles"; Deep Dive "Where each AI layer runs on AWS" (TS 1.1)
   - TC: TC-L for day 01 + facts: F4 values shown match exam-guide.yaml.
   - Plan: 1) register day 1 content expected → content-day spec red; 2) author; 3) SVG labs; 4) green.
   - Verify: `npm run test:e2e -- content-day --grep "day 01"`; `npm run validate:content`; inspect `day-01-*` screenshots; Exam-content reviewer.
-- [ ] T046 [US1] Author site/src/content/lessons/day-02.mdx + site/public/labs/day-02/ — model, algorithm, training vs inference, fit/overfit/underfit, bias–variance diagram, inference types batch/real-time/async/serverless decision diagram; lab "SageMaker AI endpoint types"; Deep Dive "Choosing an inference pattern" (TS 1.1, 4.1)
+- [x] T046 [US1] Author site/src/content/lessons/day-02.mdx + site/public/labs/day-02/ — model, algorithm, training vs inference, fit/overfit/underfit, bias–variance diagram, inference types batch/real-time/async/serverless decision diagram; lab "SageMaker AI endpoint types"; Deep Dive "Choosing an inference pattern" (TS 1.1, 4.1)
   - TC: TC-L day 02 + recap references Day 1. Verify: as T045.
-- [ ] T047 [US1] Author site/src/content/lessons/day-03.mdx + site/public/labs/day-03/ — data types; supervised (regression, classification), unsupervised (clustering, PCA, association), reinforcement, self-supervised; decision-tree diagram; lab "SageMaker Canvas no-code prediction"; Deep Dive "Data → model type mapping" (TS 1.1, 1.2)
+- [x] T047 [US1] Author site/src/content/lessons/day-03.mdx + site/public/labs/day-03/ — data types; supervised (regression, classification), unsupervised (clustering, PCA, association), reinforcement, self-supervised; decision-tree diagram; lab "SageMaker Canvas no-code prediction"; Deep Dive "Data → model type mapping" (TS 1.1, 1.2)
   - TC: TC-L day 03. Verify: as T045.
-- [ ] T048 [US1] REVIEW US1: T033–T036 green for Days 1–3; inspect all screenshots
+- [x] T048 [US1] REVIEW US1: T033–T036 green for Days 1–3; inspect all screenshots
+  - Done 2026-11-02: unit 133 passing, E2E 40 passing (content-day, lesson-ui, design, foundation), lint/typecheck/validate:content clean. Accepted deviations: (a) lab visuals are owned HTML console mock-ups (`ConsoleMock.astro`) inside `<figure>` + `<figcaption>` instead of `site/public/labs/day-NN/*.svg`; (b) `keyPoints` added to lesson frontmatter (contract + Zod) as the Recap source; (c) quiz section renders `QuizSlot.astro` placeholder until T058 wires QuizRunner; (d) Exam-content review of Days 1–3 deferred to the single swarm review in T181 (Constitution v2.0.0).
 
 ---
 

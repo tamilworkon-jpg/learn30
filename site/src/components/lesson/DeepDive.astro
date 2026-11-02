@@ -1,0 +1,20 @@
+---
+// T041 — optional architect deep dive, collapsed by default and excluded from core minutes.
+interface Props {
+  id: string;
+  heading: string;
+  minutes?: number;
+}
+const { id, heading, minutes } = Astro.props;
+---
+
+<details class="deep-dive lesson-section" id={id} data-section-type="deepDive" data-optional="true">
+  <summary>
+    <span class="pill pill-accent">Optional</span>
+    <span class="font-semibold">🏗️ Architect Deep Dive · {heading}</span>
+    {minutes ? <span class="muted text-sm">{minutes} min</span> : null}
+  </summary>
+  <div class="deep-body">
+    <slot />
+  </div>
+</details>

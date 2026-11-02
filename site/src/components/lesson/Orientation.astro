@@ -1,0 +1,51 @@
+---
+import { examGuide } from '../../lib/data';
+const f = examGuide.format;
+---
+
+<div class="exam-facts">
+  <div class="fact"><strong>{f.totalQuestions}</strong><span>questions ({f.scored} scored, {f.totalQuestions - f.scored} unscored)</span></div>
+  <div class="fact"><strong>{f.minutes} minutes</strong><span>about 80 seconds per question</span></div>
+  <div class="fact"><strong>{f.passScaled}</strong><span>pass mark on a {f.scaleMin}–{f.scaleMax} scale</span></div>
+  <div class="fact"><strong>v{examGuide.version}</strong><span>exam guide, published {examGuide.publishedOn}</span></div>
+</div>
+<div class="grid gap-3 sm:grid-cols-2 mt-4">
+  {
+    examGuide.domains.map((d) => (
+      <div class="card flex items-center gap-3">
+        <span class={`chip chip-${d.id}`}>{d.weight}%</span>
+        <span class="font-medium">
+          {d.id} · {d.name}
+        </span>
+      </div>
+    ))
+  }
+</div>
+<p class="mt-4 mb-1 font-semibold">Question types</p>
+<ul class="mt-0">
+  {examGuide.questionTypes.map((t) => <li>{t}</li>)}
+</ul>
+
+<style>
+  .exam-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  .fact {
+    background: var(--brand-purple);
+    color: #fff;
+    border-radius: 18px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .fact strong {
+    font-size: 22px;
+  }
+  .fact span {
+    font-size: 13px;
+    color: #e9e4ff;
+  }
+</style>
