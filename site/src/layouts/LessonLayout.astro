@@ -35,7 +35,7 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
 ---
 
 <BaseLayout active="outline" title={`Day ${d.day}: ${d.title}`}>
-  <p class="muted text-sm m-0">Week {week.number} · {week.title} › Day {d.day}</p>
+  <p class="muted text-sm m-0 lesson-crumbs">Week {week.number} · {week.title} › Day {d.day}</p>
   <h1 class="h1">{d.title}</h1>
   <PlannedDate day={d.day} />
   <div role="status" class="skip-notice card" id="skip-notice" hidden data-day={d.day}>
@@ -66,10 +66,16 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
     </article>
     </SlideDeck>
     <aside class="lesson-aside">
-      <SectionNav sections={sections} />
-      <div class="card mt-4 pastel-a">
-        <strong>Exam guide v{examGuide.version}</strong>
-        <p class="m-0 text-sm">Task statements {d.taskStatements.join(', ')} · verified {d.lastVerified}</p>
+      <button class="sections-toggle" type="button" id="sections-toggle" aria-controls="lesson-aside-body" aria-expanded="true" aria-label="Hide today's sections" title="Hide today's sections">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        <span class="sections-toggle-text">Sections</span>
+      </button>
+      <div class="lesson-aside-body" id="lesson-aside-body">
+        <SectionNav sections={sections} />
+        <div class="card mt-4 pastel-a">
+          <strong>Exam guide v{examGuide.version}</strong>
+          <p class="m-0 text-sm">Task statements {d.taskStatements.join(', ')} · verified {d.lastVerified}</p>
+        </div>
       </div>
     </aside>
   </div>
@@ -78,6 +84,11 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
 <script>
   import { getStore } from '../lib/progress/store';
   import { trackSections } from '../lib/progress/section-tracker';
+  import { bindCollapse } from '../lib/ui-prefs';
+
+  // T187 — collapse "Today's sections" to a thin strip (desktop); the lesson takes the full width.
+  const secToggle = document.getElementById('sections-toggle');
+  if (secToggle instanceof HTMLButtonElement) bindCollapse({ button: secToggle, key: 'aip-ui:sections', attr: 'sections', labels: { collapse: "Hide today's sections", expand: "Show today's sections" } });
 
   // T068 — record sections viewed + resume position.
   const lessonEl = document.querySelector<HTMLElement>('[data-lesson-day]');
@@ -208,7 +219,51 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
     margin-top: 40px;
     flex-wrap: wrap;
   }
+  .sections-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 10px auto;
+    padding: 6px 12px;
+    min-height: 36px;
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .sections-toggle:focus-visible {
+    outline: 3px solid var(--brand-orange);
+    outline-offset: 2px;
+  }
+  .lesson-aside {
+    display: flex;
+    flex-direction: column;
+  }
+  @media (min-width: 1001px) {
+    :global([data-sections='collapsed']) .lesson {
+      grid-template-columns: minmax(0, 1fr) 44px;
+      gap: 16px;
+    }
+    :global([data-sections='collapsed']) .lesson-aside-body {
+      display: none;
+    }
+    :global([data-sections='collapsed']) .sections-toggle {
+      writing-mode: vertical-rl;
+      margin: 0;
+      padding: 14px 8px;
+      gap: 8px;
+    }
+    :global([data-sections='collapsed']) .sections-toggle svg {
+      transform: rotate(180deg);
+    }
+  }
   @media (max-width: 1000px) {
+    .sections-toggle {
+      display: none;
+    }
     .lesson {
       grid-template-columns: minmax(0, 1fr);
     }

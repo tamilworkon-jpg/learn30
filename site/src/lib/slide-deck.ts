@@ -254,12 +254,16 @@ export function initSlideDeck(deck: HTMLElement) {
     return article.scrollHeight <= article.clientHeight;
   };
   const shrink = (g: Group, leaf: HTMLElement, page: HTMLElement[]) => {
-    let z = 1;
-    zoomed.add(leaf);
-    while (z > 0.4 && !fits(g, page)) {
+    // Zoom on an inline sentence span can't shrink its line box: zoom the paragraph / list item instead.
+    // Same for a table row: zoom the table.
+    const target = leaf.tagName === 'TR' ? (leaf.closest('table') ?? leaf) : getComputedStyle(leaf).display === 'inline' ? (leaf.parentElement ?? leaf) : leaf;
+    let z = Number(target.style.getPropertyValue('zoom') || 1);
+    zoomed.add(target);
+    while (z > 0.3 && !fits(g, page)) {
       z = Math.round((z - 0.05) * 100) / 100;
-      leaf.style.setProperty('zoom', String(z));
+      target.style.setProperty('zoom', String(z));
     }
+    return fits(g, page);
   };
 
   // A paragraph/list item taller than a slide is paged by sentence: its direct text is wrapped in
@@ -309,13 +313,19 @@ export function initSlideDeck(deck: HTMLElement) {
     const nav = document.querySelector<HTMLElement>('.sidebar');
     return nav && getComputedStyle(nav).position === 'fixed' ? nav.getBoundingClientRect().height : 0;
   };
-  // The deck (toolbar, skip notice, stage, controls) is sized to fill the viewport above the mobile tab
-  // bar; slide changes and first load scroll it to the top, so the controls never cover the slide.
+  // The deck (compact title bar, skip notice, stage, controls) fits the viewport from where it starts, so a
+  // slide is fully visible without scrolling the page; only if that leaves too little room (very short
+  // windows) is the deck sized to the whole viewport and scrolled to the top.
+  const MIN_STAGE = 260;
   const stageHeight = () => {
+    const vh = window.innerHeight - bottomBar();
+    const docTop = article.getBoundingClientRect().top + window.scrollY;
+    const fromTop = Math.floor(vh - docTop - controls.offsetHeight - 12);
     const above = article.getBoundingClientRect().top - deck.getBoundingClientRect().top;
-    const h = Math.max(300, Math.floor(window.innerHeight - bottomBar() - above - controls.offsetHeight - 16));
+    const h = fromTop >= MIN_STAGE ? fromTop : Math.max(MIN_STAGE, Math.floor(vh - above - controls.offsetHeight - 16));
     article.style.height = `${h}px`;
-    article.style.setProperty('--slide-img-max', `${Math.max(160, h - 190)}px`);
+    article.style.setProperty('--slide-img-max', `${Math.max(120, h - 150)}px`);
+    article.classList.toggle('slide-short', h < 420);
   };
 
   const repaginate = () => {
@@ -352,9 +362,15 @@ export function initSlideDeck(deck: HTMLElement) {
   };
 
   // ---------- navigation ----------
+  // Bring the whole deck on screen with the smallest scroll (none when it already fits).
   const deckInView = () => {
     const top = deck.getBoundingClientRect().top;
-    if (Math.abs(top - 8) > 1) window.scrollTo({ top: window.scrollY + top - 8, behavior: 'instant' });
+    const bottom = controls.getBoundingClientRect().bottom;
+    const limit = window.innerHeight - bottomBar() - 4;
+    let dy = 0;
+    if (top < 0) dy = top - 8;
+    else if (bottom > limit) dy = Math.min(bottom - limit, top - 8);
+    if (Math.abs(dy) > 1) window.scrollTo({ top: window.scrollY + dy, behavior: 'instant' });
   };
 
   function go(i: number, opts: { focus: boolean; scroll: boolean; replace: boolean } = { focus: true, scroll: true, replace: true }) {
@@ -431,9 +447,50 @@ export function initSlideDeck(deck: HTMLElement) {
   notice?.before(noticeHome);
   if (notice) new MutationObserver(() => later(0)).observe(notice, { attributes: true, attributeFilter: ['hidden'] });
 
+  // The day title and "Planned for" line join the deck's title bar in slide view (one compact header).
+  const title = document.querySelector<HTMLElement>('main h1');
+  const planned = document.querySelector<HTMLElement>('main .planned-date');
+  const titleSlot = bar.querySelector<HTMLElement>('.deck-title');
+  const homes = new Map<HTMLElement, Comment>();
+  for (const el of [title, planned]) {
+    if (!el) continue;
+    const c = document.createComment('deck-home');
+    el.before(c);
+    homes.set(el, c);
+  }
+  if (title) title.title = title.textContent?.trim() ?? ''; // full title on hover when the compact bar truncates it
+  const dockTitle = (on: boolean) => homes.forEach((home, el) => (on && titleSlot ? titleSlot.append(el) : home.after(el)));
+
+  // Re-page when the room changes: side bars collapsed/expanded, the title bar or notice growing.
+  let lastDeckW = 0;
+  const sizes = new Map<Element, number>();
+  const ro = new ResizeObserver((entries) => {
+    let changed = false;
+    for (const e of entries) {
+      if (e.target === deck) {
+        const w = Math.round(e.contentRect.width);
+        if (lastDeckW && w !== lastDeckW) changed = true;
+        lastDeckW = w;
+      } else {
+        const h = Math.round(e.contentRect.height);
+        if (sizes.has(e.target) && sizes.get(e.target) !== h) changed = true;
+        sizes.set(e.target, h);
+      }
+    }
+    if (changed) later(60);
+  });
+  ro.observe(deck);
+  ro.observe(bar);
+  if (notice) ro.observe(notice);
+  document.addEventListener('layoutchange', () => later(60));
+  // Islands (MarkComplete) change size when they hydrate or celebrate: re-page their slide.
+  const islandWatch = new MutationObserver(() => later(150));
+  article.querySelectorAll(':scope > astro-island').forEach((isl) => islandWatch.observe(isl, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-ready', 'class'] }));
+
   const enterSlides = (initial: boolean) => {
     root.dataset.lessonView = 'slides';
     if (notice) bar.after(notice);
+    dockTitle(true);
     controls.hidden = false;
     article.querySelectorAll<HTMLImageElement>('img[loading="lazy"]').forEach((img) => (img.loading = 'eager')); // hidden lazy images would never load
     groups ??= build();
@@ -451,6 +508,7 @@ export function initSlideDeck(deck: HTMLElement) {
     root.dataset.lessonView = 'full';
     controls.hidden = true;
     if (notice) noticeHome.after(notice);
+    dockTitle(false);
     managed.forEach((n) => n.classList.remove('slide-off'));
     zoomed.forEach((el) => el.style.removeProperty('zoom'));
     zoomed.clear();

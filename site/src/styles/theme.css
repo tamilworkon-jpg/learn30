@@ -427,6 +427,74 @@
   border-color: #64748b;
 }
 
+/* ---------- T187: collapsible primary navigation (desktop icon rail) ---------- */
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding-right: 14px;
+}
+.brand-row .brand {
+  padding-right: 0;
+}
+.rail-toggle {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--shell-text);
+  background: rgb(255 255 255 / 0.12);
+  cursor: pointer;
+}
+.rail-toggle:hover {
+  background: rgb(255 255 255 / 0.22);
+}
+.rail-toggle:focus-visible {
+  outline: 3px solid var(--brand-orange-soft);
+  outline-offset: 2px;
+}
+@media (min-width: 761px) {
+  [data-sidebar='collapsed'] .app {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+  [data-sidebar='collapsed'] .sidebar {
+    padding: 24px 0 24px 12px;
+    gap: 20px;
+  }
+  [data-sidebar='collapsed'] .brand-row {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 0;
+    gap: 14px;
+  }
+  [data-sidebar='collapsed'] .brand-row .rail-toggle {
+    margin-left: 2px;
+  }
+  [data-sidebar='collapsed'] .rail-toggle svg {
+    transform: rotate(180deg);
+  }
+  /* Labels stay in the accessibility tree (link names); links also carry a title tooltip. */
+  [data-sidebar='collapsed'] .brand-text,
+  [data-sidebar='collapsed'] .nav-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  [data-sidebar='collapsed'] .nav a {
+    justify-content: center;
+    padding: 12px 0;
+  }
+  [data-sidebar='collapsed'] .support-card {
+    display: none;
+  }
+}
+
 /* ---------- Mobile: sidebar becomes bottom tab bar ---------- */
 @media (max-width: 760px) {
   .app {
@@ -443,6 +511,7 @@
     background: var(--shell);
   }
   .brand,
+  .brand-row,
   .support-card {
     display: none;
   }

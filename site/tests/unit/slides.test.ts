@@ -33,7 +33,7 @@ describe('paginate', () => {
 
   it('does not shrink a block that only fails to fit together with a long lead-in', () => {
     const shrunk = new Set<string>();
-    const pages = paginate([leaf('h', 20, { keepWithNext: true }), leaf('lead', 70, { keepWithNext: true }), leaf('li', 20)], fitsIn(100, shrunk), (el) => shrunk.add(el));
+    const pages = paginate([leaf('h', 20, { keepWithNext: true }), leaf('lead', 70, { keepWithNext: true }), leaf('li', 20)], fitsIn(100, shrunk), (el) => void shrunk.add(el));
     expect(pages).toEqual([['h', 'lead'], ['li']]);
     expect(shrunk.size).toBe(0);
   });
@@ -49,7 +49,7 @@ describe('paginate', () => {
 
   it('gives an oversize atomic block its own page and asks for it to be shrunk', () => {
     const shrunk = new Set<string>();
-    const pages = paginate([leaf('p', 30), leaf('diagram', 300), leaf('q', 30)], fitsIn(100, shrunk), (el) => shrunk.add(el));
+    const pages = paginate([leaf('p', 30), leaf('diagram', 300), leaf('q', 30)], fitsIn(100, shrunk), (el) => void shrunk.add(el));
     expect(pages).toEqual([['p'], ['diagram'], ['q']]);
     expect([...shrunk]).toEqual(['diagram']);
   });
@@ -58,9 +58,14 @@ describe('paginate', () => {
     const shrunk = new Set<string>();
     const parts = [leaf('s1', 60), leaf('s2', 60), leaf('s3', 60)];
     H.long = 180;
-    const pages = paginate([leaf('p', 30), leaf('long', 180)], fitsIn(100, shrunk), (el) => shrunk.add(el), (el) => (el === 'long' ? parts : null));
+    const pages = paginate([leaf('p', 30), leaf('long', 180)], fitsIn(100, shrunk), (el) => void shrunk.add(el), (el) => (el === 'long' ? parts : null));
     expect(pages).toEqual([['p', 's1'], ['s2'], ['s3']]);
     expect(shrunk.size).toBe(0);
+  });
+
+  it('moves the lead-in to its own page when shrinking the block with it still fails', () => {
+    const pages = paginate([leaf('h3', 40, { keepWithNext: true }), leaf('big', 300)], fitsIn(100), () => false);
+    expect(pages).toEqual([['h3'], ['big']]);
   });
 
   it('returns one empty page for a group without blocks (header-only teaser)', () => {

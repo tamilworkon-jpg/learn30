@@ -19,7 +19,7 @@ export interface SlideBlock<T> {
  * a page of its own (plus any carried heading, passed as `page`). `explode(leaf)` may first offer
  * smaller parts of an oversize leaf (a long paragraph's sentences).
  */
-export function paginate<T>(blocks: SlideBlock<T>[], fits: (leaves: T[]) => boolean, shrink?: (leaf: T, page: T[]) => void, explode?: (leaf: T) => SlideBlock<T>[] | null): T[][] {
+export function paginate<T>(blocks: SlideBlock<T>[], fits: (leaves: T[]) => boolean, shrink?: (leaf: T, page: T[]) => boolean | void, explode?: (leaf: T) => SlideBlock<T>[] | null): T[][] {
   const pages: T[][] = [];
   const keep = new Set<T>();
   let cur: T[] = [];
@@ -60,8 +60,13 @@ export function paginate<T>(blocks: SlideBlock<T>[], fits: (leaves: T[]) => bool
       cur = [b.el];
       return;
     }
-    shrink?.(b.el, cur); // oversize: shrink it to fit (together with its heading, if any)
-    flush(); // and nothing else joins that page
+    // Oversize: shrink it to fit (together with its lead-in, if any; alone if even that fails).
+    if (shrink?.(b.el, cur) === false && carry.length) {
+      pages.push(carry);
+      cur = [b.el];
+      shrink(b.el, cur);
+    }
+    flush(); // nothing else joins that page
   };
 
   blocks.forEach(place);

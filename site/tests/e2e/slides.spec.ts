@@ -49,6 +49,7 @@ const measure = (page: Page) =>
     return {
       contentBottom,
       contentTop: a.getBoundingClientRect().top,
+      scrollY: window.scrollY,
       navTop: ctl.top,
       noticeShown: !!document.querySelector('#skip-notice:not([hidden])'),
       interactive: a.classList.contains('slide-scroll'),
@@ -63,52 +64,73 @@ const measure = (page: Page) =>
   });
 
 test.describe('slide lessons (T182) @visual', () => {
-  for (const path of ['/day/02', '/day/15']) {
-    test(`SL1 SL3 SL4 ${path}: ≥ 11 slides; each fully visible above the controls, big type, a visual`, async ({ page }, info) => {
-      const problems = trackConsole(page);
-      await openDeck(page, path);
-      await page.waitForLoadState('networkidle');
-      const n = await total(page);
-      expect(n).toBeGreaterThanOrEqual(11);
-      await expect(page.locator('.deck-count')).toHaveText(`Slide 1 of ${n}`);
-      await expect(prev(page)).toBeDisabled();
-      // fresh learner: the skip-ahead notice is shown (inside the deck) on slide 1
-      await expect(page.locator('#skip-notice')).toBeVisible();
-      if (path === '/day/02') await viewShot(page, 'slide-first');
-      const minFont = info.project.name === 'mobile' ? 18 : 20;
-      for (let i = 1; i <= n; i++) {
-        if (i > 1) await next(page).click();
-        expect(await total(page), 'slide count stays stable').toBe(n);
-        expect(await slideNo(page)).toBe(i);
-        const m = await measure(page);
-        const where = `${path} slide ${i} (${await article(page).getAttribute('data-slide-section')})`;
-        if (i === 1) expect(m.noticeShown, 'notice visible on slide 1').toBe(true);
-        expect(m.visual, `${where} has a visual`).toBe(true);
-        // At the position the learner sees (first load included): toolbar, slide and controls are all on screen …
-        expect(m.deckTop, where).toBeGreaterThanOrEqual(-1);
-        expect(m.contentTop, where).toBeGreaterThanOrEqual(0);
-        expect(m.deckBottom, where).toBeLessThanOrEqual(m.viewport + 1);
-        // … and nothing of a reading slide is hidden under the controls or clipped (no inner scroll).
-        // Only the quiz slide may scroll inside the stage (one question at a time, but results grow).
-        if (!m.quiz) {
-          expect(m.contentBottom, `${where} content ends above the controls`).toBeLessThanOrEqual(m.navTop + 0.5);
-          expect(m.overflow, `${where} fits without inner scroll`).toBeLessThanOrEqual(0);
-          if (m.font !== null) expect(m.font, `${where} body font`).toBeGreaterThanOrEqual(minFont);
-        }
+  // Real screens: short, wide CSS viewports (125–150 % display scaling, browser chrome) as well as phones.
+  const VIEWPORTS = {
+    desktop: [
+      { width: 1280, height: 600 },
+      { width: 1366, height: 650 },
+      { width: 1536, height: 730 },
+      { width: 1920, height: 900 },
+      { width: 1280, height: 800 },
+    ],
+    // Phones: not in scope for this round (learner feedback is about desktop windows); the default phone size stays covered.
+    mobile: [{ width: 375, height: 812 }],
+  };
+  for (const [project, sizes] of Object.entries(VIEWPORTS)) {
+    for (const vp of sizes) {
+      for (const path of ['/day/02', '/day/15']) {
+        test(`SL1 SL3 SL4 ${path} @ ${vp.width}×${vp.height}: every slide fits above the controls without page scroll`, async ({ page }, info) => {
+          test.skip(info.project.name !== project, `${project} viewport`);
+          const problems = trackConsole(page);
+          await page.setViewportSize(vp);
+          await openDeck(page, path);
+          await page.waitForLoadState('networkidle');
+          const n = await total(page);
+          expect(n).toBeGreaterThanOrEqual(11);
+          await expect(page.locator('.deck-count')).toHaveText(`Slide 1 of ${n}`);
+          await expect(prev(page)).toBeDisabled();
+          // fresh learner: the skip-ahead notice is shown (inside the deck) on slide 1
+          await expect(page.locator('#skip-notice')).toBeVisible();
+          if (path === '/day/02' && vp.width === 1280 && vp.height === 800) await viewShot(page, 'slide-first');
+          if (path === '/day/02' && vp.width === 375 && vp.height === 812) await viewShot(page, 'slide-first');
+          if (path === '/day/02' && vp.width === 1366) await viewShot(page, 'slide-short-viewport');
+          const minFont = project === 'mobile' ? 18 : 20;
+          for (let i = 1; i <= n; i++) {
+            if (i > 1) await next(page).click();
+            expect(await total(page), 'slide count stays stable').toBe(n);
+            expect(await slideNo(page)).toBe(i);
+            const m = await measure(page);
+            const where = `${path} @${vp.width}×${vp.height} slide ${i} (${await article(page).getAttribute('data-slide-section')})`;
+            if (i === 1) expect(m.noticeShown, 'notice visible on slide 1').toBe(true);
+            expect(m.visual, `${where} has a visual`).toBe(true);
+            // No page scroll needed — on first load and after navigating: title bar, slide and controls all on screen …
+            expect(m.scrollY, `${where} page not scrolled`).toBe(0);
+            expect(m.deckTop, where).toBeGreaterThanOrEqual(0);
+            expect(m.contentTop, where).toBeGreaterThanOrEqual(0);
+            expect(m.deckBottom, where).toBeLessThanOrEqual(m.viewport + 1);
+            // … and nothing of a reading slide is hidden under the controls or clipped (no inner scroll).
+            // Only the quiz slide may scroll inside the stage (one question at a time, but results grow).
+            if (!m.quiz) {
+              expect(m.contentBottom, `${where} content ends above the controls`).toBeLessThanOrEqual(m.navTop + 0.5);
+              expect(m.overflow, `${where} fits without inner scroll`).toBeLessThanOrEqual(0);
+              if (m.font !== null) expect(m.font, `${where} body font`).toBeGreaterThanOrEqual(minFont);
+            }
+          }
+          await expect(next(page)).toBeDisabled();
+          // and back again with the keyboard / a deep link
+          await page.keyboard.press('ArrowLeft');
+          const back = await measure(page);
+          expect(back.deckBottom).toBeLessThanOrEqual(back.viewport + 1);
+          await page.goto(`${path}#slide-3`);
+          await expect.poll(() => slideNo(page)).toBe(3);
+          const deep = await measure(page);
+          expect(deep.contentBottom).toBeLessThanOrEqual(deep.navTop + 0.5);
+          expect(deep.deckBottom).toBeLessThanOrEqual(deep.viewport + 1);
+          await noHorizontalScroll(page);
+          expect(problems, problems.join('\n')).toEqual([]);
+        });
       }
-      await expect(next(page)).toBeDisabled();
-      // and back again with the keyboard / a deep link
-      await page.keyboard.press('ArrowLeft');
-      const back = await measure(page);
-      expect(back.deckBottom).toBeLessThanOrEqual(back.viewport + 1);
-      await page.goto(`${path}#slide-3`);
-      await expect.poll(() => slideNo(page)).toBe(3);
-      const deep = await measure(page);
-      expect(deep.contentBottom).toBeLessThanOrEqual(deep.navTop + 0.5);
-      expect(deep.deckBottom).toBeLessThanOrEqual(deep.viewport + 1);
-      await noHorizontalScroll(page);
-      expect(problems, problems.join('\n')).toEqual([]);
-    });
+    }
   }
 
   test('SL2 buttons, arrow/page keys, swipe, #slide-n deep links, focus + announcement', async ({ page }) => {
@@ -210,7 +232,8 @@ test.describe('slide lessons (T182) @visual', () => {
   test('SL5 key terms are highlighted and callouts get a Key point treatment', async ({ page }, info) => {
     await page.goto('/day/02#explanation');
     await expect(page.locator('html')).toHaveAttribute('data-deck-ready', 'true');
-    const strong = page.locator('#explanation strong').first();
+    const strong = page.locator('#explanation :is(p, li, .slide-sent) > strong:visible').first();
+    for (let i = 0; i < 10 && !(await strong.count()); i++) await page.keyboard.press('ArrowRight');
     await expect(strong).toBeVisible();
     expect(await strong.evaluate((e) => getComputedStyle(e).backgroundImage)).toContain('linear-gradient');
     await page.goto('/day/02#exam-tips');
@@ -218,10 +241,18 @@ test.describe('slide lessons (T182) @visual', () => {
     await expect(callout).toBeVisible();
     await expect(callout).toHaveClass(/slide-keypoint/);
     expect(await callout.evaluate((e) => getComputedStyle(e, '::before').content)).toContain('Key point');
+    // component internals are not highlighted: Day 1 exam-fact numbers, chips, the console mock-up
+    await page.goto('/day/01#orientation');
+    await expect(page.locator('html')).toHaveAttribute('data-deck-ready', 'true');
+    for (let i = 0; i < 6 && !(await page.locator('#orientation .fact strong').first().isVisible()); i++) await page.keyboard.press('ArrowRight');
+    await expect(page.locator('#orientation .fact strong').first()).toBeVisible();
+    for (const bg of await page.locator('#orientation .fact strong').evaluateAll((els) => els.map((e) => getComputedStyle(e).backgroundImage))) expect(bg).toBe('none');
     // explanation slides with ≥ 3 bold terms show the "Key terms on this slide" strip when it fits
     // (on a phone the slides are full, so the optional strip rarely has room)
     if (info.project.name === 'mobile') return;
     await page.goto('/day/02#explanation');
+    await expect(page.locator('html')).toHaveAttribute('data-deck-ready', 'true');
+    await page.waitForLoadState('networkidle');
     let found = false;
     for (let i = 0; i < 30 && !found; i++) {
       found = await page.locator('.key-strip:not([hidden])').isVisible();
