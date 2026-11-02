@@ -298,13 +298,14 @@ If a model is unavailable, use any available model that differs from the author 
 
 **Goal**: Review days with domain summary, concept map, 55–60 Q test, per-domain results, engagement rating (FR-026). **Independent test**: quickstart V7.
 
-- [ ] T079 [P] [US4] E2E site/tests/e2e/review.spec.ts (`@visual`)
+- [x] T079 [P] [US4] E2E site/tests/e2e/review.spec.ts (`@visual`)
   - TC: W1 summary lists every prior lesson day grouped by domain; W2 concept map renders; W3 results show per-domain bars + "Revisit Day N" links; W4 rating prompt 1–5 saves to `ratings.week-N` and shows on dashboard; screenshots `review-summary`, `review-results`, `review-rating`.
-- [ ] T080 [P] [US4] Create site/src/components/review/ReviewSummary.astro
-- [ ] T081 [P] [US4] Create site/src/components/review/DomainResults.tsx
-- [ ] T082 [P] [US4] Create site/src/components/review/RatingPrompt.tsx (FR-026)
-- [ ] T083 [US4] Create site/src/layouts/ReviewLayout.astro; render `kind: review` in site/src/pages/day/[day].astro → T079 green
-- [ ] T084 [US4] REVIEW US4; log
+- [x] T080 [P] [US4] Create site/src/components/review/ReviewSummary.astro
+- [x] T081 [P] [US4] Create site/src/components/review/DomainResults.tsx
+- [x] T082 [P] [US4] Create site/src/components/review/RatingPrompt.tsx (FR-026)
+- [x] T083 [US4] Create site/src/layouts/ReviewLayout.astro; render `kind: review` in site/src/pages/day/[day].astro → T079 green
+- [x] T084 [US4] REVIEW US4; log
+  - Done 2026-11-02: unit 162 passing (new review.test.ts; quiz-state Q-S4 weekly; validator review/mock structure), E2E review.spec 6 passing (W1 on real /day/07 + /day/14; W2–W4 on the test-only fixture route /design/fixture-review rendering tests/fixtures/days/day-07-review.mdx + an 8-question week-1 fixture), quiz.spec regression green; lint/typecheck/validate:content clean; screenshots review-summary/results/rating/page/dark inspected (fixed: list markers in review MDX, "1 of 1 day" grammar, results card). Decisions: the layout (not the MDX) adds summary → test → per-domain results → rating, so review MDX holds only conceptMap/topFacts/traps (contract: contracts/review-and-mock-days.md); weak domain = < 70% (data-model); "Revisit Day N" = lesson days of the missed questions in that domain. Open: W4 "shows on dashboard" belongs to the dashboard (T075, other agent) — `ratings.week-N` is saved and validated here.
 
 ---
 

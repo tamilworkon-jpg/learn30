@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { estimateMinutes, parseLesson, validateContent, type QuestionSet } from '../../src/lib/validate';
 import { course, examGuide } from '../../src/lib/data';
@@ -130,5 +131,83 @@ describe('content validator (T014)', () => {
 
   it('F20 pending days become errors in final mode', () => {
     expect(run({}, [], true).errors.join()).toMatch(/Day 1 has no content/);
+  });
+});
+
+// Review and mock day contract (contracts/review-and-mock-days.md); the fixtures are the documented examples.
+const fixture = (name: string) => readFileSync(`tests/fixtures/days/${name}.mdx`, 'utf8');
+const review = fixture('day-07-review');
+const mock29 = fixture('day-29-mock');
+const mock30 = fixture('day-30-mock');
+const dayErrors = (day: number, src: string) => run({ [day]: src }, []).errors;
+
+describe('review and mock day structure (W1–W2, M11–M12)', () => {
+  it('documented examples are valid', () => {
+    expect(dayErrors(7, review)).toEqual([]);
+    expect(dayErrors(29, mock29)).toEqual([]);
+    expect(dayErrors(30, mock30)).toEqual([]);
+  });
+
+  it('W2 review needs a concept-map diagram, 20 facts, 5 traps, sections in order', () => {
+    expect(dayErrors(7, review.replace(/<Diagram[\s\S]*?\/>/, 'no map')).join()).toMatch(
+      /concept-map diagram/,
+    );
+    expect(dayErrors(7, review.replace(/^20\. .*$/m, '')).join()).toMatch(
+      /topFacts needs ≥ 20 numbered facts \(found 19\)/,
+    );
+    expect(dayErrors(7, review.replace(/^- \*\*"Accuracy.*$/m, '')).join()).toMatch(/traps needs ≥ 5/);
+    const swapped = review
+      .replace('type="topFacts"', 'type="TMP"')
+      .replace('type="traps"', 'type="topFacts"')
+      .replace('type="TMP"', 'type="traps"');
+    expect(dayErrors(7, swapped).join()).toMatch(/exactly conceptMap → topFacts → traps/);
+  });
+
+  it('review: only Section/Diagram/Callout; domains follow task statements; task statements follow course.yaml', () => {
+    expect(dayErrors(7, review.replace('</Section>', '<QuizSlot day={7} />\n</Section>')).join()).toMatch(
+      /not allowed on review days: QuizSlot/,
+    );
+    expect(dayErrors(7, review.replace('domains: [D1, D4]', 'domains: [D1]')).join()).toMatch(
+      /domains D1 must be the domains/,
+    );
+    expect(
+      dayErrors(
+        7,
+        review
+          .replace("taskStatements: ['1.1', '1.2', '1.3', '4.1']", "taskStatements: ['1.1']")
+          .replace('domains: [D1, D4]', 'domains: [D1]'),
+      ).join(),
+    ).toMatch(/differ from course.yaml/);
+  });
+
+  it('M11/M12 mock days: launches, remediation, strategy topics, all task statements', () => {
+    expect(dayErrors(29, mock29.replace('<MockLaunch n={1} />', '')).join()).toMatch(
+      /MockLaunch n=\{…\} \/> for mock 1/,
+    );
+    expect(dayErrors(29, mock29.replace('<Remediation mock={1} />', '')).join()).toMatch(
+      /<Remediation mock=\{N\} \/>/,
+    );
+    expect(dayErrors(30, mock30.replace('<MockLaunch n={3} optional />', '')).join()).toMatch(
+      /for mock 2 and 3/,
+    );
+    expect(dayErrors(30, mock30.replace('Pearson VUE', 'a')).join()).toMatch(
+      /examStrategy must cover delivery/,
+    );
+    expect(
+      dayErrors(
+        30,
+        mock30
+          .replace('<Section id="exam-strategy"', '<Section id="x"')
+          .replace(/<Section id="final-revision"[\s\S]*?<\/Section>/, ''),
+      ).join(),
+    ).toMatch(/exactly launch → remediation → finalRevision → examStrategy/);
+    expect(dayErrors(29, mock29.replace(", '5.1', '5.2'", '')).join()).toMatch(
+      /differ from all task statements/,
+    );
+    expect(dayErrors(29, mock29.replace('<MockLaunch n={1} />', '<HandsOnLab />')).join()).toMatch(
+      /not allowed on mock days: HandsOnLab/,
+    );
+    // mock days do not count as "teaching" days in the coverage report
+    expect(run({ 29: mock29 }, []).coverage['1.1'].days).toEqual([]);
   });
 });

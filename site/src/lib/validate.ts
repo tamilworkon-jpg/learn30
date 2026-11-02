@@ -10,6 +10,59 @@ export const MINUTES_PER_QUESTION = 1;
 export const LESSON_SECTION_ORDER = ['recap', 'objectives', 'explanation', 'diagram', 'examples', 'realWorld', 'handsOn', 'examTips', 'summary', 'quiz'];
 export const MOCK_SPLIT: Record<string, number> = { D1: 13, D2: 16, D3: 18, D4: 9, D5: 9 };
 
+// Review and mock day structure — contract: specs/001-aws-ai-practitioner-course/contracts/review-and-mock-days.md
+export const REVIEW_SECTION_ORDER = ['conceptMap', 'topFacts', 'traps'];
+export const REVIEW_MIN_FACTS = 20;
+export const REVIEW_MIN_TRAPS = 5;
+export const MOCK_SECTION_ORDER: Record<number, string[]> = { 29: ['launch', 'remediation'], 30: ['launch', 'remediation', 'finalRevision', 'examStrategy'] };
+export const MOCK_LAUNCHES: Record<number, number[]> = { 29: [1], 30: [2, 3] };
+export const STRATEGY_TOPICS: [string, RegExp][] = [
+  ['registration', /regist/i],
+  ['delivery options (Pearson VUE test centre or online proctoring)', /Pearson VUE/i],
+  ['90 minutes', /\b90\b/],
+  ['65 questions', /\b65\b/],
+  ['question types (multiple choice, multiple response, ordering, matching)', /multiple response[\s\S]*ordering[\s\S]*matching|matching[\s\S]*ordering/i],
+  ['pacing', /pac(e|ing)/i],
+];
+const ALLOWED_COMPONENTS: Record<string, string[]> = { review: ['Section', 'Diagram', 'Callout'], mock: ['Section', 'Diagram', 'Callout', 'MockLaunch', 'Remediation'] };
+const countItems = (text: string, numbered: boolean) => (text.match(numbered ? /^\s*\d+\.\s+\S/gm : /^\s*(?:[-*]|\d+\.)\s+\S/gm) ?? []).length;
+
+/** Structure errors for a review/mock day (sections exactly in order, allowed components, required content). */
+export function checkReviewOrMockDay(lesson: ParsedLesson, kind: 'review' | 'mock', day: number): string[] {
+  const errors: string[] = [];
+  const required = kind === 'review' ? REVIEW_SECTION_ORDER : (MOCK_SECTION_ORDER[day] ?? []);
+  const types = lesson.sections.map((s) => s.type);
+  if (types.join() !== required.join()) errors.push(`sections must be exactly ${required.join(' → ')} (found ${types.join(' → ') || 'none'})`);
+  const ids = lesson.sections.map((s) => s.id);
+  if (ids.some((id) => !/^[a-z0-9-]+$/.test(id))) errors.push('section ids must be kebab-case');
+  const dupes = ids.filter((id, i) => ids.indexOf(id) !== i);
+  if (dupes.length) errors.push(`duplicate section ids ${[...new Set(dupes)].join(', ')}`);
+  if (lesson.sections.some((s) => s.optional)) errors.push(`${kind} days have no optional sections`);
+  const body = lesson.body.replace(/<Diagram\b[\s\S]*?\/>/g, '<Diagram />');
+  const used = [...new Set([...body.matchAll(/<([A-Z][A-Za-z0-9]*)/g)].map((m) => m[1]))];
+  const bad = used.filter((c) => !ALLOWED_COMPONENTS[kind].includes(c));
+  if (bad.length) errors.push(`components not allowed on ${kind} days: ${bad.join(', ')}`);
+  const sec = (t: string) => lesson.sections.find((s) => s.type === t);
+  if (kind === 'review') {
+    const map = sec('conceptMap');
+    if (!map || countDiagrams(map.content) < 1) errors.push('review needs a concept-map diagram in the conceptMap section');
+    const facts = sec('topFacts');
+    if (facts && countItems(facts.content, true) < REVIEW_MIN_FACTS) errors.push(`topFacts needs ≥ ${REVIEW_MIN_FACTS} numbered facts (found ${countItems(facts.content, true)})`);
+    const traps = sec('traps');
+    if (traps && countItems(traps.content, false) < REVIEW_MIN_TRAPS) errors.push(`traps needs ≥ ${REVIEW_MIN_TRAPS} list items (found ${countItems(traps.content, false)})`);
+  } else {
+    const launch = sec('launch');
+    const launched = launch ? [...launch.content.matchAll(/<MockLaunch\s+n=\{(\d)\}/g)].map((m) => Number(m[1])) : [];
+    const want = MOCK_LAUNCHES[day] ?? [];
+    if (launched.join() !== want.join()) errors.push(`launch section must contain <MockLaunch n={…} /> for mock ${want.join(' and ')} (found ${launched.join(', ') || 'none'})`);
+    const rem = sec('remediation');
+    if (rem && !/<Remediation\s+mock=\{\d\}/.test(rem.content)) errors.push('remediation section must contain <Remediation mock={N} />');
+    const strategy = sec('examStrategy');
+    if (strategy) for (const [topic, re] of STRATEGY_TOPICS) if (!re.test(strategy.content)) errors.push(`examStrategy must cover ${topic}`);
+  }
+  return errors;
+}
+
 export interface QuestionSet {
   set: string;
   questions: Question[];
@@ -81,10 +134,17 @@ export function validateContent(input: ValidateInput): ValidateResult {
       continue;
     }
     if (cd.kind !== fm.kind) errors.push(`${where}: kind ${fm.kind} but course.yaml says ${cd.kind}`);
-    if (JSON.stringify([...fm.taskStatements!].sort()) !== JSON.stringify([...cd.taskStatements].sort())) {
-      errors.push(`${where}: taskStatements ${fm.taskStatements} differ from course.yaml ${cd.taskStatements}`);
+    // Mock days cover the whole exam: course.yaml lists none, the frontmatter lists all 14 task statements.
+    const expectedTs = fm.kind === 'mock' ? taskIds : cd.taskStatements;
+    if (JSON.stringify([...fm.taskStatements!].sort()) !== JSON.stringify([...expectedTs].sort())) {
+      errors.push(`${where}: taskStatements ${fm.taskStatements} differ from ${fm.kind === 'mock' ? 'all task statements' : 'course.yaml'} ${expectedTs}`);
     }
-    for (const ts of fm.taskStatements!) coverage[ts]?.days.push(day);
+    if (fm.kind !== 'mock') for (const ts of fm.taskStatements!) coverage[ts]?.days.push(day);
+    if (fm.kind !== 'lesson') {
+      const want = [...new Set(fm.taskStatements!.map((ts) => guide.domains.find((d) => d.tasks.some((t) => t.id === ts))?.id))].sort();
+      const have = [...(lesson.frontmatter.domains as string[])].sort();
+      if (want.join() !== have.join()) errors.push(`${where}: domains ${have.join(', ')} must be the domains of its task statements (${want.join(', ')})`);
+    }
 
     const text = source;
     for (const name of trapNames) {
@@ -116,8 +176,8 @@ export function validateContent(input: ValidateInput): ValidateResult {
       if (est < 50 || est > 70) errors.push(`${where}: estimated core minutes ${est} outside 50–70`);
       const declared = fm.estimatedMinutes!;
       if (Math.abs(est - declared) / declared > 0.15) errors.push(`${where}: estimated ${est} min is >15% off declared ${declared}`);
-    } else if (fm.kind === 'review') {
-      if (countDiagrams(source) < 1) errors.push(`${where}: review needs a concept-map diagram`);
+    } else if (fm.kind === 'review' || fm.kind === 'mock') {
+      for (const e of checkReviewOrMockDay(lesson, fm.kind, day)) errors.push(`${where}: ${e}`);
     }
   }
 

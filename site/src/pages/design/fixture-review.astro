@@ -1,0 +1,17 @@
+---
+// Test-only fixture (T079): the Day 7 review layout with the documented example MDX and an 8-question week-1 fixture.
+// Not linked from learner navigation; real review days render at /day/07, /day/14, /day/21, /day/28.
+import ReviewLayout from '../../layouts/ReviewLayout.astro';
+import Section from '../../components/lesson/Section.astro';
+import Diagram from '../../components/lesson/Diagram.astro';
+import Callout from '../../components/lesson/Callout.astro';
+import { Content, frontmatter } from '../../../tests/fixtures/days/day-07-review.mdx';
+import { weekFixture } from '../../../tests/fixtures/review-mock';
+import { course } from '../../lib/data';
+
+const cd = course.days.find((d) => d.day === 7)!;
+---
+
+<ReviewLayout cd={cd} questions={weekFixture} hasContent title={`${frontmatter.title} (fixture)`}>
+  <Content components={{ Section, Diagram, Callout }} />
+</ReviewLayout>

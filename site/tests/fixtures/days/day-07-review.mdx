@@ -1,0 +1,74 @@
+---
+day: 7
+kind: review
+title: 'Week 1 review'
+summary: 'Consolidate Week 1: the AI family tree, ML vocabulary, data and learning types, neural networks, AWS managed AI services and the ML lifecycle.'
+domains: [D1, D4]
+taskStatements: ['1.1', '1.2', '1.3', '4.1']
+objectives:
+  - 'Connect every Week 1 topic on one concept map'
+  - 'Recall the 20 facts most likely to be tested'
+  - 'Spot the classic Week 1 exam traps'
+estimatedMinutes: 90
+lastVerified: '2026-11-02'
+---
+
+<Section id="concept-map" type="conceptMap" title="Week 1 concept map" minutes={10}>
+
+Everything from Days 1–6 on one map. Read it from the centre outwards and say each branch out loud.
+
+<Diagram
+  caption="Week 1 concept map: AI family, learning types, data, neural networks, AWS AI services and the ML lifecycle"
+  code={`mindmap
+  root((Week 1))
+    AI family
+      Machine learning
+      Deep learning
+      Generative AI
+    Learning types
+      Supervised
+      Unsupervised
+      Reinforcement
+    Lifecycle
+      Data prep
+      Train and tune
+      Deploy
+      Monitor`}
+/>
+
+</Section>
+
+<Section id="top-facts" type="topFacts" title="Top 20 facts" minutes={15}>
+
+1. AI ⊃ machine learning ⊃ deep learning ⊃ generative AI (Day 1).
+2. Machine learning learns patterns from data instead of following hand-written rules (Day 1).
+3. A model is the learned function; an algorithm is the procedure that produces it (Day 2).
+4. Training fits the model; inference uses it to make predictions (Day 2).
+5. Real-time inference serves low-latency requests; batch inference scores large datasets offline (Day 2).
+6. Overfitting means low training error but high error on new data (Day 2).
+7. Underfitting means the model is too simple to capture the pattern (Day 2).
+8. Labelled data enables supervised learning (Day 3).
+9. Clustering without labels is unsupervised learning (Day 3).
+10. Reinforcement learning learns from rewards and penalties (Day 3).
+11. Structured data lives in rows and columns; images, audio and free text are unstructured (Day 3).
+12. Neural networks are layers of weighted connections trained by backpropagation (Day 4).
+13. Convolutional networks suit images; transformers suit sequences such as text (Day 4).
+14. Amazon Rekognition analyses images and video (Day 5).
+15. Amazon Comprehend extracts insights from text (Day 5).
+16. Amazon Transcribe converts speech to text; Amazon Polly converts text to speech (Day 5).
+17. Amazon SageMaker AI covers building, training and deploying custom models (Day 6).
+18. MLOps automates the ML lifecycle with repeatable pipelines and monitoring (Day 6).
+19. Accuracy can mislead on imbalanced data; check precision, recall and F1 (Day 6).
+20. Model drift means production data no longer matches training data, so monitor and retrain (Day 6).
+
+</Section>
+
+<Section id="traps" type="traps" title="Exam traps" minutes={5}>
+
+- **"Deep learning is a separate field from ML"** — no: deep learning is a subset of machine learning.
+- **"More training accuracy is always better"** — very high training accuracy with poor test accuracy is overfitting.
+- **"Clustering needs labels"** — clustering is unsupervised; labels mean supervised learning.
+- **"Batch inference for a chatbot"** — interactive, low-latency use cases need real-time inference.
+- **"Accuracy is the best metric"** — on imbalanced data prefer precision, recall or F1.
+
+</Section>

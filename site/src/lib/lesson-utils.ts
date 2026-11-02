@@ -36,4 +36,10 @@ export const sectionTypeLabel: Record<string, string> = {
   quiz: 'Quiz',
   deepDive: 'Architect deep dive',
   conceptMap: 'Concept map',
+  topFacts: 'Top facts',
+  traps: 'Exam traps',
+  launch: 'Mock exam',
+  remediation: 'Remediation plan',
+  finalRevision: 'Final revision',
+  examStrategy: 'Exam-day strategy',
 };

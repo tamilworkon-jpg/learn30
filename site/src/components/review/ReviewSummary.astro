@@ -1,0 +1,70 @@
+---
+// T080 — review-day summary: every prior lesson day grouped by exam domain, with the learner's quiz average per domain
+// (filled in on the client from saved best scores).
+import { course, examGuide, pad } from '../../lib/data';
+import { summaryByDomain } from '../../lib/review';
+
+interface Props {
+  day: number;
+}
+const { day } = Astro.props;
+const groups = summaryByDomain(course, examGuide, day);
+const weight = (id: string) => examGuide.domains.find((d) => d.id === id)?.weight ?? 0;
+---
+
+<section class="review-summary" id="summary" data-section-type="summary" aria-labelledby="summary-h">
+  <h2 class="h2 sec-head" id="summary-h">What you have covered</h2>
+  <p class="muted mt-0">Every lesson day so far, grouped by exam domain. A day appears under each domain it teaches.</p>
+  <div class="grid gap-4 md:grid-cols-2 mt-4">
+    {
+      groups.map((g) => (
+        <div class="card review-domain" data-domain={g.id} data-days={g.days.map((d) => d.day).join(',')}>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class={`chip chip-${g.id}`}>{g.id}</span>
+            <span class="muted text-sm">{weight(g.id)}% of the exam</span>
+          </div>
+          <h3 class="font-semibold text-base mt-2 mb-1">{g.name}</h3>
+          <ul class="review-days">
+            {g.days.map((d) => (
+              <li>
+                <a href={`/day/${pad(d.day)}`}>
+                  Day {d.day}: {d.title}
+                </a>{' '}
+                <span class="muted text-sm">({d.taskStatements.join(', ')})</span>
+              </li>
+            ))}
+          </ul>
+          <progress class="quiz-progress mt-3" max="100" value="0" aria-label={`${g.id} daily quiz average`} />
+          <p class="text-sm m-0 mt-1 review-avg">No daily quiz scores yet</p>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  import { getStore } from '../../lib/progress/store';
+  const days = getStore().get().days;
+  for (const card of document.querySelectorAll<HTMLElement>('.review-domain')) {
+    const scores = (card.dataset.days ?? '')
+      .split(',')
+      .map((d) => days[d]?.bestScore)
+      .filter((s): s is number => typeof s === 'number');
+    if (!scores.length) continue;
+    const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+    card.querySelector('progress')!.value = avg;
+    const total = card.dataset.days!.split(',').length;
+    card.querySelector('.review-avg')!.textContent = `Daily quiz average ${avg}% (${scores.length} of ${total} ${total === 1 ? 'day' : 'days'} taken)`;
+  }
+</script>
+
+<style>
+  .review-days {
+    margin: 8px 0 0;
+    padding-left: 0;
+  }
+  .review-days li {
+    line-height: 1.6;
+    margin-top: 2px;
+  }
+</style>

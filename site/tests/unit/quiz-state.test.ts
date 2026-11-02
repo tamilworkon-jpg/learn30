@@ -101,4 +101,20 @@ describe('quiz state (T049)', () => {
     expect(retake.best()).toBe(100);
     expect(retake.lastAttempt()?.score.percent).toBe(25);
   });
+
+  it('Q-S4 weekly assessment (week-N): kind weekly, best from attempts, no DayState change', () => {
+    const store = createStore();
+    const s = createQuizSession(store, 'week-1', questions, 'weekly');
+    expect(s.best()).toBeUndefined();
+    s.answer('q-day-02-001', ['b']);
+    const a = s.submit();
+    expect(a).toMatchObject({ assessmentId: 'week-1', kind: 'weekly' });
+    expect(a.score.scaled).toBeUndefined();
+    expect(a.byDomain).toEqual({ D1: { correct: 1, total: 2 }, D4: { correct: 0, total: 2 } });
+    for (const q of questions) s.answer(q.id, q.answer);
+    s.submit();
+    expect(s.best()).toBe(100);
+    expect(store.get().days).toEqual({});
+    expect(validateProgress(store.get())).toBe(true);
+  });
 });
