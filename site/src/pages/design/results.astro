@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const rows = [
+  { ok: true, q: 'Which inference option is MOST cost-effective for a nightly 40M-record job?', a: 'Batch transform — offline, no always-on endpoint.' },
+  { ok: false, q: 'A model scores 99% on training data and 61% on new data. What is happening?', a: 'Overfitting (high variance). You chose “underfitting”, which shows poor scores on both.' },
+  { ok: true, q: 'Which term describes using a trained model to make predictions?', a: 'Inference.' },
+];
+---
+
+<BaseLayout title="Design · Results" active="none">
+  <div class="flex flex-wrap items-center gap-6">
+    <svg viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Score 85 percent">
+      <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="12"></circle>
+      <circle cx="60" cy="60" r="50" fill="none" stroke="var(--d4)" stroke-width="12" stroke-linecap="round" stroke-dasharray="267 314" transform="rotate(-90 60 60)"></circle>
+      <text x="60" y="67" text-anchor="middle" font-size="24" font-weight="700" fill="currentColor">85%</text>
+    </svg>
+    <div>
+      <h1 class="h1">Great work! 17 / 20</h1>
+      <p class="muted m-0">Best score for Day 2 · <a href="#">Retake quiz</a></p>
+    </div>
+  </div>
+  <h2 class="h2 mt-8">Review your answers</h2>
+  {
+    rows.map((r) => (
+      <div class="card mt-3 flex gap-3">
+        <span class={`num-icon ${r.ok ? 'ok' : 'bad'}`} aria-label={r.ok ? 'Correct' : 'Incorrect'}>{r.ok ? '✓' : '✗'}</span>
+        <div>
+          <p class="m-0 font-medium">{r.q}</p>
+          <p class="m-0 mt-1 text-sm">{r.a}</p>
+          <a class="text-sm" href="#">Review in lesson →</a>
+        </div>
+      </div>
+    ))
+  }
+</BaseLayout>
+
+<style>
+  .ok {
+    background: var(--d4);
+    color: #fff;
+  }
+  .bad {
+    background: var(--d5);
+    color: #fff;
+  }
+</style>

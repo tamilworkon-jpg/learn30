@@ -1,0 +1,39 @@
+---
+import { diagramSrc } from '../../lib/diagram';
+
+interface Props {
+  code: string;
+  caption: string;
+  wide?: boolean;
+}
+const { code, caption, wide = false } = Astro.props;
+---
+
+<figure class:list={['diagram', { 'diagram-wide': wide }]}>
+  <img src={diagramSrc(code)} alt={caption} loading="lazy" decoding="async" />
+  <figcaption>{caption}</figcaption>
+</figure>
+
+<style>
+  .diagram {
+    margin: 20px 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 16px;
+    text-align: center;
+  }
+  .diagram img {
+    max-width: 100%;
+    height: auto;
+    max-height: 520px;
+  }
+  .diagram-wide img {
+    max-height: 680px;
+  }
+  figcaption {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #5b5675;
+  }
+</style>

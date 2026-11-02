@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Diagram from '../../components/lesson/Diagram.astro';
+const domains = [
+  { id: 'D1', name: 'Fundamentals of AI & ML', days: 'Days 1–6', pct: 'w-[78%]', score: '78%' },
+  { id: 'D4', name: 'Responsible AI (bias/variance)', days: 'Day 2', pct: 'w-[64%]', score: '64%' },
+];
+---
+
+<BaseLayout title="Design · Weekly review" active="none">
+  <p class="muted text-sm m-0">Day 7 · Week 1 review</p>
+  <h1 class="h1">Everything from Week 1, on one page</h1>
+  <div class="grid gap-4 md:grid-cols-2 mt-4">
+    {
+      domains.map((d) => (
+        <div class="card">
+          <span class={`chip chip-${d.id}`}>{d.id}</span>
+          <h2 class="font-semibold text-base mt-2 mb-1">{d.name}</h2>
+          <p class="muted text-sm m-0">{d.days}</p>
+          <div class="progress mt-3"><span class={d.pct} /></div>
+          <p class="text-sm m-0 mt-1">Quiz average {d.score}</p>
+        </div>
+      ))
+    }
+  </div>
+  <Diagram
+    caption="Week 1 concept map"
+    code={`mindmap
+  root((Week 1))
+    AI family
+      ML
+      Deep learning
+      GenAI
+      Agentic AI
+    Learning types
+      Supervised
+      Unsupervised
+      Reinforcement
+    Lifecycle
+      Data
+      Train
+      Deploy
+      Monitor`}
+  />
+  <div class="card flex flex-wrap items-center justify-between gap-3">
+    <div><strong>Cumulative test · 57 questions</strong><p class="muted m-0 text-sm">About 60 minutes · mixed domains</p></div>
+    <button class="btn" type="button">Start test →</button>
+  </div>
+  <div class="card mt-4">
+    <strong>How engaging was Week 1?</strong>
+    <div class="flex gap-2 mt-2" role="radiogroup" aria-label="Rate Week 1">
+      {[1, 2, 3, 4, 5].map((n) => <button class="icon-btn" type="button" role="radio" aria-checked={n === 4 ? 'true' : 'false'} aria-label={`${n} stars`}>{n <= 4 ? '★' : '☆'}</button>)}
+    </div>
+  </div>
+</BaseLayout>

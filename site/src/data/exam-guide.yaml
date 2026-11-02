@@ -1,0 +1,235 @@
+# Source: https://docs.aws.amazon.com/aws-certification/latest/ai-practitioner-01/ (guide v1.2)
+examCode: AIF-C01
+name: AWS Certified AI Practitioner
+version: '1.2'
+publishedOn: '2026-10-29'
+lastVerified: '2026-11-02'
+sourceUrl: https://docs.aws.amazon.com/aws-certification/latest/ai-practitioner-01/ai-practitioner-01.html
+format:
+  totalQuestions: 65
+  scored: 50
+  minutes: 90
+  passScaled: 700
+  scaleMin: 100
+  scaleMax: 1000
+questionTypes:
+  - Multiple choice (1 correct of 4)
+  - Multiple response (2+ correct of 5+)
+  - Ordering (3–5 steps)
+  - Matching (3–7 pairs)
+domains:
+  - id: D1
+    name: Fundamentals of AI and ML
+    weight: 20
+    color: '#2563EB'
+    tasks:
+      - id: '1.1'
+        title: Explain basic AI concepts and terminologies
+        objectives:
+          - Define AI, ML, deep learning, neural networks, CV, NLP, model, algorithm, training, inferencing, bias, fairness, fit, LLM, GenAI, agentic AI
+          - Differentiate AI, ML, GenAI, deep learning and agentic AI
+          - Describe batch, real-time, asynchronous and serverless inferencing
+          - Describe data types (labeled/unlabeled, tabular, time-series, image, text, structured/unstructured)
+          - Describe supervised, unsupervised and reinforcement learning
+      - id: '1.2'
+        title: Identify practical use cases for AI
+        objectives:
+          - Recognize where AI/ML adds value (decision support, scalability, automation)
+          - Determine when AI/ML is not appropriate (cost-benefit, deterministic outcome needed)
+          - Select techniques (regression, classification, clustering) for use cases
+          - Identify real-world AI applications (CV, NLP, speech, recommendations, fraud, forecasting, knowledge bases, agentic AI)
+          - Explain capabilities of SageMaker AI, Transcribe, Translate, Comprehend, Lex, Polly
+          - Choose traditional ML vs foundation models (regulation, explainability, operational constraints)
+      - id: '1.3'
+        title: Describe the AI/ML development lifecycle
+        objectives:
+          - Describe components of an AI/ML pipeline
+          - Describe sources of models (open-source pre-trained, custom training)
+          - Describe production use (managed API, self-hosted API)
+          - Identify AWS services per pipeline stage (Bedrock, Amazon Quick, Kiro, SageMaker AI)
+          - Describe MLOps (experimentation, repeatability, scale, tech debt, readiness, monitoring, re-training)
+          - Describe model metrics (accuracy, precision, recall, F1) and business metrics (cost per user, ROI, feedback)
+  - id: D2
+    name: Fundamentals of GenAI
+    weight: 24
+    color: '#7C3AED'
+    tasks:
+      - id: '2.1'
+        title: Explain the basic concepts of GenAI
+        objectives:
+          - Define tokens, chunking, embeddings, vectors, prompt engineering, transformer LLMs, FMs, multimodal and diffusion models
+          - Identify GenAI use cases
+          - Describe the FM lifecycle
+          - Describe token-based pricing
+          - Describe context engineering
+          - Define agentic AI concepts (multi-agent patterns, MCP, memory, tool use, orchestration)
+      - id: '2.2'
+        title: Understand capabilities and limitations of GenAI
+        objectives:
+          - Describe advantages (adaptability, responsiveness, conversation, content generation)
+          - Identify disadvantages (hallucinations, interpretability, inaccuracy, nondeterminism)
+          - Identify model selection factors
+          - Determine business value and metrics
+      - id: '2.3'
+        title: Describe AWS infrastructure and technologies for GenAI
+        objectives:
+          - Identify Bedrock, SageMaker AI, JumpStart, Amazon Quick, Kiro, Strands Agents, Bedrock AgentCore
+          - Describe advantages of AWS GenAI services
+          - Describe benefits of AWS infrastructure (security, compliance, responsibility, safety)
+          - Describe cost trade-offs (token pricing, provisioned throughput, custom models, regional coverage)
+  - id: D3
+    name: Applications of Foundation Models
+    weight: 28
+    color: '#C2410C'
+    tasks:
+      - id: '3.1'
+        title: Describe design considerations for FM applications
+        objectives:
+          - FM selection criteria incl. prompt caching
+          - Effect of inference parameters
+          - RAG and Bedrock Knowledge Bases
+          - Vector stores (OpenSearch Service, Aurora, Neptune, RDS for PostgreSQL)
+          - Customization cost trade-offs (pre-training, fine-tuning, in-context learning, RAG, distillation)
+          - Role and applications of AI agents
+      - id: '3.2'
+        title: Choose effective prompt engineering techniques
+        objectives:
+          - Prompt constructs (context, instruction, negative prompts)
+          - Techniques (chain-of-thought, zero/single/few-shot, templates)
+          - Benefits and best practices
+          - Risks (exposure, poisoning, hijacking, jailbreaking)
+          - Prompt versioning with Bedrock Prompt Management
+      - id: '3.3'
+        title: Describe the training and fine-tuning process for FMs
+        objectives:
+          - Pre-training, fine-tuning, continuous pre-training, distillation
+          - Fine-tuning methods (instruction tuning, domain adaptation, transfer learning)
+          - Data preparation (curation, governance, size, labeling, representativeness, RLHF)
+      - id: '3.4'
+        title: Describe methods to evaluate FM performance
+        objectives:
+          - Human-in-the-loop, benchmark datasets, Bedrock Model Evaluation
+          - ROUGE, BLEU, BERTScore, LLM-as-a-judge
+          - Business objective fit
+          - Evaluating RAG, agents and workflows
+          - Alignment metrics (task completion, satisfaction, cost per interaction)
+  - id: D4
+    name: Guidelines for Responsible AI
+    weight: 14
+    color: '#15803D'
+    tasks:
+      - id: '4.1'
+        title: Explain the development of responsible AI systems
+        objectives:
+          - Features (bias, fairness, inclusivity, robustness, safety, veracity)
+          - Tools such as Bedrock Guardrails
+          - Responsible model selection (environment, sustainability)
+          - Legal risks of GenAI
+          - Dataset characteristics
+          - Effects of bias and variance
+          - Bias detection and monitoring tools
+      - id: '4.2'
+        title: Recognize the importance of transparent and explainable models
+        objectives:
+          - Transparent vs non-transparent models
+          - Tools (SageMaker Model Cards, Bedrock Model Evaluations, open source, licensing)
+          - Safety vs transparency trade-offs
+          - Human-centered design for explainable AI
+  - id: D5
+    name: Security, Compliance, and Governance for AI Solutions
+    weight: 14
+    color: '#DC2626'
+    tasks:
+      - id: '5.1'
+        title: Explain methods to secure AI systems
+        objectives:
+          - IAM, encryption, Macie, PrivateLink, shared responsibility, AgentCore Identity, Policy in AgentCore, Guardrails
+          - Source citation and data origins (lineage, cataloging, Model Cards)
+          - Secure data engineering
+          - Security and privacy considerations (prompt injection, leakage, output filtering, audit logging, toxicity)
+          - Hallucination detection and grounding
+      - id: '5.2'
+        title: Recognize governance and compliance regulations for AI systems
+        objectives:
+          - Config, Inspector, Artifact, CloudTrail, Trusted Advisor
+          - Data governance (lifecycle, logging, residency, monitoring, retention)
+          - Governance processes (policies, review cadence, Generative AI Security Scoping Matrix, training)
+inScopeServices:
+  - AWS Data Exchange
+  - Amazon EMR
+  - AWS Glue
+  - AWS Glue DataBrew
+  - AWS Lake Formation
+  - Amazon OpenSearch Service
+  - Amazon Quick
+  - Amazon Redshift
+  - AWS Budgets
+  - AWS Cost Explorer
+  - Amazon EC2
+  - AWS Lambda
+  - Amazon ECS
+  - Amazon EKS
+  - Amazon Aurora
+  - Amazon DocumentDB
+  - Amazon DynamoDB
+  - Amazon ElastiCache
+  - Amazon Neptune
+  - Amazon RDS
+  - Kiro
+  - Strands Agents
+  - Amazon Bedrock
+  - Amazon Bedrock AgentCore
+  - Amazon Comprehend
+  - Amazon Lex
+  - Amazon Nova
+  - Amazon Personalize
+  - Amazon Polly
+  - Amazon Rekognition
+  - Amazon SageMaker AI
+  - Amazon SageMaker JumpStart
+  - Amazon Textract
+  - Amazon Transcribe
+  - Amazon Translate
+  - AWS Transform
+  - AWS CloudTrail
+  - Amazon CloudWatch
+  - AWS Config
+  - AWS Trusted Advisor
+  - AWS Well-Architected Tool
+  - Amazon CloudFront
+  - Amazon VPC
+  - AWS Artifact
+  - AWS Identity and Access Management
+  - Amazon Inspector
+  - AWS Key Management Service
+  - Amazon Macie
+  - AWS Secrets Manager
+  - Amazon S3
+  - Amazon S3 Glacier
+outOfScopeServices:
+  - AWS WAF
+  - Amazon GuardDuty
+  - AWS Security Hub
+  - AWS Shield
+  - Amazon Cognito
+  - Amazon Detective
+  - AWS Control Tower
+  - AWS HealthImaging
+  - AWS HealthOmics
+  - AWS Certificate Manager
+  - AWS CloudHSM
+  - AWS Firewall Manager
+  - Amazon Security Lake
+  - Amazon Route 53
+  - AWS Direct Connect
+  - AWS Backup
+# Not listed in v1.2 (neither list) — teach only as "Beyond the exam".
+notListed:
+  - AWS DeepLens
+  - Amazon Kendra
+  - Amazon Q
+  - Amazon Augmented AI
+  - AWS Audit Manager
+  - Amazon Forecast
+  - Amazon Fraud Detector
+  - PartyRock

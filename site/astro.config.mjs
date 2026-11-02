@@ -1,0 +1,32 @@
+import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
+import preact from '@astrojs/preact';
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  base: '/',
+  trailingSlash: 'ignore',
+  integrations: [mdx(), preact()],
+  preview: { host: true, port: 4321, allowedHosts: ['localhost', '.devtunnels.ms', '.app.github.dev'] },
+  experimental: {
+    // Astro hashes its own inline scripts/styles into a <meta> CSP (Constitution VII).
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        "font-src 'self'",
+        "connect-src 'self'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+      ],
+      scriptDirective: { resources: ["'self'"] },
+      styleDirective: { resources: ["'self'"] },
+    },
+  },
+  // Only localhost and VS Code forwarded-port domains may reach the dev/preview server (DNS-rebinding guard).
+  server: { host: true, port: 4321, allowedHosts: ['localhost', '.devtunnels.ms', '.app.github.dev'] },
+  vite: {
+    plugins: [tailwindcss()],
+  },
+});

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "aip-course/lesson-frontmatter",
+  "title": "Lesson frontmatter",
+  "type": "object",
+  "required": ["day", "kind", "title", "summary", "domains", "taskStatements", "objectives", "estimatedMinutes", "lastVerified"],
+  "properties": {
+    "day": { "type": "integer", "minimum": 1, "maximum": 30 },
+    "kind": { "enum": ["lesson", "review", "mock"] },
+    "title": { "type": "string", "minLength": 3 },
+    "summary": { "type": "string", "maxLength": 900 },
+    "domains": { "type": "array", "minItems": 1, "items": { "enum": ["D1", "D2", "D3", "D4", "D5"] }, "uniqueItems": true },
+    "taskStatements": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^[1-5]\\.[1-4]$" } },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["provider", "title"],
+        "properties": {
+          "provider": { "enum": ["udemy", "skillbuilder", "aws-docs"] },
+          "title": { "type": "string" },
+          "url": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "objectives": { "type": "array", "minItems": 3, "maxItems": 7, "items": { "type": "string" } },
+    "estimatedMinutes": { "type": "integer", "minimum": 30, "maximum": 120 },
+    "deepDiveMinutes": { "type": "integer", "minimum": 0 },
+    "lastVerified": { "type": "string", "format": "date" },
+    "examTraps": { "type": "array", "items": { "type": "string" } }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "lesson" } } },
+      "then": {
+        "required": ["sources", "deepDiveMinutes"],
+        "properties": { "estimatedMinutes": { "minimum": 50, "maximum": 70 }, "sources": { "minItems": 1 } }
+      }
+    }
+  ],
+  "x-required-sections-for-lesson": ["recap|orientation", "objectives", "explanation", "diagram", "examples", "realWorld", "handsOn", "examTips", "summary", "quiz", "deepDive"]
+}

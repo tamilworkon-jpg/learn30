@@ -1,0 +1,128 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const cards = [
+  { day: 3, title: 'Data types & ways machines learn', left: '35 min left', grad: 'grad-1', domain: 'D1', pct: 'w-[40%]' },
+  { day: 4, title: 'Neural networks & deep learning', left: '60 min', grad: 'grad-2', domain: 'D1', pct: 'w-[0%]' },
+  { day: 5, title: 'Use cases & AWS managed AI services', left: '60 min', grad: 'grad-3', domain: 'D1', pct: 'w-[0%]' },
+];
+const week = [
+  { d: 1, t: 'Orientation', s: 'done' },
+  { d: 2, t: 'ML vocabulary', s: 'done' },
+  { d: 3, t: 'Data & learning', s: 'now' },
+  { d: 4, t: 'Neural nets', s: '' },
+  { d: 5, t: 'Use cases', s: '' },
+  { d: 6, t: 'ML lifecycle', s: '' },
+  { d: 7, t: 'Week 1 review', s: '' },
+];
+---
+
+<BaseLayout title="Design · Dashboard" active="home">
+  <div class="dash">
+    <section>
+      <h1 class="h1">Welcome back 👋</h1>
+      <p class="muted mt-0">Day 3 of 30 · Week 1 — AI &amp; ML foundations</p>
+
+      <h2 class="h2 mt-6">Continue where you left off</h2>
+      <div class="grid-cards">
+        {
+          cards.map((c) => (
+            <a class={`course-card ${c.grad}`} href={`/day/${String(c.day).padStart(2, '0')}`}>
+              <div class="flex items-center justify-between">
+                <span class="chip chip-D1">Day {c.day}</span>
+                <span class="pill pill-accent">⏱ {c.left}</span>
+              </div>
+              <div>
+                <div class="title">{c.title}</div>
+                <div class="progress mt-3 bg-white/30">
+                  <span class={c.pct} />
+                </div>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="flex items-center justify-between mt-8">
+        <h2 class="h2 m-0">This week</h2>
+        <a class="icon-btn" href="/outline" aria-label="Open course outline">→</a>
+      </div>
+      <div class="week-row mt-3">
+        {
+          week.map((w) => (
+            <a class={`week-tile ${w.s}`} href={`/day/${String(w.d).padStart(2, '0')}`}>
+              <span class="num-icon">{w.d}</span>
+              <span class="text-sm font-medium">{w.t}</span>
+              <span class="pill pill-accent text-[11px]">{w.s === 'done' ? '✓ Done' : w.s === 'now' ? 'Today' : '60 min'}</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="card text-center">
+        <svg viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="7 percent complete">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="12"></circle>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" stroke-dasharray="22 314" transform="rotate(-90 60 60)"></circle>
+          <text x="60" y="66" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">7%</text>
+        </svg>
+        <p class="m-0 font-semibold">2 of 30 days complete</p>
+        <p class="muted m-0 text-sm">🔥 2-day streak</p>
+      </div>
+      <div class="card">
+        <h3 class="font-semibold m-0 mb-2">Focus areas</h3>
+        <p class="muted text-sm m-0 mb-2">From your quiz results</p>
+        <div class="flex flex-wrap gap-2"><span class="chip chip-D1">D1 · 62%</span><span class="chip chip-D4">D4 · 68%</span></div>
+      </div>
+      <div class="card">
+        <h3 class="font-semibold m-0 mb-1">Badges</h3>
+        <p class="text-2xl m-0" aria-label="2 badges">🏅 ⭐</p>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  .dash {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 28px;
+  }
+  .side {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .week-row {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(110px, 1fr));
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .week-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+    padding: 14px;
+    border-radius: 18px;
+    background: var(--card);
+    color: var(--text);
+    text-decoration: none;
+    border: 2px solid transparent;
+  }
+  .week-tile.now {
+    border-color: var(--accent);
+  }
+  .week-tile.done .num-icon {
+    background: var(--d4);
+    color: #fff;
+  }
+  @media (max-width: 1100px) {
+    .dash {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

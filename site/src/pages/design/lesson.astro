@@ -1,0 +1,98 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Callout from '../../components/lesson/Callout.astro';
+import Diagram from '../../components/lesson/Diagram.astro';
+
+const sections = [
+  ['Recap of Day 1', 5],
+  ['Objectives', 2],
+  ['Explanation', 20],
+  ['Diagrams', 4],
+  ['Examples', 4],
+  ['Real world', 3],
+  ['Hands-on lab', 8],
+  ['Exam tips', 2],
+  ['Summary', 2],
+  ['Quiz · 20 questions', 20],
+];
+---
+
+<BaseLayout title="Design · Lesson" active="none">
+  <p class="muted text-sm m-0">Week 1 › Day 2</p>
+  <h1 class="h1">ML vocabulary, fit &amp; inference types</h1>
+  <div class="lesson">
+    <article>
+      <div class="hero">
+        <Diagram
+          caption="Underfitting vs good fit vs overfitting"
+          code={`flowchart LR
+  A[Training data] --> B{Model complexity}
+  B -->|too simple| C[Underfit: high bias]
+  B -->|just right| D[Good fit]
+  B -->|too complex| E[Overfit: high variance]`}
+        />
+      </div>
+      <div class="flex flex-wrap items-center gap-2 mt-4">
+        <span class="chip chip-D1">D1 · Fundamentals</span><span class="chip chip-D4">D4 · Responsible AI</span>
+        <span class="pill pill-accent">⏱ 60 min</span>
+        <span class="muted text-sm">Aligned with Skill Builder “Fundamentals of ML &amp; AI”</span>
+      </div>
+      <p class="mt-4 leading-7">
+        A model is what you get after an algorithm learns from data. Today you will learn the words the exam uses for that journey —
+        training, inference, fit, bias and variance — and the four ways AWS lets you run inference.
+      </p>
+      <Callout type="examTrap">“Batch transform” is for large offline datasets; “real-time endpoints” are for low-latency requests.</Callout>
+      <Callout type="realWorld">A bank scores every card swipe in real time, but recalculates credit limits overnight in batch.</Callout>
+    </article>
+    <aside>
+      <h2 class="h2">Today’s sections</h2>
+      <ol class="list-none p-0 m-0">
+        {
+          sections.map(([t, m], i) => (
+            <li>
+              <a class="list-row" href="#">
+                <span class="num-icon">{i + 1}</span>
+                <span class="flex-1 font-medium">{t}</span>
+                <span class="muted text-sm">{m} min</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="card mt-4 pastel-a">
+        <strong>🏗️ Architect deep dive</strong>
+        <p class="m-0 text-sm">Optional · Choosing an inference pattern · 15 min</p>
+      </div>
+      <div class="card mt-3 pastel-b">
+        <strong>✅ Mark day complete</strong>
+        <p class="m-0 text-sm">Your best quiz score: 85%</p>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  .lesson {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 32px;
+    margin-top: 16px;
+  }
+  .hero :global(.diagram) {
+    margin: 0;
+    background: linear-gradient(135deg, #efeafd, #fff1ea);
+  }
+  .pastel-a {
+    background: #efeafd;
+    color: #1f1a3a;
+  }
+  .pastel-b {
+    background: #fff1ea;
+    color: #1f1a3a;
+  }
+  @media (max-width: 1000px) {
+    .lesson {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

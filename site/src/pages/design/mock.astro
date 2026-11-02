@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const palette = Array.from({ length: 65 }, (_, i) => (i < 17 ? 'answered' : i === 17 ? 'current' : i === 9 || i === 12 ? 'flagged' : ''));
+---
+
+<BaseLayout title="Design · Mock exam" active="none">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <p class="muted text-sm m-0">Mock exam 1 · 65 questions</p>
+      <h1 class="h1 m-0">Question 18</h1>
+    </div>
+    <span class="pill timer" role="timer" aria-label="Time remaining 64 minutes 12 seconds">⏱ 64:12</span>
+  </div>
+  <div class="mock mt-4">
+    <div class="card">
+      <span class="chip chip-D3">D3 · 3.1</span>
+      <p class="font-medium text-lg">Which TWO AWS services can store vector embeddings for a RAG application? (Select TWO.)</p>
+      {
+        ['Amazon OpenSearch Service', 'Amazon Aurora PostgreSQL with pgvector', 'AWS WAF', 'Amazon Polly', 'AWS Artifact'].map((o) => (
+          <label class="flex items-center gap-3 mt-2">
+            <input type="checkbox" /> {o}
+          </label>
+        ))
+      }
+      <div class="flex gap-2 mt-4">
+        <button class="btn btn-ghost" type="button">🚩 Flag</button><button class="btn" type="button">Next →</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2 class="font-semibold m-0 mb-2 text-base">Questions</h2>
+      <div class="palette">
+        {palette.map((s, i) => <button type="button" class={`pal ${s}`}>{i + 1}</button>)}
+      </div>
+      <button class="btn mt-4 w-full justify-center" type="button">Review &amp; submit</button>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .mock {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 20px;
+  }
+  .timer {
+    background: var(--brand-purple);
+    color: #fff;
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+  .palette {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+  }
+  .pal {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 6px 0;
+    font: inherit;
+    font-size: 12px;
+  }
+  .pal.answered {
+    background: var(--brand-purple2);
+    color: #fff;
+  }
+  .pal.current {
+    outline: 3px solid var(--accent);
+  }
+  .pal.flagged {
+    background: var(--accent);
+    color: var(--accent-text);
+  }
+  @media (max-width: 900px) {
+    .mock {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

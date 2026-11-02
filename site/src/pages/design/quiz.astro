@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const options = [
+  'Use a SageMaker AI real-time endpoint',
+  'Use SageMaker AI batch transform',
+  'Use SageMaker AI asynchronous inference',
+  'Use SageMaker AI serverless inference',
+];
+---
+
+<BaseLayout title="Design · Quiz" active="none">
+  <p class="muted text-sm m-0">Day 2 · Daily quiz</p>
+  <div class="flex items-center gap-3 mt-2">
+    <h1 class="h1 m-0">Question 4 of 20</h1><span class="chip chip-D1">D1 · 1.1</span>
+  </div>
+  <div class="progress mt-3"><span class="w-[20%]"></span></div>
+  <div class="card mt-6">
+    <p class="font-medium text-lg mt-0">
+      A retailer needs predictions for 40 million product records once a night. Latency is not important. Which option is the MOST cost-effective?
+    </p>
+    <fieldset class="border-0 p-0 m-0">
+      <legend class="sr-only">Choose one answer</legend>
+      {
+        options.map((o, i) => (
+          <label class={`opt ${i === 1 ? 'opt-selected' : ''}`}>
+            <input type="radio" name="q" checked={i === 1} /> <span class="num-icon">{String.fromCharCode(65 + i)}</span> {o}
+          </label>
+        ))
+      }
+    </fieldset>
+  </div>
+  <div class="flex justify-between mt-4">
+    <button class="btn btn-ghost" type="button">← Previous</button>
+    <button class="btn" type="button">Next →</button>
+  </div>
+</BaseLayout>
+
+<style>
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    margin-top: 10px;
+    border-radius: 14px;
+    background: var(--panel);
+    border: 2px solid var(--border);
+    cursor: pointer;
+  }
+  .opt input {
+    position: absolute;
+    opacity: 0;
+  }
+  .opt-selected {
+    border-color: var(--accent);
+  }
+</style>

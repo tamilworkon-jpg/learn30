@@ -1,0 +1,21 @@
+---
+interface Props {
+  type: 'tip' | 'examTrap' | 'realWorld' | 'handsOn' | 'remember' | 'deepDive';
+  title?: string;
+}
+const labels = {
+  tip: ['💡', 'Tip'],
+  examTrap: ['⚠️', 'Exam trap'],
+  realWorld: ['🌍', 'Real world'],
+  handsOn: ['🛠️', 'Hands-on'],
+  remember: ['📌', 'Remember'],
+  deepDive: ['🏗️', 'Architect deep dive'],
+} as const;
+const { type, title } = Astro.props;
+const [icon, label] = labels[type];
+---
+
+<aside class={`callout callout-${type}`} aria-label={title ?? label}>
+  <div class="callout-title"><span aria-hidden="true">{icon}</span> {title ?? label}</div>
+  <slot />
+</aside>
