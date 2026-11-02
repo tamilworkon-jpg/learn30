@@ -1,0 +1,117 @@
+---
+// T076 — course outline: weeks → days → sections, rendered at build time; a small script adds the
+// learner's status icons from localStorage.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildPlan } from '../lib/course-plan';
+import { course, examGuide, pad } from '../lib/data';
+import '../styles/dashboard.css';
+
+const lessons = await getCollection('lessons');
+const plan = buildPlan(
+  course,
+  examGuide.domains,
+  lessons.map((l) => ({ day: l.data.day, body: l.body })),
+);
+const domainName = (id: string) => examGuide.domains.find((d) => d.id === id)?.name ?? id;
+const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as const;
+---
+
+<BaseLayout title="Course outline" active="outline">
+  <div data-outline>
+    <h1 class="h1">Course outline</h1>
+    <p class="muted mt-0">
+      {plan.days.length} days · {plan.weeks.length} weeks · about an hour a day. Jump to any day — the order is a suggestion.
+    </p>
+    <p class="outline-legend text-sm" aria-hidden="true">
+      <span><span class="status-icon" data-s="completed">✓</span> Completed</span>
+      <span><span class="status-icon" data-s="in-progress">◐</span> In progress</span>
+      <span><span class="status-icon" data-s="not-started">○</span> Not started</span>
+    </p>
+    {
+      plan.weeks.map((w) => (
+        <section class="outline-week" data-week={w.number} aria-labelledby={`week-${w.number}-h`}>
+          <h2 class="h2" id={`week-${w.number}-h`}>
+            Week {w.number} · {w.title}
+          </h2>
+          <ol class="outline-days" role="list">
+            {w.days.map((n) => {
+              const d = plan.days.find((x) => x.day === n)!;
+              return (
+                <li class="outline-day card" data-day-row={n} data-status="not-started">
+                  <div class="outline-day-head">
+                    <span class="status-icon" data-s="not-started" role="img" aria-label="Not started">
+                      ○
+                    </span>
+                    <span class="num-icon">{n}</span>
+                    <a class="outline-day-title" href={`/day/${pad(n)}`}>
+                      {d.title}
+                    </a>
+                    <span class="outline-day-meta">
+                      {d.domains.map((id) => (
+                        <span class={`chip chip-${id}`} title={domainName(id)}>
+                          {id}
+                        </span>
+                      ))}
+                      {kindLabel[d.kind] && <span class="pill pill-soft">{kindLabel[d.kind]}</span>}
+                      {d.available ? <span class="pill pill-accent">⏱ {d.minutes} min</span> : <span class="pill pill-soon">🚧 Coming soon</span>}
+                    </span>
+                  </div>
+                  {d.sections.length > 0 && (
+                    <details class="outline-secs">
+                      <summary class="text-sm">
+                        {d.sections.length} sections<span class="sr-only"> in Day {n}</span>
+                      </summary>
+                      <ol role="list">
+                        {d.sections.map((s) => (
+                          <li data-section={s.id} data-viewed="false">
+                            <span class="sec-icon" role="img" aria-label="Not viewed">
+                              ○
+                            </span>
+                            <a href={`/day/${pad(n)}#${s.id}`}>{s.title}</a>
+                            <span class="muted text-sm">{s.optional ? 'optional' : `${s.minutes} min`}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </details>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>
+
+<script>
+  import { getStore } from '../lib/progress/store';
+
+  const ICON = { completed: ['✓', 'Completed'], 'in-progress': ['◐', 'In progress'], 'not-started': ['○', 'Not started'] } as const;
+  const root = document.querySelector<HTMLElement>('[data-outline]')!;
+  const render = () => {
+    const p = getStore().get();
+    root.querySelectorAll<HTMLElement>('[data-day-row]').forEach((row) => {
+      const ds = p.days[row.dataset.dayRow!];
+      const status = ds?.status ?? 'not-started';
+      row.dataset.status = status;
+      const icon = row.querySelector<HTMLElement>('.status-icon')!;
+      icon.textContent = ICON[status][0];
+      icon.dataset.s = status;
+      icon.setAttribute('aria-label', ICON[status][1]);
+      const viewed = new Set(ds?.sectionsViewed ?? []);
+      row.querySelectorAll<HTMLElement>('[data-section]').forEach((li) => {
+        const v = status === 'completed' || viewed.has(li.dataset.section!);
+        li.dataset.viewed = String(v);
+        const si = li.querySelector<HTMLElement>('.sec-icon')!;
+        si.textContent = v ? '✓' : '○';
+        si.setAttribute('aria-label', v ? 'Viewed' : 'Not viewed');
+      });
+      if (status === 'in-progress') row.querySelector('details')?.setAttribute('open', '');
+    });
+    root.dataset.ready = 'true';
+  };
+  render();
+  getStore().subscribe(render);
+</script>
