@@ -1,0 +1,29 @@
+---
+// T183 — "Planned for <date>" on a day page, from the active learner's start date (browser calendar).
+interface Props {
+  day: number;
+}
+const { day } = Astro.props;
+---
+
+<p class="planned-date muted text-sm" data-planned-day={day} hidden></p>
+
+<script>
+  import { getStore } from '../../lib/progress/store';
+  import { formatDate, planDayOn, plannedDate } from '../../lib/schedule';
+
+  const el = document.querySelector<HTMLElement>('[data-planned-day]');
+  if (el) {
+    const start = new Date(getStore().get().startedAt);
+    const day = Number(el.dataset.plannedDay);
+    const today = planDayOn(start, new Date());
+    el.textContent = `📅 Planned for ${formatDate(plannedDate(start, day))}${today === day ? ' · today' : today > day ? '' : ` · in ${day - today} day${day - today === 1 ? '' : 's'}`}`;
+    el.hidden = false;
+  }
+</script>
+
+<style>
+  .planned-date {
+    margin: 2px 0 6px;
+  }
+</style>

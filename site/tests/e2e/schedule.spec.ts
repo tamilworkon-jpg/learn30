@@ -29,6 +29,12 @@ test.describe('schedule dates (T183) @visual', () => {
     await expect(page.locator('[data-day-row="5"] [data-plan-date]')).toHaveText(/^Today · .*Nov 6, 2026/);
     await expect(page.locator('[data-day-row="30"] [data-plan-date]')).toHaveText(/Dec 1, 2026/);
     await expect(page.locator('[data-today]')).toHaveCount(1);
+
+    // Day pages show their planned date (lesson + review layouts).
+    await page.goto('/day/05');
+    await expect(page.locator('[data-planned-day]')).toHaveText(/Planned for .*Nov 6, 2026 · today/);
+    await page.goto('/day/07');
+    await expect(page.locator('[data-planned-day]')).toHaveText(/Planned for .*Nov 8, 2026 · in 2 days/);
   });
 
   test('SD3 changing the start date in Settings updates dashboard and outline', async ({ page }) => {

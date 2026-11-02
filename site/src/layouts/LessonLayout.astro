@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { render } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
+import PlannedDate from '../components/schedule/PlannedDate.astro';
 import Section from '../components/lesson/Section.astro';
 import Diagram from '../components/lesson/Diagram.astro';
 import Callout from '../components/lesson/Callout.astro';
@@ -36,6 +37,7 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
 <BaseLayout active="outline" title={`Day ${d.day}: ${d.title}`}>
   <p class="muted text-sm m-0">Week {week.number} · {week.title} › Day {d.day}</p>
   <h1 class="h1">{d.title}</h1>
+  <PlannedDate day={d.day} />
   <div role="status" class="skip-notice card" id="skip-notice" hidden data-day={d.day}>
     <span>👋 You haven't finished <strong>Day {d.day - 1}</strong> yet. That's okay — you can study in any order.</span>
     <button class="btn btn-ghost" type="button" id="skip-dismiss" aria-label="Dismiss notice">Dismiss</button>
