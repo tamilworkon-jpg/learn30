@@ -1,0 +1,330 @@
+- id: q-day-03-001
+  set: day-03
+  type: single
+  stem: "A company has 50,000 past emails, and each one has already been marked as spam or not spam by users. How is this dataset BEST described for machine learning?"
+  options:
+    - { id: a, text: "Unlabelled data, because email bodies are unstructured text", explanation: "Wrong: being unstructured text does not make data unlabelled; each email here carries its answer (spam or not spam)." }
+    - { id: b, text: "Labelled data, because each example includes the answer the model should learn", explanation: "Correct: labelled data has the correct answer attached to every example, which is exactly what the spam tags provide." }
+    - { id: c, text: "Time-series data, because emails arrive in time order", explanation: "Wrong: arrival order is not the signal being learned; the defining feature here is the attached spam label." }
+    - { id: d, text: "Reward data, because the spam tags act as reinforcement learning rewards", explanation: "Wrong: rewards in reinforcement learning come from an environment after an agent acts; fixed per-example tags are labels." }
+  answer: [b]
+  explanation: "Labelled data includes the answer for each example (spam / not spam, sale price, fracture / no fracture). Unlabelled data has no answer attached. Labels are what make supervised learning possible."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: easy
+
+- id: q-day-03-002
+  set: day-03
+  type: single
+  stem: "Which data source is an example of unstructured data?"
+  options:
+    - { id: a, text: "A customer table in Amazon RDS with a fixed set of columns", explanation: "Wrong: a database table with a fixed schema of rows and columns is structured data." }
+    - { id: b, text: "Hourly temperature readings stored as timestamp and value columns", explanation: "Wrong: time-series values stored in rows and columns are structured data." }
+    - { id: c, text: "JSON log files with key-value fields", explanation: "Wrong: JSON and log files have some organisation without a rigid schema, so they are semi-structured." }
+    - { id: d, text: "Recorded customer service phone calls", explanation: "Correct: audio recordings have no predefined data model, so they are unstructured data." }
+  answer: [d]
+  explanation: "Structured data fits rows and columns with a fixed schema; semi-structured data (JSON, logs, XML) has some organisation but no rigid schema; unstructured data such as free text, images, audio and video has no predefined model."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: easy
+
+- id: q-day-03-003
+  set: day-03
+  type: single
+  stem: "A food delivery company has historical orders that record the actual delivery time in minutes. It wants to estimate the delivery time for each new order. Which ML approach is MOST appropriate?"
+  options:
+    - { id: a, text: "Supervised regression", explanation: "Correct: the past orders are labelled with the actual time, and the output is a continuous number, so this is regression." }
+    - { id: b, text: "Supervised classification", explanation: "Wrong: classification predicts a category, but the required output is a number of minutes." }
+    - { id: c, text: "Unsupervised clustering", explanation: "Wrong: clustering groups unlabelled items; here labels exist and a specific number must be predicted." }
+    - { id: d, text: "Reinforcement learning", explanation: "Wrong: there is no agent acting in an environment for rewards; this is prediction from labelled history." }
+  answer: [a]
+  explanation: "Labels present plus a numeric output means supervised regression. If the target were a category (for example late / on time), it would be classification instead."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-03#examples
+  difficulty: easy
+
+- id: q-day-03-004
+  set: day-03
+  type: multi
+  stem: "Which of the following are unsupervised learning techniques? (Select TWO.)"
+  options:
+    - { id: a, text: "Logistic regression", explanation: "Wrong: logistic regression is a supervised classification algorithm that needs labelled examples." }
+    - { id: b, text: "K-means clustering", explanation: "Correct: k-means groups unlabelled items into k clusters, a classic unsupervised technique." }
+    - { id: c, text: "Linear regression", explanation: "Wrong: linear regression is supervised; it learns to predict a known numeric label." }
+    - { id: d, text: "Principal component analysis (PCA)", explanation: "Correct: PCA is unsupervised dimensionality reduction that compresses many features without using labels." }
+    - { id: e, text: "Reinforcement learning from human feedback (RLHF)", explanation: "Wrong: RLHF is a reinforcement learning technique that uses human ratings as a reward signal, not an unsupervised method." }
+  answer: [b, d]
+  explanation: "Unsupervised learning works on unlabelled data to find hidden structure: clustering (k-means), dimensionality reduction (PCA), anomaly detection and association rules. Linear and logistic regression are supervised; RLHF is reinforcement learning."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: medium
+
+- id: q-day-03-005
+  set: day-03
+  type: single
+  stem: "A data scientist proposes using logistic regression to predict whether a loan applicant will default (yes or no). Which type of ML task is this?"
+  options:
+    - { id: a, text: "Regression, because the algorithm name contains the word regression", explanation: "Wrong: the task type is decided by the output, not the algorithm's name; logistic regression predicts categories." }
+    - { id: b, text: "Clustering, because applicants are split into two groups", explanation: "Wrong: clustering discovers groups in unlabelled data; here the yes/no outcome is known for past applicants." }
+    - { id: c, text: "Binary classification, because the output is one of two categories", explanation: "Correct: predicting default yes or no is a two-class category output, and logistic regression is a classification algorithm." }
+    - { id: d, text: "Dimensionality reduction, because many applicant features are reduced to one output", explanation: "Wrong: dimensionality reduction compresses features into fewer features; it does not predict an outcome." }
+  answer: [c]
+  explanation: "Despite its name, logistic regression is a classification algorithm that usually predicts yes/no. Always decide classification versus regression by the output: category means classification, number means regression."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#exam-tips
+  difficulty: medium
+
+- id: q-day-03-006
+  set: day-03
+  type: single
+  stem: "A research team has a dataset with 400 highly correlated sensor measurements per record. Training is slow and the team wants to compress these into a small number of features while keeping most of the information. Which technique should it use?"
+  options:
+    - { id: a, text: "K-means clustering", explanation: "Wrong: k-means groups records into clusters; it does not reduce the number of features per record." }
+    - { id: b, text: "Principal component analysis (PCA)", explanation: "Correct: PCA is dimensionality reduction, compressing many correlated features into fewer while keeping most information." }
+    - { id: c, text: "Logistic regression", explanation: "Wrong: logistic regression is a supervised classifier and does not compress features." }
+    - { id: d, text: "Random Cut Forest", explanation: "Wrong: Random Cut Forest is an anomaly detection algorithm for finding unusual records." }
+  answer: [b]
+  explanation: "Dimensionality reduction, best known through PCA, compresses many features into fewer while keeping most of the information. It speeds up training, removes noise and redundancy, and helps visualise high-dimensional data."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-03#explanation
+  difficulty: medium
+
+- id: q-day-03-007
+  set: day-03
+  type: single
+  stem: "A foundation model provider asks people to rate the model's responses and uses those ratings as the reward signal that teaches the model to be more helpful and less harmful. What is this technique called?"
+  options:
+    - { id: a, text: "Self-supervised pre-training", explanation: "Wrong: self-supervised pre-training creates labels from the data itself (such as the next word) with no human ratings." }
+    - { id: b, text: "Semi-supervised learning", explanation: "Wrong: semi-supervised learning combines a small labelled set with a large unlabelled set; it does not use ratings as rewards." }
+    - { id: c, text: "Reinforcement learning from human feedback (RLHF)", explanation: "Correct: in RLHF, human ratings of model answers become the reward signal used to align a foundation model." }
+    - { id: d, text: "Active learning with Amazon SageMaker Ground Truth", explanation: "Wrong: Ground Truth active learning speeds up data labelling; it does not turn ratings into a reward for a model." }
+  answer: [c]
+  explanation: "RLHF applies reinforcement learning to foundation models: people rate responses, the ratings act as the reward, and the model learns a policy that produces more helpful and less harmful answers."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: medium
+
+- id: q-day-03-008
+  set: day-03
+  type: single
+  stem: "A language model is pre-trained on billions of unlabelled sentences by hiding the next word and learning to predict it. No humans labelled any of the data. Which learning type describes this pre-training?"
+  options:
+    - { id: a, text: "Semi-supervised learning", explanation: "Wrong: semi-supervised learning starts from a small human-labelled set; here no human labels exist at all." }
+    - { id: b, text: "Reinforcement learning", explanation: "Wrong: there is no agent receiving rewards from an environment; the model predicts hidden words." }
+    - { id: c, text: "Supervised classification with human-labelled sentences", explanation: "Wrong: the scenario states no humans labelled the data." }
+    - { id: d, text: "Self-supervised learning", explanation: "Correct: the model creates its own labels from the data's structure (the hidden next word), which is self-supervised learning." }
+  answer: [d]
+  explanation: "Self-supervised learning generates labels from the data itself, such as predicting a hidden word or a masked part of an image. It needs no human labelling, which is why foundation models can pre-train on trillions of words."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: easy
+
+- id: q-day-03-009
+  set: day-03
+  type: matching
+  stem: "Match each business problem to the MOST appropriate learning approach."
+  options:
+    - { id: a, text: "Predict whether a subscriber will cancel next month, using past subscribers labelled stayed or left", explanation: "Labelled examples with a category output (cancel / stay) make this supervised classification." }
+    - { id: b, text: "Estimate the sale price of a house from records of past sales and their prices", explanation: "Labelled examples with a continuous numeric output make this regression." }
+    - { id: c, text: "Group news articles into topics when no topic labels exist", explanation: "No labels and the goal of discovering natural groups points to clustering." }
+    - { id: d, text: "Train a delivery drone controller in a simulator that scores each flight", explanation: "Learning by acting and receiving a score (reward) is reinforcement learning." }
+    - { id: e, text: "Find products that customers frequently buy together", explanation: "Finding items that co-occur, as in market-basket analysis, is association rule learning." }
+  matchTargets:
+    - { id: t1, text: "Supervised regression" }
+    - { id: t2, text: "Association rule learning" }
+    - { id: t3, text: "Supervised classification" }
+    - { id: t4, text: "Reinforcement learning" }
+    - { id: t5, text: "Unsupervised clustering" }
+  answer: { a: t3, b: t1, c: t5, d: t4, e: t2 }
+  explanation: "Ask the decision questions: labels plus a category means classification; labels plus a number means regression; no labels and finding groups means clustering; learning by acting for reward means reinforcement learning; items that occur together means association rules."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-03#examples
+  difficulty: medium
+
+- id: q-day-03-010
+  set: day-03
+  type: single
+  stem: "A bank's fraud classifier reports 99.6% accuracy on test data. Only 0.4% of transactions in the data are fraudulent. What should the team conclude?"
+  options:
+    - { id: a, text: "Accuracy is misleading because of class imbalance, so the team should check precision and recall", explanation: "Correct: a model that never predicts fraud would also score 99.6%, so precision and recall reveal whether real frauds are caught." }
+    - { id: b, text: "The model is ready for production because accuracy is above 99%", explanation: "Wrong: with 0.4% fraud, high accuracy can hide a model that misses nearly every fraud." }
+    - { id: c, text: "The fraud examples are outliers and should be removed from the training data", explanation: "Wrong: in fraud detection the rare cases are exactly what the model must find; removing them makes the model useless." }
+    - { id: d, text: "The team should replace the classifier with k-means clustering because accuracy is too high", explanation: "Wrong: high accuracy is not a reason to switch to unsupervised learning; the issue is the evaluation metric and imbalance." }
+  answer: [a]
+  explanation: "With class imbalance, accuracy is a trap: always predicting the majority class scores highly yet is useless. Judge the model with precision and recall, and consider rebalancing (oversampling, undersampling, synthetic examples)."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-03#examples
+  difficulty: hard
+
+- id: q-day-03-011
+  set: day-03
+  type: single
+  stem: "A business analyst with no coding experience has a spreadsheet of past customers that includes a churned column (Yes or No). The analyst needs to build a churn prediction model. Which AWS service is MOST suitable?"
+  options:
+    - { id: a, text: "Amazon SageMaker Ground Truth", explanation: "Wrong: Ground Truth manages human data labelling; the data is already labelled and a model is needed." }
+    - { id: b, text: "Amazon Personalize", explanation: "Wrong: Personalize is a managed recommendation service, not a tool for building churn classifiers." }
+    - { id: c, text: "Amazon SageMaker Canvas", explanation: "Correct: SageMaker Canvas provides no-code ML for business users and detects that a Yes/No target means binary classification." }
+    - { id: d, text: "Amazon Comprehend", explanation: "Wrong: Comprehend analyses text (sentiment, entities); it does not build predictive models from tabular customer data." }
+  answer: [c]
+  explanation: "SageMaker Canvas is no-code ML for analysts. The target column decides the task: a category target such as churned (Yes/No) gives classification, and a numeric target gives regression."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-03#hands-on
+  difficulty: easy
+
+- id: q-day-03-012
+  set: day-03
+  type: single
+  stem: "A medical imaging startup has 500,000 unlabelled X-rays. It needs radiologists to annotate them, and it wants obvious images labelled automatically so that experts review only the uncertain ones. Which AWS service should it use?"
+  options:
+    - { id: a, text: "Amazon SageMaker Canvas", explanation: "Wrong: Canvas builds no-code models from prepared data; it does not manage human labelling workforces." }
+    - { id: b, text: "Amazon SageMaker Ground Truth", explanation: "Correct: Ground Truth manages human labelling workforces and uses active learning to label easy examples automatically." }
+    - { id: c, text: "Amazon SageMaker Clarify", explanation: "Wrong: Clarify reports bias metrics such as class imbalance; it does not label data." }
+    - { id: d, text: "AWS Glue DataBrew", explanation: "Wrong: DataBrew provides visual data cleaning and preparation, not expert image annotation." }
+  answer: [b]
+  explanation: "Labelling is often the slowest, most expensive step. SageMaker Ground Truth manages your own team, vendors or a public crowd and uses active learning so humans focus on the hard examples."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-03#real-world
+  difficulty: medium
+
+- id: q-day-03-013
+  set: day-03
+  type: multi
+  stem: "Which business problems are BEST solved with supervised classification? (Select TWO.)"
+  options:
+    - { id: a, text: "Route new support tickets to the right team using historical tickets tagged by category", explanation: "Correct: tickets are labelled with categories and the output is a category, so this is multi-class classification." }
+    - { id: b, text: "Forecast next quarter's revenue in dollars from past quarterly figures", explanation: "Wrong: the output is a continuous number, so this is regression." }
+    - { id: c, text: "Predict whether a patient will be readmitted within 30 days using labelled past hospital stays", explanation: "Correct: labelled history with a yes/no output is binary classification." }
+    - { id: d, text: "Discover natural groupings of stores by sales pattern when no labels exist", explanation: "Wrong: finding groups without labels is unsupervised clustering." }
+    - { id: e, text: "Compress 500 genetic markers into 10 summary features", explanation: "Wrong: reducing the number of features is dimensionality reduction such as PCA." }
+  answer: [a, c]
+  explanation: "Classification needs labelled examples and predicts a category, whether binary (readmitted or not) or multi-class (which team). Numeric outputs are regression; grouping or compressing unlabelled data is unsupervised."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-03#examples
+  difficulty: medium
+
+- id: q-day-03-014
+  set: day-03
+  type: single
+  stem: "A support team has hand-labelled 1,500 tickets and also has 150,000 unlabelled tickets. It trains a model on the labelled set, uses it to label the rest, keeps the confident labels and retrains. Which learning approach is this?"
+  options:
+    - { id: a, text: "Self-supervised learning", explanation: "Wrong: self-supervised learning creates labels from the data's structure with no human labels; here the team starts with human labels." }
+    - { id: b, text: "Reinforcement learning", explanation: "Wrong: no agent is acting in an environment and receiving rewards." }
+    - { id: c, text: "Unsupervised clustering", explanation: "Wrong: clustering uses no labels at all, but this workflow depends on a small labelled set." }
+    - { id: d, text: "Semi-supervised learning", explanation: "Correct: combining a small labelled set with a large unlabelled set is semi-supervised learning." }
+  answer: [d]
+  explanation: "Semi-supervised learning stretches a small amount of labelled data over a large amount of unlabelled data, typically by pseudo-labelling the unlabelled examples and retraining on the confident ones."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-03#explanation
+  difficulty: medium
+
+- id: q-day-03-015
+  set: day-03
+  type: single
+  stem: "A telecom company has five years of labelled tabular customer records and wants a churn prediction model that is low cost per prediction, fast and easy to explain. Which approach is MOST appropriate?"
+  options:
+    - { id: a, text: "Train a gradient-boosted tree model such as XGBoost with Amazon SageMaker AI", explanation: "Correct: for labelled tabular data, a gradient-boosted tree is usually cheaper, faster and easier to explain than a large language model." }
+    - { id: b, text: "Prompt a large foundation model on Amazon Bedrock with each customer record", explanation: "Wrong: a foundation model costs more per prediction and is harder to explain; it suits generative tasks or scarce labelled data." }
+    - { id: c, text: "Run k-means clustering on the customer records", explanation: "Wrong: clustering finds groups but does not predict a known churn label." }
+    - { id: d, text: "Train a reinforcement learning agent in a simulator", explanation: "Wrong: churn prediction from labelled history is not a sequential decision problem with rewards." }
+  answer: [a]
+  explanation: "Pick traditional supervised ML when there are plenty of labels and a tabular prediction task. XGBoost is a frequent winner on tabular data; foundation models are better when the task is generative or labelled data is scarce."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-03#explanation
+  difficulty: hard
+
+- id: q-day-03-016
+  set: day-03
+  type: single
+  stem: "An insurer wants to find potentially fraudulent claims, but it has never recorded which past claims were fraudulent. Which approach is the MOST practical starting point?"
+  options:
+    - { id: a, text: "Supervised binary classification trained on past claims labelled fraud or not fraud", explanation: "Wrong: there are no fraud labels, so a supervised classifier cannot be trained yet." }
+    - { id: b, text: "Supervised regression to predict the cost of each claim", explanation: "Wrong: predicting claim cost answers a different question and does not identify fraud." }
+    - { id: c, text: "Anomaly detection to surface unusual claims for investigators", explanation: "Correct: with no labels and rare events, anomaly detection flags unusual claims, and investigators' decisions can later become labels." }
+    - { id: d, text: "Dimensionality reduction with PCA to produce a fraud score", explanation: "Wrong: PCA compresses features; it does not by itself identify which claims are suspicious." }
+  answer: [c]
+  explanation: "Without labels, supervised learning is not an option. Anomaly detection finds items that do not fit the normal pattern, which suits rare events such as fraud, and investigators' findings can build labels for a future supervised model."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-03#examples
+  difficulty: hard
+
+- id: q-day-03-017
+  set: day-03
+  type: ordering
+  stem: "Arrange the steps of one reinforcement learning cycle in the correct order."
+  options:
+    - { id: a, text: "The environment responds with a new state and a reward or penalty", explanation: "Third: after the action, the environment returns feedback in the form of a new state and a reward or penalty." }
+    - { id: b, text: "The agent selects an action using its current policy", explanation: "Second: based on what it observes, the agent uses its policy to choose an action." }
+    - { id: c, text: "The agent updates its policy to increase total future reward", explanation: "Last: the agent learns from the reward, gradually improving its policy to maximise total reward." }
+    - { id: d, text: "The agent observes the current state of the environment", explanation: "First: the agent must know the current state before it can choose an action." }
+  answer: [d, b, a, c]
+  explanation: "In reinforcement learning an agent observes the environment, takes an action according to its policy, receives a new state and a reward or penalty, and adjusts its policy. Repeating this loop teaches a strategy that maximises total reward."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#diagram
+  difficulty: medium
+
+- id: q-day-03-018
+  set: day-03
+  type: single
+  stem: "A data scientist is preparing three years of hourly electricity readings to train a demand forecasting model. Which data-handling consideration is MOST important for this type of data?"
+  options:
+    - { id: a, text: "Convert the readings into unstructured text before training", explanation: "Wrong: numeric readings in time order are structured data and should stay that way." }
+    - { id: b, text: "Preserve the time order and never let the model see future values during training", explanation: "Correct: in time-series data order matters, so it must not be randomly shuffled or leak future values into training." }
+    - { id: c, text: "Use Amazon SageMaker Ground Truth to have humans label every reading", explanation: "Wrong: the recorded demand already serves as the label, so human labelling is unnecessary." }
+    - { id: d, text: "Use PCA to remove the timestamp column", explanation: "Wrong: the timestamp defines the order that makes time-series data meaningful; dropping it loses key information." }
+  answer: [b]
+  explanation: "Time-series data is values recorded in time order, where yesterday influences today. Shuffling it randomly or letting the model peek at the future during training produces misleadingly good results."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: easy
+
+- id: q-day-03-019
+  set: day-03
+  type: multi
+  stem: "Which of the following are examples of structured data? (Select TWO.)"
+  options:
+    - { id: a, text: "Product photos uploaded by sellers", explanation: "Wrong: images have no predefined data model, so they are unstructured." }
+    - { id: b, text: "A transactions table in a relational database", explanation: "Correct: rows and columns with a fixed schema are structured (tabular) data." }
+    - { id: c, text: "Scanned PDF contracts", explanation: "Wrong: PDFs of free text are unstructured data." }
+    - { id: d, text: "Call center audio recordings", explanation: "Wrong: audio is unstructured data." }
+    - { id: e, text: "Daily sales figures stored in date and amount columns", explanation: "Correct: time-series values stored in rows and columns are structured data." }
+  answer: [b, e]
+  explanation: "Structured data fits rows and columns with a fixed schema, including tabular and time-series data. Text documents, images, audio and video are unstructured."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-03#explanation
+  difficulty: easy
+
+- id: q-day-03-020
+  set: day-03
+  type: multi
+  stem: "A retailer has a large dataset of customer records but no column describing any outcome. Which tasks can it perform on this data WITHOUT first creating labels? (Select THREE.)"
+  options:
+    - { id: a, text: "Train a binary classifier to predict which customers will churn", explanation: "Wrong: classification is supervised and needs a labelled churn outcome, which does not exist." }
+    - { id: b, text: "Segment customers into groups with k-means clustering", explanation: "Correct: clustering is unsupervised and works directly on unlabelled data." }
+    - { id: c, text: "Train a linear regression model to predict each customer's next-month spend", explanation: "Wrong: regression is supervised and requires a known numeric target for past examples." }
+    - { id: d, text: "Reduce the number of features with principal component analysis (PCA)", explanation: "Correct: PCA is unsupervised dimensionality reduction and needs no labels." }
+    - { id: e, text: "Flag unusual customer records with the Random Cut Forest algorithm", explanation: "Correct: Random Cut Forest performs unsupervised anomaly detection without labels." }
+  answer: [b, d, e]
+  explanation: "With no outcome column, supervised learning (classification, regression) is not directly possible. Unsupervised techniques such as clustering, dimensionality reduction and anomaly detection work on unlabelled data; to use supervised learning, first create labels, for example with SageMaker Ground Truth."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-03#explanation
+  difficulty: hard

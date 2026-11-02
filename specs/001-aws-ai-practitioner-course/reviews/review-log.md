@@ -37,3 +37,10 @@ One entry per task (Constitution III). Template:
 - Components: SectionNav.astro (sticky desktop, collapsible `<details>` on mobile) and DeepDive.astro extracted; HandsOnLab steps wrapped in `<figure>`/`<figcaption>`.
 - Screenshots inspected: `lesson-nav` desktop + mobile, `day-02` lab region, `day-01..03` desktop overview, `lesson-deepdive-open`, `day1-orientation`. No overlap, truncation or horizontal scroll.
 - Deviations: see T048 note in tasks.md. Exam-content review of Days 1–3 runs in T181.
+
+## Progress note — Phase 4 / US2 (T049–T062) — 2026-11-02
+
+- Tests: unit 154 passing (adds quiz-state Q-S1–Q-S3, TC-Q Q1–Q6 on day-01..03); E2E 44 passing — quiz.spec Q-E1 (mouse and keyboard-only for single/multi/ordering/matching), Q-E2 confirm on unanswered, Q-E3 results with %, correct answer, every option explanation and "Review in lesson" link, Q-E4 best score after reload, Q-E5 retake. lesson-ui + quiz ran 5× each with no flakes after two fixes: nav highlight now computed from layout (late image loads had left a stale highlight), ordering focus restored only once the moved item is in place.
+- Static: lint clean, `astro check` 0 errors, `validate:content` clean (60 questions).
+- Content: 60 questions (each day 14 single / 4 multi / 1 ordering / 1 matching; answer positions spread). Blind answer-key solve by Claude Sonnet: 60/60 agreement; one wording fix, two lessonRefs moved off the optional deep dive.
+- Screenshots inspected: `quiz-single`, `quiz-ordering`, `quiz-matching`, `quiz-results` desktop + mobile (light). Fixed on mobile: ordering text column squeezed by unbreakable words and the ↓ button touching the card edge; Next button wrapping onto its own line. Not yet captured: dark theme of the quiz (components use theme variables only) — covered by T175 visual regression.

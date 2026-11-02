@@ -45,18 +45,33 @@ const { sections } = Astro.props;
     if (narrow.matches && target.closest('a')) toggle.open = false;
   });
 
+  // Current section = the last one whose top has scrolled past 35% of the viewport.
+  // Recomputed from layout on every scroll/resize/load, so late-loading images can't leave a stale highlight.
   const links = new Map([...document.querySelectorAll<HTMLAnchorElement>('[data-nav-for]')].map((a) => [a.dataset.navFor!, a]));
-  const io = new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) {
-        if (!e.isIntersecting) continue;
-        links.forEach((a) => a.removeAttribute('aria-current'));
-        links.get(e.target.id)?.setAttribute('aria-current', 'true');
-      }
-    },
-    { rootMargin: '-30% 0px -60% 0px' },
-  );
-  document.querySelectorAll('[data-section-type]').forEach((s) => io.observe(s));
+  const sectionEls = [...document.querySelectorAll<HTMLElement>('[data-section-type]')];
+  let current = '';
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const line = window.innerHeight * 0.35;
+    let id = sectionEls[0]?.id ?? '';
+    for (const s of sectionEls) if (s.getBoundingClientRect().top <= line) id = s.id;
+    if (id === current) return;
+    links.get(current)?.removeAttribute('aria-current');
+    links.get(id)?.setAttribute('aria-current', 'true');
+    current = id;
+  };
+  const schedule = () => {
+    if (!queued) {
+      queued = true;
+      requestAnimationFrame(update);
+    }
+  };
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  window.addEventListener('load', schedule);
+  sectionEls.forEach((s) => s.addEventListener('toggle', schedule)); // deep dive open/close
+  update();
 </script>
 
 <style>

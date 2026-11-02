@@ -1,0 +1,329 @@
+- id: q-day-02-001
+  set: day-02
+  type: single
+  stem: "A data scientist is building a house-price model with XGBoost. Before training starts, the data scientist sets the number of trees and the learning rate. Which term BEST describes these settings?"
+  options:
+    - { id: a, text: "Model parameters", explanation: "Incorrect. Parameters are values the model learns by itself during training, such as the weight given to house size." }
+    - { id: b, text: "Hyperparameters", explanation: "Correct. Hyperparameters are settings chosen before training that control how learning happens, such as learning rate and number of trees." }
+    - { id: c, text: "Features", explanation: "Incorrect. Features are the input columns the model uses, such as size, bedrooms and postcode." }
+    - { id: d, text: "Labels", explanation: "Incorrect. A label is the answer the model predicts, such as the sale price." }
+  answer: [b]
+  explanation: "Parameters are learned during training; hyperparameters (learning rate, number of trees, epochs) are set by a person before training to control how learning happens. Searching for good values is called hyperparameter tuning."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: easy
+
+- id: q-day-02-002
+  set: day-02
+  type: single
+  stem: "A company has a dataset of 10,000 past house sales. Each row contains the size, number of bedrooms, postcode and the price the house sold for. The company wants a model that predicts the sale price. In ML terms, what is the sale price column?"
+  options:
+    - { id: a, text: "A feature", explanation: "Incorrect. Features are the inputs used to make the prediction, such as size and bedrooms, not the value being predicted." }
+    - { id: b, text: "A hyperparameter", explanation: "Incorrect. A hyperparameter is a training setting chosen before training, not a column in the dataset." }
+    - { id: c, text: "An algorithm", explanation: "Incorrect. An algorithm, such as linear regression, is the learning method, not part of the data." }
+    - { id: d, text: "The label (target)", explanation: "Correct. The label or target is the answer the model learns to predict; data that includes it is labelled data." }
+  answer: [d]
+  explanation: "The label (also called the target) is the value you want to predict. The other columns used as inputs are features. Because the dataset contains the answer for each row, it is labelled data."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: easy
+
+- id: q-day-02-003
+  set: day-02
+  type: multi
+  stem: "A model scores 98% accuracy on its training data but only 64% on the validation data. Which actions will MOST likely improve its performance on new data? (Select TWO.)"
+  options:
+    - { id: a, text: "Collect more, and more varied, training data", explanation: "Correct. More varied data is the most reliable cure for overfitting because random noise averages out and only the real pattern remains." }
+    - { id: b, text: "Apply regularisation or early stopping", explanation: "Correct. Regularisation penalises complexity and early stopping halts training before the model memorises the training data, both of which reduce overfitting." }
+    - { id: c, text: "Switch to a more complex model with more layers", explanation: "Incorrect. A more complex model increases variance and would make the overfitting worse." }
+    - { id: d, text: "Train for many more epochs on the same data", explanation: "Incorrect. Training for too long is a cause of overfitting, so more epochs would deepen the memorisation." }
+    - { id: e, text: "Reduce regularisation to let the model fit the training data more closely", explanation: "Incorrect. Reducing regularisation is a fix for underfitting; here it would increase overfitting." }
+  answer: [a, b]
+  explanation: "High training accuracy with much lower validation accuracy indicates overfitting (high variance). Typical fixes are more and more varied data, a simpler model, regularisation, early stopping, data augmentation and removing noisy features. More complexity, longer training and less regularisation are underfitting fixes."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-day-02-004
+  set: day-02
+  type: single
+  stem: "A team tries 50 hyperparameter combinations and selects the combination that gives the best score on the test set. They report that score as the expected production accuracy. What is the MAIN problem with this approach?"
+  options:
+    - { id: a, text: "The test set was used for tuning, so the reported score is optimistic; tuning should use the validation set", explanation: "Correct. Once the test set influences model choices it no longer gives an honest estimate; the validation set is for tuning and the test set is used once at the end." }
+    - { id: b, text: "Hyperparameters should be learned automatically during training, not tried in combinations", explanation: "Incorrect. Hyperparameters are set before training; trying combinations is normal hyperparameter tuning. Parameters are the values learned automatically." }
+    - { id: c, text: "The team should have tuned on the training set because it is the largest", explanation: "Incorrect. Scores on the training set do not show how the model generalises; tuning belongs on the validation set." }
+    - { id: d, text: "Trying 50 combinations always causes underfitting", explanation: "Incorrect. The number of combinations tried does not cause underfitting; the issue is which dataset was used to choose among them." }
+  answer: [a]
+  explanation: "Training data is for learning, validation data is for comparing models and choosing hyperparameters, and the test set is kept locked away and used once for an honest final estimate. Tuning on the test set leaks information and makes the final score look better than real-world performance."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#examples
+  difficulty: medium
+
+- id: q-day-02-005
+  set: day-02
+  type: single
+  stem: "A classification model achieves 99% accuracy on the training data and 62% accuracy on the test data. Which description BEST fits this model?"
+  options:
+    - { id: a, text: "Underfitting with high bias", explanation: "Incorrect. An underfit model performs poorly on both training and test data, but this model is excellent on training data." }
+    - { id: b, text: "Good fit with low total error", explanation: "Incorrect. A good fit performs well on training data and almost as well on new data; a 37-point gap is not a good fit." }
+    - { id: c, text: "Overfitting with high variance", explanation: "Correct. Excellent training performance with poor performance on unseen data means the model memorised the training data and fails to generalise." }
+    - { id: d, text: "Data drift in production", explanation: "Incorrect. Drift is a decline over time in production as the world changes; this gap appears immediately between training and test data." }
+  answer: [c]
+  explanation: "Compare the training score with the validation or test score. Training high but test much lower indicates overfitting, which corresponds to high variance. Both low would indicate underfitting (high bias)."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#examples
+  difficulty: easy
+
+- id: q-day-02-006
+  set: day-02
+  type: single
+  stem: "A model scores 58% accuracy on training data and 57% on test data. A team member proposes collecting twice as much data of the same kind. Which action would MOST likely improve the model instead?"
+  options:
+    - { id: a, text: "Add regularisation to penalise model complexity", explanation: "Incorrect. Regularisation is a fix for overfitting; adding it to an underfit model makes it even simpler." }
+    - { id: b, text: "Apply early stopping to end training sooner", explanation: "Incorrect. Early stopping prevents overfitting; an underfit model needs more training, not less." }
+    - { id: c, text: "Remove features to simplify the model", explanation: "Incorrect. Removing features reduces the information available; underfitting usually needs more informative features." }
+    - { id: d, text: "Use a more expressive model and add more informative features", explanation: "Correct. Poor scores on both sets indicate underfitting (high bias), which is fixed with a richer model, better features or longer training." }
+  answer: [d]
+  explanation: "Low training and test scores mean underfitting (high bias): the model is too simple to capture the pattern. More data rarely fixes underfitting on its own because a too-simple model stays too simple. Use a more expressive model, add informative features, train longer or reduce regularisation."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#summary
+  difficulty: medium
+
+- id: q-day-02-007
+  set: day-02
+  type: matching
+  stem: "Match each workload to the Amazon SageMaker AI inference option that fits it BEST."
+  options:
+    - { id: a, text: "Score 40 million products every Sunday night and write the results to Amazon S3", explanation: "Batch transform fits because it is a large offline job with no one waiting and no endpoint needs to stay running." }
+    - { id: b, text: "Approve or decline a card payment while the customer waits at checkout", explanation: "Real-time inference fits because the customer is waiting and the answer is needed within milliseconds." }
+    - { id: c, text: "Analyse 45-minute call recordings uploaded during the day, with results needed later", explanation: "Asynchronous inference fits because the payloads are large and processing is long, so a queue with results written to S3 works well." }
+    - { id: d, text: "An internal tool used a few times per hour with unpredictable spikes", explanation: "Serverless inference fits because traffic is intermittent, there are no servers to manage and there is no idle cost." }
+  matchTargets:
+    - { id: t1, text: "Real-time inference" }
+    - { id: t2, text: "Serverless inference" }
+    - { id: t3, text: "Asynchronous inference" }
+    - { id: t4, text: "Batch transform" }
+  answer: { a: t4, b: t1, c: t3, d: t2 }
+  explanation: "Real-time inference serves waiting users with low latency from a persistent endpoint. Batch transform processes large datasets offline. Asynchronous inference queues large payloads (up to 1 GB) or long jobs (up to about an hour) and writes results to S3. Serverless inference suits intermittent or unpredictable traffic and bills only while requests are processed."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#examples
+  difficulty: medium
+
+- id: q-day-02-008
+  set: day-02
+  type: single
+  stem: "A hiring model is 92% accurate overall but only 70% accurate for applicants over 50. Applicants over 50 were rare in the training data. Which action should the company take FIRST to address this responsible-AI concern?"
+  options:
+    - { id: a, text: "Report the 92% overall accuracy because it reflects average performance", explanation: "Incorrect. A good average can hide poor performance for a subgroup, which is exactly the fairness problem here." }
+    - { id: b, text: "Perform subgroup analysis and collect more representative data for under-represented groups", explanation: "Correct. Evaluating performance per subgroup and making training data representative and balanced addresses bias against a demographic group." }
+    - { id: c, text: "Move the model to a real-time endpoint to reduce latency", explanation: "Incorrect. The inference option affects latency and cost, not fairness across demographic groups." }
+    - { id: d, text: "Increase the learning rate hyperparameter so the model trains faster", explanation: "Incorrect. Training speed does not fix under-representation of a group in the training data." }
+  answer: [b]
+  explanation: "In responsible AI, bias means a model systematically disadvantages certain people, often because they are under-represented in the data. A model can have good average accuracy while performing badly for a subgroup, so evaluate per subgroup and make training data representative and balanced."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-02#examples
+  difficulty: medium
+
+- id: q-day-02-009
+  set: day-02
+  type: single
+  stem: "A data scientist plots error against training epochs. Training error keeps falling throughout, but validation error falls until epoch 30 and then rises steadily. Which approach would MOST likely produce the best model for new data?"
+  options:
+    - { id: a, text: "Use early stopping to stop training at around epoch 30", explanation: "Correct. After epoch 30 the model starts to overfit; early stopping halts training when the validation score stops improving." }
+    - { id: b, text: "Continue training until training error reaches zero", explanation: "Incorrect. Lower training error after epoch 30 comes from memorising the training data, which makes validation performance worse." }
+    - { id: c, text: "Use a more complex model so validation error keeps falling", explanation: "Incorrect. A more complex model raises variance and would make the overfitting worse, not better." }
+    - { id: d, text: "Evaluate on the test set after every epoch and pick the best epoch", explanation: "Incorrect. Using the test set during development leaks information and makes the final score optimistic; the test set is used once at the end." }
+  answer: [a]
+  explanation: "Rising validation error while training error keeps falling is the classic sign of overfitting. Early stopping watches the validation score and stops training as soon as it stops improving, before the model memorises noise."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#examples
+  difficulty: hard
+
+- id: q-day-02-010
+  set: day-02
+  type: single
+  stem: "A retail bank needs a fraud model to return a risk score for every card swipe in under 100 milliseconds, with steady traffic all day. Which inference option is MOST appropriate?"
+  options:
+    - { id: a, text: "Batch transform", explanation: "Incorrect. Batch transform processes large datasets offline and writes results to S3; it cannot answer an individual swipe in milliseconds." }
+    - { id: b, text: "Asynchronous inference", explanation: "Incorrect. Asynchronous inference queues requests for large payloads or long processing and delivers results later, which is too slow for a waiting customer." }
+    - { id: c, text: "Real-time inference", explanation: "Correct. A persistent real-time endpoint answers individual requests within milliseconds while a user or system waits." }
+    - { id: d, text: "Serverless inference", explanation: "Incorrect. Serverless suits intermittent traffic and can add cold-start latency; steady traffic with strict latency targets fits a real-time endpoint." }
+  answer: [c]
+  explanation: "Real-time inference uses a persistent endpoint to return predictions within milliseconds, which suits low-latency, interactive use cases such as fraud checks at checkout. You pay for the endpoint while it runs."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#real-world
+  difficulty: easy
+
+- id: q-day-02-011
+  set: day-02
+  type: multi
+  stem: "A loan-approval model was trained mostly on applicants from one region and age group. The company is concerned that the model may be less accurate for other demographic groups. Which actions will help detect or reduce this bias? (Select TWO.)"
+  options:
+    - { id: a, text: "Evaluate model performance separately for each demographic subgroup", explanation: "Correct. Subgroup analysis reveals groups for which the model performs badly even when the average accuracy looks good." }
+    - { id: b, text: "Make the training data representative and balanced across regions and age groups", explanation: "Correct. Bias often comes from unrepresentative data, so representative and balanced data reduces unfair performance gaps." }
+    - { id: c, text: "Rely on the overall accuracy score because it averages all groups", explanation: "Incorrect. A model can have a good average accuracy while performing badly for a subgroup." }
+    - { id: d, text: "Switch from batch inference to real-time inference", explanation: "Incorrect. The inference option changes latency and cost, not how fairly the model treats different groups." }
+    - { id: e, text: "Train for more epochs on the existing dataset", explanation: "Incorrect. Training longer on unrepresentative data can amplify its quirks rather than fix under-representation." }
+  answer: [a, b]
+  explanation: "Responsible-AI bias often comes from data that under-represents certain groups, causing the model to be less accurate for them. Detect it with subgroup analysis and reduce it with representative, balanced training data. Amazon SageMaker Clarify can measure this kind of bias."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-day-02-012
+  set: day-02
+  type: single
+  stem: "Users of a media application upload 500 MB video files for analysis by a model hosted on Amazon SageMaker AI. Processing takes several minutes, and users are happy to be notified when results are ready. Which inference option should a solutions architect choose?"
+  options:
+    - { id: a, text: "Real-time inference", explanation: "Incorrect. Real-time endpoints are for quick responses to waiting users, not large payloads that take minutes to process." }
+    - { id: b, text: "Asynchronous inference", explanation: "Correct. Asynchronous inference queues requests with large payloads (up to 1 GB) and long processing times, writes results to S3 and can send a notification." }
+    - { id: c, text: "Batch transform", explanation: "Incorrect. Batch transform processes a large dataset in one scheduled offline job, not individual uploads arriving throughout the day." }
+    - { id: d, text: "Serverless inference", explanation: "Incorrect. Serverless inference targets intermittent traffic of ordinary requests, not very large payloads with long processing times." }
+  answer: [b]
+  explanation: "Asynchronous inference places requests in a queue and processes them in the background, writing results to Amazon S3 and optionally notifying the caller. It is designed for large payloads (up to 1 GB) or long processing (up to about an hour) and can scale to zero when idle."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#hands-on
+  difficulty: medium
+
+- id: q-day-02-013
+  set: day-02
+  type: single
+  stem: "A startup's image-tagging feature receives about 300 small requests a day, mostly during office hours. Users accept a one- or two-second wait for each response. The startup wants to minimise cost and avoid managing instances. Which inference option is MOST cost-effective?"
+  options:
+    - { id: a, text: "A real-time endpoint on a GPU instance", explanation: "Incorrect. A real-time endpoint is billed while it runs, so it would sit idle and still cost money for most of the day." }
+    - { id: b, text: "Asynchronous inference, because it can scale to zero", explanation: "Incorrect. Although it can scale to zero, asynchronous inference is designed for large payloads or long processing with results delivered to S3, not small interactive requests." }
+    - { id: c, text: "A nightly batch transform job", explanation: "Incorrect. Batch transform delivers results hours later in one offline run, but users are waiting a second or two for each tag." }
+    - { id: d, text: "Serverless inference", explanation: "Correct. Serverless inference bills only while requests are processed, scales automatically and suits intermittent traffic where an occasional cold start is acceptable." }
+  answer: [d]
+  explanation: "For low, intermittent traffic where users tolerate a short wait, serverless inference avoids paying for an idle endpoint and removes capacity planning, at the cost of possible cold starts. If traffic grows to thousands of requests per minute with strict latency targets, a right-sized real-time endpoint with auto scaling becomes cheaper per prediction."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#examples
+  difficulty: hard
+
+- id: q-day-02-014
+  set: day-02
+  type: ordering
+  stem: "Place the following steps for building and using a supervised ML model in the correct order, from first to last."
+  options:
+    - { id: a, text: "Evaluate the chosen model once on the test set", explanation: "This is the fourth step: the locked-away test set gives an honest final score only after tuning is finished." }
+    - { id: b, text: "Split the dataset into training, validation and test sets", explanation: "This is the first step: the data must be split before training so the test set is never seen during training." }
+    - { id: c, text: "Train candidate models on the training set", explanation: "This is the second step: the algorithm learns parameters from the training examples." }
+    - { id: d, text: "Compare models and choose hyperparameters using the validation set", explanation: "This is the third step: the validation set is used during development to tune and select models." }
+    - { id: e, text: "Deploy the model and run inference on new data", explanation: "This is the last step: inference uses the trained, evaluated model to make predictions on new data." }
+  answer: [b, c, d, a, e]
+  explanation: "Split the data first, learn on the training set, tune and select with the validation set, evaluate once on the untouched test set for an honest estimate, and then deploy the model for inference. Using the test set earlier would cause data leakage and an optimistic score."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-day-02-015
+  set: day-02
+  type: single
+  stem: "A bank trained a churn model only on two years of data from its city branches. The model scored highly on a test set drawn from the same city branches but performed poorly for rural customers after deployment. Which solution BEST addresses both the fit and the fairness problem?"
+  options:
+    - { id: a, text: "Collect representative data from every region, evaluate accuracy per customer segment before launch and monitor it after deployment", explanation: "Correct. Representative data fixes the overfitting to city behaviour, and per-segment evaluation and monitoring catch bias against under-represented groups." }
+    - { id: b, text: "Use a more complex model trained longer on the city branch data", explanation: "Incorrect. More complexity and longer training on the same narrow data would increase overfitting to city behaviour." }
+    - { id: c, text: "Re-run the evaluation on the existing city test set to confirm the score", explanation: "Incorrect. The test set comes from the same city branches, so it cannot reveal how the model performs for rural customers." }
+    - { id: d, text: "Switch the model from batch inference to a real-time endpoint", explanation: "Incorrect. Changing the inference option does not change what the model learned or how it treats rural customers." }
+  answer: [a]
+  explanation: "The model overfit to city behaviour and was biased against a group it had rarely seen. The fix combines statistical thinking (more varied, representative data) with responsible-AI practice (subgroup evaluation before launch and monitoring afterwards)."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-02#real-world
+  difficulty: hard
+
+- id: q-day-02-016
+  set: day-02
+  type: single
+  stem: "A demand-forecasting model was 94% accurate when it launched in January. By July its error has doubled, although its code has not changed. What is the MOST likely cause, and what should the team do?"
+  options:
+    - { id: a, text: "The model is underfitting; replace it with a larger, more complex model", explanation: "Incorrect. The model performed well at launch; the decline over time points to changes in the world, not a model that is too simple." }
+    - { id: b, text: "The test set was too small; re-run the original evaluation", explanation: "Incorrect. Re-evaluating on old data does not explain or fix a decline caused by new real-world conditions." }
+    - { id: c, text: "Drift; monitor predictions and input data and retrain on recent data", explanation: "Correct. When customer behaviour changes, accuracy decays; the cure is monitoring in production and retraining on recent data." }
+    - { id: d, text: "The hyperparameters have changed; redeploy the same model artifact", explanation: "Incorrect. Hyperparameters do not change after training, and redeploying the same model would not fix the decline." }
+  answer: [c]
+  explanation: "Accuracy that drops months after launch with no code change indicates data drift or concept drift. The fix is not a bigger model but monitoring plus retraining on recent data. Amazon SageMaker Model Monitor can automate these checks."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#examples
+  difficulty: medium
+
+- id: q-day-02-017
+  set: day-02
+  type: single
+  stem: "An exam question states that a credit model approves applicants from one demographic group far less often than equally qualified applicants from other groups, and calls this bias. Which meaning of bias does the question use?"
+  options:
+    - { id: a, text: "Statistical bias: error from overly simple assumptions that causes underfitting", explanation: "Incorrect. Statistical bias relates to training and test scores and model complexity, not to how groups of people are treated." }
+    - { id: b, text: "Responsible-AI bias: the model systematically disadvantages a group of people", explanation: "Correct. When a question talks about groups of people, fairness or demographics, bias means unfair outcomes." }
+    - { id: c, text: "Variance: sensitivity to the particular training sample", explanation: "Incorrect. Variance describes how much a model changes when trained on slightly different data, which leads to overfitting." }
+    - { id: d, text: "Data drift: a change in the input data after deployment", explanation: "Incorrect. Data drift describes inputs changing over time in production, not unfair treatment of a group." }
+  answer: [b]
+  explanation: "Bias has two meanings on the exam. With training versus test scores or model complexity, it means systematic error (underfitting). With groups of people, fairness or demographics, it means unfair outcomes. Read the context before answering."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-02#exam-tips
+  difficulty: easy
+
+- id: q-day-02-018
+  set: day-02
+  type: multi
+  stem: "A marketing team wants churn scores for all 8 million customers every night. A machine learning engineer recommends Amazon SageMaker AI batch transform. Which statements about batch transform are correct? (Select TWO.)"
+  options:
+    - { id: a, text: "It runs as a job that reads input data from Amazon S3 and writes predictions to Amazon S3", explanation: "Correct. Batch transform is a job pointed at input data in S3 with an output prefix in S3." }
+    - { id: b, text: "No endpoint needs to stay running, so it is usually the most cost-effective option for large scheduled jobs", explanation: "Correct. Batch transform is not an endpoint, so there is no idle cost, making it cheapest per prediction for large offline workloads." }
+    - { id: c, text: "It returns each prediction within milliseconds to a waiting user", explanation: "Incorrect. Millisecond responses for waiting users are the role of real-time inference; batch results are typically hours old." }
+    - { id: d, text: "It is configured as a persistent endpoint that bills while idle", explanation: "Incorrect. A persistent endpoint billed while idle describes real-time inference; batch transform is a job, not an endpoint." }
+    - { id: e, text: "It is designed for individual 1 GB requests that arrive throughout the day", explanation: "Incorrect. Individual large payloads arriving over time are a fit for asynchronous inference, not a scheduled batch job." }
+  answer: [a, b]
+  explanation: "Batch transform processes a large dataset offline in one go, reading from and writing to Amazon S3. Because no endpoint stays running, it is usually the most cost-effective choice when nobody is waiting for the results, though the predictions are hours old."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#hands-on
+  difficulty: medium
+
+- id: q-day-02-019
+  set: day-02
+  type: single
+  stem: "A model's predictions change a lot whenever it is retrained on a slightly different sample of the same data, and it performs much worse on new data than on its training data. Which description fits this model BEST?"
+  options:
+    - { id: a, text: "High bias, which causes underfitting", explanation: "Incorrect. High bias means consistently missing the target in the same direction and performing poorly even on training data." }
+    - { id: b, text: "Low bias and low variance, which is a good fit", explanation: "Incorrect. A good fit performs almost as well on new data as on training data and is stable across samples." }
+    - { id: c, text: "Concept drift, which causes accuracy to decay over time", explanation: "Incorrect. Concept drift is a change in the real-world relationship between inputs and answers after deployment, not sensitivity to the training sample." }
+    - { id: d, text: "High variance, which causes overfitting", explanation: "Correct. Variance is error from being too sensitive to the particular training data; a high-variance model overfits and generalises poorly." }
+  answer: [d]
+  explanation: "High variance means the model is too sensitive to its training sample, so it changes a lot between samples and overfits. In the darts analogy, high variance spreads darts all over the board, while high bias groups them together far from the bullseye."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-02#diagram
+  difficulty: easy
+
+- id: q-day-02-020
+  set: day-02
+  type: multi
+  stem: "A data scientist has a small dataset and wants a reliable estimate of model performance. Some of the data is daily sales history. Which statements about validating models in this situation are correct? (Select TWO.)"
+  options:
+    - { id: a, text: "Cross-validation trains several times, holding out a different fold for validation each time, and averages the scores", explanation: "Correct. With k folds, every example is used for both training and validation, and the averaged score is more reliable than a single split." }
+    - { id: b, text: "For time-series data, train on past data and validate on later data instead of shuffling randomly", explanation: "Correct. Random shuffling of time-series data lets the model see the future when predicting the past, so validation must use later data." }
+    - { id: c, text: "Cross-validation allows the test set to be used during training because every fold is averaged", explanation: "Incorrect. The model must never see test data during training; doing so is data leakage regardless of cross-validation." }
+    - { id: d, text: "Time-series data should be shuffled randomly so every fold has a mix of dates", explanation: "Incorrect. Randomly shuffling time-series data lets the model cheat by seeing tomorrow when predicting today." }
+    - { id: e, text: "With a small dataset, skip validation and report the training accuracy", explanation: "Incorrect. Training accuracy does not show how a model generalises and hides overfitting." }
+  answer: [a, b]
+  explanation: "Cross-validation makes the most of scarce data by rotating which fold is held out for validation and averaging the results. For time-series data, never shuffle randomly: train on the past and validate on the future to avoid leaking future information."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-02#explanation
+  difficulty: hard

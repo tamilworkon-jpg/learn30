@@ -234,27 +234,28 @@ If a model is unavailable, use any available model that differs from the author 
 
 ### Tests first
 
-- [ ] T049 [P] [US2] Unit test site/tests/unit/quiz-state.test.ts
+- [x] T049 [P] [US2] Unit test site/tests/unit/quiz-state.test.ts
   - TC: Q-S1 answers persist to `inProgress[assessmentId]`; Q-S2 submit creates Attempt with `byDomain`, clears inProgress; Q-S3 DayState best/latest updated.
-- [ ] T050 [P] [US2] E2E site/tests/e2e/quiz.spec.ts (`@visual`)
+- [x] T050 [P] [US2] E2E site/tests/e2e/quiz.spec.ts (`@visual`)
   - TC: Q-E1 answer single/multi/ordering/matching by mouse and keyboard only; Q-E2 submit with unanswered → confirm; Q-E3 results show %, correct answer, every option's explanation, "Review in lesson" link to `lessonRef`; Q-E4 reload shows best score; Q-E5 retake; screenshots `quiz-single`, `quiz-ordering`, `quiz-matching`, `quiz-results`.
 
 ### Implementation
 
-- [ ] T051 [P] [US2] Create site/src/components/quiz/QuestionSingle.tsx (radio group, arrow keys)
-- [ ] T052 [P] [US2] Create site/src/components/quiz/QuestionMulti.tsx ("Select N")
-- [ ] T053 [P] [US2] Create site/src/components/quiz/QuestionOrdering.tsx (up/down buttons, keyboard)
-- [ ] T054 [P] [US2] Create site/src/components/quiz/QuestionMatching.tsx (select per prompt)
-- [ ] T055 [US2] Implement site/src/lib/quiz-state.ts → T049 green
-- [ ] T056 [US2] Create site/src/components/quiz/QuizRunner.tsx (progress bar, domain chip, submit confirm)
-- [ ] T057 [US2] Create site/src/components/quiz/Results.tsx (score ring, per-question review, explanations, lesson links, retake)
-- [ ] T058 [US2] Wire QuizRunner into LessonLayout quiz section (questions by `set: day-NN`)
+- [x] T051 [P] [US2] Create site/src/components/quiz/QuestionSingle.tsx (radio group, arrow keys)
+- [x] T052 [P] [US2] Create site/src/components/quiz/QuestionMulti.tsx ("Select N")
+- [x] T053 [P] [US2] Create site/src/components/quiz/QuestionOrdering.tsx (up/down buttons, keyboard)
+- [x] T054 [P] [US2] Create site/src/components/quiz/QuestionMatching.tsx (select per prompt)
+- [x] T055 [US2] Implement site/src/lib/quiz-state.ts → T049 green
+- [x] T056 [US2] Create site/src/components/quiz/QuizRunner.tsx (progress bar, domain chip, submit confirm)
+- [x] T057 [US2] Create site/src/components/quiz/Results.tsx (score ring, per-question review, explanations, lesson links, retake)
+- [x] T058 [US2] Wire QuizRunner into LessonLayout quiz section (questions by `set: day-NN`)
   - Verify (T051–T058): T050 green; screenshots vs. Phase 0 quiz/results mockups.
-- [ ] T059 [P] [US2] Author site/src/content/questions/day-01.yaml (20 Q; TS 1.1)
+- [x] T059 [P] [US2] Author site/src/content/questions/day-01.yaml (20 Q; TS 1.1)
   - TC: TC-Q for day-01. Plan: 1) register set → Q1 red; 2) author; 3) Q7 answer-key review. Verify: `npm run test -- question-sets`.
-- [ ] T060 [P] [US2] Author site/src/content/questions/day-02.yaml (20 Q; TS 1.1, 4.1) — TC-Q
-- [ ] T061 [P] [US2] Author site/src/content/questions/day-03.yaml (20 Q; TS 1.1, 1.2) — TC-Q
-- [ ] T062 [US2] REVIEW US2: regression US1+US2; self-check answer keys Days 1–3
+- [x] T060 [P] [US2] Author site/src/content/questions/day-02.yaml (20 Q; TS 1.1, 4.1) — TC-Q
+- [x] T061 [P] [US2] Author site/src/content/questions/day-03.yaml (20 Q; TS 1.1, 1.2) — TC-Q
+- [x] T062 [US2] REVIEW US2: regression US1+US2; self-check answer keys Days 1–3
+  - Done 2026-11-02: unit 154 passing, E2E 44 passing (quiz Q-E1–Q-E5 mouse + keyboard on desktop/mobile; lesson-ui + quiz stable over 5 repeats), lint/typecheck/validate:content clean. Answer keys: a blind solve by a second model (Claude Sonnet, key and explanations removed) agreed on 60/60. Fixes from review: q-day-01-016 option b reworded from an absolute claim to the exam hierarchy; q-day-02-018 and q-day-03-015 lessonRefs moved from the optional deep dive to the core section that teaches the answer. Decisions: `questions` collection uses a custom loader (one entry per question, validated by `questionZod`) because each YAML file is an array; a partly matched matching question counts as unanswered; ordering starts from a deterministic shuffle that is never the correct order. The formal Q7 review by the Exam-content reviewer model still runs in T181.
 
 ---
 

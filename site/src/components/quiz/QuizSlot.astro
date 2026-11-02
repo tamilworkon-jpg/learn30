@@ -1,12 +1,22 @@
 ---
+// T058 — daily quiz section: loads `set: day-NN` questions and hydrates the QuizRunner island.
+import { getCollection } from 'astro:content';
+import QuizRunner from './QuizRunner';
 import { pad } from '../../lib/data';
+import type { Question } from '../../lib/types';
+import '../../styles/quiz.css';
+
 interface Props {
   day: number;
 }
 const { day } = Astro.props;
+const set = `day-${pad(day)}`;
+const questions = (await getCollection('questions', (q) => q.data.set === set)).map((q) => q.data as Question).sort((a, b) => a.id.localeCompare(b.id));
 ---
 
-<div class="card quiz-slot" data-quiz-set={`day-${pad(day)}`}>
-  <p class="m-0 font-semibold">📝 Daily quiz — 20 exam-style questions</p>
-  <p class="muted m-0 mt-1 text-sm">Answer, submit and read every explanation. Aim for 80%+ before moving on.</p>
+<div class="quiz-slot" data-quiz-set={set}>
+  <p class="muted mt-0">
+    {questions.length} exam-style questions. Answer, submit and read every explanation — aim for 80%+ before moving on. Your answers are saved as you go.
+  </p>
+  <QuizRunner client:visible assessmentId={set} title={`Day ${day} · Daily quiz`} questions={questions} />
 </div>

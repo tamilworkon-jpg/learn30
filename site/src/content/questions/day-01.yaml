@@ -1,0 +1,333 @@
+# Day 01 quiz — Orientation & the AI family tree (task statement 1.1)
+- id: q-day-01-001
+  set: day-01
+  type: single
+  stem: "A bank's fraud team gives a system thousands of past transactions labeled as fraud or not fraud. The system works out the patterns that separate the two groups and then flags new transactions. Which term BEST describes this approach?"
+  options:
+    - { id: a, text: "A rules-based expert system", explanation: "Incorrect. An expert system follows if-then rules written by people; here the patterns are learned from labeled data." }
+    - { id: b, text: "Machine learning", explanation: "Correct. Machine learning learns patterns from data instead of following hand-coded rules, producing a model that predicts on new inputs." }
+    - { id: c, text: "Generative AI", explanation: "Incorrect. Generative AI creates new content such as text or images; flagging transactions is a classification task." }
+    - { id: d, text: "Agentic AI", explanation: "Incorrect. Agentic AI plans steps and calls tools to take actions; this system only predicts a label." }
+  answer: [b]
+  explanation: "Machine learning is the part of AI where a system learns patterns from (often labeled) data rather than following rules a programmer wrote by hand. The output of that learning is a model that makes predictions on new data."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: easy
+
+- id: q-day-01-002
+  set: day-01
+  type: single
+  stem: "A candidate is planning study time for the AWS Certified AI Practitioner (AIF-C01) exam, guide v1.2. Which description of the exam format is correct?"
+  options:
+    - { id: a, text: "50 questions, 60 minutes, passing score of 750 out of 1,000", explanation: "Incorrect. The exam has 65 questions in 90 minutes and the passing score is 700." }
+    - { id: b, text: "65 questions, 130 minutes, passing score of 720 out of 1,000", explanation: "Incorrect. 130 minutes and 720 belong to other AWS exams; AIF-C01 is 90 minutes with a 700 passing score." }
+    - { id: c, text: "85 questions, 120 minutes, passing score of 700 out of 1,000", explanation: "Incorrect. The passing score is right, but AIF-C01 has 65 questions and a 90-minute limit." }
+    - { id: d, text: "65 questions (50 scored), 90 minutes, passing score of 700 out of 1,000", explanation: "Correct. AIF-C01 v1.2 has 65 questions, of which 50 are scored, in 90 minutes, with a scaled passing score of 700." }
+  answer: [d]
+  explanation: "AIF-C01 v1.2 contains 65 questions (50 scored and 15 unscored), lasts 90 minutes and requires a scaled score of 700 out of 1,000 across five domains weighted 20/24/28/14/14."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#orientation
+  difficulty: easy
+
+- id: q-day-01-003
+  set: day-01
+  type: single
+  stem: "An ecommerce company wants a tool that takes three bullet points about a product and writes a complete, original product description. Which type of AI BEST fits this requirement?"
+  options:
+    - { id: a, text: "Generative AI", explanation: "Correct. Writing new text from a short input is content creation, the defining capability of generative AI and LLMs." }
+    - { id: b, text: "Classic machine learning classification", explanation: "Incorrect. A classifier assigns inputs to predefined labels; it does not write new descriptions." }
+    - { id: c, text: "A rules-based system", explanation: "Incorrect. Fixed if-then rules cannot produce fluent, original descriptions for arbitrary products." }
+    - { id: d, text: "Computer vision", explanation: "Incorrect. Computer vision interprets images and video; this task takes text in and produces text out." }
+  answer: [a]
+  explanation: "Words such as create, draft, write, summarise or generate point to generative AI. A foundation model such as an LLM creates new content that resembles the data it learned from."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#examples
+  difficulty: medium
+
+- id: q-day-01-004
+  set: day-01
+  type: single
+  stem: "A company wants an assistant that reads a customer support ticket, looks up the order in a database, issues a refund through a payments API and then replies to the customer, without a human performing each step. Which term MOST accurately describes this solution?"
+  options:
+    - { id: a, text: "Deep learning image classification", explanation: "Incorrect. No images are being classified; the assistant is completing a multi-step business task." }
+    - { id: b, text: "Supervised machine learning regression", explanation: "Incorrect. Regression predicts a numeric value; it does not call APIs or take actions." }
+    - { id: c, text: "Agentic AI", explanation: "Correct. An AI agent uses a foundation model to plan steps, call tools such as databases and APIs, and act to complete the task." }
+    - { id: d, text: "Generative AI text summarization", explanation: "Incorrect. Writing the reply is generative, but looking up data and issuing refunds through APIs requires an agent that acts with tools." }
+  answer: [c]
+  explanation: "Agentic AI adds planning, tool use, memory and orchestration on top of generative AI. Phrases such as take actions, call APIs or complete multi-step tasks point to agentic AI rather than plain generative AI."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#examples
+  difficulty: medium
+
+- id: q-day-01-005
+  set: day-01
+  type: single
+  stem: "An online retailer must check that uploaded product photos contain the expected objects. A managed AWS service already detects the labels the retailer needs. Which solution meets this requirement with the LEAST operational overhead?"
+  options:
+    - { id: a, text: "Train a custom image classification model in Amazon SageMaker AI", explanation: "Incorrect. Training a custom model adds effort and cost when a managed service already does the job." }
+    - { id: b, text: "Use Amazon Rekognition label detection", explanation: "Correct. Amazon Rekognition is a pre-trained AI service for images and video that returns labels through a single API call with no training." }
+    - { id: c, text: "Use Amazon Comprehend to analyze the photos", explanation: "Incorrect. Amazon Comprehend extracts insights from text, not from images." }
+    - { id: d, text: "Run an open-source vision model on Amazon EC2 GPU instances", explanation: "Incorrect. Self-managing models on infrastructure has the highest operational overhead of the options." }
+  answer: [b]
+  explanation: "The exam rewards choosing the highest AWS layer that solves the problem. When a pre-trained AI service such as Amazon Rekognition already supports the task, there is no need to build or host a model yourself."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#real-world
+  difficulty: medium
+
+- id: q-day-01-006
+  set: day-01
+  type: single
+  stem: "A manufacturer's data scientists must build a predictive model from proprietary sensor data by using their own custom algorithm, then deploy it to an endpoint. Which AWS service is MOST appropriate?"
+  options:
+    - { id: a, text: "Amazon Rekognition", explanation: "Incorrect. Rekognition is a pre-trained image and video service; it does not train custom algorithms on sensor data." }
+    - { id: b, text: "Amazon Bedrock", explanation: "Incorrect. Bedrock provides API access to foundation models for generative AI, not training of a custom predictive algorithm." }
+    - { id: c, text: "Amazon Personalize", explanation: "Incorrect. Personalize is a managed recommendation service, not a general platform for custom algorithms." }
+    - { id: d, text: "Amazon SageMaker AI", explanation: "Correct. SageMaker AI is the ML platform for building, training, tuning, deploying and monitoring your own models." }
+  answer: [d]
+  explanation: "When no managed AI service fits and a team needs full control over its own model and algorithm, Amazon SageMaker AI is the ML platform layer for building, training and deploying custom models."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#hands-on
+  difficulty: medium
+
+- id: q-day-01-007
+  set: day-01
+  type: single
+  stem: "A legal team tests a generative AI assistant. It returns a confident, well-written answer that cites a court case that does not exist. What is this behavior called?"
+  options:
+    - { id: a, text: "Overfitting", explanation: "Incorrect. Overfitting is when a model memorizes training data and performs poorly on new data; it is not the term for invented content." }
+    - { id: b, text: "Underfitting", explanation: "Incorrect. Underfitting means a model is too simple to capture the real pattern." }
+    - { id: c, text: "Hallucination", explanation: "Correct. A hallucination is fluent but false or invented content produced by a generative model." }
+    - { id: d, text: "Inference", explanation: "Incorrect. Inference is simply using a trained model to produce outputs; it does not describe false content." }
+  answer: [c]
+  explanation: "Hallucination is when a generative model produces fluent but false or made-up content. It is the most-tested limitation of generative AI and a key reason for guardrails and human review."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: easy
+
+- id: q-day-01-008
+  set: day-01
+  type: single
+  stem: "A payments company retrains its fraud model once a month. Every time a customer makes a purchase, the trained model scores the transaction in real time. What is the real-time scoring step called?"
+  options:
+    - { id: a, text: "Inference", explanation: "Correct. Inference is using a trained model to make predictions on new data, and it happens far more often than training." }
+    - { id: b, text: "Training", explanation: "Incorrect. Training is the monthly learning phase; scoring each purchase uses the already trained model." }
+    - { id: c, text: "Feature labeling", explanation: "Incorrect. Labeling attaches known answers to training examples; it is not the act of scoring new transactions." }
+    - { id: d, text: "Fine-tuning", explanation: "Incorrect. Fine-tuning further trains a model; scoring a purchase does not change the model." }
+  answer: [a]
+  explanation: "Training is the expensive learning phase done occasionally; inference is using the trained model on new data, often constantly and in real time. Because inference happens so often, its cost and latency matter a lot in real designs."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#exam-tips
+  difficulty: medium
+
+- id: q-day-01-009
+  set: day-01
+  type: single
+  stem: "A travel company uses a classic Amazon Lex bot. The bot recognizes the user's intent and fills slots such as date and city, then triggers a fixed booking workflow. Which statement about this bot is MOST accurate?"
+  options:
+    - { id: a, text: "It is generative AI because every chatbot generates its responses with a foundation model.", explanation: "Incorrect. Not all chatbots are generative; this bot triggers a fixed workflow rather than writing free-form answers." }
+    - { id: b, text: "It uses NLP and machine learning to understand language, but it is not generative AI.", explanation: "Correct. Intent recognition and slot filling are NLP and ML tasks; no new content is generated." }
+    - { id: c, text: "It is agentic AI because it completes a booking for the user.", explanation: "Incorrect. The bot follows a fixed workflow; it does not reason about a goal and decide which tools to call." }
+    - { id: d, text: "It is a rules-based system with no machine learning involved.", explanation: "Incorrect. Recognizing intents from varied user phrasing relies on NLP and ML, not only hand-written rules." }
+  answer: [b]
+  explanation: "A common trap is assuming all chatbots are generative AI. A classic Amazon Lex bot recognizes intents and fills slots to drive a fixed workflow, which is NLP and ML. Only a bot that writes free-form answers with an LLM is generative AI."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#examples
+  difficulty: hard
+
+- id: q-day-01-010
+  set: day-01
+  type: single
+  stem: "Which statement correctly describes the relationship between machine learning and deep learning?"
+  options:
+    - { id: a, text: "Machine learning is a subset of deep learning.", explanation: "Incorrect. The nesting is the other way around: deep learning sits inside machine learning." }
+    - { id: b, text: "They are separate fields with no overlap.", explanation: "Incorrect. Deep learning is part of machine learning, so they overlap completely in that direction." }
+    - { id: c, text: "Deep learning is a subset of generative AI.", explanation: "Incorrect. Generative AI is a subset of deep learning, not the reverse." }
+    - { id: d, text: "Deep learning is a subset of machine learning that uses multi-layer neural networks.", explanation: "Correct. Deep learning is machine learning with neural networks that have many layers." }
+  answer: [d]
+  explanation: "The AI family tree nests: AI contains machine learning, which contains deep learning (multi-layer neural networks), which contains generative AI. Agentic AI builds on generative AI by adding the ability to act."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#diagram
+  difficulty: medium
+
+- id: q-day-01-011
+  set: day-01
+  type: single
+  stem: "A finance application must calculate the exact tax owed on each invoice by applying the formula defined in tax law. Results must be fully explainable and identical every time. Which approach is MOST appropriate?"
+  options:
+    - { id: a, text: "Train a regression model in Amazon SageMaker AI on historical invoices", explanation: "Incorrect. A regression model produces a prediction that may be wrong; the law's formula gives the exact answer." }
+    - { id: b, text: "Prompt a foundation model on Amazon Bedrock to compute the tax", explanation: "Incorrect. Generative models are non-deterministic and can hallucinate, which is unacceptable for an exact legal calculation." }
+    - { id: c, text: "Implement the tax formula as deterministic rules in application code", explanation: "Correct. A known, simple formula that must be exact and explainable is best implemented as rules, without machine learning." }
+    - { id: d, text: "Use Amazon Comprehend to extract the tax amount from each invoice", explanation: "Incorrect. Comprehend extracts insights from text; it does not calculate tax according to a formula." }
+  answer: [c]
+  explanation: "AI is often the wrong choice when a decision must be exactly deterministic and fully explainable, and the rules are already known. Adding ML or generative AI here adds cost and uncertainty without benefit."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: hard
+
+- id: q-day-01-012
+  set: day-01
+  type: single
+  stem: "A learner's older training course features AWS DeepLens, a deep-learning video camera, in its AI services section. How should the learner treat AWS DeepLens when preparing for AIF-C01 v1.2?"
+  options:
+    - { id: a, text: "Skip it, because AWS DeepLens is discontinued and not part of the v1.2 exam", explanation: "Correct. AWS DeepLens is a discontinued legacy device and is not covered by the v1.2 exam guide." }
+    - { id: b, text: "Study it as the main AWS service for computer vision", explanation: "Incorrect. Computer vision on AWS is covered by services such as Amazon Rekognition, not the discontinued DeepLens." }
+    - { id: c, text: "Study it as the AWS service for running AI agents at scale", explanation: "Incorrect. Amazon Bedrock AgentCore runs agents at scale; DeepLens was a camera device and is discontinued." }
+    - { id: d, text: "Study it as the new name for Amazon SageMaker AI", explanation: "Incorrect. DeepLens was never a name for SageMaker AI; it was a separate, now-discontinued camera product." }
+  answer: [a]
+  explanation: "Some older courses still show AWS DeepLens, but it is discontinued and not on the v1.2 exam. Learn the current v1.2 names, such as Amazon Quick and Kiro where older material said Amazon Q."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#exam-tips
+  difficulty: easy
+
+- id: q-day-01-013
+  set: day-01
+  type: single
+  stem: "A real estate company builds a model that uses house size and location to predict a house's sale price. In this dataset, which item is the label?"
+  options:
+    - { id: a, text: "House size", explanation: "Incorrect. House size is an input attribute, which makes it a feature." }
+    - { id: b, text: "Sale price", explanation: "Correct. The label is the answer the model is trained to predict, which here is the sale price." }
+    - { id: c, text: "Location", explanation: "Incorrect. Location is an input attribute, which makes it a feature." }
+    - { id: d, text: "The trained model", explanation: "Incorrect. The model is the result of training, not a column in the dataset." }
+  answer: [b]
+  explanation: "Features are the input attributes (house size, location); the label is the answer you want to predict (price). Labeled data has the answer attached; unlabeled data does not."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: easy
+
+- id: q-day-01-014
+  set: day-01
+  type: single
+  stem: "A product manager says a foundation model and a large language model (LLM) are the same thing. Which statement MOST accurately corrects this?"
+  options:
+    - { id: a, text: "Foundation models are small, task-specific models, while LLMs are large general models.", explanation: "Incorrect. Foundation models are very large models pre-trained on broad datasets so they can be adapted to many tasks." }
+    - { id: b, text: "LLMs are a type of deep learning model, but they are not foundation models.", explanation: "Incorrect. An LLM is a foundation model specialized in text." }
+    - { id: c, text: "Foundation models only generate images, while LLMs only generate text.", explanation: "Incorrect. Foundation models include text, image, audio and multimodal models; LLMs are the text-focused group." }
+    - { id: d, text: "Every LLM is a foundation model, but foundation models also include image, audio and multimodal models.", explanation: "Correct. LLMs are text-focused foundation models; other foundation models handle images (diffusion) or several input types at once (multimodal)." }
+  answer: [d]
+  explanation: "Foundation models are very large models pre-trained on broad data and adaptable to many tasks. An LLM is a foundation model specialized in text, so every LLM is an FM, but FMs also include diffusion and multimodal models."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#examples
+  difficulty: hard
+
+- id: q-day-01-015
+  set: day-01
+  type: multi
+  stem: "A company is deciding where AI could create value. Which characteristics of a task indicate that AI is a GOOD fit? (Select TWO.)"
+  options:
+    - { id: a, text: "The task is repetitive and must be performed at very large scale, such as reviewing millions of transactions", explanation: "Correct. AI adds value for repetitive work at large scale." }
+    - { id: b, text: "Very little relevant historical data exists for the task", explanation: "Incorrect. Too little relevant data is a reason AI struggles, because models learn from data." }
+    - { id: c, text: "The task involves subtle patterns across hundreds of variables that humans cannot see", explanation: "Correct. Finding patterns humans cannot see is a classic strength of machine learning." }
+    - { id: d, text: "The result must be exactly deterministic and follow a fixed legal formula", explanation: "Incorrect. When outcomes must be exact and deterministic, a rules-based approach is better than a prediction." }
+    - { id: e, text: "The cost of building and running a model is higher than the value it creates", explanation: "Incorrect. If cost exceeds value, AI is the wrong choice." }
+  answer: [a, c]
+  explanation: "AI creates value when a task is repetitive at large scale, needs speed, benefits from consistency or involves patterns humans cannot see. It struggles with too little data, strict determinism or explainability needs, unreviewable costly errors, or when cost exceeds value."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: medium
+
+- id: q-day-01-016
+  set: day-01
+  type: multi
+  stem: "Which statements about how AI, machine learning, deep learning and generative AI relate to each other are correct? (Select TWO.)"
+  options:
+    - { id: a, text: "Every deep learning model is a generative AI model.", explanation: "Incorrect. An image classifier is deep learning but only labels images; it does not generate content." }
+    - { id: b, text: "In the AI hierarchy used by the exam, generative AI is a subset of deep learning.", explanation: "Correct. AI ⊃ machine learning ⊃ deep learning ⊃ generative AI — today's generative models are deep neural networks, largely transformers." }
+    - { id: c, text: "Every machine learning model is a neural network.", explanation: "Incorrect. A decision tree is machine learning but is not a neural network." }
+    - { id: d, text: "A rules-based expert system is AI but is not machine learning.", explanation: "Correct. An expert system follows hand-written rules, so it is AI without learning from data." }
+    - { id: e, text: "Agentic AI replaces foundation models with hand-written rules.", explanation: "Incorrect. Agentic AI uses a foundation model as its brain and adds planning, tool use and memory." }
+  answer: [b, d]
+  explanation: "The terms nest: AI contains ML, ML contains deep learning, and deep learning contains generative AI, with agentic AI building on generative AI. Not every AI system is ML, not every ML model is deep learning, and not every deep learning model is generative."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#diagram
+  difficulty: medium
+
+- id: q-day-01-017
+  set: day-01
+  type: multi
+  stem: "A startup with no machine learning expertise wants to add AI features by calling pre-trained AWS AI services through an API, without training any models. Which services meet this requirement? (Select THREE.)"
+  options:
+    - { id: a, text: "Amazon Transcribe", explanation: "Correct. Transcribe is a pre-trained AI service that converts speech to text through an API." }
+    - { id: b, text: "Amazon SageMaker AI", explanation: "Incorrect. SageMaker AI is the ML platform for building and training your own models, which requires ML work." }
+    - { id: c, text: "Amazon Textract", explanation: "Correct. Textract is a pre-trained AI service that extracts text and data from documents." }
+    - { id: d, text: "Amazon EC2 GPU instances", explanation: "Incorrect. EC2 is infrastructure; you would have to deploy and manage models yourself." }
+    - { id: e, text: "Amazon Comprehend", explanation: "Correct. Comprehend is a pre-trained AI service that extracts insights such as sentiment and entities from text." }
+    - { id: f, text: "Strands Agents", explanation: "Incorrect. Strands Agents is an open-source SDK for building agents in code, not a pre-trained API-based AI service." }
+  answer: [a, c, e]
+  explanation: "The AI services layer offers ready-made models for common tasks with no ML expertise required, including Amazon Rekognition, Comprehend, Transcribe, Polly, Translate, Textract, Lex and Personalize. SageMaker AI, infrastructure and agent SDKs sit in other layers."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: hard
+
+- id: q-day-01-018
+  set: day-01
+  type: multi
+  stem: "A team is evaluating a large language model for a customer-facing assistant. Which limitations of generative models should the team plan controls for? (Select TWO.)"
+  options:
+    - { id: a, text: "The model can produce fluent but false or invented content.", explanation: "Correct. This is hallucination, the most-tested limitation of generative AI." }
+    - { id: b, text: "The model always returns exactly the same output for the same prompt.", explanation: "Incorrect. Generative models are non-deterministic, so the same prompt can give different answers." }
+    - { id: c, text: "The model can give different answers to the same prompt.", explanation: "Correct. Generative models are non-deterministic, which matters when consistent answers are required." }
+    - { id: d, text: "The model can only classify inputs into predefined categories.", explanation: "Incorrect. Generative models create new content; fixed-category classification describes traditional ML." }
+    - { id: e, text: "The model cannot accept natural-language instructions as input.", explanation: "Incorrect. LLMs take prompts, which are natural-language instructions, context and examples." }
+  answer: [a, c]
+  explanation: "Generative models can hallucinate, are non-deterministic and may reflect biases in their training data. These risks are why controls such as guardrails, human review and monitoring are needed."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: easy
+
+- id: q-day-01-019
+  set: day-01
+  type: ordering
+  stem: "Order these milestones in the evolution of AI from earliest to most recent."
+  options:
+    - { id: a, text: "The transformer architecture is introduced in the paper \"Attention Is All You Need\"", explanation: "Fourth: the transformer was introduced in 2017 and enables modern LLMs." }
+    - { id: b, text: "Alan Turing proposes the imitation game (Turing test)", explanation: "First: Turing proposed the imitation game in 1950." }
+    - { id: c, text: "Amazon Bedrock becomes generally available", explanation: "Last: Amazon Bedrock became generally available in 2023 as generative AI went mainstream." }
+    - { id: d, text: "The Dartmouth workshop coins the term artificial intelligence", explanation: "Second: the Dartmouth workshop took place in 1956." }
+    - { id: e, text: "AlexNet wins the ImageNet competition, launching the deep learning era", explanation: "Third: AlexNet won ImageNet in 2012." }
+  answer: [b, d, e, a, c]
+  explanation: "The sequence is: Turing test (1950), Dartmouth workshop (1956), AlexNet and the deep learning era (2012), the transformer (2017) and Amazon Bedrock general availability (2023), followed by agentic AI from 2024 onward."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: medium
+
+- id: q-day-01-020
+  set: day-01
+  type: matching
+  stem: "Match each AI term to its correct definition."
+  options:
+    - { id: a, text: "Overfitting", explanation: "Matches t3: the model memorized the training data, including noise, and fails on new data." }
+    - { id: b, text: "Underfitting", explanation: "Matches t1: the model is too simple and misses the real pattern." }
+    - { id: c, text: "Prompt", explanation: "Matches t4: the instructions, context and examples given to a generative model." }
+    - { id: d, text: "Fairness", explanation: "Matches t2: the goal that outcomes do not disadvantage individuals or groups based on attributes such as age or gender." }
+    - { id: e, text: "Neural network", explanation: "Matches t5: layers of connected units whose connection weights are adjusted during training." }
+  matchTargets:
+    - { id: t1, text: "A model that is too simple and misses the real pattern in the data" }
+    - { id: t2, text: "The goal that model outcomes do not disadvantage individuals or groups based on attributes such as gender, age or ethnicity" }
+    - { id: t3, text: "A model that memorized its training data, including noise, and performs poorly on new data" }
+    - { id: t4, text: "The input text, including instructions, context and examples, given to a generative model" }
+    - { id: t5, text: "A model made of layers of connected units whose weights are adjusted during training" }
+  answer: { a: t3, b: t1, c: t4, d: t2, e: t5 }
+  explanation: "Task statement 1.1 lists these terms by name. Overfitting and underfitting describe fit, a prompt is the input to a generative model, fairness is a responsible AI goal, and a neural network is the layered model behind deep learning."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: medium
