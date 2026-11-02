@@ -71,6 +71,17 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
 </BaseLayout>
 
 <script>
+  // Wide tables / code blocks scroll horizontally on small screens: make them keyboard-focusable (WCAG 2.1.1).
+  const markScrollable = () =>
+    document.querySelectorAll<HTMLElement>('article table, article pre').forEach((el) => {
+      if (el.scrollWidth > el.clientWidth + 1) el.tabIndex = 0;
+      else el.removeAttribute('tabindex');
+    });
+  markScrollable();
+  window.addEventListener('resize', markScrollable);
+</script>
+
+<script>
   import { getStore } from '../lib/progress/store';
   import { trackSections } from '../lib/progress/section-tracker';
 

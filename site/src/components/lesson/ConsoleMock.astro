@@ -110,6 +110,13 @@ const { screen } = Astro.props;
     color: #4b5563;
     min-width: 110px;
   }
+  /* The mock console is always light: don't inherit the dark-theme lesson code colours. */
+  .field code {
+    background: #f3f4f6;
+    color: #111827;
+    padding: 1px 6px;
+    border-radius: 6px;
+  }
   .hl {
     display: inline-block;
     margin-top: 6px;

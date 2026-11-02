@@ -46,6 +46,27 @@ test.describe('engagement (T107) @visual', () => {
     expect(problems, problems.join('\n')).toEqual([]);
   });
 
+  test('W4 weekly ratings show on the dashboard (hidden until a week is rated)', async ({ page }) => {
+    await seed(page, progress());
+    await page.goto('/');
+    const dash = page.locator('[data-dashboard]');
+    await expect(dash).toHaveAttribute('data-ready', 'true');
+    await expect(dash.locator('[data-ratings]')).toHaveCount(0);
+
+    await page.evaluate(() => {
+      const p = JSON.parse(localStorage.getItem('aip-course:v1')!);
+      p.ratings = { 'week-1': 4, 'week-2': 2 };
+      localStorage.setItem('aip-course:v1', JSON.stringify(p));
+    });
+    await page.reload();
+    await expect(dash).toHaveAttribute('data-ready', 'true');
+    const ratings = dash.locator('[data-ratings]');
+    await expect(ratings.getByRole('heading', { name: 'Your weekly ratings' })).toBeVisible();
+    await expect(ratings.getByRole('img', { name: 'Week 1: 4 out of 5' })).toBeVisible();
+    await expect(ratings.getByRole('img', { name: 'Week 2: 2 out of 5' })).toBeVisible();
+    await expect(ratings.locator('[data-week-rating]')).toHaveCount(2);
+  });
+
   test('E5 dark theme badges', async ({ page }) => {
     await seed(page, progress({ settings: { theme: 'dark' }, days: week1(), streak: { current: 7, longest: 7, lastStudyDate: today() } }));
     await page.goto('/');

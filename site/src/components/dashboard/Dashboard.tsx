@@ -9,6 +9,7 @@ import type { Progress } from '../../lib/types';
 import Badges from './Badges';
 import ContinueCard from './ContinueCard';
 import ProgressRing from './ProgressRing';
+import Ratings from './Ratings';
 import Streak from './Streak';
 import WeakDomains from './WeakDomains';
 import WeekTimeline from './WeekTimeline';
@@ -57,6 +58,7 @@ export default function Dashboard({ plan }: Props) {
           <Streak streak={progress.streak} />
         </ProgressRing>
         <WeakDomains plan={plan} progress={progress} />
+        <Ratings ratings={progress.ratings} />
         <Badges earned={[...new Set([...progress.badges, ...earnedBadges(progress, plan.weeks, plan.days.length)])]} />
       </aside>
     </div>

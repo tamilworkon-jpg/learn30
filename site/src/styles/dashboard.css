@@ -528,3 +528,26 @@
     bottom: 88px;
   }
 }
+
+/* W4 weekly ratings */
+.dash-ratings-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: grid;
+  gap: 6px;
+}
+.dash-ratings-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.dash-ratings .stars {
+  color: var(--accent);
+  letter-spacing: 2px;
+  font-size: 18px;
+}
+.dash-ratings .stars-off {
+  color: var(--border);
+}
