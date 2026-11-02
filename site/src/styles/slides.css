@@ -244,10 +244,22 @@
   html[data-lesson-view='slides'] .slide-deck .slide-illo.illo-off {
     display: none;
   }
-  html[data-lesson-view='slides'] .slide-deck .deep-dive summary .slide-illo {
+  /* Deep-dive teaser: compact illustration on the minutes row, teaser text below. */
+  html[data-lesson-view='slides'] .slide-deck .deep-dive summary .slide-illo,
+  html[data-lesson-view='slides'] .slide-deck article.slide-short .deep-dive summary .slide-illo {
     float: none;
+    display: block;
     order: 5;
-    margin: 8px 0 0 auto;
+    width: 120px;
+    height: 90px;
+    margin: 0 0 0 auto;
+  }
+  html[data-lesson-view='slides'] .slide-deck article.slide-short .deep-dive summary .slide-illo {
+    width: 88px;
+    height: 66px;
+  }
+  .deep-teaser {
+    order: 6;
   }
   .deep-teaser {
     flex-basis: 100%;
@@ -256,14 +268,16 @@
   }
 
   /* ---------- key points ---------- */
-  html[data-lesson-view='slides'] .slide-deck article strong {
+  /* Marker highlight on key terms in prose only — not on component internals (exam-fact numbers, chips,
+     pills, console mock-ups, the quiz, table headers). */
+  html[data-lesson-view='slides'] .slide-deck article :where(p, li, td, blockquote, .slide-sent) > strong:not(:where(.quiz, .console, .exam-facts, .chip, .pill, thead, .lab-outcome) *) {
     background: linear-gradient(transparent 55%, rgb(253 164 132 / 0.65) 55%);
     border-radius: 3px;
     padding: 0 2px;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }
-  html[data-theme='dark'][data-lesson-view='slides'] .slide-deck article strong {
+  html[data-theme='dark'][data-lesson-view='slides'] .slide-deck article :where(p, li, td, blockquote, .slide-sent) > strong:not(:where(.quiz, .console, .exam-facts, .chip, .pill, thead, .lab-outcome) *) {
     background: linear-gradient(transparent 55%, rgb(251 109 58 / 0.45) 55%);
   }
   html[data-lesson-view='slides'] .slide-deck .slide-keypoint {
@@ -320,17 +334,98 @@
     white-space: nowrap;
   }
 
+  /* ---------- compact page chrome in slide view (T187: short windows) ---------- */
+  html[data-lesson-view='slides'] .panel {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding-top: 12px;
+  }
+  html[data-lesson-view='slides'] .topbar {
+    margin-bottom: 8px;
+  }
+  html[data-lesson-view='slides'] .lesson-crumbs {
+    display: none;
+  }
+  html[data-lesson-view='slides'] .lesson {
+    margin-top: 0;
+  }
+  html[data-lesson-view='slides'] .deck-bar:not([hidden]) {
+    margin: 0 0 8px;
+    flex-wrap: nowrap;
+  }
+  html[data-lesson-view='slides'] .slide-deck .deck-title.slide-only {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+  }
+  html[data-lesson-view='slides'] .deck-title .h1 {
+    font-size: 20px;
+    line-height: 1.3;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  html[data-lesson-view='slides'] .deck-title .planned-date {
+    margin: 0;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  html[data-lesson-view='slides'] .view-toggle button {
+    min-height: 36px;
+    padding: 4px 14px;
+  }
+  html[data-lesson-view='slides'] .slide-deck .deck-status.slide-only {
+    flex: none;
+  }
+
+  /* Reading width: long lines are hard to read on wide screens; centre the text, give the room to the visual. */
+  html[data-lesson-view='slides'] .slide-deck article > :is(.lesson-section, details.deep-dive, div, p, nav, astro-island, h2, img.slide-illo) {
+    max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  html[data-lesson-view='slides'] .slide-deck article > img.slide-illo {
+    margin-left: auto;
+  }
+  @media (min-width: 1500px) {
+    html[data-lesson-view='slides'] .slide-deck .slide-illo {
+      width: 260px;
+      height: 195px;
+    }
+  }
+  /* Short stage: smaller illustration and heading so more text fits. */
+  html[data-lesson-view='slides'] .slide-deck article.slide-short .slide-illo {
+    width: 140px;
+    height: 105px;
+  }
+  html[data-lesson-view='slides'] .slide-deck details[open] .deep-teaser {
+    display: none;
+  }
+  html[data-lesson-view='slides'] .slide-deck article.slide-short .sec-head {
+    font-size: 23px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+  }
+  html[data-lesson-view='slides'][data-deck-ready] .slide-deck article.slide-short {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
   /* ---------- controls ---------- */
   .deck-controls:not([hidden]) {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 10px 0;
+    padding: 8px 0 0;
     background: var(--panel);
   }
   .deck-btn {
-    min-height: 52px;
+    min-height: 48px;
     min-width: 160px;
     justify-content: center;
     font-size: 17px;
@@ -352,8 +447,9 @@
     html[data-lesson-view='slides'] .slide-deck .sec-head {
       font-size: 23px;
     }
-    /* Course-source line: useful on the long page, too costly on a phone slide. */
-    html[data-lesson-view='slides'] .slide-deck article > p.muted.text-sm {
+    /* Course-source line and domain/minute chips: on the long page and in the section list; too costly on a phone slide. */
+    html[data-lesson-view='slides'] .slide-deck article > p.muted.text-sm,
+    html[data-lesson-view='slides'] .slide-deck article > div.flex:first-child {
       display: none;
     }
     html[data-lesson-view='slides'] .slide-deck article h3 {
@@ -362,12 +458,36 @@
     html[data-lesson-view='slides'] .slide-deck article table {
       font-size: 15px;
     }
-    html[data-lesson-view='slides'] .slide-deck .slide-illo {
+    html[data-lesson-view='slides'] .slide-deck .slide-illo,
+    html[data-lesson-view='slides'] .slide-deck article.slide-short .slide-illo {
       float: none;
       display: block;
       width: 100%;
       height: 76px;
       margin: 0 0 8px;
+    }
+    /* Short phone slide: the illustration floats beside the text instead of taking a row. */
+    html[data-lesson-view='slides'] .slide-deck article.slide-short .slide-illo {
+      float: right;
+      width: 72px;
+      height: 54px;
+      margin: 0 0 4px 8px;
+    }
+    html[data-lesson-view='slides'] .slide-deck article.slide-short .deep-teaser {
+      display: none;
+    }
+    html[data-lesson-view='slides'] .slide-deck article.slide-short .sec-head {
+      font-size: 19px;
+      padding-right: 44px;
+    }
+    /* minutes are in the section list; a short phone slide needs the line */
+    html[data-lesson-view='slides'] .slide-deck article.slide-short .sec-head .text-sm {
+      display: none;
+    }
+    html[data-lesson-view='slides'] .slide-deck .skip-notice:not([hidden]) {
+      font-size: 13px;
+      line-height: 1.35;
+      padding: 6px 6px 6px 10px;
     }
     html[data-lesson-view='slides'] .slide-deck .slide-keypoint,
     html[data-lesson-view='slides'] .slide-deck .slide-keypoint .callout-title {
@@ -393,6 +513,20 @@
     .deck-bar:not([hidden]) {
       flex-wrap: nowrap;
       gap: 8px;
+    }
+    html[data-lesson-view='slides'] .deck-bar:not([hidden]) {
+      flex-wrap: wrap;
+      gap: 4px 8px;
+      margin-bottom: 6px;
+    }
+    html[data-lesson-view='slides'] .slide-deck .deck-title.slide-only {
+      flex-basis: 100%;
+    }
+    html[data-lesson-view='slides'] .deck-title .h1 {
+      font-size: 17px;
+    }
+    html[data-lesson-view='slides'] .panel {
+      padding-top: 10px;
     }
     .view-toggle button {
       padding: 6px 11px;

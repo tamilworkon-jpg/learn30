@@ -46,20 +46,26 @@ const nav = [
         if (p.settings && p.settings.theme === 'dark') document.documentElement.dataset.theme = 'dark';
       } catch (e) {}
     </script>
+    <script is:inline src="/scripts/ui-prefs.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="app">
       <aside class="sidebar" aria-label="Primary">
-        <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">AI</span> AIP · 30</a>
-        <nav class="nav" aria-label="Main navigation">
+        <div class="brand-row">
+          <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">AI</span> <span class="brand-text">AIP · 30</span></a>
+          <button class="rail-toggle" type="button" id="rail-toggle" aria-controls="primary-nav" aria-expanded="true" aria-label="Collapse navigation" title="Collapse navigation">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+          </button>
+        </div>
+        <nav class="nav" id="primary-nav" aria-label="Main navigation">
           {
             nav.map((n) => (
-              <a href={n.href} aria-current={active === n.key ? 'page' : undefined}>
+              <a href={n.href} aria-current={active === n.key ? 'page' : undefined} title={n.label}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d={icons[n.key]} />
                 </svg>
-                <span>{n.label}</span>
+                <span class="nav-label">{n.label}</span>
               </a>
             ))
           }
@@ -101,6 +107,12 @@ const nav = [
         store.setTheme(next);
         apply(next);
       });
+    </script>
+    <script>
+      // T187 — collapse the primary navigation to an icon rail (desktop).
+      import { bindCollapse } from '../lib/ui-prefs';
+      const rail = document.getElementById('rail-toggle');
+      if (rail instanceof HTMLButtonElement) bindCollapse({ button: rail, key: 'aip-ui:sidebar', attr: 'sidebar', labels: { collapse: 'Collapse navigation', expand: 'Expand navigation' } });
     </script>
       <script>
       // Wide tables / code blocks scroll horizontally on small screens: make them keyboard-focusable (WCAG 2.1.1).
