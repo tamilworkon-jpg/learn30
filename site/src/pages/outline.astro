@@ -1,4 +1,5 @@
 ---
+import '../styles/profiles.css';
 // T076 — course outline: weeks → days → sections, rendered at build time; a small script adds the
 // learner's status icons from localStorage.
 import { getCollection } from 'astro:content';
@@ -47,6 +48,7 @@ const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as 
                     <a class="outline-day-title" href={`/day/${pad(n)}`}>
                       {d.title}
                     </a>
+                    <span class="outline-date muted text-sm" data-plan-date></span>
                     <span class="outline-day-meta">
                       {d.domains.map((id) => (
                         <span class={`chip chip-${id}`} title={domainName(id)}>
@@ -87,12 +89,20 @@ const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as 
 
 <script>
   import { getStore } from '../lib/progress/store';
+  import { formatDate, planDayOn, plannedDate } from '../lib/schedule';
 
   const ICON = { completed: ['✓', 'Completed'], 'in-progress': ['◐', 'In progress'], 'not-started': ['○', 'Not started'] } as const;
   const root = document.querySelector<HTMLElement>('[data-outline]')!;
   const render = () => {
     const p = getStore().get();
+    const start = new Date(p.startedAt);
+    const todayPlan = planDayOn(start, new Date());
     root.querySelectorAll<HTMLElement>('[data-day-row]').forEach((row) => {
+      // T183 — the learner's planned date for this day (browser calendar).
+      const n = Number(row.dataset.dayRow);
+      const dateEl = row.querySelector<HTMLElement>('[data-plan-date]');
+      if (dateEl) dateEl.textContent = (n === todayPlan ? 'Today · ' : '') + formatDate(plannedDate(start, n));
+      row.toggleAttribute('data-today', n === todayPlan);
       const ds = p.days[row.dataset.dayRow!];
       const status = ds?.status ?? 'not-started';
       row.dataset.status = status;

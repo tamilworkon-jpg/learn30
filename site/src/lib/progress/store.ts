@@ -3,7 +3,9 @@ import { localDate, recordStudyDay } from '../streak';
 import type { Attempt, Progress } from '../types';
 import validateProgress from '../../schemas/generated/validate-progress';
 
-export const STORAGE_KEY = 'aip-course:v1';
+import { readActiveProfileId, progressKey, STORAGE_KEY } from './keys';
+
+export { STORAGE_KEY };
 const MAX_ATTEMPTS = 500;
 
 export function defaultProgress(): Progress {
@@ -39,7 +41,7 @@ function browserStorage(): Storage | null {
   }
 }
 
-export function createStore(storage: Storage | null = browserStorage()) {
+export function createStore(storage: Storage | null = browserStorage(), key: string = STORAGE_KEY) {
   let recovered = false;
   let persistent = storage !== null;
   let state: Progress;
@@ -60,7 +62,7 @@ export function createStore(storage: Storage | null = browserStorage()) {
       persistent = false; // quota exceeded / blocked: keep working in memory for this session
     }
   };
-  const raw = read(STORAGE_KEY);
+  const raw = read(key);
   try {
     const parsed = raw ? JSON.parse(raw) : defaultProgress();
     if (!validateProgress(parsed)) throw new Error('invalid');
@@ -68,13 +70,13 @@ export function createStore(storage: Storage | null = browserStorage()) {
   } catch {
     recovered = raw !== null;
     // Keep the FIRST unreadable copy: a later recovery must not overwrite the original backup.
-    if (raw !== null && read(`${STORAGE_KEY}:backup`) === null) write(`${STORAGE_KEY}:backup`, raw);
+    if (raw !== null && read(`${key}:backup`) === null) write(`${key}:backup`, raw);
     state = defaultProgress();
   }
   const listeners = new Set<Listener>();
 
   const save = () => {
-    write(STORAGE_KEY, JSON.stringify(state));
+    write(key, JSON.stringify(state));
     listeners.forEach((l) => l(state));
   };
   const day = (n: number) => (state.days[String(n)] ??= { status: 'not-started', sectionsViewed: [] });
@@ -154,6 +156,12 @@ export function createStore(storage: Storage | null = browserStorage()) {
       state.ratings[week] = value;
       save();
     },
+    /** T183 — the course start date (local calendar day) drives every planned date. */
+    setStartDate(date: Date) {
+      if (Number.isNaN(date.getTime())) throw new Error('Invalid start date');
+      state.startedAt = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
+      save();
+    },
     setTheme(theme: 'light' | 'dark') {
       state.settings.theme = theme;
       save();
@@ -172,6 +180,11 @@ export function createStore(storage: Storage | null = browserStorage()) {
 export type Store = ReturnType<typeof createStore>;
 
 let singleton: Store | null = null;
+/** Store of the active learner profile (T184). Switching profiles reloads the page, so one per page load. */
 export function getStore(): Store {
-  return (singleton ??= createStore());
+  if (!singleton) {
+    const storage = browserStorage();
+    singleton = createStore(storage, progressKey(readActiveProfileId(storage)));
+  }
+  return singleton;
 }
