@@ -1,0 +1,271 @@
+---
+day: 27
+kind: lesson
+title: 'Governance & compliance'
+summary: 'Recognise the AWS services that support governance and compliance for AI systems — AWS Config, Amazon Inspector, AWS Artifact, AWS CloudTrail, Amazon CloudWatch, AWS Trusted Advisor and the AWS Well-Architected Tool — and the data governance practices behind them: lifecycle, logging, residency, monitoring and retention. Finish with governance processes: policies, review cadence, staff training and the Generative AI Security Scoping Matrix.'
+domains: [D5]
+taskStatements: ['5.2']
+sources:
+  - { provider: udemy, title: 'Security, Compliance and Governance for AI Solutions; AWS Config; Amazon Inspector; AWS Artifact; AWS CloudTrail; AWS Trusted Advisor' }
+  - { provider: skillbuilder, title: 'Security, Compliance, and Governance for AI Solutions' }
+  - { provider: aws-docs, title: 'Securing generative AI: Generative AI Security Scoping Matrix', url: 'https://aws.amazon.com/ai/generative-ai/security/scoping-matrix/' }
+  - { provider: aws-docs, title: 'AWS Well-Architected Tool — Lenses', url: 'https://docs.aws.amazon.com/wellarchitected/latest/userguide/lenses.html' }
+objectives:
+  - Match AWS Config, Amazon Inspector, AWS Artifact, AWS CloudTrail, Amazon CloudWatch, AWS Trusted Advisor and the Well-Architected Tool to governance needs
+  - Explain data governance for AI — lifecycle, logging, residency, monitoring and retention
+  - Describe governance processes — policies, review cadence, roles and staff training
+  - Use the Generative AI Security Scoping Matrix to classify a generative AI use case and its responsibilities
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+examTraps: ['AWS Security Hub', 'AWS Control Tower', 'AWS Audit Manager', 'AWS Backup', 'Amazon GuardDuty']
+keyPoints:
+  - 'AWS Config records resource configuration over time and checks it against rules; Amazon Inspector scans EC2, container images and Lambda for software vulnerabilities.'
+  - 'AWS Artifact gives on-demand access to AWS compliance reports and agreements; CloudTrail records who did what; CloudWatch watches metrics, logs and alarms.'
+  - 'Trusted Advisor checks your account against best practices (cost, security, fault tolerance, performance, service quotas); the Well-Architected Tool reviews a workload against the pillars and lenses such as Generative AI.'
+  - 'Data governance: classify data, manage its lifecycle and retention (S3 Lifecycle, Object Lock, log retention), keep it in the right Region for residency, and log and monitor access.'
+  - 'Generative AI Security Scoping Matrix: Scope 1 consumer app, 2 enterprise app, 3 pre-trained model, 4 fine-tuned model, 5 self-trained model — more scope, more responsibility.'
+  - 'Governance processes: written AI policies, a review board, a regular review cadence and staff training.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 26" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="Proving you are in control" minutes={16}>
+
+### Security versus governance and compliance
+
+The last two days were about *security*: stopping bad things from happening. **Governance** is about *deciding the rules and making sure they are followed* — who may build which AI systems, with which data, reviewed how often. **Compliance** is about *proving* that you follow the rules — your own policies and external ones such as data protection laws, industry standards and AI regulations.
+
+A good analogy is driving. Security is the car's brakes, locks and airbags. Governance is the highway code and the decision about who may drive which vehicle. Compliance is the MOT certificate, driving licence and insurance documents you can show when a police officer asks. Task statement 5.2 asks you to recognise the AWS services and the processes that make all three possible. The exam rarely asks for deep configuration; it asks which service fits which need.
+
+### AWS Config: is everything configured the way it should be?
+
+**AWS Config** continuously **records the configuration of your AWS resources** and how it changes over time — for example a bucket's encryption setting, a SageMaker AI notebook's internet access, or a security group's rules. You can ask, *"What did this resource look like last Tuesday, and who changed it?"* (Config shows the change; CloudTrail shows the API call behind it.)
+
+**Config rules** evaluate resources against desired settings and mark them compliant or non-compliant. AWS provides many managed rules, and you can write your own. Examples relevant to AI:
+
+- S3 buckets holding training data must have encryption enabled.
+- SageMaker AI notebook instances must not have direct internet access.
+- SageMaker AI endpoint configurations must use a KMS key.
+
+Groups of rules can be deployed together as **conformance packs**, and non-compliant resources can be fixed automatically with remediation actions. Exam clue: *"continuously evaluate whether resources comply"*, *"track configuration changes"*, *"configuration history"* → **AWS Config**.
+
+### Amazon Inspector: are there known vulnerabilities?
+
+**Amazon Inspector** is an automated **vulnerability management** service. It continuously scans **Amazon EC2 instances, container images and AWS Lambda functions** for known software vulnerabilities (CVEs) and unintended network exposure, and ranks findings by severity. For AI teams this matters when you run your own model servers on EC2, package inference code in containers for Amazon ECS or Amazon EKS, or use Lambda functions as agent tools. An unpatched library in a model-serving container is a classic way in for attackers. Exam clue: *"scan for software vulnerabilities"*, *"CVEs"*, *"unpatched packages"* → **Amazon Inspector**.
+
+Inspector does *not* check model quality or bias, and it does not scan prompts. It checks software.
+
+### AWS Artifact: show me AWS's compliance evidence
+
+Under the shared responsibility model, auditors want evidence that AWS has done *its* part. **AWS Artifact** is a self-service portal in the console where you download **AWS compliance reports** — for example SOC reports, ISO certifications and PCI DSS attestations produced by independent auditors — and review and accept **agreements** with AWS, such as a Business Associate Addendum for health data. AWS has also obtained certification under **ISO/IEC 42001**, the international standard for AI management systems, for a number of its AI services.
+
+The key word is *AWS's* evidence. Artifact does not assess *your* resources; it provides the documents that show the underlying AWS services meet a standard, which you combine with your own evidence. Exam clue: *"download SOC or ISO reports"*, *"evidence that AWS services are compliant"*, *"accept an agreement"* → **AWS Artifact**.
+
+### AWS CloudTrail: who did what, and when?
+
+You met **AWS CloudTrail** on Day 25. For governance, remember what it gives you: a record of **API activity** — the identity, time, source address, action and resource — for actions taken through the console, the AWS CLI and SDKs. The last 90 days of management events are viewable in the console's event history; a **trail** delivers logs to an S3 bucket for long-term retention, and **log file integrity validation** lets you prove the logs were not altered. Typical questions: *"who deleted the guardrail"*, *"who changed the model endpoint"*, *"which user invoked the model"* → **CloudTrail**.
+
+### Amazon CloudWatch: what is happening right now?
+
+**Amazon CloudWatch** is the monitoring service. It collects **metrics** (for Amazon Bedrock: invocations, latency, input and output token counts, errors, guardrail interventions; for SageMaker AI endpoints: invocations, latency, errors, instance utilisation), stores **logs** (including Bedrock model invocation logs if you send them there) and raises **alarms** that notify people or trigger actions. **Dashboards** give teams a shared view of an AI system's health and cost drivers.
+
+The easy way to keep CloudTrail and CloudWatch apart: **CloudTrail = audit of actions** (who called which API); **CloudWatch = performance and operational monitoring** (how the system is behaving). CloudTrail events can be sent to CloudWatch to alarm on sensitive actions.
+
+### AWS Trusted Advisor: are we following best practice?
+
+**AWS Trusted Advisor** inspects your account and recommends improvements in categories including **cost optimisation, performance, security, fault tolerance, service quotas** and operational excellence. Examples: idle or under-used instances (such as a forgotten GPU instance), S3 buckets with open access, IAM access keys that have not been rotated, the root user without multi-factor authentication, or services close to a quota limit. A core set of checks is available to everyone; the full set comes with Business-level support plans and above. Exam clue: *"recommendations to reduce cost and improve security across the account"* → **Trusted Advisor**.
+
+### AWS Well-Architected Tool: is this workload designed well?
+
+The **AWS Well-Architected Framework** describes best practices in six pillars: operational excellence, security, reliability, performance efficiency, cost optimisation and sustainability. The **AWS Well-Architected Tool** in the console lets you **review a specific workload** by answering questions for each pillar; it then highlights risks and produces an **improvement plan**. You can apply **lenses** — extra question sets for particular workload types — including a **Machine Learning Lens** and a **Generative AI Lens**, or create custom lenses for your company's own standards.
+
+Trusted Advisor versus Well-Architected Tool: Trusted Advisor runs **automated checks across your account**; the Well-Architected Tool is a **guided review of one workload's design**, done with the team.
+
+### Data governance for AI
+
+Task 5.2 lists five data governance ideas. Each has a plain-English meaning and familiar AWS controls.
+
+**Lifecycle.** Data is created, used, archived and finally deleted. Define each stage for each kind of data. Amazon S3 **Lifecycle rules** move objects to cheaper storage classes as they age — such as **Amazon S3 Glacier** storage classes for archives — and **expire** (delete) them when they are no longer needed. Training datasets, model artifacts and invocation logs all need lifecycle rules; keeping everything forever is a cost and a privacy risk.
+
+**Logging.** Decide what must be logged — API calls (CloudTrail), prompts and responses (Bedrock invocation logging), data access (S3 server access logs or CloudTrail data events) — where logs are stored, who can read them, and how they are protected. Logs that contain prompts are sensitive data themselves.
+
+**Residency.** Some laws and contracts require data to be stored and processed in a particular country or region. On AWS you choose the **Region** where data is stored and where services run, and AWS does not move your content out of the Region you choose without your action. For generative AI, check features that can route requests across Regions: Amazon Bedrock **cross-Region inference** uses inference profiles that send requests to other Regions for capacity. Geographic profiles keep processing within a geography such as the EU or the US, while global profiles can use Regions worldwide — choose deliberately when residency rules apply.
+
+**Monitoring.** Watch data and models continuously: CloudWatch metrics and alarms, AWS Config for configuration drift, Macie for sensitive data appearing where it should not, model monitoring for data and model drift (Day 6) and bias drift (Day 23).
+
+**Retention.** Keep data for as long as required — not shorter (legal or audit obligations) and not longer (privacy laws often require deletion when the purpose ends). Controls include S3 Lifecycle expiration, **S3 Object Lock** for records that must not be changed or deleted during a retention period, **CloudWatch Logs retention settings** (by default log groups keep data indefinitely, so set a period), and processes to honour deletion requests — which, thanks to lineage, also tell you which models used the deleted data.
+
+### Governance processes
+
+Tools only work inside a process. Task 5.2 names several:
+
+- **Policies.** Written rules such as an *AI acceptable use policy* (which tools staff may use and with what data), a *model approval policy* (what evidence is needed before production), and a *data classification policy*. Policies should reflect relevant laws and frameworks — for example data protection law, sector rules, emerging AI regulations, and standards such as ISO/IEC 42001 or the NIST AI Risk Management Framework.
+- **Roles and a review board.** Name owners for each model and dataset, and set up a cross-functional AI governance group — business, legal, security, data science, risk — that approves high-risk use cases.
+- **Review cadence.** Decide how often things are reviewed: for example, high-risk models every quarter, policies every year, access rights every six months, and an immediate review after an incident or a major model change. Governance is continuous, not a one-off launch checklist.
+- **Training.** Staff must know the policies — what data may go into a public chatbot, how to spot prompt injection, how to report AI incidents. Training is a control: many AI incidents start with a well-meaning employee pasting confidential data into a consumer tool.
+- **Transparency and documentation.** Model Cards, risk assessments, evaluation results and decision logs, kept current.
+
+### The Generative AI Security Scoping Matrix
+
+AWS created the **Generative AI Security Scoping Matrix** to help organisations work out which security and governance controls apply to a generative AI use case. It sorts use cases into five **scopes** by how much of the AI stack you own:
+
+| Scope | Name | Example | What you control |
+|---|---|---|---|
+| 1 | Consumer app | Staff use a free public chatbot | Almost nothing except what data you put in and your usage policy |
+| 2 | Enterprise app | A SaaS product with generative AI features, under an enterprise agreement | Contract terms, configuration, user access |
+| 3 | Pre-trained models | Your own app calling a foundation model on Amazon Bedrock | The application, prompts, data, guardrails, access |
+| 4 | Fine-tuned models | Your app using a foundation model you fine-tuned on your data | All of scope 3 plus the fine-tuning data and the custom model |
+| 5 | Self-trained models | A model you train from scratch on your own data | The whole stack, including training data and model |
+
+Scopes 1 and 2 are **buying**; scopes 3 to 5 are **building**. As you move from 1 to 5 you gain control and take on responsibility. The matrix then asks you to consider five security disciplines for your scope: **governance and compliance, legal and privacy, risk management, controls, and resilience**. For example, in scope 1 the main control is a usage policy and training ("never paste customer data into a public chatbot"); in scope 4 you must also govern the fine-tuning dataset, protect the custom model, and evaluate it before release.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="Which governance service answers which question: configuration, vulnerabilities, AWS evidence, actions, health, best practice and workload design"
+  code={`flowchart LR
+  Q["Governance question"] --> C1["Is the resource configured to our rules? AWS Config"]
+  Q --> C2["Does the software have known vulnerabilities? Amazon Inspector"]
+  Q --> C3["Where is AWS's compliance report? AWS Artifact"]
+  Q --> C4["Who called which API and when? AWS CloudTrail"]
+  Q --> C5["How is the system performing now? Amazon CloudWatch"]
+  Q --> C6["Account-wide best-practice checks? AWS Trusted Advisor"]
+  Q --> C7["Is this workload well designed? Well-Architected Tool"]`}
+/>
+
+<Diagram
+  caption="Generative AI Security Scoping Matrix: from buying a consumer app to training your own model, control and responsibility grow together"
+  code={`flowchart LR
+  S1["Scope 1: Consumer app"] --> S2["Scope 2: Enterprise app"]
+  S2 --> S3["Scope 3: Pre-trained model via API"]
+  S3 --> S4["Scope 4: Fine-tuned model"]
+  S4 --> S5["Scope 5: Self-trained model"]
+  S1 -.-> B["Buy: usage policy, contracts, training"]
+  S3 -.-> D["Build: also own app, data, guardrails, model governance"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Requirement | Service or practice | Why |
+|---|---|---|
+| Alert when any training-data bucket is not encrypted | AWS Config rule | Continuous compliance evaluation of resource configuration |
+| Find unpatched libraries in the inference container image | Amazon Inspector | Vulnerability scanning of container images |
+| An auditor wants AWS's SOC 2 report for Bedrock | AWS Artifact | On-demand AWS compliance reports |
+| Identify who changed an endpoint's configuration | AWS CloudTrail | API activity history |
+| Alarm when model latency or errors rise | Amazon CloudWatch | Metrics and alarms |
+| Find idle GPU instances and open S3 buckets across the account | AWS Trusted Advisor | Automated best-practice checks |
+| Review a new chatbot's design against best practices before launch | Well-Architected Tool with the Generative AI Lens | Guided workload review and improvement plan |
+| Delete chat transcripts after 90 days | S3 Lifecycle expiration and log retention settings | Retention and lifecycle |
+| Customer data must stay in the EU | Choose EU Regions; use EU geographic inference profiles if using cross-Region inference | Residency |
+| Staff paste confidential data into a public chatbot | Acceptable use policy plus training (Scope 1) | Governance process |
+
+**Worked example — classifying with the scoping matrix.** A marketing team wants to (a) use a public image-generation website, (b) switch on the generative writing assistant in their licensed CRM product, (c) build a product-description generator calling Amazon Nova on Bedrock with their catalogue in the prompt, and (d) fine-tune a model on 10,000 past descriptions to match the brand voice. These are scopes 1, 2, 3 and 4. For (a) the controls are policy and training; for (b) the contract's data-use terms and admin settings; for (c) the application, prompts, IAM and guardrails; for (d) also the fine-tuning data governance, the custom model's encryption and access, and pre-release evaluation.
+
+**Worked example — three similar-sounding services.** *"A compliance officer needs to show (1) that S3 buckets with patient data have always been encrypted over the past year, (2) which administrator disabled encryption on one bucket in March, and (3) AWS's own HIPAA-related documentation."* (1) is **AWS Config** — configuration history and rule compliance over time. (2) is **CloudTrail** — the API call and the identity that made it. (3) is **AWS Artifact** — AWS's compliance documents and agreements. One scenario, three different tools.
+
+**Worked example — designing retention.** A bank logs every prompt and response of its customer assistant. Regulators require conversation records for five years, but privacy policy says nothing longer. The design: invocation logs go to an S3 bucket encrypted with a KMS key; S3 Object Lock in compliance mode prevents deletion for five years; a Lifecycle rule moves logs to an S3 Glacier storage class after 90 days and expires them after five years; CloudWatch Logs keep a 30-day copy for operational troubleshooting. Each control maps to a governance requirement.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={3}>
+
+<Callout type="realWorld" title="A healthcare company passes its first AI audit">
+A health-tech company built a clinical note summariser on Amazon Bedrock. For its first external audit it prepared evidence layer by layer. From **AWS Artifact** it downloaded AWS's compliance reports and its accepted Business Associate Addendum. **AWS Config** conformance packs showed that every bucket, notebook and endpoint had met its encryption and network rules all year, with two exceptions automatically remediated. **CloudTrail** trails with integrity validation showed every change to models and guardrails. **Amazon Inspector** reports showed container vulnerabilities fixed within the agreed time. **CloudWatch** dashboards showed latency, error and guardrail metrics, and **Trusted Advisor** findings were reviewed monthly.
+</Callout>
+
+The process evidence mattered just as much. The company had classified the summariser as **Scope 3** in the Generative AI Security Scoping Matrix and documented the controls it owned: prompts, data, guardrails, access and output use. An AI governance group with clinical, legal, security and engineering members had approved it after a **Well-Architected review** using the Generative AI Lens. The review cadence was written down — quarterly model evaluation, six-monthly access reviews, annual policy review — and minutes proved it had happened. All staff had completed training on the AI acceptable use policy.
+
+The auditor's only significant finding was about **retention**: invocation logs containing patient information were kept indefinitely because nobody had set a retention period. The fix took a day — a lifecycle rule and a log group retention setting — but it is a good reminder that the default is often "keep forever", and governance means choosing deliberately.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: build a governance evidence pack" minutes={8}>
+
+<HandsOnLab
+  goal="Walk through the consoles that provide governance evidence for an AI workload: AWS Config rules, AWS Artifact reports, CloudTrail history and a Well-Architected review."
+  asOf="November 2026"
+  steps={[
+    { text: 'In AWS Config, add a managed rule that checks SageMaker AI notebook instances have no direct internet access, then view the compliance results.', screen: { service: 'AWS Config', path: ['Rules', 'sagemaker-notebook-no-direct-internet-access'], menu: ['Dashboard', 'Conformance packs', 'Rules', 'Resources'], active: 'Rules', fields: [{ label: 'Compliant', value: '11 resources' }, { label: 'Noncompliant', value: '1 resource: ds-sandbox-notebook' }], highlight: 'Remediate' } },
+    { text: 'In AWS Artifact, open Reports and download AWS’s latest SOC 2 report for the auditor.', screen: { service: 'AWS Artifact', path: ['Reports', 'SOC 2 Type 2'], menu: ['Reports', 'Agreements'], active: 'Reports', fields: [{ label: 'Category', value: 'Certifications and attestations' }, { label: 'Scope', value: 'Includes Amazon Bedrock, SageMaker AI' }], highlight: 'Download report' } },
+    { text: 'In CloudTrail event history, filter by event name to see who updated the guardrail and when.', screen: { service: 'AWS CloudTrail', path: ['Event history'], menu: ['Dashboard', 'Event history', 'Trails', 'Lake'], active: 'Event history', fields: [{ label: 'Event name', value: 'UpdateGuardrail' }, { label: 'User', value: 'role/ml-platform-admin' }, { label: 'Time', value: '2026-10-28 14:02 UTC' }], note: 'Who did what, when' } },
+    { text: 'In the Well-Architected Tool, define the chatbot workload, apply the Generative AI Lens and review the high-risk items in the improvement plan.', screen: { service: 'AWS Well-Architected Tool', path: ['Workloads', 'claims-chatbot', 'Lenses'], menu: ['Workloads', 'Custom lenses', 'Lens catalog'], active: 'Workloads', fields: [{ label: 'Lenses', value: 'Well-Architected Framework · Generative AI Lens' }, { label: 'High risks', value: '3' }], highlight: 'Improvement plan' } },
+  ]}
+  expectedOutcome="You can say which console produces which piece of evidence: configuration compliance from Config, AWS's own reports from Artifact, activity history from CloudTrail and a design review from the Well-Architected Tool."
+  checks={[
+    { q: 'An auditor asks for proof that AWS’s data centres meet ISO 27001. Where do you get it?', a: 'AWS Artifact — it provides AWS compliance reports and certifications on demand.' },
+    { q: 'You need to know whether any SageMaker AI notebook was ever internet-facing this year. Which service?', a: 'AWS Config — it records configuration history and evaluates rules over time.' },
+    { q: 'Account-wide automated recommendations on cost, security and quotas come from which service?', a: 'AWS Trusted Advisor.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="Out-of-scope governance services">
+AWS Security Hub, AWS Control Tower, AWS Backup and Amazon GuardDuty are **out of scope** in the AIF-C01 v1.2 guide, and AWS Audit Manager is not listed. They are real services, but when they appear as options they are usually distractors. For the exam, reach for **Config** (configuration compliance), **Inspector** (vulnerabilities), **Artifact** (AWS compliance reports), **CloudTrail** (API audit), **CloudWatch** (monitoring), **Trusted Advisor** (best-practice checks) and the **Well-Architected Tool** (workload review).
+</Callout>
+
+- "Track configuration changes", "evaluate compliance with rules" → **AWS Config**.
+- "Vulnerabilities", "CVEs", "unpatched software" in EC2, containers or Lambda → **Amazon Inspector**.
+- "AWS compliance reports", "SOC", "ISO", "agreements" → **AWS Artifact**.
+- "Who made the change", "API calls", "audit trail" → **AWS CloudTrail**.
+- "Metrics", "alarms", "dashboards", "latency" → **Amazon CloudWatch**.
+- "Recommendations on cost, security, fault tolerance, quotas" → **AWS Trusted Advisor**.
+- "Review a workload against best practices", "lenses", "improvement plan" → **Well-Architected Tool**.
+- "Data must stay in a country" → **Region choice** (and care with cross-Region inference). "Keep for N years" → **retention** (Object Lock, Lifecycle, log retention).
+- Scoping matrix: public chatbot = **1**, SaaS with AI = **2**, Bedrock FM via API = **3**, fine-tuned = **4**, trained from scratch = **5**.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+Governance sets the rules; compliance proves you follow them. AWS Config records configuration and checks it against rules; Amazon Inspector finds software vulnerabilities; AWS Artifact supplies AWS's compliance reports and agreements; CloudTrail records who did what; CloudWatch monitors metrics, logs and alarms; Trusted Advisor checks the account against best practices; and the Well-Architected Tool reviews a workload with lenses such as Generative AI. Data governance covers lifecycle, logging, residency, monitoring and retention, using S3 Lifecycle and Glacier, Object Lock, log retention and Region choice. Processes — policies, owners, a review board, a review cadence and training — make the tools effective, and the Generative AI Security Scoping Matrix tells you which responsibilities are yours, from scope 1 (consumer app) to scope 5 (self-trained model). Tomorrow: Week 4 review.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={27} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="A governance architecture for an AI platform" minutes={15} optional>
+
+A company running dozens of AI workloads across several AWS accounts needs governance that scales. The platform team centralises evidence: every account sends **CloudTrail** logs to a dedicated, locked-down log-archive account, with log file integrity validation and S3 Object Lock. **AWS Config** runs in every account with a conformance pack of AI-specific rules — encrypted training buckets, notebooks without direct internet access, endpoints using KMS keys — and an aggregator gives the governance team one compliance view. **Amazon Inspector** scans every model-serving container image and Lambda tool, and findings above a severity threshold block deployment in the CI/CD pipeline. **CloudWatch** dashboards and alarms track invocations, token usage, latency, errors and guardrail interventions per application.
+
+<Diagram
+  caption="Reference architecture: multi-account AI governance with central CloudTrail archive, Config aggregator, Inspector scanning, CloudWatch monitoring and a review process"
+  code={`flowchart LR
+  subgraph WL["Workload accounts"]
+    app["AI apps: Bedrock and SageMaker AI"]
+    cfg["AWS Config rules and conformance pack"]
+    insp["Amazon Inspector scans"]
+    cw["CloudWatch metrics and alarms"]
+  end
+  app --> ct["CloudTrail"]
+  ct --> arch[("Log archive account: S3, Object Lock, lifecycle")]
+  cfg --> agg["Config aggregator: compliance view"]
+  insp --> pipe["CI/CD gate: block high severity"]
+  agg --> board["AI governance board: quarterly review"]
+  cw --> board
+  ta["Trusted Advisor findings"] --> board
+  wa["Well-Architected reviews with Generative AI Lens"] --> board
+  art["AWS Artifact reports"] --> audit["External auditors"]
+  board --> audit`}
+/>
+
+**Process on top of tooling.** Each new AI use case starts with an intake form that classifies it with the Generative AI Security Scoping Matrix and a risk tier. Scope 1 and 2 requests go through procurement and the acceptable use policy; scope 3 to 5 projects need a Well-Architected review with the Generative AI Lens, a Model Card, an evaluation report and a data residency check before the governance board approves them. High-risk systems are reviewed quarterly, others yearly, and every review is minuted. Mandatory annual training covers the acceptable use policy, data classification and how to report AI incidents.
+
+**Trade-offs.** Central logging and aggregated compliance views cost money and need an owner, but they make audits fast and investigations possible. Strict deployment gates slow releases slightly but stop known vulnerabilities reaching production. Longer retention helps investigations and regulators, but increases storage cost and privacy exposure — so set retention per data type, not one rule for everything. Good governance is proportionate: heavier controls for higher-risk scopes and use cases, lighter ones where the risk is low.
+
+</Section>

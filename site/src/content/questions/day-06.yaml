@@ -1,0 +1,331 @@
+- id: q-day-06-001
+  set: day-06
+  type: single
+  stem: "Three data science teams each rebuild the same 'average monthly spend' and 'days since last order' features for their own models, and the values sometimes differ. Which Amazon SageMaker AI feature solves this?"
+  options:
+    - { id: a, text: "SageMaker Model Monitor", explanation: "Incorrect. Model Monitor watches deployed models for drift; it does not store and share features." }
+    - { id: b, text: "SageMaker Ground Truth", explanation: "Incorrect. Ground Truth manages data labelling, not feature reuse." }
+    - { id: c, text: "SageMaker Feature Store", explanation: "Correct. Feature Store is a central repository to store, share and reuse consistent features for training and inference." }
+    - { id: d, text: "SageMaker JumpStart", explanation: "Incorrect. JumpStart offers pre-trained models, not a shared store of a company's features." }
+  answer: [c]
+  explanation: "SageMaker Feature Store keeps curated features in one place so teams reuse the same definitions for training and inference. That avoids duplicated work and inconsistent values — a typical source of technical debt in ML projects."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: easy
+
+- id: q-day-06-002
+  set: day-06
+  type: single
+  stem: "Business analysts need to clean and normalise a customer dataset before it is used for ML. They do not write code and want a visual tool with ready-made transformations. Which AWS service fits BEST?"
+  options:
+    - { id: a, text: "AWS Glue DataBrew", explanation: "Correct. DataBrew is a visual, no-code data preparation tool with hundreds of built-in transformations and data-quality profiles." }
+    - { id: b, text: "Amazon EMR", explanation: "Incorrect. EMR runs big-data frameworks such as Apache Spark and requires engineering skills." }
+    - { id: c, text: "AWS Data Exchange", explanation: "Incorrect. Data Exchange is for finding and subscribing to third-party datasets, not cleaning data." }
+    - { id: d, text: "Amazon Redshift", explanation: "Incorrect. Redshift is a data warehouse queried with SQL, not a visual no-code cleaning tool." }
+  answer: [a]
+  explanation: "AWS Glue DataBrew targets analysts and data scientists who want to prepare data visually without code. SageMaker Data Wrangler and SageMaker Canvas offer similar visual preparation inside SageMaker AI."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: easy
+
+- id: q-day-06-003
+  set: day-06
+  type: single
+  stem: "A churn model has run in production for six months. The company wants to be alerted automatically when the incoming customer data starts to differ from the data the model was trained on. Which feature should it use?"
+  options:
+    - { id: a, text: "SageMaker Data Wrangler", explanation: "Incorrect. Data Wrangler prepares data before training; it does not monitor production traffic." }
+    - { id: b, text: "SageMaker Model Registry", explanation: "Incorrect. Model Registry tracks model versions and approvals, not live data drift." }
+    - { id: c, text: "AWS Glue DataBrew", explanation: "Incorrect. DataBrew is a data preparation tool, not a production monitoring service." }
+    - { id: d, text: "SageMaker Model Monitor", explanation: "Correct. Model Monitor compares production inputs and predictions with a training baseline and reports data drift, model-quality decay and bias drift." }
+  answer: [d]
+  explanation: "Monitoring is a core MLOps stage. SageMaker Model Monitor runs on a schedule against a deployed endpoint, compares live data with the training baseline and raises violations that can trigger CloudWatch alarms and retraining."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-day-06-004
+  set: day-06
+  type: single
+  stem: "A hospital builds a model to flag possible early-stage cancer on scans for follow-up by a specialist. Missing a real case is far more harmful than an unnecessary follow-up. Which metric should the team prioritise?"
+  options:
+    - { id: a, text: "Precision", explanation: "Incorrect. Precision limits false alarms; here false alarms are acceptable but misses are not." }
+    - { id: b, text: "Recall", explanation: "Correct. Recall measures how many real cases are caught; maximising it minimises false negatives, the costly error here." }
+    - { id: c, text: "Accuracy", explanation: "Incorrect. With rare positive cases, accuracy can be high even when many cancers are missed." }
+    - { id: d, text: "RMSE", explanation: "Incorrect. RMSE measures error for regression, not for a yes/no classification." }
+  answer: [b]
+  explanation: "Recall = TP ÷ (TP + FN). Prioritise recall when false negatives (missed cases) are costly — disease screening, fraud, safety defects. Prioritise precision when false positives are costly, and use F1 when both matter."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-day-06-005
+  set: day-06
+  type: multi
+  stem: "A team's model is retrained by one data scientist running notebook cells by hand, and nobody else can reproduce it. Which MLOps practices would MOST improve this situation? (Select TWO.)"
+  options:
+    - { id: a, text: "Automate the steps as a pipeline, for example with SageMaker Pipelines", explanation: "Correct. An automated pipeline makes training repeatable and removes fragile manual steps." }
+    - { id: b, text: "Version the data, code and models, and register each model version", explanation: "Correct. Versioning and a model registry let anyone trace and rebuild exactly the same model." }
+    - { id: c, text: "Keep retraining manual but document the notebook cells in an email", explanation: "Incorrect. Documentation in email does not make the process repeatable or scalable; it leaves the technical debt in place." }
+    - { id: d, text: "Stop monitoring the model once its accuracy is high", explanation: "Incorrect. Models decay as data changes; monitoring is a core MLOps practice." }
+    - { id: e, text: "Deploy every new model straight to production without evaluation", explanation: "Incorrect. Production readiness requires evaluation and approval gates before deployment." }
+  answer: [a, b]
+  explanation: "MLOps applies engineering discipline to ML: experiment tracking, automated and repeatable pipelines, versioning, scalable infrastructure, production-readiness checks, monitoring and retraining. These reduce technical debt and make models reliable."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-day-06-006
+  set: day-06
+  type: single
+  stem: "A spam filter is tested on a batch of emails. It produces 45 true positives, 15 false positives and 30 false negatives. What is its precision?"
+  options:
+    - { id: a, text: "60%", explanation: "Incorrect. 60% is the recall: 45 ÷ (45 + 30)." }
+    - { id: b, text: "25%", explanation: "Incorrect. 25% is the share of flagged emails that were false positives: 15 ÷ 60." }
+    - { id: c, text: "75%", explanation: "Correct. Precision = TP ÷ (TP + FP) = 45 ÷ (45 + 15) = 75%." }
+    - { id: d, text: "50%", explanation: "Incorrect. 45 ÷ (45 + 15 + 30) mixes false positives and false negatives and is not precision." }
+  answer: [c]
+  explanation: "Precision answers 'of everything flagged, how much was right?': TP ÷ (TP + FP). Recall answers 'of all real cases, how many were caught?': TP ÷ (TP + FN). Here precision is 75% and recall is 60%."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#examples
+  difficulty: medium
+
+- id: q-day-06-007
+  set: day-06
+  type: ordering
+  stem: "Place these stages of the ML development lifecycle in the correct order, from first to last."
+  options:
+    - { id: a, text: "Train and tune candidate models", explanation: "This is the third stage: models learn from the prepared data and hyperparameters are tuned." }
+    - { id: b, text: "Deploy the model and monitor it in production", explanation: "This is the last stage: the model serves predictions and is watched for drift, triggering retraining when needed." }
+    - { id: c, text: "Identify the business goal and frame the ML problem", explanation: "This is the first stage: success criteria and the ML task must be defined before any data work." }
+    - { id: d, text: "Evaluate the model against held-out data and the business target", explanation: "This is the fourth stage: the model must meet the agreed metrics before deployment." }
+    - { id: e, text: "Collect, clean and prepare the data, including feature engineering", explanation: "This is the second stage: the data is gathered, explored, cleaned and turned into features." }
+  answer: [c, e, a, d, b]
+  explanation: "The lifecycle runs from business goal and problem framing, through data collection and preparation, training and tuning, and evaluation, to deployment and monitoring. Monitoring feeds back into data collection when the model needs retraining, so the lifecycle is a loop."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-day-06-008
+  set: day-06
+  type: matching
+  stem: "Match each data requirement to the AWS service that fits it BEST."
+  options:
+    - { id: a, text: "Let data scientists see only some columns of tables in an S3 data lake", explanation: "AWS Lake Formation fits because it centrally manages fine-grained permissions on data-lake databases, tables, columns and rows." }
+    - { id: b, text: "Run Apache Spark jobs over 80 TB of clickstream logs", explanation: "Amazon EMR fits because it provides managed big-data clusters for frameworks such as Spark." }
+    - { id: c, text: "Run SQL analytics on years of structured sales data in a data warehouse", explanation: "Amazon Redshift fits because it is AWS's cloud data warehouse." }
+    - { id: d, text: "Subscribe to a commercial weather dataset to improve a demand forecast", explanation: "AWS Data Exchange fits because it lets you find and subscribe to third-party datasets." }
+    - { id: e, text: "Automatically discover the schema of new files and record it in a catalog", explanation: "AWS Glue fits because its crawlers discover schemas and store them in the Glue Data Catalog." }
+  matchTargets:
+    - { id: t1, text: "AWS Glue" }
+    - { id: t2, text: "Amazon EMR" }
+    - { id: t3, text: "AWS Lake Formation" }
+    - { id: t4, text: "Amazon Redshift" }
+    - { id: t5, text: "AWS Data Exchange" }
+  answer: { a: t3, b: t2, c: t4, d: t5, e: t1 }
+  explanation: "S3 stores the data, Glue catalogs and transforms it, EMR processes it at very large scale, Lake Formation governs access, Redshift serves warehouse analytics and Data Exchange brings in third-party data. Knowing one sentence per service is enough for the exam."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-day-06-009
+  set: day-06
+  type: single
+  stem: "A three-person start-up wants to add text generation to its app. Traffic is unpredictable, and the team does not want to manage servers, scaling or model updates. How should it consume a foundation model?"
+  options:
+    - { id: a, text: "Download an open-source model and run it on Amazon EC2 GPU instances", explanation: "Incorrect. Self-hosting on EC2 means managing instances, scaling, patching and paying while they run." }
+    - { id: b, text: "Train a new foundation model from scratch on SageMaker AI", explanation: "Incorrect. Training from scratch is enormously expensive and unnecessary for a small team." }
+    - { id: c, text: "Host the model on an Amazon EKS cluster that the team operates", explanation: "Incorrect. A self-managed cluster adds the operational work the team wants to avoid." }
+    - { id: d, text: "Call a model through Amazon Bedrock as a managed API", explanation: "Correct. Bedrock provides foundation models through an API with no infrastructure to manage and pay-per-use pricing." }
+  answer: [d]
+  explanation: "A managed API such as Amazon Bedrock suits small teams, fast starts and variable traffic: AWS runs the infrastructure and you pay per request or token. Self-hosting on a SageMaker AI endpoint, EC2, EKS or ECS gives more control but adds operational work and instance costs."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-day-06-010
+  set: day-06
+  type: single
+  stem: "A company's policy says that only model versions reviewed and approved by a risk manager may be deployed. Which SageMaker AI feature records each model version with its metrics and approval status?"
+  options:
+    - { id: a, text: "SageMaker Canvas", explanation: "Incorrect. Canvas is a no-code tool for building models, not a catalogue of approved versions." }
+    - { id: b, text: "SageMaker Model Registry", explanation: "Correct. Model Registry catalogues model versions with metadata and metrics and tracks an approval status before deployment." }
+    - { id: c, text: "SageMaker Ground Truth", explanation: "Incorrect. Ground Truth is for labelling data." }
+    - { id: d, text: "AWS Glue Data Catalog", explanation: "Incorrect. The Glue Data Catalog stores table schemas for data, not model versions and approvals." }
+  answer: [b]
+  explanation: "SageMaker Model Registry supports production readiness: every model version is registered with its metrics and lineage, and its approval status (pending, approved, rejected) can gate automated deployment."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: easy
+
+- id: q-day-06-011
+  set: day-06
+  type: single
+  stem: "A development team wants an AI-powered integrated development environment that turns natural-language requirements into specifications and tasks and then helps write and test the code for a new AI application. Which AWS offering fits?"
+  options:
+    - { id: a, text: "Kiro", explanation: "Correct. Kiro is AWS's agentic IDE that turns requirements into specifications, designs and tasks and helps write, test and update code." }
+    - { id: b, text: "Amazon Quick", explanation: "Incorrect. Amazon Quick is an agentic workspace for business users — dashboards, research, chat agents and automation — not a developer IDE." }
+    - { id: c, text: "AWS Glue DataBrew", explanation: "Incorrect. DataBrew is a visual data preparation tool." }
+    - { id: d, text: "SageMaker Model Monitor", explanation: "Incorrect. Model Monitor detects drift in deployed models." }
+  answer: [a]
+  explanation: "Exam guide v1.2 names Kiro and Amazon Quick as lifecycle tools. Kiro supports the build stage for developers with spec-driven, agentic coding; Amazon Quick supports business users who consume AI insights, dashboards and agents."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-day-06-012
+  set: day-06
+  type: single
+  stem: "A bank's card-fraud model blocks many genuine purchases, and customers are complaining. The bank still wants to catch most fraud but must reduce false alarms. What should the team do?"
+  options:
+    - { id: a, text: "Lower the decision threshold so the model flags more transactions", explanation: "Incorrect. Lowering the threshold raises recall but creates even more false positives — the opposite of what is needed." }
+    - { id: b, text: "Judge the model only on accuracy, which is already above 99%", explanation: "Incorrect. With rare fraud, accuracy hides the false-positive problem; it is the wrong metric here." }
+    - { id: c, text: "Raise the decision threshold and track precision alongside recall", explanation: "Correct. A higher threshold flags fewer, more confident cases, improving precision; tracking recall ensures most fraud is still caught." }
+    - { id: d, text: "Switch to RMSE as the main evaluation metric", explanation: "Incorrect. RMSE measures regression error and does not apply to a fraud yes/no decision." }
+  answer: [c]
+  explanation: "Classifiers output a probability that a threshold turns into a decision. Raising the threshold increases precision and lowers recall; lowering it does the opposite. The right balance depends on the business cost of false positives versus false negatives, and F1 summarises the balance."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: hard
+
+- id: q-day-06-013
+  set: day-06
+  type: multi
+  stem: "In which situations is self-hosting a model, for example on a SageMaker AI endpoint, a better choice than calling a managed API? (Select TWO.)"
+  options:
+    - { id: a, text: "The team has fine-tuned an open-source model and needs full control over the model version, hardware and networking", explanation: "Correct. Self-hosting gives full control over custom weights, versions, instance types and network configuration." }
+    - { id: b, text: "Traffic is steady and very high, so dedicated instances cost less than per-request pricing", explanation: "Correct. At constant high volume, paying for instances that are always busy can be cheaper than paying per request or token." }
+    - { id: c, text: "The team is small and has no one to manage infrastructure", explanation: "Incorrect. Lack of operations staff points to a managed API, where AWS runs the infrastructure." }
+    - { id: d, text: "Traffic is low and spiky, with long idle periods", explanation: "Incorrect. Self-hosted instances bill while idle; spiky low traffic suits pay-per-use managed APIs." }
+    - { id: e, text: "The team wants to start within a day without choosing instance types", explanation: "Incorrect. Fast starts without capacity planning are the advantage of a managed API." }
+  answer: [a, b]
+  explanation: "A managed API trades control for simplicity: no servers, pay per use, quick start. Self-hosting suits custom or open-source models, strict control requirements and steady high volume, but you take on capacity planning, scaling, patching and monitoring."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: hard
+
+- id: q-day-06-014
+  set: day-06
+  type: single
+  stem: "Sales managers with no technical background want to explore dashboards, ask questions of company data in natural language and automate routine follow-up work with AI agents. Which AWS service named in the exam guide fits this use stage of the lifecycle?"
+  options:
+    - { id: a, text: "Amazon EMR", explanation: "Incorrect. EMR runs big-data processing clusters for engineers." }
+    - { id: b, text: "Kiro", explanation: "Incorrect. Kiro is an agentic IDE for developers building applications." }
+    - { id: c, text: "SageMaker Pipelines", explanation: "Incorrect. Pipelines automates ML workflows for data scientists and engineers." }
+    - { id: d, text: "Amazon Quick", explanation: "Correct. Amazon Quick is an agentic workspace for business users that combines BI dashboards, research, chat agents and workflow automation over company data." }
+  answer: [d]
+  explanation: "Amazon Quick puts AI insights and agents in the hands of business users — the stage where people consume results and make decisions. Kiro serves developers in the build stage, and SageMaker AI and Bedrock serve the model-building and serving stages."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: medium
+
+- id: q-day-06-015
+  set: day-06
+  type: multi
+  stem: "Which Amazon SageMaker AI features are used mainly in the data preparation stage, before a model is trained? (Select TWO.)"
+  options:
+    - { id: a, text: "SageMaker Data Wrangler", explanation: "Correct. Data Wrangler imports, explores, cleans and transforms data with visual tools." }
+    - { id: b, text: "SageMaker Ground Truth", explanation: "Correct. Ground Truth creates labelled datasets with human and assisted labelling." }
+    - { id: c, text: "SageMaker Model Monitor", explanation: "Incorrect. Model Monitor runs after deployment to detect drift." }
+    - { id: d, text: "SageMaker Model Registry", explanation: "Incorrect. Model Registry tracks trained model versions and approvals, after training." }
+    - { id: e, text: "Real-time inference endpoints", explanation: "Incorrect. Endpoints serve predictions in the deployment stage." }
+  answer: [a, b]
+  explanation: "Map SageMaker AI features to lifecycle stages: Ground Truth and Data Wrangler prepare data, Feature Store manages features, training jobs and JumpStart produce models, Clarify evaluates bias, Model Registry and endpoints handle deployment, and Model Monitor watches production."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: easy
+
+- id: q-day-06-016
+  set: day-06
+  type: single
+  stem: "Only 2% of loan applications in a dataset end in default. A model reports 98% accuracy, but the risk team suspects it rarely identifies defaulters. Which single metric should the team use to judge the model on both missed defaulters and false alarms?"
+  options:
+    - { id: a, text: "Accuracy, because 98% is close to perfect", explanation: "Incorrect. A model that predicts 'no default' for everyone also scores 98%, so accuracy hides the problem." }
+    - { id: b, text: "F1 score, because it balances precision and recall on imbalanced data", explanation: "Correct. F1 is the harmonic mean of precision and recall and stays low if the model misses defaulters or raises many false alarms." }
+    - { id: c, text: "MAE, because it measures the average size of errors", explanation: "Incorrect. MAE is a regression metric for numeric predictions, not for a default yes/no classification." }
+    - { id: d, text: "R², because it shows how much variation the model explains", explanation: "Incorrect. R² is a regression metric and does not apply to this classification task." }
+  answer: [b]
+  explanation: "With imbalanced classes, accuracy is misleading. Precision measures false alarms, recall measures misses, and F1 combines both into one number. AUC is also useful to compare classifiers across thresholds."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#exam-tips
+  difficulty: hard
+
+- id: q-day-06-017
+  set: day-06
+  type: multi
+  stem: "A product-recommendation model is live. Leadership asks whether it is worth the money. Which are business metrics rather than model metrics? (Select TWO.)"
+  options:
+    - { id: a, text: "Cost per user served", explanation: "Correct. Cost per user is a business metric that links running costs to the people who benefit." }
+    - { id: b, text: "Return on investment (ROI)", explanation: "Correct. ROI compares the financial gain with the cost of building and running the model." }
+    - { id: c, text: "F1 score", explanation: "Incorrect. F1 is a model metric that combines precision and recall." }
+    - { id: d, text: "AUC", explanation: "Incorrect. AUC is a model metric that measures how well a classifier separates classes." }
+    - { id: e, text: "RMSE", explanation: "Incorrect. RMSE is a model metric for regression error." }
+  answer: [a, b]
+  explanation: "Model metrics such as precision, recall, F1, AUC and RMSE describe predictive quality. Business metrics such as cost per user, development cost, ROI, conversion uplift and customer feedback decide whether the model is worth running."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: easy
+
+- id: q-day-06-018
+  set: day-06
+  type: single
+  stem: "A model predicting taxi journey times has an MAE of 3 minutes and an RMSE of 11 minutes. What does the large gap between the two values MOST likely indicate?"
+  options:
+    - { id: a, text: "Most predictions are close, but a few predictions are very far off", explanation: "Correct. RMSE squares errors, so a handful of very large misses raises it far above MAE." }
+    - { id: b, text: "The model is a classifier, so these metrics are invalid", explanation: "Incorrect. MAE and RMSE are standard metrics for regression models such as journey-time prediction." }
+    - { id: c, text: "Every prediction is wrong by exactly 11 minutes", explanation: "Incorrect. If every error were the same size, MAE and RMSE would be equal." }
+    - { id: d, text: "The model has perfect precision and recall", explanation: "Incorrect. Precision and recall are classification metrics and say nothing about journey-time errors." }
+  answer: [a]
+  explanation: "MAE is the average absolute error in plain units. RMSE squares errors before averaging, so it punishes large errors more. When RMSE is much larger than MAE, a few big misses — perhaps in bad weather or heavy traffic — deserve investigation."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#examples
+  difficulty: medium
+
+- id: q-day-06-019
+  set: day-06
+  type: single
+  stem: "What is the main purpose of Amazon SageMaker Pipelines?"
+  options:
+    - { id: a, text: "To define ML steps such as processing, training, evaluation and registration as an automated, repeatable workflow", explanation: "Correct. Pipelines automates the ML workflow so the same model can be rebuilt and redeployed reliably." }
+    - { id: b, text: "To label images with a human workforce", explanation: "Incorrect. Human labelling is the job of SageMaker Ground Truth." }
+    - { id: c, text: "To subscribe to third-party datasets", explanation: "Incorrect. Third-party data subscriptions are provided by AWS Data Exchange." }
+    - { id: d, text: "To provide a no-code interface for business analysts to build models", explanation: "Incorrect. No-code model building is the job of SageMaker Canvas." }
+  answer: [a]
+  explanation: "SageMaker Pipelines is the automation backbone of MLOps on SageMaker AI. A pipeline chains steps — process data, train, evaluate, check a quality condition, register the model — and can run on a schedule or be triggered by events such as drift alerts."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: easy
+
+- id: q-day-06-020
+  set: day-06
+  type: single
+  stem: "A demand-forecasting model's accuracy falls steadily after customer buying habits change. The team wants the model to stay accurate with as little manual work as possible. Which design BEST meets this goal?"
+  options:
+    - { id: a, text: "Retrain manually whenever someone notices complaints from planners", explanation: "Incorrect. Waiting for complaints is slow and depends on manual effort, which is what MLOps aims to remove." }
+    - { id: b, text: "Increase the endpoint instance size so predictions are faster", explanation: "Incorrect. Faster inference does not fix a model whose patterns no longer match reality." }
+    - { id: c, text: "Use Model Monitor to detect drift and trigger a SageMaker Pipelines run that retrains on recent data and registers the new version for approval", explanation: "Correct. Monitoring plus automated retraining and a registry approval gate keeps the model accurate with minimal manual effort." }
+    - { id: d, text: "Freeze the model so its predictions stay consistent over time", explanation: "Incorrect. A frozen model keeps making stale predictions as the world changes; consistency is not the same as accuracy." }
+  answer: [c]
+  explanation: "When the relationship between inputs and outcomes changes (concept drift) or input data shifts (data drift), accuracy decays. MLOps closes the loop: Model Monitor detects drift, alarms trigger an automated retraining pipeline, and Model Registry gates the new version before deployment."
+  domain: D1
+  taskStatement: "1.3"
+  lessonRef: day-06#explanation
+  difficulty: hard

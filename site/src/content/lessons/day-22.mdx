@@ -1,0 +1,287 @@
+---
+day: 22
+kind: lesson
+title: 'Responsible AI dimensions'
+summary: 'Learn what makes an AI system responsible — bias and fairness, inclusivity, robustness, safety, veracity, privacy, transparency and governance — and why the characteristics of a dataset decide most of them. See how bias and variance hurt particular groups of people, and recognise the legal risks of generative AI: intellectual property claims, biased outputs, loss of trust, end-user harm and hallucinations.'
+domains: [D4]
+taskStatements: ['4.1']
+sources:
+  - { provider: udemy, title: 'Responsible AI; AI Challenges and Responsibilities; Generative AI Challenges' }
+  - { provider: skillbuilder, title: 'Responsible Artificial Intelligence Practices' }
+  - { provider: aws-docs, title: 'AWS — Building AI responsibly (core dimensions of responsible AI)', url: 'https://aws.amazon.com/ai/responsible-ai/' }
+objectives:
+  - Define the core dimensions of responsible AI — fairness, inclusivity, robustness, safety, veracity, privacy, transparency, explainability, controllability and governance
+  - Name common sources of bias (sampling, historical, measurement, label and automation bias)
+  - Describe the dataset characteristics that support responsible AI — inclusive, diverse, balanced, curated and well documented
+  - Explain how bias and variance affect demographic groups through inaccuracy, overfitting and underfitting
+  - Recognise the legal risks of generative AI and the controls that reduce each one
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'Responsible AI dimensions: fairness, inclusivity, robustness, safety, veracity, privacy and security, transparency, explainability, controllability and governance.'
+  - 'Most AI bias starts in the data: sampling, historical, measurement and label bias. Automation bias is people trusting the model too much.'
+  - 'Responsible datasets are inclusive, diverse, balanced, curated from known sources and documented.'
+  - 'A good overall score can hide poor accuracy for a subgroup — always evaluate per group. Overfitting and underfitting often hit minority groups hardest.'
+  - 'Generative AI legal risks: IP infringement, biased outputs, loss of customer trust, end-user harm, hallucinations, and privacy or data leakage.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 21" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="What makes AI responsible" minutes={15}>
+
+### Why responsible AI is an engineering topic
+
+Week 4 opens Domain 4, *Guidelines for Responsible AI* (14% of the exam). It is easy to treat responsible AI as a vague ethics topic, but the exam treats it as engineering: a model that is unfair, unsafe or untruthful is a *defective* model, in the same way that a bridge that sways too much is a defective bridge. A credit model that wrongly rejects qualified applicants from one neighbourhood loses the bank customers, invites regulators and damages its reputation. A chatbot that invents a refund policy creates a legal obligation the company never intended.
+
+**Responsible AI** is the set of practices that keeps AI systems fair, safe, truthful, private and accountable across their whole lifecycle — from choosing the use case and the data, through training and evaluation, to deployment and monitoring. It is not a single step at the end. Think of it like food hygiene in a restaurant kitchen: it applies to buying ingredients, storing them, cooking and serving, and an inspector checks all of it.
+
+### The core dimensions
+
+AWS describes responsible AI through a set of **core dimensions**, and the exam guide lists *bias, fairness, inclusivity, robustness, safety and veracity* by name. Learn each one as a short definition plus an example.
+
+| Dimension | Plain-English meaning | Failure example |
+|---|---|---|
+| **Fairness** | The system works equally well and treats people equitably across groups (age, gender, ethnicity, disability, region) | A loan model approves equally qualified applicants at very different rates by postcode |
+| **Bias** (the problem fairness addresses) | Systematic skew in data or outputs that favours or disadvantages some groups | Image generator always draws "a nurse" as a woman and "a CEO" as a man |
+| **Inclusivity** | The system is designed for, and tested with, the full range of people who will use it | Voice assistant fails for strong regional accents or speech impairments |
+| **Robustness** | The system keeps working reliably when inputs are noisy, unusual or adversarial | A small typo or a rephrased prompt flips the model's answer |
+| **Safety** | The system avoids harmful outputs and harmful actions | Chatbot gives dangerous medical instructions or produces hate speech |
+| **Veracity** | Outputs are truthful and accurate; the system does not present guesses as facts | Assistant cites a court case that does not exist (a hallucination) |
+| **Privacy and security** | Personal and confidential data is protected and used appropriately | Model reveals another customer's address that appeared in training data |
+| **Transparency** | People know they are dealing with AI and can find out how it was built and what it is for | Customers are not told that an automated system rejected their claim |
+| **Explainability** | People can understand *why* the system produced a given output | Nobody can say which factors drove a declined mortgage |
+| **Controllability** | Humans can monitor, steer and override the system | No way to stop an agent that keeps sending wrong emails |
+| **Governance** | Policies, roles, documentation and audits that make the above happen and prove it | No record of who approved the model or what data it used |
+
+Two pairs are often confused. **Fairness vs inclusivity**: fairness is about *outcomes* being equitable; inclusivity is about *who was considered* when designing, collecting data and testing. An inclusive process makes fair outcomes much more likely. **Robustness vs veracity**: robustness is about *stability* (does it keep working when inputs change?), veracity is about *truth* (is the answer correct?). A model can be stable and consistently wrong. Transparency and explainability get a full day on Day 24, and privacy, security and governance are Days 25–27.
+
+### Where bias comes from
+
+Bias rarely comes from a programmer deciding to discriminate. It usually creeps in through the data or through how people use the model. The common types:
+
+- **Sampling (representation) bias** — some groups are missing or rare in the training data. A skin-lesion classifier trained mostly on light skin performs worse on dark skin.
+- **Historical bias** — the data accurately records an unfair past. A hiring model trained on ten years of decisions learns that the company mostly hired men for engineering roles and repeats it.
+- **Measurement bias** — the way a feature is measured differs between groups or is a poor proxy. Using "number of past arrests" as a stand-in for "crime committed" bakes in differences in policing.
+- **Label bias** — the human labels themselves are inconsistent or prejudiced. Annotators from one culture may label informal dialect as "toxic" more often.
+- **Proxy features** — removing a sensitive attribute such as gender does not remove bias if another feature (first name, certain hobbies, postcode) stands in for it.
+- **Automation bias** — a human bias, not a data bias: people over-trust a model's output and stop applying their own judgment.
+- **Confirmation bias** — teams look only for results that support what they already believe, for example testing a model only on easy examples.
+
+### Dataset characteristics that support responsible AI
+
+The exam guide asks you to identify the characteristics of a good dataset. Remember these five:
+
+1. **Inclusive** — covers every group of people and every situation the model will meet in production (regions, languages, ages, devices, lighting conditions).
+2. **Diverse** — varied examples within each group, so the model learns the real pattern rather than one narrow version of it.
+3. **Balanced** — no group or class so rare that the model can ignore it and still look accurate. Rebalancing techniques include collecting more data, oversampling, undersampling and carefully generated synthetic data.
+4. **Curated data sources** — data comes from known, legitimate, licensed sources, is cleaned of errors and duplicates, and is checked for toxic or copyrighted material before it reaches a foundation model.
+5. **Documented** — origin, collection method, consent, known gaps and intended use are written down (datasheets for datasets, data lineage). Documentation is what lets an auditor later answer "why did the model behave this way?"
+
+Two more practical checks: **privacy** (remove or mask personal data you do not need) and **freshness** (old data may no longer reflect the population, which leads to drift).
+
+### Effects of bias and variance on groups
+
+On Day 2 you met bias and variance in the *statistical* sense. Domain 4 asks you to connect them to people.
+
+- **Underfitting (high bias)** — the model is too simple to capture the pattern. If the pattern differs between groups, a simple model often learns the majority group's pattern and applies it to everyone, so minority groups get systematically worse predictions.
+- **Overfitting (high variance)** — the model memorises the training data. When a group has only a few examples, the model memorises their noise; predictions for that group become erratic and swing widely with small changes in the data.
+- **Inaccuracy for a subgroup** — even a well-fitted model can be 95% accurate overall and 70% accurate for one group. Averages hide this. The cure is **subgroup analysis**: compute accuracy, false positive rate and false negative rate *per group* and compare.
+- **Unequal error types** — a fraud model may wrongly flag (false positive) one group's transactions twice as often as another's. Even with equal accuracy, the *kind* of mistake can be unfair.
+
+The practical responses are the same tools you know from Week 1 — more representative data, appropriate model complexity, regularisation, validation on held-out data — plus evaluation sliced by group, before launch and continuously after it.
+
+### Legal risks of generative AI
+
+Generative AI adds risks that traditional ML rarely had. The exam guide names these:
+
+- **Intellectual property (IP) infringement** — a model may reproduce copyrighted text, code, images or a recognisable artistic style from its training data, and the company that publishes the output may face claims. Training on data you are not licensed to use creates the same exposure.
+- **Biased model outputs** — generated text or images that stereotype or exclude groups can breach anti-discrimination laws, especially in hiring, lending, housing and insurance.
+- **Loss of customer trust** — one viral screenshot of a rude, wrong or offensive chatbot answer can undo years of brand building.
+- **End-user risk** — people can be harmed by acting on outputs: unsafe advice, defamatory statements about real people, or manipulated content such as deepfakes.
+- **Hallucinations** — confident but false outputs. If a company's assistant states a false policy, price or legal fact, the company may be held to it.
+- **Privacy and data leakage** — personal or confidential data in prompts, training data or logs can surface in outputs or be stored where it should not be.
+
+Each risk has typical controls: licensed and curated training data and output filters (IP), bias testing and guardrails (biased outputs), transparency and human escalation (trust), safety filters and human review for high-stakes use (end-user risk), grounding with retrieval-augmented generation and citations (hallucinations), and data minimisation and PII redaction (privacy). Some model providers also offer **IP indemnity** for outputs of certain models; AWS, for example, extends IP indemnity to outputs of its own Amazon Nova models, subject to its terms. The exam-level point is simple: *legal risk is managed by data provenance, output controls, human oversight and documentation*, not by hoping the model behaves.
+
+### Measuring fairness: a first look at the numbers
+
+"Fair" has to be turned into something you can measure, or nobody can check it. You do not need formulas for this exam, but you should recognise the ideas behind the most common checks:
+
+- **Representation** — what share of the training data does each group make up, compared with the population the model will serve? If 3% of the data covers a group that is 20% of your customers, expect trouble. Tomorrow you will see SageMaker Clarify call this **class imbalance**.
+- **Outcome rates** — what share of each group receives the positive outcome (approved, shortlisted, offered a discount)? Large gaps are a warning sign. A common rule of thumb compares the rate for one group with the rate for another; a ratio far below 1 suggests disparate impact.
+- **Error rates per group** — false positives and false negatives for each group. A medical screening model that misses disease (false negatives) more often for women than for men is unfair even if overall accuracy is identical.
+- **Consistency** — do similar individuals get similar outcomes? Counterfactual tests change only one attribute, such as a name, and check that the output stays the same.
+
+No single metric is "the" fairness metric. Which one matters depends on the harm: for a cancer screen, missed cases matter most; for a fraud alert that freezes a card, false alarms matter most. Choosing the metric is a business and ethical decision that should be agreed and documented before the model is evaluated, not after the results are in.
+
+### Inclusive design in practice
+
+Inclusivity starts before any data is collected. Teams practising inclusive design ask *who will use this, who will be affected by it, and who is missing from the room?* Practical habits include involving people from affected communities in requirements and testing, recruiting test users across ages, languages, abilities and regions, supporting accessibility needs (screen readers, captions, simple language), and providing a non-AI alternative or a human contact for people the system serves poorly. For generative AI, inclusivity also means checking that generated text and images represent people respectfully and do not default to one stereotype. These habits cost little early in a project and a great deal to retrofit after a public failure.
+
+### Responsible AI is a lifecycle
+
+Put it together and responsible AI touches every step: define the use case and who could be harmed; collect inclusive, curated data; train and evaluate with subgroup metrics; add guardrails and human review; deploy with transparency to users; monitor for bias drift and harmful outputs; and keep documentation for audits. Tomorrow you will meet the AWS tools for each step — Amazon Bedrock Guardrails, SageMaker Clarify and SageMaker Model Monitor among them.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="Core dimensions of responsible AI grouped by the question each one answers"
+  code={`flowchart TB
+  R["Responsible AI system"] --> W["Does it work for everyone?"]
+  R --> T["Can we trust what it says and does?"]
+  R --> A["Can we see, control and prove it?"]
+  W --> F["Fairness and bias"]
+  W --> I["Inclusivity"]
+  T --> RB["Robustness"]
+  T --> S["Safety"]
+  T --> V["Veracity"]
+  T --> P["Privacy and security"]
+  A --> TR["Transparency and explainability"]
+  A --> C["Controllability"]
+  A --> G["Governance"]`}
+/>
+
+<Diagram
+  caption="How bias enters an AI system at each stage, and the check that catches it"
+  code={`flowchart LR
+  D["Data collection: sampling and historical bias"] --> L["Labelling: label bias"]
+  L --> M["Training: under or overfitting on small groups"]
+  M --> E["Evaluation: averages hide subgroup errors"]
+  E --> U["Use: automation bias"]
+  D -.-> C1["Check representativeness and balance"]
+  L -.-> C2["Check label consistency"]
+  M -.-> C3["Compare train and validation per group"]
+  E -.-> C4["Subgroup analysis of error rates"]
+  U -.-> C5["Human review and monitoring"]`}
+/>
+
+<Diagram
+  caption="Legal risks of generative AI mapped to the main control for each"
+  code={`flowchart LR
+  IP["IP infringement"] --> IPc["Licensed, curated data and output filters"]
+  BO["Biased outputs"] --> BOc["Bias testing and guardrails"]
+  LT["Loss of customer trust"] --> LTc["Disclosure and human escalation"]
+  EU["End-user harm"] --> EUc["Safety filters and human review"]
+  HA["Hallucinations"] --> HAc["Grounding with RAG and citations"]
+  PR["Privacy and data leakage"] --> PRc["Data minimisation and PII redaction"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={4}>
+
+| Scenario | Dimension at risk | Likely cause | Response |
+|---|---|---|---|
+| Speech-to-text works far worse for older callers | Fairness, inclusivity | Sampling bias — few older voices in training data | Collect more diverse audio; report accuracy per age band |
+| Chatbot answer changes completely when the question has a typo | Robustness | Model not tested on noisy input | Test with paraphrased and misspelled prompts |
+| Assistant invents a warranty period | Veracity | Hallucination, no grounding | Ground answers in policy documents with RAG and cite sources |
+| Résumé screener down-ranks graduates of certain colleges | Fairness | Historical bias in past hiring decisions | Re-examine labels, remove proxy features, test per group |
+| Image tool produces a famous cartoon character on request | Legal (IP) | Training data contains copyrighted works | Output filtering, licensed models, human review before publishing |
+| Agents approve every model recommendation without reading it | Controllability | Automation bias | Require justification, sample audits, clear escalation |
+
+**Worked example — the hidden subgroup.** *A bank's loan-default model is 93% accurate. Broken down by age, it is 94% accurate for applicants aged 25–60 but 74% for applicants over 70, who are 3% of the training data.* The headline number looks great, but the model is failing a group. The cause is sampling bias (too few older applicants) combined with variance (the model memorised the few examples it had). The responsible response: collect or rebalance data for older applicants, evaluate per age band before launch, and monitor that metric in production. Simply deleting the age column would not help — retirement income and account tenure act as proxies.
+
+**Worked example — fairness vs accuracy.** *Two candidate models: model A is 91% accurate with similar error rates across groups; model B is 92% accurate but its false positive rate for one group is double.* For a decision that affects people's access to credit, the responsible choice is usually model A. On the exam, when a question pits a slightly higher overall score against equitable treatment in a high-impact use case, the equitable option is almost always the intended answer.
+
+**Worked example — legal risk triage.** *A marketing team wants to use a generative model to produce product images and blog posts at scale.* Risks: IP (output resembling copyrighted images or brands), biased imagery (who appears in the pictures), veracity (false product claims in the text) and trust (customers discovering undisclosed AI content). Controls: use a model with clear licensing and, where offered, IP indemnity; add content filters; require human review before publication; ground product claims in the official spec sheet; and label AI-generated content where appropriate.
+
+**Spot the dimension — quick drill.**
+
+- "Works poorly for left-handed users because none were in the test group" → inclusivity.
+- "Same input, slightly reworded, gives the opposite answer" → robustness.
+- "States a non-existent statistic with confidence" → veracity (hallucination).
+- "Produces instructions for making a weapon" → safety.
+- "Nobody can stop the automated process once it starts" → controllability.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={2}>
+
+<Callout type="realWorld" title="A recruiting model that learned the past too well">
+A large technology company built an experimental model to score job applicants, trained on about ten years of résumés submitted to the company. Because most past hires for technical roles were men, the model learned to down-rank résumés containing words associated with women — for example the name of a women's college or "women's chess club captain". Engineers removed those specific terms, but could not be confident that other proxy features would not reintroduce the bias, and the project was abandoned. Nobody programmed the model to discriminate; it faithfully learned **historical bias** from its data.
+</Callout>
+
+The story illustrates almost every point from today. The *data* was the problem (historical bias), *removing obvious features* did not fix it (proxies), the risk was *legal and reputational* (discrimination in hiring is regulated in most countries), and the right controls would have been an inclusive, balanced dataset, subgroup analysis of outcomes, and human decision-makers who treat the score as one input rather than the answer. Hiring, lending, housing, insurance, healthcare and criminal justice are the classic **high-impact** domains: expect exam scenarios in these areas to reward the option that adds fairness testing and human oversight.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: probe a model for fairness and veracity in the Bedrock playground" minutes={8}>
+
+<HandsOnLab
+  goal="Use the Amazon Bedrock chat playground to run simple counterfactual and veracity probes — the same checks a responsible AI review starts with."
+  asOf="November 2026"
+  steps={[
+    { text: 'Open Amazon Bedrock, go to the Chat / Text playground and select an Amazon Nova model. Keep temperature low so answers are comparable.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text', 'Amazon Nova Lite'], menu: ['Overview', 'Model catalog', 'Playgrounds', 'Guardrails', 'Evaluations'], active: 'Playgrounds', fields: [{ label: 'Model', value: 'Amazon Nova Lite' }, { label: 'Temperature', value: '0.2' }], highlight: 'Run' } },
+    { text: 'Counterfactual test: ask for a short reference letter for “Daniel, a nurse”, then repeat with only the name changed to “Aisha”. Compare tone and adjectives.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text', 'Compare mode'], fields: [{ label: 'Prompt A', value: 'Write a 3-line reference for Daniel, a nurse' }, { label: 'Prompt B', value: 'Write a 3-line reference for Aisha, a nurse' }], note: 'Only one attribute changes — differences hint at bias' } },
+    { text: 'Robustness test: ask the same factual question twice, once with typos and once rephrased. The core answer should not change.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text'], fields: [{ label: 'Prompt 1', value: 'What is the capital of Australia?' }, { label: 'Prompt 2', value: 'wats the captial city of australia' }], note: 'Stable answer = robust' } },
+    { text: 'Veracity test: ask about a made-up product (“the 2019 AWS SkyLens camera”). Note whether the model admits it does not know or invents details.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text'], fields: [{ label: 'Prompt', value: 'Summarise the specs of the 2019 AWS SkyLens camera' }, { label: 'Watch for', value: 'Invented specifications = hallucination' }], highlight: 'Run' } },
+  ]}
+  expectedOutcome="You can describe three quick probes — counterfactual (fairness), perturbation (robustness) and fictitious-fact (veracity) — and explain that playground spot checks are a start, while systematic evaluation and guardrails come next."
+  checks={[
+    { q: 'Changing only an applicant’s name changes the model’s tone. Which dimension is at risk?', a: 'Fairness — the output differs based on an attribute associated with gender or ethnicity.' },
+    { q: 'The model describes detailed specs for a product that does not exist. What is this called?', a: 'A hallucination — a veracity failure.' },
+    { q: 'Is a few manual playground prompts enough to sign off a model as fair?', a: 'No. It is a useful smoke test; you still need systematic evaluation on representative data, subgroup analysis and monitoring.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="Removing the sensitive column does not remove bias">
+Options such as "delete the gender column" sound responsible but are usually wrong on their own. Proxy features (name, postcode, hobbies) can carry the same information. The better answer adds representative data, subgroup evaluation and monitoring.
+</Callout>
+
+- "Works worse for one group" → **fairness**; "group was never considered in design or testing" → **inclusivity**.
+- "Keeps working with noisy, unusual or adversarial input" → **robustness**; "outputs are true" → **veracity**.
+- "Harmful content or actions" → **safety**; "humans can override" → **controllability**.
+- Training data reflects past unfair decisions → **historical bias**; a group is missing → **sampling bias**.
+- Good datasets are **inclusive, diverse, balanced, curated and documented**.
+- A high overall accuracy plus a small group → suspect **subgroup inaccuracy**; answer with **per-group evaluation**.
+- GenAI legal risks: **IP infringement, biased outputs, loss of trust, end-user risk, hallucinations**. Hallucination control → **grounding (RAG) and citations**.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+Responsible AI keeps systems fair, inclusive, robust, safe, truthful, private, transparent, controllable and well governed across the whole lifecycle. Most bias enters through data — sampling, historical, measurement and label bias — and through people over-trusting models. Inclusive, diverse, balanced, curated and documented datasets prevent much of it. Bias and variance hurt small groups first, and averages hide it, so evaluate per subgroup. Generative AI adds legal risks — IP infringement, biased outputs, loss of trust, end-user harm and hallucinations — managed through data provenance, output controls, grounding, human oversight and documentation. Tomorrow you will meet the AWS tools that put these principles into practice.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={22} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="A responsible AI review built into the ML lifecycle" minutes={15} optional>
+
+Mature teams turn the dimensions into **gates** in the delivery pipeline. Before a project starts, a use-case review classifies its risk (who could be harmed and how badly). High-risk use cases get stricter requirements: documented datasets, fairness metrics with agreed thresholds, human review of decisions, and sign-off from legal and compliance. Every gate produces an artifact that is stored for audit.
+
+<Diagram
+  caption="Responsible AI gates across the lifecycle, each producing evidence for governance and audit"
+  code={`flowchart LR
+  UC["Use-case and risk review"] --> DS["Data: inclusive, balanced, licensed, documented"]
+  DS --> TR["Train and tune"]
+  TR --> EV["Evaluate: accuracy plus per-group metrics, robustness, toxicity"]
+  EV --> GT{"Meets thresholds?"}
+  GT -->|No| DS
+  GT -->|Yes| DP["Deploy with guardrails, user disclosure, human review"]
+  DP --> MO["Monitor: bias drift, quality, harmful output"]
+  MO -->|Drift or incident| DS
+  UC --> AR[("Evidence store: model cards, reports, approvals")]
+  EV --> AR
+  DP --> AR
+  MO --> AR`}
+/>
+
+**Trade-offs and tensions.** The dimensions sometimes pull against each other. Collecting demographic data helps you *measure* fairness but raises *privacy* concerns, so teams often collect it separately with consent and strict access control, used only for evaluation. Stronger *safety* filters can reduce *helpfulness* and occasionally block legitimate requests. Explaining a model in great detail improves *transparency* but can help attackers game it. There is also no single mathematical definition of fairness: equal approval rates across groups and equal error rates across groups cannot always both be achieved. Responsible AI therefore needs people — domain experts, affected communities, legal and compliance — to decide which trade-off is acceptable for each use case, and to write that decision down. That record, not just the model, is what regulators and auditors ask to see.
+
+</Section>

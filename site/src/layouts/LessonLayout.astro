@@ -138,6 +138,19 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
     border-radius: 6px;
     font-size: 0.9em;
   }
+  article :global(pre) {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  article :global(pre code) {
+    background: none;
+    padding: 0;
+    white-space: pre;
+  }
   article :global(.deep-dive) {
     background: var(--deep-bg);
     color: var(--deep-text);

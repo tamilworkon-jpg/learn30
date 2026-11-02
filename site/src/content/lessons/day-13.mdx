@@ -1,0 +1,297 @@
+---
+day: 13
+kind: lesson
+title: 'GenAI cost trade-offs'
+summary: 'Learn what drives the cost of a generative AI application and how to control it: on-demand token pricing, batch inference, provisioned throughput, the cost of custom models, prompt caching, smaller and distilled models, Regional availability and cross-Region inference — and how AWS Budgets and AWS Cost Explorer keep spending visible and under control.'
+domains: [D2, D3]
+taskStatements: ['2.3', '3.1']
+sources:
+  - { provider: udemy, title: 'Amazon Bedrock Pricing; Provisioned Throughput; Cost Optimization' }
+  - { provider: skillbuilder, title: 'Developing Generative AI Solutions; Optimizing Foundation Models' }
+  - { provider: aws-docs, title: 'Amazon Bedrock pricing', url: 'https://aws.amazon.com/bedrock/pricing/' }
+  - { provider: aws-docs, title: 'Prompt caching for faster model inference', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html' }
+  - { provider: aws-docs, title: 'AWS Budgets and AWS Cost Explorer user guide', url: 'https://docs.aws.amazon.com/cost-management/latest/userguide/what-is-costmanagement.html' }
+objectives:
+  - Compare on-demand, batch and provisioned throughput pricing in Amazon Bedrock and choose one for a workload
+  - Describe the cost components of customised models
+  - Explain how prompt caching, smaller or distilled models and prompt routing reduce cost and latency
+  - Describe how Regional availability, cross-Region inference and data residency affect cost and resilience
+  - Use AWS Budgets and AWS Cost Explorer to monitor and control GenAI spending
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'On-demand = pay per input and output token with no commitment; batch = asynchronous jobs from S3 at a lower price; provisioned throughput = reserved model units billed hourly for guaranteed capacity.'
+  - 'Output tokens usually cost more than input tokens; model size is the biggest price lever — use the smallest model that meets requirements.'
+  - 'Custom models add training cost (tokens × epochs), monthly storage and dedicated inference capacity — often provisioned throughput.'
+  - 'Prompt caching reuses a repeated prompt prefix (system prompt, long document) to cut input cost and latency.'
+  - 'Model availability and price vary by Region; cross-Region inference raises throughput and resilience; AWS Budgets alerts on spend, AWS Cost Explorer analyses and forecasts it.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 12" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="Where the money goes — and how to keep it" minutes={17}>
+
+### Paying for a taxi, a bus pass or a hired car
+
+Think about how you pay for getting around a city. A **taxi** charges for each trip: perfect when you travel occasionally, expensive if you ride all day. A **bus pass** bought in advance gives a lower price if you know you will travel a lot. A **hired car with a driver** is reserved for you all day: you always have a ride immediately, but you pay even while it waits outside. And if you can wait, a **night coach** that leaves when it is full is the cheapest of all.
+
+Amazon Bedrock pricing works in much the same way. Task statement 2.3 asks you to describe the **cost trade-offs** of AWS GenAI services — token pricing, provisioned throughput, custom models and Regional coverage — and task statement 3.1 includes **prompt caching** and customisation costs as part of choosing and designing an FM application. Exam questions describe a workload and ask for the most cost-effective option.
+
+### What drives the cost of a GenAI request
+
+Day 9 introduced **token-based pricing**. For text models in Bedrock you pay per token processed:
+
+- **Input tokens** — everything you send: system prompt, instructions, examples, conversation history and any documents retrieved for RAG.
+- **Output tokens** — everything the model generates. Output tokens are usually **several times more expensive** than input tokens, because generating each token takes a full pass through the model.
+- **Model choice** — the price per token can differ by **10 to 100 times** between the smallest and the largest models.
+- Other modalities are priced in their own units — for example per image generated, or per second of video.
+
+So cost per request ≈ (input tokens × input price) + (output tokens × output price). Three levers follow directly: **send fewer tokens, generate fewer tokens and use a cheaper model** — as long as quality still meets the requirement.
+
+### Bedrock inference options
+
+**On-demand (pay as you go).** You call the model and pay per token, with no commitment and no minimum. Capacity is shared, so your account has **quotas** (requests and tokens per minute) and very large bursts may be throttled. On-demand is the default and is ideal for prototypes, variable traffic and most production applications that are not extremely high volume.
+
+**Batch inference.** You place many prompts in a file (JSONL) in Amazon S3, start a batch job, and Bedrock writes all the responses back to S3 when the job finishes — typically within hours, not seconds. For supported models, batch is priced at a significant **discount to on-demand (around 50%)**. Use it whenever nobody is waiting for the answer: summarising last month's 200,000 support tickets, generating product descriptions for a catalogue, classifying an archive of documents, creating embeddings for a large corpus.
+
+**Provisioned throughput.** You purchase a fixed amount of capacity for a specific model, measured in **model units** (each unit delivers a defined throughput of tokens per minute). You pay **per hour for as long as the capacity exists**, whether or not you use it. You can buy it with no commitment, or with a 1-month or 6-month commitment for a lower hourly rate. Choose provisioned throughput when you need:
+
+- **Guaranteed, predictable capacity** for large, steady production traffic that would hit on-demand quotas;
+- **Consistent performance** for latency-critical applications;
+- To run many **custom (fine-tuned or continued pre-trained) models** — for many models, provisioned throughput is required to serve a customised model.
+
+The trade-off is the hired car: great when it is busy all day, wasteful when it sits idle.
+
+**Service tiers.** For some models Bedrock also offers service tiers on on-demand traffic: a premium tier that prioritises latency-critical requests, and a discounted flexible tier for work that can tolerate slower processing. Treat these as variations on on-demand pricing; the exam focuses on on-demand, batch and provisioned throughput.
+
+| Option | How you pay | Best for | Watch out for |
+|---|---|---|---|
+| On-demand | Per input and output token | Variable or unpredictable traffic, prototypes, most apps | Quotas and throttling at very high volume |
+| Batch | Per token, discounted | Large offline jobs, results not needed immediately | Asynchronous — hours, not seconds |
+| Provisioned throughput | Per model unit per hour (commitment optional) | Steady high volume, guaranteed capacity, many custom models | Paying for idle capacity |
+
+### The cost of custom models
+
+Customising a model (Day 19) adds three kinds of cost on top of normal inference:
+
+1. **Training** — fine-tuning and continued pre-training are typically billed by the number of tokens processed, so cost grows with dataset size × number of **epochs** (passes over the data).
+2. **Storage** — a monthly fee to keep each custom model.
+3. **Inference capacity** — custom models are often served through **provisioned throughput**, an hourly cost that runs whether or not users send requests. Some models now support on-demand inference for custom versions, but you should check per model.
+
+Models imported with **Custom Model Import** are billed for the compute time that copies of the model are active, and models deployed from SageMaker JumpStart or on SageMaker AI endpoints are billed **per instance-hour** while the endpoint runs (unless you use serverless or asynchronous options that scale to zero, Day 2).
+
+This is why the exam treats customisation as a ladder of increasing cost. From cheapest to most expensive: **prompt engineering and in-context learning** (only extra input tokens) → **RAG** (vector store and retrieval, plus larger prompts) → **fine-tuning** (training, storage, dedicated hosting) → **continued pre-training** (much more data and compute) → **pre-training a model from scratch** (by far the most expensive). Climb the ladder only when the step below does not meet the requirement.
+
+**Distillation** is the exception that *saves* money at inference time: a large *teacher* model generates answers that train a smaller *student* model, which then serves requests faster and at a fraction of the per-token price, with accuracy close to the teacher for that specific use case. You pay for the distillation job once and save on every request afterwards.
+
+### Prompt caching
+
+Many applications send the *same* long beginning with every request: a 2,000-token system prompt with rules and examples, or a long contract the user is asking several questions about. Without caching, you pay for — and the model reprocesses — that prefix every time.
+
+**Prompt caching** in Amazon Bedrock lets you mark a **cache checkpoint** in the prompt. The first request writes the prefix to the cache; later requests that start with the identical prefix read it from the cache. Cached input tokens are billed at a **large discount** compared with normal input tokens (AWS quotes up to about 90% lower cost) and responses start faster (up to about 85% lower latency for supported models). Some models charge a little more to *write* to the cache than for normal input, and the cache expires after a few minutes without use (each hit resets the timer), so caching pays off when the same prefix is reused frequently.
+
+Good candidates for prompt caching:
+
+- Chat assistants with a long, fixed system prompt;
+- Several questions about the same long document;
+- Agents that send the same tool definitions on every step;
+- Few-shot prompts with many examples.
+
+Prompt caching is part of **FM selection** in task statement 3.1: whether a model supports caching can change its effective price a lot for these workloads.
+
+### More levers to reduce cost
+
+- **Right-size the model.** Use the smallest model that meets quality, latency and compliance needs; route only hard requests to a larger model. Bedrock **intelligent prompt routing** can route each request between models in the same family based on predicted quality and cost.
+- **Shorter prompts and answers.** Remove unnecessary instructions and history, summarise long conversations, retrieve fewer but better chunks in RAG, and set a sensible **maximum output tokens** limit; ask for concise formats.
+- **Batch where possible.** Anything not needed in real time can move to batch inference.
+- **Cache answers, not just prompts.** If many users ask the same question, store and reuse the answer in the application (for example with Amazon ElastiCache) instead of calling the model again.
+- **Prefer RAG to fine-tuning for changing knowledge.** Updating documents in a knowledge base is cheaper than retraining a model each time facts change.
+
+### Bedrock or self-hosting: a different cost shape
+
+Day 12 contrasted Amazon Bedrock with SageMaker JumpStart. The cost shapes are different, and the exam may ask you to reason about them:
+
+- **Bedrock on-demand** has **variable cost**: zero when nobody uses the application, rising in proportion to tokens. There is nothing to patch or scale.
+- **A model hosted on a SageMaker AI real-time endpoint** (or on Amazon EC2, ECS or EKS) has a mostly **fixed cost**: you pay for GPU instances per hour whether they serve one request or a million, plus the people needed to operate them. At very high, steady utilisation, self-hosting a smaller open model can work out cheaper per token; at low or spiky utilisation it is usually more expensive.
+- **Scale to zero.** SageMaker AI serverless and asynchronous inference can scale down when idle, reducing the fixed-cost problem for intermittent workloads (Day 2).
+- **Commitment discounts.** For steady self-hosted workloads, commitment-based pricing such as Savings Plans lowers the hourly rate — similar in spirit to committing to provisioned throughput in Bedrock.
+
+A simple way to decide: estimate the monthly volume of tokens, price it on-demand, and compare it with the monthly cost of the smallest set of instances (or model units) that could serve the peak. Then add the operational effort. For most teams starting out, on-demand wins; reserved or self-hosted capacity becomes attractive only once traffic is large, steady and well understood.
+
+### Estimating cost before you launch
+
+Before launch, build a small cost model like the one in today's deep dive: number of users × requests per user × average input and output tokens × price, plus supporting services. Measure real token counts from a pilot rather than guessing — retrieved RAG passages and conversation history are often far larger than the user's question. Then track **cost per interaction** after launch, the business metric from Day 11 that connects the bill to value delivered.
+
+### Regional availability, redundancy and data residency
+
+Not every model is available in every AWS **Region**, and prices can differ between Regions. When you choose a Region you balance:
+
+- **Model availability** — the model and features (batch, provisioned throughput, customisation) you need must exist there.
+- **Data residency and compliance** — regulations may require data to stay in a country or geography.
+- **Latency** — Regions close to users respond faster.
+- **Resilience** — what happens if a Region or a model's capacity is constrained.
+
+**Cross-Region inference** helps with throughput and resilience. Instead of calling a model in one Region, you call an **inference profile** that can route requests to several Regions within a geography (for example a US or EU profile), which smooths traffic bursts and provides higher effective throughput. Geographic profiles keep processing within that geography, which helps with data-residency requirements; for global profiles, requests may be processed in any supported Region. For a fully resilient design, critical applications may also run in more than one Region.
+
+### Monitoring and controlling spend: AWS Budgets and AWS Cost Explorer
+
+Token costs grow silently: a prompt change that doubles the retrieved context can double the bill overnight. Two in-scope services keep spending visible:
+
+- **AWS Budgets** — set a budget for cost or usage (for the whole account, a service such as Bedrock, or a tag such as `team=support`) and receive **alerts** by email or Amazon SNS when **actual or forecasted** spend crosses a threshold, such as 80% of the monthly budget. **Budget actions** can respond automatically — for example by applying an IAM policy that stops further resource creation. Budgets is *proactive*: it warns you before the money is gone.
+- **AWS Cost Explorer** — visualise and analyse **historical** cost and usage with charts, filter and group by service, Region, usage type, linked account or cost allocation tag, and **forecast** future spend. Cost Explorer is *analytical*: it shows where the money went and the trend.
+
+To make these tools useful for GenAI, **tag** resources and usage by team, application or customer. Bedrock **application inference profiles** let you attach cost allocation tags to model usage, so Cost Explorer can show what each application spends. Amazon CloudWatch adds near-real-time operational metrics such as invocations and input and output token counts per model — useful for spotting a sudden increase in tokens per request.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="Choosing a Bedrock inference option: is someone waiting, and is the traffic steady and high enough to keep reserved capacity busy?"
+  code={`flowchart TD
+  S["New GenAI workload"] --> W{"Is a user waiting for each answer?"}
+  W -->|No, large offline job| B["Batch inference: JSONL in S3, discounted price"]
+  W -->|Yes| C{"Custom model or steady very high traffic needing guaranteed capacity?"}
+  C -->|Yes| P["Provisioned throughput: model units billed per hour"]
+  C -->|No, variable or moderate traffic| O["On-demand: pay per input and output token"]
+  O --> X["Add prompt caching for repeated prefixes and right-size the model"]`}
+/>
+
+<Diagram
+  caption="Prompt caching: the repeated prefix is processed once and then read from the cache at a reduced price and latency"
+  code={`flowchart LR
+  R1["Request 1: system prompt plus question A"] --> W["Cache write: prefix stored"]
+  W --> M1["Model processes full prompt"]
+  R2["Request 2: same system prompt plus question B"] --> H["Cache hit: prefix read at discounted price"]
+  H --> M2["Model processes only the new question tokens"]
+  H --> E["Cache expires after minutes without reuse"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Scenario | Most cost-effective choice | Why |
+|---|---|---|
+| Summarise 500,000 archived support tickets by next week | Batch inference | No one waiting; discounted price |
+| Internal assistant with unpredictable usage, a few hundred users | On-demand | Pay only for tokens used, no idle cost |
+| Customer app with steady, very high traffic hitting on-demand quotas | Provisioned throughput | Guaranteed capacity for predictable volume |
+| Serve a model fine-tuned on company data | Provisioned throughput (for many models) | Custom models often require reserved capacity |
+| Chatbot sends the same 3,000-token system prompt with every message | Prompt caching | Repeated prefix billed at a discount |
+| Simple classification at high volume using a large model | Switch to a smaller or distilled model | Lower price per token with enough accuracy |
+| Facts in a policy manual change monthly | RAG instead of repeated fine-tuning | Update documents, not the model |
+| Finance wants an email when Bedrock spend reaches 80% of the monthly plan | AWS Budgets alert | Proactive threshold alert on actual or forecasted spend |
+| Find which application caused last month's cost increase | AWS Cost Explorer with tags | Historical analysis grouped by tag or service |
+| EU customer data must be processed in the EU, with burst capacity | EU geographic cross-Region inference profile | Throughput across EU Regions while staying in the geography |
+
+**Worked example — on-demand or provisioned?** Suppose (illustrative numbers) one model unit costs \$40 per hour, or about \$29,000 per month if kept all month. Your application's on-demand token bill would be \$6,000 per month. Provisioned throughput would cost almost five times more — on-demand wins. If traffic grows until the on-demand bill exceeds the provisioned cost, or you start hitting quotas, provisioned throughput becomes attractive. Real prices vary by model and Region; the reasoning is what the exam tests.
+
+**Worked example — the value of prompt caching.** A support bot sends a 4,000-token system prompt plus about 200 tokens of question with every message, 2 million messages a month. That is 8.4 billion input tokens. If 4,000 of every 4,200 input tokens are read from the cache at a 90% discount, the billable-equivalent input falls to roughly 0.8 + 0.4 = 1.2 billion tokens — about one-seventh of the original input cost — and responses start faster.
+
+**Worked example — batch vs on-demand.** Generating descriptions for 1 million products costs (illustratively) \$4,000 on-demand. The catalogue team needs them by Friday, not instantly, so a batch job at about half the price costs roughly \$2,000 — the same output for half the money.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={3}>
+
+<Callout type="realWorld" title="A travel company cuts its GenAI bill by 70%">
+A travel company launched a trip-planning assistant on Amazon Bedrock using its largest model for every request. After three months the bill had tripled. **Cost Explorer**, grouped by an `app` cost allocation tag, showed the assistant was 85% of AI spend; CloudWatch token metrics showed each conversation resent a 5,000-token system prompt and the full chat history. The team enabled **prompt caching** on the system prompt, summarised older chat turns, routed simple questions ("what is the baggage allowance?") to a **smaller model**, and moved the nightly generation of destination guides to **batch inference**. Spending fell by about 70% while customer ratings stayed the same. An **AWS Budgets** alert at 80% of the monthly AI budget now warns the team before the next surprise.
+</Callout>
+
+The team also reviewed **Regional** choices. Most customers were in Europe, and the company's privacy policy promised that customer conversations would be processed within the EU. They therefore called models through an **EU cross-Region inference profile**, which spread traffic across EU Regions and removed the throttling they had seen during holiday booking peaks — without moving data outside the EU.
+
+Finally, they reconsidered a plan to **fine-tune** a model on their destination content. Because that content changed weekly, fine-tuning would have meant repeated training jobs, monthly storage fees and provisioned throughput to host the custom model. A **RAG** knowledge base delivered the same freshness at a fraction of the cost. Months later, when they needed a very fast model for a single narrow task — classifying incoming emails — they used **distillation** from a larger model to create a small, cheap student model.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: set a budget and inspect GenAI costs" minutes={8}>
+
+<HandsOnLab
+  goal="Create a monthly AWS Budgets alert for Amazon Bedrock, analyse spending by application in AWS Cost Explorer, and see where batch inference and provisioned throughput are configured."
+  asOf="November 2026"
+  steps={[
+    { text: 'Open the Billing and Cost Management console, choose Budgets and create a cost budget. Scope it to the Amazon Bedrock service with a monthly amount.', screen: { service: 'AWS Billing and Cost Management', path: ['Budgets', 'Create budget', 'Cost budget'], menu: ['Home', 'Bills', 'Cost Explorer', 'Budgets', 'Cost allocation tags'], active: 'Budgets', fields: [{ label: 'Period', value: 'Monthly' }, { label: 'Budgeted amount', value: '$5,000' }, { label: 'Filter', value: 'Service = Amazon Bedrock' }], highlight: 'Next' } },
+    { text: 'Add alert thresholds: one at 80% of actual spend and one at 100% of forecasted spend, sent to the team email list or an SNS topic.', screen: { service: 'AWS Budgets', path: ['Create budget', 'Configure alerts'], fields: [{ label: 'Alert 1', value: '80% of budgeted amount (Actual)' }, { label: 'Alert 2', value: '100% of budgeted amount (Forecasted)' }, { label: 'Recipients', value: 'ai-team@example.com' }], highlight: 'Create budget' } },
+    { text: 'Open Cost Explorer. Filter by service Amazon Bedrock, group by the app cost allocation tag and view the last six months with a forecast.', screen: { service: 'AWS Cost Explorer', path: ['Cost Explorer', 'Reports', 'New cost and usage report'], fields: [{ label: 'Filter', value: 'Service: Amazon Bedrock' }, { label: 'Group by', value: 'Tag: app' }, { label: 'Top spender', value: 'trip-assistant (85%)' }], note: 'Tags reveal which app drives cost' } },
+    { text: 'In the Amazon Bedrock console, look at Batch inference (create a job from an S3 input file) and Provisioned Throughput (purchase model units with a commitment term) to see where each pricing option is configured.', screen: { service: 'Amazon Bedrock', path: ['Infer', 'Provisioned Throughput', 'Purchase'], menu: ['Model catalog', 'Playgrounds', 'Batch inference', 'Provisioned Throughput', 'Cross-Region inference'], active: 'Provisioned Throughput', fields: [{ label: 'Model units', value: '1' }, { label: 'Commitment term', value: 'No commitment · 1 month · 6 months' }], note: 'Billed hourly whether used or not' } },
+  ]}
+  expectedOutcome="You know where to set proactive budget alerts, how to find which application drives GenAI spending, and where batch inference and provisioned throughput are configured."
+  checks={[
+    { q: 'You want a warning before spending exceeds the monthly plan. Budgets or Cost Explorer?', a: 'AWS Budgets — it sends alerts on actual or forecasted spend against a threshold.' },
+    { q: 'How do you see which application caused a cost increase?', a: 'Use Cost Explorer filtered to Amazon Bedrock and grouped by a cost allocation tag (for example via application inference profiles).' },
+    { q: 'What do you pay for provisioned throughput when no requests arrive overnight?', a: 'The full hourly charge — capacity is billed whether used or not.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="Provisioned throughput is not automatically cheaper">
+Provisioned throughput buys **guaranteed capacity**, billed per hour even when idle. For variable or modest traffic, on-demand is cheaper. Choose provisioned throughput for steady, high-volume traffic, guaranteed performance, or to serve many custom models.
+</Callout>
+
+- "Results not needed immediately", "large dataset", "lowest cost" → **batch inference**.
+- "Unpredictable traffic", "no commitment", "pay only for what you use" → **on-demand**.
+- "Custom (fine-tuned) model in Bedrock" or "guaranteed throughput" → **provisioned throughput**.
+- "Same long system prompt or document in every request" → **prompt caching**.
+- Customisation cost ladder: prompt engineering < RAG < fine-tuning < continued pre-training < pre-training from scratch. Distillation lowers inference cost.
+- "Alert when spend exceeds a threshold" → **AWS Budgets**; "analyse past spend, trends and forecast" → **AWS Cost Explorer**.
+- "Higher throughput and resilience across Regions" → **cross-Region inference**; check model availability and data residency per Region.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+GenAI cost is driven by tokens in, tokens out and model size. Amazon Bedrock offers on-demand pricing for flexible traffic, batch inference at a discount for offline jobs, and provisioned throughput for guaranteed capacity and many custom models — billed hourly whether used or not. Custom models add training, storage and hosting costs, so climb the customisation ladder only as far as needed; distillation can lower inference cost. Prompt caching, smaller models, prompt routing, shorter prompts and answer caching cut the bill further. Choose Regions for model availability, residency, latency and resilience, using cross-Region inference for throughput. Watch it all with AWS Budgets alerts and AWS Cost Explorer analysis. Tomorrow: the Week 2 review.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={13} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Cost model for 1M chats/month" minutes={15} optional>
+
+A bank's product owner asks: *"What will a customer-service chatbot handling one million chats a month cost, and how do we make it cheaper?"* The architect builds a simple cost model. **All prices below are illustrative round numbers, not current AWS prices** — always use the Bedrock pricing page and the AWS Pricing Calculator for real estimates.
+
+**Assumptions.** Each chat has 4 user turns. Every turn sends a 2,000-token system prompt (rules, tone, examples), about 1,500 tokens of retrieved knowledge-base passages and history, and a 100-token question — 3,600 input tokens — and receives a 250-token answer.
+
+- Input per month: 1,000,000 chats × 4 turns × 3,600 = **14.4 billion tokens**.
+- Output per month: 1,000,000 × 4 × 250 = **1.0 billion tokens**.
+
+**Scenario A — large model, no optimisation.** Illustrative price \$3 per million input tokens and \$15 per million output tokens: input 14,400 × \$3 = \$43,200; output 1,000 × \$15 = \$15,000. **Total ≈ \$58,200 per month** (\$0.058 per chat).
+
+**Scenario B — add prompt caching.** The 2,000-token system prompt (8 billion of the 14.4 billion input tokens) is read from the cache at 10% of the normal input price: cached 8,000 × \$0.30 = \$2,400; uncached 6,400 × \$3 = \$19,200; output unchanged at \$15,000. **Total ≈ \$36,600** — a 37% saving with no change in quality (ignoring small cache-write charges).
+
+**Scenario C — route 70% of turns to a small model.** Simple questions go to a small model at an illustrative \$0.06 input / \$0.24 output per million tokens; 30% still use the large model with caching. Large share ≈ 30% × \$36,600 = \$10,980; small share ≈ 70% × (14,400 × \$0.06 + 1,000 × \$0.24) ≈ 70% × \$1,104 ≈ \$770. **Total ≈ \$11,750 per month** (about \$0.012 per chat) — an 80% reduction from Scenario A.
+
+**Scenario D — provisioned throughput?** Traffic is spiky (lunchtimes and evenings) and on-demand quotas are sufficient, so reserving capacity 24/7 would add idle cost. Provisioned throughput would only make sense if the bank fine-tuned its own model or needed guaranteed capacity at peak.
+
+<Diagram
+  caption="Architecture for the cost-optimised chatbot: routing, prompt caching, knowledge-base retrieval, batch analytics and cost guardrails with Budgets and Cost Explorer"
+  code={`flowchart LR
+  user["Customers"] --> app["Chat backend on Lambda"]
+  app --> cache["ElastiCache: answers to common questions"]
+  app --> router["Router: simple or complex question"]
+  router -->|70 percent| small["Small model on demand"]
+  router -->|30 percent| large["Large model on demand with prompt caching"]
+  app --> kb["Bedrock Knowledge Base"]
+  logs[("Chat logs in S3")] --> batch["Nightly batch inference: summaries and topic labels"]
+  app --> cw["CloudWatch token metrics"]
+  tags["Application inference profiles with cost tags"] --> ce["Cost Explorer by app"]
+  ce --> bud["AWS Budgets alerts at 80 percent"]`}
+/>
+
+**Beyond the model bill.** The architect adds vector storage for the knowledge base, Lambda and API costs, logging and monitoring, and Guardrails charges (priced per text unit processed). Nightly analytics — summarising every chat and labelling its topic — runs as **batch inference** at a discount because nobody waits for it. Repeated questions ("what are your opening hours?") are answered from an application cache without calling a model at all.
+
+**Resilience and Region.** The bank processes data only in its home geography, so it uses a geographic cross-Region inference profile for burst capacity within that geography. **AWS Budgets** alerts the team at 80% of the monthly budget, and **Cost Explorer**, grouped by application tags, tracks cost per chat month by month — the business metric finance actually cares about.
+
+</Section>

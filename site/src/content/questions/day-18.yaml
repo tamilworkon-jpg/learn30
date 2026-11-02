@@ -1,0 +1,329 @@
+- id: q-day-18-001
+  set: day-18
+  type: single
+  stem: "A company wants its generative AI assistant to answer questions using internal documents that the foundation model never saw during training. The company does not want to change the model's weights. What does Retrieval Augmented Generation (RAG) do to meet this goal?"
+  options:
+    - { id: a, text: "It retrains the model overnight on the internal documents", explanation: "Incorrect. RAG does not train the model; changing weights is what fine-tuning or continued pre-training does." }
+    - { id: b, text: "It increases the temperature so the model generates more varied answers", explanation: "Incorrect. Temperature controls randomness of output; it adds no new knowledge and can increase hallucinations." }
+    - { id: c, text: "It retrieves relevant passages from the documents at question time and adds them to the prompt as context", explanation: "Correct. RAG retrieves, augments the prompt with the retrieved text and then generates an answer grounded in it, without changing the model." }
+    - { id: d, text: "It compresses the documents into a smaller model through distillation", explanation: "Incorrect. Distillation trains a smaller student model from a larger teacher; it is a training technique, not retrieval." }
+  answer: [c]
+  explanation: "RAG works like an open-book exam: retrieve the most relevant passages from your own data, augment the prompt with them and let the foundation model generate a grounded answer that can cite its sources. The model's weights never change, so updated documents are reflected as soon as they are re-indexed."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: easy
+
+- id: q-day-18-002
+  set: day-18
+  type: single
+  stem: "A user searches a support portal for 'Can I get my money back?' and the system returns a paragraph titled 'Refund policy', even though the two texts share no keywords. Which technique makes this possible?"
+  options:
+    - { id: a, text: "Embeddings that represent text as vectors so similar meanings are close together", explanation: "Correct. An embedding model maps texts with similar meaning to nearby vectors, so a similarity search finds 'Refund policy' for a question about getting money back." }
+    - { id: b, text: "Exact keyword matching on the paragraph titles", explanation: "Incorrect. Keyword matching would fail here because the question and the title share no words." }
+    - { id: c, text: "Increasing the maximum output tokens of the model", explanation: "Incorrect. Output length controls how long a response can be; it does not affect how documents are found." }
+    - { id: d, text: "Fine-tuning the model on the portal's click logs", explanation: "Incorrect. Fine-tuning changes model behaviour; semantic search over documents relies on embeddings and a vector store." }
+  answer: [a]
+  explanation: "Semantic (vector) search embeds both the documents and the question with the same embedding model and returns the stored vectors nearest to the question vector, measured with a similarity metric such as cosine similarity. It matches meaning rather than exact words."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: easy
+
+- id: q-day-18-003
+  set: day-18
+  type: single
+  stem: "An HR team wants a chatbot that answers employee questions from 3,000 policy PDFs stored in Amazon S3. The policies are updated every month, and every answer must show which policy it came from. Which solution meets these requirements with the LEAST operational overhead?"
+  options:
+    - { id: a, text: "Fine-tune a foundation model on the PDFs every month", explanation: "Incorrect. Monthly fine-tuning is costly and slow, and a fine-tuned model cannot reliably cite which document an answer came from." }
+    - { id: b, text: "Use Amazon Bedrock Knowledge Bases with the S3 bucket as the data source and RetrieveAndGenerate", explanation: "Correct. Knowledge Bases is managed RAG: it ingests the PDFs, keeps them searchable after a sync and returns answers with citations." }
+    - { id: c, text: "Paste all 3,000 PDFs into the system prompt of every request", explanation: "Incorrect. The documents would not fit in a context window, and even part of them would make every call very expensive." }
+    - { id: d, text: "Pre-train a new foundation model from scratch on the HR documents", explanation: "Incorrect. Pre-training from scratch needs enormous data and compute and is almost never the right business choice." }
+  answer: [b]
+  explanation: "Frequently changing proprietary documents plus a need for source citations point to RAG. Amazon Bedrock Knowledge Bases handles ingestion, chunking, embedding, vector storage, retrieval and citations as a managed service, so it has the least operational overhead."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#examples
+  difficulty: medium
+
+- id: q-day-18-004
+  set: day-18
+  type: single
+  stem: "A retailer stores its product catalogue in Amazon Aurora PostgreSQL-Compatible Edition. It wants to add a 'find similar products' feature using embeddings and would prefer not to run and synchronise a second database. Which approach BEST meets this requirement?"
+  options:
+    - { id: a, text: "Copy the catalogue into Amazon DynamoDB and look up similar items by partition key", explanation: "Incorrect. DynamoDB key lookups find exact keys, not nearest vectors, and this adds a second system to keep in sync." }
+    - { id: b, text: "Store the embeddings in Amazon S3 Glacier for low-cost retrieval", explanation: "Incorrect. S3 Glacier is archival storage with slow retrieval and does not perform similarity search." }
+    - { id: c, text: "Use Amazon Comprehend to classify each product into a category", explanation: "Incorrect. Category classification is not similarity search over embeddings and does not rank the closest products." }
+    - { id: d, text: "Enable the pgvector extension in the existing Aurora PostgreSQL database and store the vectors next to the product data", explanation: "Correct. Aurora PostgreSQL supports pgvector, so vectors live beside business data and can be queried with SQL without a second database." }
+  answer: [d]
+  explanation: "When data already lives in a database that supports vectors, adding vectors there avoids running and synchronising another system. Aurora PostgreSQL and RDS for PostgreSQL support the open-source pgvector extension for similarity search with SQL."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: medium
+
+- id: q-day-18-005
+  set: day-18
+  type: multi
+  stem: "A legal firm is deciding whether to use RAG for a research assistant. Which benefits does RAG provide compared with using a foundation model on its own? (Select TWO.)"
+  options:
+    - { id: a, text: "Answers can include citations to the source documents", explanation: "Correct. Because the answer is built from retrieved chunks, the system can show which document each fact came from." }
+    - { id: b, text: "Answers can reflect documents added yesterday without retraining the model", explanation: "Correct. Re-indexing (syncing) new documents makes them retrievable immediately; the model's weights do not change." }
+    - { id: c, text: "The model permanently learns the firm's writing style", explanation: "Incorrect. Learning a style or behaviour requires fine-tuning; RAG only supplies context at question time." }
+    - { id: d, text: "Prompts become shorter, so every request costs less", explanation: "Incorrect. RAG adds retrieved chunks to the prompt, so input tokens usually increase." }
+    - { id: e, text: "No data preparation or document maintenance is needed", explanation: "Incorrect. RAG is only as good as its data; documents must be current, clean and re-synced when they change." }
+  answer: [a, b]
+  explanation: "RAG grounds answers in retrieved text, which reduces hallucinations, enables source citations and keeps knowledge current without retraining. It does not change model behaviour, it adds input tokens, and it depends on well-maintained documents."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: medium
+
+- id: q-day-18-006
+  set: day-18
+  type: single
+  stem: "A manufacturer wants an assistant that answers questions such as 'Which suppliers of parts used in recalled models are based in Germany?' The answer requires following links between models, parts and suppliers. Which vector store option is MOST suitable?"
+  options:
+    - { id: a, text: "Amazon Neptune, using GraphRAG with Amazon Bedrock Knowledge Bases", explanation: "Correct. Neptune is a graph database that also stores vectors; GraphRAG follows relationships between entities to answer multi-hop questions." }
+    - { id: b, text: "Amazon DocumentDB, because it stores JSON documents", explanation: "Incorrect. DocumentDB suits JSON document data; the key need here is following relationships across entities." }
+    - { id: c, text: "A larger chunk size in the existing knowledge base", explanation: "Incorrect. Bigger chunks blur topics and do not help the system follow links between separate entities." }
+    - { id: d, text: "Amazon S3 Glacier Deep Archive", explanation: "Incorrect. Glacier is archival storage and cannot perform vector or graph queries." }
+  answer: [a]
+  explanation: "Multi-hop questions that depend on relationships between entities are a fit for graphs. Amazon Neptune (Neptune Analytics) supports vector search and powers GraphRAG in Bedrock Knowledge Bases, which combines similarity search with traversal of the relationships."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: medium
+
+- id: q-day-18-007
+  set: day-18
+  type: single
+  stem: "A media company keeps its article catalogue as JSON documents in a MongoDB-compatible AWS database. It wants to add semantic search to the existing database. Which AWS service is the company MOST likely using?"
+  options:
+    - { id: a, text: "Amazon Neptune", explanation: "Incorrect. Neptune is a graph database for highly connected data, not a MongoDB-compatible document database." }
+    - { id: b, text: "Amazon RDS for PostgreSQL", explanation: "Incorrect. RDS for PostgreSQL is relational; it supports vectors through pgvector but is not MongoDB-compatible." }
+    - { id: c, text: "Amazon DocumentDB", explanation: "Correct. Amazon DocumentDB (with MongoDB compatibility) stores JSON documents and supports vector search, so semantic search can be added where the documents already are." }
+    - { id: d, text: "Amazon Redshift", explanation: "Incorrect. Redshift is a data warehouse for analytics, not a MongoDB-compatible document store." }
+  answer: [c]
+  explanation: "Match the vector store to where the data lives: JSON documents in a MongoDB-compatible database point to Amazon DocumentDB, which supports vector search. PostgreSQL data points to pgvector in Aurora or RDS, and graph data points to Neptune."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: easy
+
+- id: q-day-18-008
+  set: day-18
+  type: single
+  stem: "A support assistant built on an Amazon Bedrock knowledge base keeps quoting last year's 12-month warranty period, although the policy PDF in Amazon S3 was replaced last week with a 24-month version. What should the team do?"
+  options:
+    - { id: a, text: "Fine-tune the foundation model on the new warranty policy", explanation: "Incorrect. The model is not the problem; the knowledge base index still contains the old document's chunks." }
+    - { id: b, text: "Run a sync (ingestion job) on the knowledge base data source", explanation: "Correct. Syncing re-processes changed files so the new policy is chunked, embedded and retrievable; no retraining is needed." }
+    - { id: c, text: "Lower the temperature so the model answers more consistently", explanation: "Incorrect. Lower temperature makes output more deterministic but the model would still be given the outdated chunks." }
+    - { id: d, text: "Switch to a larger foundation model", explanation: "Incorrect. A larger model would still receive the stale retrieved text and repeat it." }
+  answer: [b]
+  explanation: "In RAG, answers come from the indexed chunks. When a source document changes, the knowledge base must be re-synced so the changed file is re-chunked and re-embedded. Keeping knowledge fresh without retraining is RAG's key operational advantage."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#examples
+  difficulty: medium
+
+- id: q-day-18-009
+  set: day-18
+  type: single
+  stem: "A developer updates a RAG application so that user questions are embedded with a newer embedding model. The document vectors already stored in the vector store were created with the old model and were left unchanged. Retrieval quality drops sharply. What is the MOST likely cause and fix?"
+  options:
+    - { id: a, text: "The chunks are too large; reduce the chunk size", explanation: "Incorrect. Chunk size did not change; the sudden drop followed the embedding model change." }
+    - { id: b, text: "The vector store is too small; move to a larger instance", explanation: "Incorrect. Capacity affects speed, not whether question and document vectors are comparable." }
+    - { id: c, text: "The foundation model is hallucinating; add a guardrail", explanation: "Incorrect. The problem is in retrieval, before the foundation model is even called." }
+    - { id: d, text: "Question and document vectors come from different embedding models; re-embed all documents with the new model", explanation: "Correct. Vectors from different embedding models are not comparable, so documents and questions must use the same model." }
+  answer: [d]
+  explanation: "Each embedding model creates its own vector space. Similarity search only works when the query and the stored chunks were embedded by the same model, so changing the model means re-ingesting (re-embedding) the whole document collection."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#examples
+  difficulty: hard
+
+- id: q-day-18-010
+  set: day-18
+  type: matching
+  stem: "Match each document collection to the Amazon Bedrock Knowledge Bases chunking strategy that fits it BEST."
+  options:
+    - { id: a, text: "Uniform FAQ entries where the team wants to set the maximum tokens per chunk and the overlap percentage", explanation: "Fixed-size chunking fits because you control the chunk length and overlap for uniform content." }
+    - { id: b, text: "Long, structured equipment manuals where search must be precise but the model needs the surrounding section", explanation: "Hierarchical chunking fits because small child chunks are searched for precision and the larger parent chunk is returned for context." }
+    - { id: c, text: "Meeting transcripts with no headings, which should be split where the topic changes", explanation: "Semantic chunking fits because it uses an embedding model to detect where the meaning changes." }
+    - { id: d, text: "Files that a script has already split into one question-and-answer pair per file", explanation: "No chunking fits because each file is already a suitable chunk." }
+  matchTargets:
+    - { id: t1, text: "Semantic chunking" }
+    - { id: t2, text: "No chunking" }
+    - { id: t3, text: "Fixed-size chunking" }
+    - { id: t4, text: "Hierarchical chunking" }
+  answer: { a: t3, b: t4, c: t1, d: t2 }
+  explanation: "Knowledge Bases offers default (about 300 tokens), fixed-size, hierarchical, semantic and no chunking, plus custom transformations with AWS Lambda. Pick the strategy that keeps each chunk focused on one topic while preserving the context the model needs."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: medium
+
+- id: q-day-18-011
+  set: day-18
+  type: single
+  stem: "A legal team indexed contracts in 50-token chunks. Answers now quote clauses such as 'This shall not apply in the cases above' without saying which cases. The team wants to keep retrieval precise. Which change BEST addresses the problem?"
+  options:
+    - { id: a, text: "Switch to hierarchical chunking so small child chunks are matched and the larger parent section is sent to the model", explanation: "Correct. Hierarchical chunking keeps precise matching on small chunks while giving the model the surrounding context." }
+    - { id: b, text: "Turn off chunking so each contract becomes a single chunk", explanation: "Incorrect. Whole contracts blur many topics into one vector, which makes retrieval imprecise and wastes context window." }
+    - { id: c, text: "Increase the temperature of the foundation model", explanation: "Incorrect. Temperature changes output randomness; it cannot restore context that the chunk does not contain." }
+    - { id: d, text: "Use a different embedding model for questions than for documents", explanation: "Incorrect. Questions and documents must use the same embedding model, otherwise similarity search fails." }
+  answer: [a]
+  explanation: "Chunks that are too small lose their context; chunks that are too large blur topics and waste tokens. Hierarchical chunking combines both needs: search small child chunks for precision, then return the parent chunk so the model sees the full clause."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#examples
+  difficulty: medium
+
+- id: q-day-18-012
+  set: day-18
+  type: single
+  stem: "A startup with a two-person team wants to build a RAG application on AWS. It does not want to write code for loading files, chunking, calling an embedding model and syncing a vector database. Which AWS service should it use?"
+  options:
+    - { id: a, text: "Amazon SageMaker AI training jobs", explanation: "Incorrect. Training jobs train or fine-tune models; they do not provide a managed retrieval pipeline." }
+    - { id: b, text: "Amazon Bedrock Knowledge Bases", explanation: "Correct. Knowledge Bases is a fully managed RAG capability that handles ingestion, chunking, embedding, storage, retrieval and citations." }
+    - { id: c, text: "Amazon Transcribe", explanation: "Incorrect. Transcribe converts speech to text; it does not build a retrieval pipeline." }
+    - { id: d, text: "AWS Glue DataBrew", explanation: "Incorrect. DataBrew is a visual data preparation tool; it does not embed, index or retrieve documents for a foundation model." }
+  answer: [b]
+  explanation: "'Least operational overhead' plus RAG points to Amazon Bedrock Knowledge Bases. You connect a data source, choose chunking, an embedding model and a vector store, sync, and then call Retrieve or RetrieveAndGenerate."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#exam-tips
+  difficulty: easy
+
+- id: q-day-18-013
+  set: day-18
+  type: ordering
+  stem: "A knowledge base has already ingested its documents. Place the steps that happen when a user asks a question in the correct order, from first to last."
+  options:
+    - { id: a, text: "Run a similarity search in the vector store to find the top matching chunks", explanation: "This is the second step: the question vector is compared with the stored chunk vectors." }
+    - { id: b, text: "The foundation model generates the answer", explanation: "This is the fourth step: the model writes an answer grounded in the retrieved context." }
+    - { id: c, text: "Embed the question with the same embedding model used for the documents", explanation: "This is the first step: the question must become a vector in the same space as the documents." }
+    - { id: d, text: "Return the answer with citations to the source documents", explanation: "This is the last step: the response includes references to the chunks it used." }
+    - { id: e, text: "Build an augmented prompt containing the instruction, the retrieved chunks and the question", explanation: "This is the third step: the retrieved text is added to the prompt as context." }
+  answer: [c, a, e, b, d]
+  explanation: "At query time RAG embeds the question with the same model, retrieves the nearest chunks by similarity, augments the prompt with them, lets the foundation model generate and returns the answer with citations. RetrieveAndGenerate performs this whole loop in one call."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#diagram
+  difficulty: medium
+
+- id: q-day-18-014
+  set: day-18
+  type: multi
+  stem: "A company wants to add semantic search without introducing any new database. Its customer records live in Amazon RDS for PostgreSQL, and its product catalogue is stored as JSON documents in Amazon DocumentDB. Which approaches meet the requirement? (Select TWO.)"
+  options:
+    - { id: a, text: "Enable pgvector in the existing RDS for PostgreSQL database for the customer records", explanation: "Correct. RDS for PostgreSQL supports pgvector, so vectors can sit next to the customer records in the same database." }
+    - { id: b, text: "Use vector search in the existing Amazon DocumentDB cluster for the product catalogue", explanation: "Correct. DocumentDB supports vector search, so the catalogue can be searched semantically where it already lives." }
+    - { id: c, text: "Copy both datasets into a new Amazon OpenSearch Service domain", explanation: "Incorrect. OpenSearch is a strong vector store, but a new domain is exactly the extra database the company wants to avoid." }
+    - { id: d, text: "Fine-tune a foundation model on both datasets instead of searching them", explanation: "Incorrect. Fine-tuning changes behaviour and does not provide search over current records; it also has to be repeated when data changes." }
+    - { id: e, text: "Store the embeddings as partition keys in Amazon DynamoDB", explanation: "Incorrect. DynamoDB key lookups find exact matches, not nearest vectors, and it would be a new database." }
+  answer: [a, b]
+  explanation: "If the data already lives in a database that supports vectors, add the vectors there. RDS and Aurora for PostgreSQL use pgvector; DocumentDB has vector search for JSON documents. This avoids running and synchronising a second system."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: hard
+
+- id: q-day-18-015
+  set: day-18
+  type: single
+  stem: "A developer wants a single Amazon Bedrock Knowledge Bases API call that retrieves relevant chunks, sends them to a chosen foundation model and returns a generated answer with citations. Which API should the developer use?"
+  options:
+    - { id: a, text: "Retrieve", explanation: "Incorrect. Retrieve returns the matching chunks and their sources, but you must build the prompt and call a model yourself." }
+    - { id: b, text: "StartIngestionJob", explanation: "Incorrect. An ingestion job syncs a data source into the vector store; it does not answer questions." }
+    - { id: c, text: "RetrieveAndGenerate", explanation: "Correct. RetrieveAndGenerate retrieves, augments the prompt, calls the selected foundation model and returns the answer with citations." }
+    - { id: d, text: "CreateModelCustomizationJob", explanation: "Incorrect. This starts fine-tuning or continued pre-training of a model, not retrieval." }
+  answer: [c]
+  explanation: "Knowledge Bases offers two query APIs. Retrieve returns relevant chunks so you can build your own prompt or use another model. RetrieveAndGenerate performs the full RAG loop and returns a grounded answer with citations."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: medium
+
+- id: q-day-18-016
+  set: day-18
+  type: single
+  stem: "A bank's assistant already answers correctly using RAG, but every response must follow the bank's formal tone and a fixed JSON structure. Detailed prompt templates have been tried and still produce inconsistent output. Which approach BEST addresses the remaining requirement?"
+  options:
+    - { id: a, text: "Add more documents to the knowledge base", explanation: "Incorrect. More documents add knowledge, but the issue is behaviour and output format, not missing facts." }
+    - { id: b, text: "Increase the number of retrieved chunks", explanation: "Incorrect. More context does not teach the model a consistent style or structure, and it raises token cost." }
+    - { id: c, text: "Pre-train a new foundation model from scratch", explanation: "Incorrect. Pre-training from scratch is far too costly for a tone and format requirement." }
+    - { id: d, text: "Fine-tune the model on labelled examples of correctly formatted, formal responses and keep RAG for knowledge", explanation: "Correct. Fine-tuning changes how the model behaves (style, tone, format), while RAG continues to supply current knowledge." }
+  answer: [d]
+  explanation: "RAG changes what the model knows at question time; fine-tuning changes how the model behaves. When prompting cannot achieve consistent style or format, fine-tuning on labelled examples is the next step on the cost ladder, and many production systems combine it with RAG."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: hard
+
+- id: q-day-18-017
+  set: day-18
+  type: single
+  stem: "An airline wants a virtual assistant that can move a customer's booking to another date. The assistant must look up the booking, search available flights, check the fare rules in a policy document and call a change API. Which solution BEST fits this requirement?"
+  options:
+    - { id: a, text: "An Amazon Bedrock agent with action groups for the booking APIs and a knowledge base for the fare rules", explanation: "Correct. An agent plans steps and calls tools; action groups expose the APIs and the knowledge base supplies the policy text." }
+    - { id: b, text: "A knowledge base with RetrieveAndGenerate only", explanation: "Incorrect. RAG answers questions from documents but cannot call booking APIs to complete the change." }
+    - { id: c, text: "A fine-tuned model trained on past booking conversations", explanation: "Incorrect. Fine-tuning changes behaviour but does not give the model the ability to call live APIs." }
+    - { id: d, text: "Amazon Translate to convert the request into the airline's booking language", explanation: "Incorrect. Translation changes language; it does not plan steps or call APIs." }
+  answer: [a]
+  explanation: "AI agents reason about a goal, plan steps, call tools and observe results until a multi-step task is complete. In Amazon Bedrock Agents, action groups (OpenAPI schemas or function definitions, often fulfilled by AWS Lambda) expose operations and knowledge bases provide reference information."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: medium
+
+- id: q-day-18-018
+  set: day-18
+  type: multi
+  stem: "An insurer is deploying an AI agent that can retrieve claim records, calculate payouts and draft letters to customers. Which practices reduce the risk of the agent causing harm? (Select TWO.)"
+  options:
+    - { id: a, text: "Give the agent's role least-privilege permissions, for example read access to claims but no access to change bank details", explanation: "Correct. Narrow permissions limit what an agent can damage if it makes a mistake or is manipulated." }
+    - { id: b, text: "Return payouts above a set threshold to a human handler for approval", explanation: "Correct. Human confirmation for high-impact actions keeps a person in control of consequential decisions." }
+    - { id: c, text: "Grant the agent administrator access so that it never fails on missing permissions", explanation: "Incorrect. Broad permissions maximise the damage an agent could do; agents should follow least privilege." }
+    - { id: d, text: "Disable logging of agent steps to reduce storage cost", explanation: "Incorrect. Logging every step is needed for auditing and troubleshooting agent behaviour." }
+    - { id: e, text: "Increase the temperature so the agent explores more creative plans", explanation: "Incorrect. Higher randomness makes an agent's actions less predictable, which raises risk." }
+  answer: [a, b]
+  explanation: "An agent that can call APIs can also do damage. Give each agent least-privilege permissions, require human approval for consequential actions and log every step. AgentCore Identity and Policy, or an agent's IAM role, help enforce these limits."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#real-world
+  difficulty: hard
+
+- id: q-day-18-019
+  set: day-18
+  type: single
+  stem: "Users of a parts catalogue search with exact part codes such as 'XR-2291-B' and also with descriptive phrases such as 'a valve that stops backflow'. Pure semantic search sometimes misses the exact codes. Which retrieval option BEST handles both kinds of query?"
+  options:
+    - { id: a, text: "Increase the chunk overlap to 90%", explanation: "Incorrect. Overlap protects sentences at chunk boundaries; it does not make semantic search match exact codes." }
+    - { id: b, text: "Hybrid search that combines keyword and semantic matching", explanation: "Correct. Hybrid search uses keyword matching for exact codes and names and semantic matching for paraphrased questions." }
+    - { id: c, text: "Use a smaller foundation model for generation", explanation: "Incorrect. The generation model does not change which chunks are retrieved." }
+    - { id: d, text: "Turn off metadata filtering", explanation: "Incorrect. Metadata filters narrow the search scope; removing them does not help match exact codes." }
+  answer: [b]
+  explanation: "Semantic search matches meaning but can miss exact tokens such as product codes. Hybrid search, available for example with OpenSearch, combines keyword and vector matching so both kinds of query find the right chunks."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: easy
+
+- id: q-day-18-020
+  set: day-18
+  type: multi
+  stem: "Which statements about chunk size in a RAG system are correct? (Select TWO.)"
+  options:
+    - { id: a, text: "Very large chunks mix several topics and waste context window and input tokens", explanation: "Correct. Large chunks blur topics in one vector and add unnecessary tokens to every prompt." }
+    - { id: b, text: "Very small chunks can lose the context needed to understand them", explanation: "Correct. A tiny chunk may not say what it refers to, so the model cannot use it reliably." }
+    - { id: c, text: "Chunk size has no effect on the cost of each request", explanation: "Incorrect. Retrieved chunks are input tokens, and you pay per input token." }
+    - { id: d, text: "Chunks should never overlap, because overlap always causes duplicate answers", explanation: "Incorrect. A small overlap of about 10-20% keeps sentences on chunk boundaries from being cut in half." }
+    - { id: e, text: "The whole document should always be embedded as a single vector for best precision", explanation: "Incorrect. One vector for a long document blurs many topics, which makes retrieval less precise." }
+  answer: [a, b]
+  explanation: "Chunking balances precision and context. Too large wastes tokens and blurs topics; too small loses context. Overlap and hierarchical chunking help find the balance."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-18#explanation
+  difficulty: easy

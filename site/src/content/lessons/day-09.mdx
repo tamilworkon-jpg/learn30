@@ -1,0 +1,288 @@
+---
+day: 9
+kind: lesson
+title: 'FM lifecycle, token pricing & context engineering'
+summary: 'Follow a foundation model from data selection through pre-training, fine-tuning, evaluation, deployment and feedback; recognise the use cases where generative AI shines; work out what a GenAI feature costs with token-based pricing; and learn context engineering — deciding exactly what goes into the context window on every call.'
+domains: [D2]
+taskStatements: ['2.1']
+sources:
+  - { provider: udemy, title: 'Generative AI Concepts; Amazon Bedrock Pricing; Prompt Engineering' }
+  - { provider: skillbuilder, title: 'Fundamentals of Generative AI; Developing Generative AI Solutions' }
+  - { provider: aws-docs, title: 'Amazon Bedrock pricing', url: 'https://aws.amazon.com/bedrock/pricing/' }
+  - { provider: aws-docs, title: 'Amazon Bedrock User Guide — Prompt caching for faster model inference', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html' }
+objectives:
+  - Describe the stages of the foundation model lifecycle and which stages most organisations actually perform
+  - Identify common generative AI use cases across text, code, images and conversation
+  - Explain token-based pricing and estimate the cost of a GenAI workload
+  - Compare on-demand, batch, provisioned throughput and prompt caching from a cost point of view
+  - Describe context engineering and apply techniques to select, order and compress what goes into the context window
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'FM lifecycle: data selection → model selection → pre-training → fine-tuning → evaluation → deployment → feedback, then repeat. Most organisations skip pre-training and start from an existing FM.'
+  - 'Typical GenAI use cases: summarisation, content and code generation, chat assistants, translation, search and question answering, extraction, and image or video generation.'
+  - 'On-demand pricing is per token, with input and output priced separately; output tokens usually cost more. Cost ≈ requests × (input tokens × input price + output tokens × output price).'
+  - 'Batch inference is cheaper for offline jobs, provisioned throughput buys reserved capacity by the hour, and prompt caching discounts a repeated prompt prefix.'
+  - 'Context engineering decides what enters the context window — instructions, retrieved knowledge, history, tool results, memory — and keeps it relevant, well-ordered and within the token budget.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 8" minutes={4}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="From model lifecycle to the bill and the context window" minutes={16}>
+
+Yesterday you learned what a foundation model is made of. Today you look at it the way a product owner does: *Where do these models come from? What are they good for? What will they cost?* And, finally, the skill that makes the biggest day-to-day difference to quality and cost: **context engineering** — choosing what to put in front of the model on every call.
+
+### The foundation model lifecycle
+
+AWS describes the life of a foundation model in seven stages. Think of it like building and running a car: someone designs and builds the engine once, many people customise and drive it, and feedback from drivers shapes the next model year.
+
+1. **Data selection.** Gather and curate the data the model will learn from. For pre-training this means enormous, diverse datasets — web text, books, code, images — cleaned to remove duplicates, low-quality content and harmful or personal data. Data quality, diversity and licensing decide much of the model's eventual behaviour and risk.
+2. **Model selection.** Choose an architecture to train, or — for most organisations — choose an *existing* FM to build on. Selection weighs capability, modality, context window, latency, cost, language support, licence and responsible-AI features (Day 15 goes deeper).
+3. **Pre-training.** Train the model on the huge unlabelled dataset with self-supervised learning, typically by predicting the next token. This is where general knowledge and language ability come from. It needs thousands of GPUs for weeks or months and costs millions of dollars, which is why only a handful of providers do it.
+4. **Fine-tuning.** Adapt the pre-trained model with a smaller, often labelled, dataset for a specific task, domain or style — for example instruction tuning so it follows requests, or training on legal contracts so it uses legal language well. Human feedback (RLHF) is often used here to align the model with human preferences.
+5. **Evaluation.** Measure quality before release: benchmark datasets, automatic metrics, human review and LLM-as-a-judge, plus checks for safety, bias and hallucination. Evaluation decides whether the model is good enough for its purpose (Day 20).
+6. **Deployment.** Make the model available for inference — as a managed API (Amazon Bedrock) or on your own endpoints (Amazon SageMaker AI) — with monitoring, scaling, security and guardrails in place.
+7. **Feedback.** Collect signals from real use — thumbs up and down, corrections, escalation rates, failure cases — and feed them into the next round of data selection, fine-tuning or prompt changes. The lifecycle is a **loop**, not a line.
+
+**Who does which stages?** Model providers such as Amazon (Nova), Anthropic, Meta and Mistral AI perform data selection and pre-training. A typical company *consuming* models starts at **model selection**, skips pre-training, may **fine-tune** or (more often) use prompting and retrieval, then **evaluates**, **deploys** and gathers **feedback**. On the exam, "a company wants generative AI without the cost of training from scratch" points to choosing an existing FM, not pre-training.
+
+### What generative AI is used for
+
+Generative AI is strongest when the output is *language, code or media*, when "good enough and fast" beats "perfect and slow", and when a human can review the result. Common use cases, grouped by output:
+
+| Output | Typical use cases |
+|---|---|
+| Text | Summarising long documents, calls and meetings; drafting emails, reports, product descriptions and marketing copy; translation and tone rewriting |
+| Conversation | Customer-service chat assistants, internal help desks, virtual agents that answer questions from company documents |
+| Code | Generating code from natural-language requests, explaining and documenting code, writing tests, modernising legacy applications (AWS tools include Kiro and AWS Transform) |
+| Knowledge | Semantic search and question answering over documents (RAG), extracting fields from contracts and forms, classifying and routing tickets |
+| Images, video, audio | Generating product imagery and marketing visuals, creating short videos, natural voice assistants |
+| Analysis | Asking questions of business data in plain language and generating dashboards (Amazon Quick), personalised recommendations and messages |
+| Action | Agents that plan and carry out multi-step tasks using tools — tomorrow's topic |
+
+Where is generative AI a *poor* fit? When you need an exact, deterministic answer every time (calculating payroll tax, settling account balances), when every output must be fully explainable to a regulator, or when a simple rule or a traditional ML model does the job more cheaply. You will weigh these trade-offs on Day 11.
+
+### Token-based pricing
+
+On Amazon Bedrock, the default way to pay for text models is **on-demand**: no commitment, pay for what you use, billed **per token**. Prices are quoted per 1,000 or per million tokens and differ by model. Four rules cover most exam questions:
+
+- **Input and output tokens are priced separately.** Input tokens are everything you send — system prompt, instructions, retrieved documents, conversation history, tool definitions and the user's question. Output tokens are what the model generates.
+- **Output tokens usually cost more than input tokens** — often several times more — because generation happens token by token.
+- **Bigger, more capable models cost more per token** than smaller, faster ones. A small model that handles the task well is often the cheapest improvement you can make.
+- **Other modalities have their own units.** Embedding models charge per input token; image-generation models typically charge per image, depending on size and quality; video models charge by the length of video generated.
+
+The basic formula for a text workload is:
+
+**Monthly cost ≈ requests per month × (input tokens per request × input price + output tokens per request × output price)**
+
+Beyond on-demand, Amazon Bedrock offers other ways to buy inference (Day 13 compares them in detail):
+
+- **Batch inference** — submit a large file of prompts (stored in Amazon S3) and collect results later. For supported models, batch is priced at a significant discount — around half the on-demand price. Ideal when nobody is waiting: summarising last month's call transcripts, tagging a whole product catalogue.
+- **Provisioned throughput** — reserve capacity, measured in *model units*, for a fixed hourly price, optionally with a 1-month or 6-month commitment for a lower rate. You pay whether or not you use it, in exchange for guaranteed throughput for steady, high-volume traffic. Some custom (fine-tuned) models require it.
+- **Prompt caching** — when many requests start with the same long prefix (a big system prompt, a policy document, tool definitions), Bedrock can cache that prefix. Cached tokens read on later requests are billed at a large discount and processed faster; AWS quotes savings of up to 90% in cost and up to 85% in latency for supported models.
+
+**Why do prices work this way?** Every input token must be processed once when the model reads your prompt, and this can happen in parallel. Every output token requires another pass through the whole model, one after another, so output consumes far more compute per token — and is priced accordingly. Larger models have more parameters to run for each token, so they cost more per token and usually respond more slowly. This is why the cheapest improvements are almost always "send fewer tokens", "generate fewer tokens" or "use a smaller model for easy steps".
+
+**Hidden token consumers.** Teams are often surprised by where tokens go. Conversation history grows with every turn, so the fortieth message of a chat can cost many times more than the first. Agents (tomorrow) make several model calls per user request — plan, call a tool, read the result, answer — and each call resends instructions and tool definitions. Retrieved documents, verbose JSON tool outputs and few-shot examples all count as input. When a GenAI feature is more expensive than forecast, measure tokens per request by component before changing models.
+
+**Comparing cost with value.** A price per million tokens means little on its own. Translate it into a business unit: **cost per conversation**, **cost per document summarised**, **cost per resolved ticket**. If an assistant costs $0.004 per conversation and deflects tickets that cost $5 each for a human agent to handle, even a modest deflection rate pays for itself. You will meet these business metrics again on Day 11.
+
+**Cost levers you control** without changing provider: shorter prompts, fewer and more relevant retrieved chunks, a **maximum output tokens** limit, a smaller model where it is good enough, summarising long conversation history, caching stable prefixes and moving offline work to batch.
+
+### Context engineering
+
+The **context window** (Day 8) is the model's working memory for one call. Everything the model knows about *this* request must be inside it. **Context engineering** is the practice of designing and managing that content: deciding **what information goes in, in what form and order, and what stays out**, so the model has exactly what it needs to do the task — within the token budget.
+
+**Prompt engineering** (Day 16) is about *how you word* instructions. Context engineering is broader: it covers the whole payload the application assembles on every call, much of which is not written by a human at all. A typical context contains:
+
+- **System instructions** — role, rules, tone, output format.
+- **Examples** — a few demonstrations of the desired output (few-shot).
+- **Retrieved knowledge** — chunks from a knowledge base (RAG).
+- **Conversation history** — earlier turns of the chat.
+- **Memory** — durable facts about the user or task from previous sessions.
+- **Tool definitions and tool results** — what the model can call, and what came back.
+- **The user's current request.**
+
+Why does this matter so much? Because **more context is not always better**. Irrelevant text costs money, slows responses and *distracts* the model; research on long contexts shows that models can pay less attention to information buried in the **middle** of a very long context ("lost in the middle"). Contradictory or stale context leads to wrong answers. Too little context leads to hallucinations. Good context engineering finds the smallest set of high-value tokens.
+
+Four families of techniques are worth remembering:
+
+1. **Select** — include only what is relevant to this request: retrieve the top few chunks rather than whole documents, filter by metadata, and pass only the tools the current step needs.
+2. **Compress** — shrink what you keep: summarise older conversation turns, trim verbose tool outputs to the fields that matter, remove duplicates.
+3. **Write and persist** — store information *outside* the context window (a memory store, a database, a scratchpad file) and bring it back only when needed, rather than carrying everything in every call.
+4. **Isolate** — split a large task so that separate calls or sub-agents each work with their own focused context, then combine the results.
+
+Two more habits matter: **structure** (clear sections or tags such as "Instructions", "Documents", "Question", so the model can tell instructions from data) and **order** (stable content such as system instructions and tool definitions first — which also makes prompt caching effective — with the user's question and the most important material where the model will attend to it).
+
+On AWS, these techniques map to familiar features: Amazon Bedrock Knowledge Bases for *select*, Amazon Bedrock AgentCore Memory for *write and persist*, prompt caching for a stable prefix, and Amazon Bedrock Prompt Management for versioned prompt templates.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="The foundation model lifecycle is a loop: feedback from deployed use drives the next round of data, tuning and evaluation"
+  code={`flowchart LR
+  DS["1. Data selection"] --> MS["2. Model selection"]
+  MS --> PT["3. Pre-training: providers only, very costly"]
+  PT --> FT["4. Fine-tuning: task or domain adaptation"]
+  FT --> EV["5. Evaluation: benchmarks, humans, safety"]
+  EV --> DP["6. Deployment: Bedrock or SageMaker AI"]
+  DP --> FB["7. Feedback from real use"]
+  FB -->|improve data, tuning, prompts| DS
+  MS -.->|most companies start here and skip pre-training| FT`}
+/>
+
+<Diagram
+  caption="Context engineering: the application selects, compresses and orders sources into one context window, leaving room for the response"
+  code={`flowchart TD
+  SYS["System instructions and examples"] --> CA{"Context assembler"}
+  KB["Knowledge base: top-k chunks"] --> CA
+  HIS["Conversation history: summarised"] --> CA
+  MEM["Long-term memory"] --> CA
+  TOOLS["Only the relevant tool definitions"] --> CA
+  Q["User request"] --> CA
+  CA --> CW["Context window: input tokens plus reserved output tokens"]
+  CW --> FM["Foundation model"]
+  FM --> R["Response, billed as output tokens"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={4}>
+
+| Scenario | Concept | Why |
+|---|---|---|
+| A bank wants GenAI for customer emails without training a model | Model selection, skip pre-training | Pre-training costs millions; choose an existing FM |
+| A model must use a firm's legal terminology consistently | Fine-tuning (or RAG for facts) | Adapts a pre-trained model to a domain |
+| Thumbs-down ratings are reviewed weekly to improve prompts | Feedback stage | Real-world signals feed the next iteration |
+| Summarise 2 million archived support tickets by Monday | Batch inference | Offline, large volume, lower price |
+| Every request begins with the same 6,000-token policy document | Prompt caching | Repeated prefix billed at a discount |
+| A chatbot's 40-turn conversations get slow and expensive | Context engineering: compress history | Summarise older turns instead of resending them |
+| An agent has 60 tools but each step needs two or three | Context engineering: select tools | Fewer definitions, fewer tokens, better choices |
+
+**Worked example — estimating a monthly bill.** A support assistant handles **200,000 requests per month**. Each request sends about **1,000 input tokens** and receives about **250 output tokens**. Suppose (illustrative prices only) the model charges **$0.40 per million input tokens** and **$1.60 per million output tokens**.
+
+- Input: 200,000 × 1,000 = 200 million tokens → 200 × $0.40 = **$80**
+- Output: 200,000 × 250 = 50 million tokens → 50 × $1.60 = **$80**
+- Total ≈ **$160 per month**
+
+Now the team adds RAG and pastes ten retrieved chunks of 500 tokens each into every request. Input grows to 6,000 tokens per request: 1,200 million tokens → **$480**, so the bill rises to about $560 — three and a half times higher — and answers get *worse* because most of the chunks are irrelevant. Retrieving the **three** best chunks instead (1,500 extra tokens) keeps input near 2,500 tokens (**$200**) and improves quality. Context engineering is cost engineering.
+
+**Worked example — output is the expensive side.** The same team notices the assistant writes 600-word answers when 120 words would do. Since output tokens cost four times as much as input here, adding "Answer in at most three sentences" and a **maximum output tokens** limit cuts the output bill sharply. Shorter answers also arrive faster.
+
+**Worked example — the growing conversation.** A chat assistant resends the full history on every turn. Each turn adds about 150 tokens of user message plus 250 tokens of answer, so by turn 20 the history alone is around 8,000 input tokens — for one question. Keeping the last five turns verbatim (about 2,000 tokens) and a 300-token summary of everything earlier caps input regardless of how long the chat runs, and the model still remembers the customer's key details.
+
+**Worked example — where to start in the lifecycle.** A hospital group wants an assistant that drafts discharge summaries in its house style. It should *select* a capable existing FM, *evaluate* it on de-identified sample records with clinicians, consider *fine-tuning* only if prompting and examples cannot achieve the style, *deploy* with guardrails and human review, and collect clinician edits as *feedback*. Pre-training its own model would be slow, costly and unnecessary.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={3}>
+
+<Callout type="realWorld" title="A travel company tames its GenAI bill">
+An online travel company launched a trip-planning assistant on Amazon Bedrock. In month one the bill was four times the forecast. An investigation found three causes: every request resent the full conversation history plus a 5,000-token list of destination rules; the assistant retrieved twelve chunks per question; and answers averaged 700 words. The team **cached** the static rules prefix, **summarised** conversation turns older than the last five, retrieved the **four** most relevant chunks, set a **maximum output length** and moved its nightly itinerary-email generation to **batch inference**. Cost fell by about two-thirds and customer ratings went *up*.
+</Callout>
+
+Why did quality improve while cost fell? Because the original context was cluttered: old turns contradicted newer preferences ("I want beaches" in turn two, "actually, mountains" in turn fifteen), and a dozen loosely related chunks pushed the relevant facts into the middle of a long context. A smaller, cleaner context made the model's job easier. The team also closed the **feedback** loop: thumbs-down ratings were reviewed every week, which revealed that the assistant was weak on visa rules, so the visa documents were re-chunked and the system instructions updated — an example of the lifecycle's feedback stage driving improvements without touching the model itself.
+
+A second example: an insurance claims team uses generative AI to **summarise** long adjuster notes and **extract** key fields (policy number, incident date, damage type) into a form. They choose a small, fast model for extraction and a more capable one only for complex summaries, route the large backlog through batch inference overnight, and keep a human adjuster approving every summary before it reaches a customer. Choosing the right model and pricing option per task — not one model for everything — is a recurring theme on the exam.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: read the cost signals in Amazon Bedrock" minutes={8}>
+
+<HandsOnLab
+  goal="Use the Amazon Bedrock console to find a model's context window and modalities, observe input and output tokens for a prompt, and see where batch inference and prompt management live."
+  asOf="November 2026"
+  steps={[
+    { text: 'Open the model catalog and select a text model. The model card lists its supported modalities, context window and supported features such as batch inference and prompt caching.', screen: { service: 'Amazon Bedrock', path: ['Discover', 'Model catalog', 'Amazon Nova Pro'], menu: ['Overview', 'Model catalog', 'Playgrounds', 'Batch inference', 'Prompt management'], active: 'Model catalog', fields: [{ label: 'Input modalities', value: 'Text, image, video' }, { label: 'Context window', value: 'Shown on the model card (in tokens)' }, { label: 'Features', value: 'Batch inference · Prompt caching' }], highlight: 'Open in playground' } },
+    { text: 'In the chat playground, add a system prompt, set a maximum output length and send a question. Compare the input and output token counts in the model metrics, then halve the system prompt and resend.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text'], fields: [{ label: 'System prompt', value: 'You are a travel assistant. Answer in at most three sentences.' }, { label: 'Maximum length', value: '300 tokens' }, { label: 'Input / output tokens', value: '1,184 / 142' }], highlight: 'Model metrics', note: 'Shorter context, fewer input tokens' } },
+    { text: 'Open Batch inference and start creating a job. You point it at a JSONL file of prompts in Amazon S3 and an output location; results arrive later at a lower price than on-demand for supported models.', screen: { service: 'Amazon Bedrock', path: ['Inference', 'Batch inference', 'Create job'], fields: [{ label: 'Input data', value: 's3://travel-genai/batch/itineraries.jsonl' }, { label: 'Output', value: 's3://travel-genai/batch/results/' }], highlight: 'Create batch inference job', note: 'Nobody waiting → batch' } },
+    { text: 'Open Prompt management and create a prompt template with variables. Keeping the stable instructions first and the variable parts last makes the prefix reusable and cache-friendly.', screen: { service: 'Amazon Bedrock', path: ['Build', 'Prompt management', 'Create prompt'], fields: [{ label: 'Template', value: 'Instructions … Documents: {{chunks}} Question: {{question}}' }, { label: 'Versions', value: 'Draft · v1 · v2' }], highlight: 'Create version' } },
+  ]}
+  expectedOutcome="You can find a model's context window, see how prompt length changes input tokens, and explain when batch inference and a cache-friendly prompt template reduce cost."
+  checks={[
+    { q: 'You halved the system prompt and input tokens dropped from 1,184 to 690. What happens to cost if this assistant handles a million requests a month?', a: 'The input bill falls by roughly 40%, because on-demand input is billed per token on every request.' },
+    { q: 'A job must summarise 500,000 documents by tomorrow morning. Which Bedrock option fits?', a: 'Batch inference — offline, large volume and cheaper than on-demand for supported models.' },
+    { q: 'Why put stable instructions at the start of a template?', a: 'A stable prefix can be cached and reused across requests, and it keeps instructions clearly separated from variable data.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="A bigger context window is not a strategy">
+Options such as "choose the model with the largest context window and include all documents in every prompt" sound safe but raise cost and latency and can lower quality. The better answer is usually to *select* relevant content (RAG), *compress* history, or *cache* a repeated prefix.
+</Callout>
+
+- Lifecycle order: **data selection → model selection → pre-training → fine-tuning → evaluation → deployment → feedback**, then repeat.
+- "Avoid the cost of training from scratch" → use an **existing FM** (skip pre-training).
+- "Adapt a pre-trained model to a domain or task with a smaller dataset" → **fine-tuning**.
+- On-demand = **per input and output token**; output usually costs more.
+- "Large offline job, results not needed immediately, lowest cost" → **batch inference**.
+- "Steady high volume, guaranteed throughput, hourly commitment" → **provisioned throughput**.
+- "Same long prefix on many requests" → **prompt caching**.
+- "Reduce output cost" → **maximum output tokens** and instructions for concise answers.
+- "Decide what information goes into the model's context window" → **context engineering**.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+A foundation model moves through data selection, model selection, pre-training, fine-tuning, evaluation, deployment and feedback, and the loop repeats; most organisations start from an existing FM and never pre-train. Generative AI is most useful for summarising, drafting, coding, conversation, search and question answering, extraction and media generation. On-demand pricing is per token, input and output separately, with output usually costing more; batch inference, provisioned throughput and prompt caching change the economics. Context engineering assembles the right instructions, knowledge, history, memory and tools for each call — selecting, compressing, persisting and isolating so the context stays relevant, well-ordered and within budget. Tomorrow: agentic AI — models that plan, call tools, remember and work together, connected through the Model Context Protocol.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={9} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Context window budget" minutes={15} optional>
+
+Architects treat the context window like a budget. Take a model with a 128,000-token window serving a customer-support agent. The window is not a target to fill; it is a ceiling. A practical budget for each call might be:
+
+| Slot | Budget (tokens) | Technique |
+|---|---|---|
+| System instructions and policies | 2,000 | Stable, first in the prompt, **cached** |
+| Tool definitions | 1,500 | Only the tools relevant to the current step |
+| Long-term memory | 500 | Retrieve a few durable facts about the customer |
+| Retrieved knowledge | 4,000 | Top-k chunks, re-ranked, filtered by product and region |
+| Conversation history | 3,000 | Last few turns verbatim, older turns **summarised** |
+| User request | 500 | As received |
+| Reserved for the response | 1,500 | Enforced with a maximum output tokens limit |
+
+That is about 13,000 tokens — roughly a tenth of the window. The headroom absorbs unusual requests, keeps latency low, and avoids paying to send material the model does not need.
+
+<Diagram
+  caption="Context budget architecture: a context builder pulls cached instructions, filtered tools, memory, retrieved chunks and summarised history into a budgeted request"
+  code={`flowchart LR
+  U["User message"] --> CB["Context builder with token budget"]
+  PM[("Prompt Management: versioned instructions")] --> CB
+  MEM[("AgentCore Memory: long-term facts")] --> CB
+  KB[("Bedrock Knowledge Bases: top-k chunks")] --> CB
+  HS["History store"] --> SUM["Summariser: older turns"] --> CB
+  TR["Tool registry"] --> SEL["Tool selector"] --> CB
+  CB -->|cached prefix plus variable suffix| BR["Amazon Bedrock model"]
+  BR --> OUT["Response with max output tokens"]
+  BR --> CW["CloudWatch: input, output and cached token metrics"]`}
+/>
+
+**Design rules.**
+
+- **Order for caching.** Put the unchanging parts (instructions, policies, tool definitions) first so they form a cacheable prefix; put per-request content (retrieved chunks, history, question) after it.
+- **Budget per slot, not just in total.** If retrieval returns too much, trim it rather than evicting the system instructions. Count tokens before sending and drop the lowest-ranked material first.
+- **Summarise, do not truncate blindly.** Cutting the oldest turns can remove the customer's key constraint ("I am travelling with a wheelchair"); a rolling summary or a memory entry keeps it.
+- **Separate instructions from data.** Label sections clearly so retrieved text cannot masquerade as instructions — this also helps against prompt injection (Day 17).
+- **Measure.** Track input, output and cached tokens per request in Amazon CloudWatch, and run evaluations when you change the budget: lowering retrieved chunks from eight to four should be a measured decision, not a guess.
+
+**Trade-offs.** A tighter budget lowers cost and latency but risks omitting something important; a looser budget is more forgiving but more expensive and can dilute attention. Summarisation adds an extra model call, which is usually far cheaper than resending long history on every turn. Large-context models are valuable for genuinely long inputs — a whole contract, a codebase — but even then, selecting and ordering content well beats sending everything.
+
+</Section>

@@ -1,0 +1,292 @@
+---
+day: 18
+kind: lesson
+title: 'RAG & vector stores'
+summary: 'Learn how Retrieval Augmented Generation (RAG) grounds a foundation model in your own documents: embeddings, chunking strategies, vector search and Amazon Bedrock Knowledge Bases. Compare the AWS vector stores the exam names — OpenSearch Service, Aurora and RDS for PostgreSQL (pgvector), Neptune and DocumentDB — weigh RAG against other customisation options, and see how Bedrock Agents and AgentCore use knowledge bases and tools in multi-step tasks.'
+domains: [D3]
+taskStatements: ['3.1']
+sources:
+  - { provider: udemy, title: 'Amazon Bedrock Knowledge Bases (RAG); Vector Databases on AWS; Amazon Bedrock Agents' }
+  - { provider: skillbuilder, title: 'Optimizing Foundation Models' }
+  - { provider: aws-docs, title: 'Retrieve data and generate AI responses with Amazon Bedrock Knowledge Bases', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html' }
+  - { provider: aws-docs, title: 'How content chunking works for knowledge bases', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/kb-chunking.html' }
+objectives:
+  - Explain what RAG is, why it reduces hallucinations and when to choose it over fine-tuning
+  - Describe embeddings, chunking strategies and vector similarity search
+  - Describe how Amazon Bedrock Knowledge Bases ingests, retrieves and cites documents
+  - Choose an AWS vector store (OpenSearch Service, Aurora or RDS for PostgreSQL, Neptune, DocumentDB) for a scenario
+  - Compare the cost and effort of in-context learning, RAG, fine-tuning, distillation and pre-training
+  - Describe the role of AI agents and how Bedrock Agents and AgentCore use knowledge bases and tools
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'RAG retrieves relevant chunks of your own data at question time and adds them to the prompt, so answers are current, grounded and citable without retraining the model.'
+  - 'Embeddings turn text into vectors; similar meanings sit close together, so a vector store finds relevant chunks by similarity search, not keyword match.'
+  - 'Bedrock Knowledge Bases is managed RAG: connect a data source, choose chunking and an embedding model, pick a vector store, then call Retrieve or RetrieveAndGenerate.'
+  - 'Vector stores on the exam: OpenSearch Service (search + vectors), Aurora / RDS for PostgreSQL with pgvector (keep SQL data), Neptune (graphs, GraphRAG), DocumentDB (JSON documents).'
+  - 'Cheapest to costliest customisation: prompt engineering / in-context learning, RAG, fine-tuning, continued pre-training, pre-training from scratch.'
+  - 'Agents plan, call tools and APIs, and query knowledge bases to complete multi-step tasks; Bedrock Agents is managed, AgentCore runs and secures agents built with any framework.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 17" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="Grounding a model in your own data" minutes={16}>
+
+### The problem RAG solves
+
+A foundation model (FM) knows only what was in its training data, and that knowledge stops at a *cut-off date*. Ask a general model about your company's refund policy, last week's price list or a contract signed yesterday, and it has two options: admit it does not know, or — worse — invent a fluent, confident answer. That invention is a **hallucination**.
+
+You could retrain the model on your documents, but that is slow, expensive and out of date the moment a document changes. **Retrieval Augmented Generation (RAG)** takes a cheaper route. Think of an open-book exam: instead of making the student memorise the whole library, you let them look up the right pages just before they answer. RAG does the same for a model:
+
+1. **Retrieve** — search your own data for the passages most relevant to the user's question.
+2. **Augment** — paste those passages into the prompt as context, with an instruction such as "Answer using only the context below".
+3. **Generate** — the FM writes an answer grounded in the retrieved text, and can cite which document each fact came from.
+
+The model's weights never change. When a document is updated, you re-index it and the very next answer reflects the change. That is why RAG is the exam's go-to answer for "use company data", "reduce hallucinations", "answers must reflect the latest documents" and "show the source of the answer".
+
+### Embeddings: turning meaning into numbers
+
+To find the *relevant* passages, RAG does not rely on matching keywords. A user asking "Can I get my money back?" should find a paragraph titled "Refund policy" even though the words differ. The trick is an **embedding**.
+
+An **embedding model** converts a piece of text (or an image) into a **vector** — a long list of numbers, often 256 to 1,024 or more of them. The model is trained so that texts with similar *meaning* get vectors that point in similar directions. Picture a map where every sentence is a dot: "refund", "money back" and "return for credit" cluster together; "aircraft engine maintenance" sits far away.
+
+To search, you embed the user's question with the *same* embedding model and look for the stored vectors nearest to it. Closeness is measured with a **similarity metric** such as cosine similarity, dot product or Euclidean distance. This is **semantic search** (also called vector search or *k-nearest-neighbour*, k-NN, search: "find the k closest vectors"). Because comparing a question against millions of vectors one by one is slow, vector stores build special indexes (for example HNSW) that find *approximately* nearest neighbours very quickly.
+
+On Amazon Bedrock you can choose embedding models such as **Amazon Titan Text Embeddings** or **Cohere Embed**, and Amazon Nova offers multimodal embeddings for text, images and other media. One rule matters for the exam and for real projects: **documents and questions must be embedded with the same model**. Vectors from two different embedding models live on different "maps" and cannot be compared.
+
+### Chunking: cutting documents into searchable pieces
+
+You do not embed a whole 200-page manual as one vector — it would blur hundreds of topics into one dot, and you could not fit the whole manual into the prompt anyway. Instead you split documents into **chunks** and embed each chunk separately. Chunking is a design decision with real trade-offs:
+
+- **Chunks too large** → each chunk mixes several topics, retrieval is less precise, and you waste context window (and money, because you pay per input token).
+- **Chunks too small** → a chunk loses the surrounding context; "It must be submitted within 30 days" is useless if the chunk does not say *what* must be submitted.
+- **Overlap** — repeating a little text (say 10–20%) between neighbouring chunks keeps sentences that sit on a boundary from being cut in half.
+
+Amazon Bedrock Knowledge Bases offers several **chunking strategies**:
+
+| Strategy | How it works | Good for |
+|---|---|---|
+| **Default** | Splits into chunks of roughly 300 tokens, respecting sentence boundaries | A sensible starting point |
+| **Fixed-size** | You set the maximum tokens per chunk and the overlap percentage | Uniform documents such as FAQs |
+| **Hierarchical** | Small *child* chunks are searched for precision, then the larger *parent* chunk is returned for context | Long, structured documents such as manuals and contracts |
+| **Semantic** | Splits where the meaning changes, using an embedding model to detect topic boundaries | Documents without clear structure, such as transcripts |
+| **No chunking** | Each file is one chunk | Files you have already split yourself |
+
+You can also run a **custom transformation** with an AWS Lambda function — for example to add metadata or apply your own splitting logic. For PDFs full of tables and charts, an **advanced parsing** option can use a foundation model (or Amazon Bedrock Data Automation) to extract the content more faithfully before chunking.
+
+### Amazon Bedrock Knowledge Bases: managed RAG
+
+Building RAG yourself means writing code to load files, split them, call an embedding model, write vectors to a database, keep everything in sync, search, assemble prompts and track citations. **Amazon Bedrock Knowledge Bases** is a fully managed service that does this plumbing for you.
+
+**Ingestion (done when data changes):**
+
+1. **Connect a data source** — Amazon S3 is the most common; connectors also exist for sources such as a web crawler, Confluence, Microsoft SharePoint and Salesforce. Knowledge Bases can also query **structured data** (for example Amazon Redshift) by turning a natural-language question into SQL.
+2. **Choose parsing and chunking** — default, fixed-size, hierarchical, semantic or none.
+3. **Choose an embedding model** — for example Titan Text Embeddings.
+4. **Choose a vector store** — let Bedrock create an Amazon OpenSearch Serverless collection for you (quick create), or point to one you manage.
+5. **Sync** — an ingestion job reads the files, chunks and embeds them and writes the vectors plus metadata. Re-sync when documents change; only changed files are re-processed.
+
+**Query (done for every question):**
+
+- The **Retrieve** API embeds the question, runs the similarity search and returns the most relevant chunks with their source locations and scores. You then build your own prompt — useful when you want full control or a model outside Bedrock.
+- The **RetrieveAndGenerate** API does the whole loop: retrieve, augment the prompt, call the FM you choose, and return the answer **with citations** pointing to the source documents.
+
+Useful options include **metadata filtering** (only search documents where `department = HR` or `year = 2026` — also a simple way to respect who may see what), **hybrid search** that combines keyword and semantic matching (helpful for product codes and names), and a **reranking model** that re-scores the retrieved chunks so the very best ones go into the prompt. You can attach **Amazon Bedrock Guardrails** to the generation step, including contextual grounding checks that flag answers not supported by the retrieved text.
+
+### Vector stores on AWS
+
+A **vector store** (vector database) stores embeddings and answers "which vectors are nearest to this one?" quickly. Task statement 3.1 names several AWS options. The exam rarely asks for low-level detail; it asks you to pick the best fit for a scenario.
+
+| Vector store | What it is | Choose it when |
+|---|---|---|
+| **Amazon OpenSearch Service** (managed clusters or **OpenSearch Serverless**) | Search and analytics engine with a k-NN vector engine | You want high-scale, low-latency semantic search, hybrid keyword + vector search, or the default Knowledge Bases option. Serverless means no cluster to manage. |
+| **Amazon Aurora PostgreSQL-Compatible** | Relational database with the open-source **pgvector** extension | Your application data already lives in PostgreSQL and you want vectors next to it, queried with SQL. Aurora Serverless can scale capacity automatically. |
+| **Amazon RDS for PostgreSQL** | Managed PostgreSQL, also supports **pgvector** | Same idea as Aurora for teams on standard RDS; familiar SQL, joins between vectors and business data. |
+| **Amazon Neptune** (Neptune Analytics) | Graph database that also stores vectors | Relationships matter — people, products, parts, regulations linked to each other. Powers **GraphRAG** in Knowledge Bases, which follows links between entities to answer multi-hop questions. |
+| **Amazon DocumentDB** (with MongoDB compatibility) | JSON document database with vector search | Your data is stored as JSON documents and you want to add semantic search without a separate database. |
+
+Bedrock Knowledge Bases also supports some third-party stores (such as Pinecone, Redis Enterprise Cloud and MongoDB Atlas) and Amazon S3 Vectors, a low-cost option for storing very large numbers of vectors where query latency is less critical. For other databases, the exam pattern is the same: **if the data already lives in a database that supports vectors, adding vectors there avoids running and syncing a second system.** Amazon DynamoDB and Amazon ElastiCache are in scope as databases, but think of DynamoDB as key-value storage — not the classic answer for a vector store question.
+
+### Where RAG sits among customisation options
+
+Task statement 3.1 asks you to compare the **cost trade-offs** of customising an FM. Order them from cheapest to most expensive:
+
+1. **Prompt engineering and in-context learning** — put instructions and a few examples in the prompt (Day 16). No training, instant, but every example adds input tokens to every call.
+2. **RAG** — no training; you pay for embeddings, the vector store and longer prompts. Best when knowledge changes often or answers must cite sources.
+3. **Fine-tuning** — train the model further on labelled examples to change its *behaviour*, style or format (Day 19). Costs training compute plus hosting a custom model; data must be prepared.
+4. **Continued pre-training** — train on large amounts of unlabelled domain text so the model absorbs a domain's vocabulary.
+5. **Pre-training from scratch** — months of compute and enormous datasets; almost never the right answer for a business.
+
+**Distillation** sits beside fine-tuning: a large *teacher* model's answers are used to train a smaller, cheaper *student* model, cutting inference cost and latency for a specific task. A rule of thumb worth memorising: **RAG changes what the model knows at question time; fine-tuning changes how the model behaves.** Many production systems combine both.
+
+**Prompt caching**, which you met with FM selection and cost trade-offs, helps RAG too: when many requests share the same long prefix — a big system prompt or a fixed reference document — Bedrock can cache it so repeated calls cost less and respond faster.
+
+### AI agents: from answering to acting
+
+A chatbot with RAG answers questions. An **AI agent** goes further: it **reasons** about a goal, **plans** steps, **calls tools** (APIs, databases, code, other agents), observes the results and repeats until the task is done. Ask a travel agent bot "Move my Tuesday flight to Thursday and tell me the fare difference" and it must look up the booking, search flights, check fare rules in a policy document (a knowledge base), call a change API and confirm — several steps, each depending on the last.
+
+On AWS:
+
+- **Amazon Bedrock Agents** is the managed option. You give the agent instructions, a foundation model, **action groups** (operations defined by an OpenAPI schema or function definitions, usually fulfilled by AWS Lambda) and optional **knowledge bases**. The agent orchestrates the steps for you (a *reason-and-act* loop), can keep **memory** across sessions, can **return control** to your application instead of calling an API itself, and supports **multi-agent collaboration**, where a supervisor agent delegates to specialist agents. Traces show each reasoning step.
+- **Amazon Bedrock AgentCore** is a set of services for deploying and operating agents built with *any* framework (such as the open-source **Strands Agents** SDK) and any model: **Runtime** (secure, serverless hosting), **Memory**, **Gateway** (turns APIs and Lambda functions into tools agents can call), **Identity** (who the agent acts for and what it may access), **Policy** (rules on which tools and actions are allowed), built-in **Browser** and **Code Interpreter** tools, and **Observability** for traces and metrics.
+
+Agents bring new risks: an agent that can call APIs can also do damage. Give each agent least-privilege permissions, require human confirmation for high-impact actions, and log every step — themes you will see again on Day 25.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="The RAG pipeline: documents are chunked, embedded and stored once; each question is embedded, matched by similarity and the best chunks are added to the prompt"
+  code={`flowchart LR
+  subgraph ING["Ingestion: when documents change"]
+    D["Documents in S3, SharePoint, web"] --> C["Parse and chunk"] --> E1["Embedding model"] --> V[("Vector store")]
+  end
+  subgraph QRY["Query: every question"]
+    Q["User question"] --> E2["Same embedding model"] --> S["Similarity search, top k chunks"]
+    S --> P["Augmented prompt: instruction + chunks + question"] --> FM["Foundation model"] --> A["Grounded answer with citations"]
+  end
+  V --> S`}
+/>
+
+<Diagram
+  caption="Choosing a vector store: start from where your data already lives and what kind of search you need"
+  code={`flowchart TD
+  S["Need vector search for RAG"] --> M{"Want AWS to manage it all?"}
+  M -->|Yes, quick start| OSS["OpenSearch Serverless via Knowledge Bases quick create"]
+  M -->|No, I have existing data| W{"Where does the data live?"}
+  W -->|PostgreSQL tables| PG["Aurora or RDS for PostgreSQL with pgvector"]
+  W -->|JSON documents| DOC["Amazon DocumentDB vector search"]
+  W -->|Highly connected entities| NEP["Amazon Neptune, GraphRAG"]
+  W -->|Search and log analytics| OS["OpenSearch Service, hybrid keyword and vector search"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Scenario | Best choice | Reason |
+|---|---|---|
+| HR chatbot must answer from 3,000 policy PDFs that change monthly and cite the source | RAG with Bedrock Knowledge Bases | Current, grounded, citable answers without retraining |
+| Product data already in Aurora PostgreSQL; add "find similar products" | pgvector in the existing Aurora database | Vectors next to business data, one system, SQL joins |
+| Questions such as "Which suppliers of parts used in recalled models are in Germany?" | Neptune with GraphRAG | Multi-hop questions follow relationships between entities |
+| Catalogue stored as JSON documents in a MongoDB-compatible database | DocumentDB vector search | Add semantic search where the documents already are |
+| Search must match exact product codes and also understand paraphrased questions | OpenSearch hybrid search | Combines keyword and semantic matching |
+| Model must always answer in the company's formal tone and JSON format | Fine-tuning (or a strong prompt template first) | Behaviour and format, not missing knowledge |
+| Customer asks to change a booking, which needs several API calls | A Bedrock agent with action groups and a knowledge base | Multi-step task with tools, not just question answering |
+
+**Worked example — the wrong chunk size.** A legal team indexes contracts with very small 50-token chunks. Users complain that answers quote clauses such as "This shall not apply in the cases above" with no idea which cases. The chunks have lost their context. Switching to **hierarchical chunking** — search small child chunks for precision, then send the larger parent section to the model — fixes the problem while keeping retrieval sharp.
+
+**Worked example — stale answers.** A support bot built with RAG keeps quoting last year's warranty period. The model is not the problem; the knowledge base was never **re-synced** after the policy document in S3 was replaced. Running the ingestion (sync) job again fixes it in minutes — no retraining needed. This is the key operational advantage of RAG over fine-tuning.
+
+**Worked example — mismatched embeddings.** A developer switches the application to a newer embedding model for questions but leaves the existing vectors in place. Retrieval quality collapses, because question vectors and document vectors now come from different models. The fix is to re-embed (re-ingest) all documents with the new model.
+
+**Worked example — RAG or fine-tuning?** A pharmaceutical company wants an assistant that answers questions about its 40,000 internal research reports and must show which report each answer came from. Reports are added daily. Fine-tuning would need repeating every time reports change and cannot reliably cite sources. RAG with a knowledge base keeps answers current and returns citations — it is the better choice, and the cheaper one.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={3}>
+
+<Callout type="realWorld" title="An insurer's claims assistant grows from RAG to an agent">
+A mid-sized insurer starts with a question-answering assistant for its 600 claims handlers. Policy wordings, underwriting guides and procedure manuals — about 25,000 documents — sit in Amazon S3. A Bedrock knowledge base ingests them with hierarchical chunking, Titan Text Embeddings and an OpenSearch Serverless vector store, and tags each document with metadata for product line and country. Handlers ask "Is flood damage to a detached garage covered under the Home Plus policy in Ireland?" and receive an answer with citations to the exact clause, filtered to Irish Home Plus documents only.
+</Callout>
+
+Within three months the average time to find a policy answer drops from about eight minutes to under one. Because answers cite sources, handlers trust them — and when a citation looks wrong, they report it, which exposes two outdated documents that were still in the bucket. The team adds a nightly sync and a document-owner review process, a reminder that **RAG is only as good as the data you feed it**.
+
+In phase two the insurer builds an **agent**. Given a claim number, it retrieves the claim record through an action group backed by AWS Lambda, checks the policy wording in the knowledge base, calculates the payout with the deductible applied and drafts a letter to the customer. Any payout above a set threshold is returned to a human handler for approval rather than issued automatically. Each action is logged and the agent's IAM role can read claims but not change bank details. The team also keeps the policy-holder data inside the existing Aurora PostgreSQL database and uses pgvector there for a "find similar past claims" feature, avoiding a second database to secure and synchronise.
+
+The lessons the insurer would give you: start with RAG before considering fine-tuning; invest in clean, current, well-tagged documents; choose a vector store that fits where your data already lives; and give agents narrow permissions with a human in the loop for consequential actions.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: create a knowledge base in Amazon Bedrock" minutes={8}>
+
+<HandsOnLab
+  goal="Walk through creating an Amazon Bedrock knowledge base over documents in S3, choosing chunking, an embedding model and a vector store, then test it with a question that returns citations."
+  asOf="November 2026"
+  steps={[
+    { text: 'In the Amazon Bedrock console, open Knowledge Bases and choose Create, then the option for a knowledge base with a vector store. Name it and let Bedrock create a service role.', screen: { service: 'Amazon Bedrock', path: ['Build', 'Knowledge Bases', 'Create'], menu: ['Model catalog', 'Playgrounds', 'Agents', 'Knowledge Bases', 'Guardrails'], active: 'Knowledge Bases', fields: [{ label: 'Name', value: 'hr-policies-kb' }, { label: 'Type', value: 'Knowledge base with vector store' }, { label: 'IAM role', value: 'Create and use a new service role' }], highlight: 'Next' } },
+    { text: 'Choose Amazon S3 as the data source and point it at the bucket prefix with your policy PDFs. Under parsing and chunking, pick a strategy — hierarchical suits long, structured documents.', screen: { service: 'Amazon Bedrock', path: ['Knowledge Bases', 'Create', 'Configure data source'], fields: [{ label: 'Data source', value: 'Amazon S3' }, { label: 'S3 URI', value: 's3://acme-hr-docs/policies/' }, { label: 'Chunking strategy', value: 'Hierarchical (parent 1500, child 300 tokens)' }], highlight: 'Chunking strategy', note: 'Default is about 300 tokens per chunk' } },
+    { text: 'Select an embedding model and a vector store. Quick create builds an OpenSearch Serverless collection; you could instead choose an existing Aurora PostgreSQL, Neptune Analytics or other supported store.', screen: { service: 'Amazon Bedrock', path: ['Knowledge Bases', 'Create', 'Embeddings and vector store'], fields: [{ label: 'Embeddings model', value: 'Titan Text Embeddings V2' }, { label: 'Vector store', value: 'Quick create: Amazon OpenSearch Serverless' }], highlight: 'Create knowledge base', note: 'Questions must use the same embedding model' } },
+    { text: 'After creation, choose Sync to run the ingestion job. Then use the Test pane: pick a model, ask a question and expand the answer to see the source chunks it cited.', screen: { service: 'Amazon Bedrock', path: ['Knowledge Bases', 'hr-policies-kb', 'Test'], fields: [{ label: 'Data source status', value: 'Sync completed · 412 files' }, { label: 'Question', value: 'How many days of parental leave do I get?' }, { label: 'Answer', value: '26 weeks, see Parental Leave Policy section 3 [1]' }], highlight: 'Show source details' } },
+  ]}
+  expectedOutcome="You can describe the four choices behind every knowledge base — data source, chunking, embedding model, vector store — and know that you must sync after documents change and that answers come back with citations."
+  checks={[
+    { q: 'You replaced a policy PDF in S3 but the knowledge base still quotes the old version. What do you do?', a: 'Run a sync (ingestion job) on the data source so the changed file is re-chunked and re-embedded.' },
+    { q: 'Which API returns an answer generated by an FM together with citations, in one call?', a: 'RetrieveAndGenerate. Retrieve only returns the matching chunks and leaves prompt building to you.' },
+    { q: 'You want the simplest, fully managed vector store when creating a knowledge base. What do you pick?', a: 'Quick create, which provisions an Amazon OpenSearch Serverless collection for you.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="RAG versus fine-tuning">
+If the scenario needs *current* or *proprietary knowledge*, *fewer hallucinations* or *source citations*, the answer is RAG / Knowledge Bases. If it needs a different *style, tone, format or task behaviour* learned from labelled examples, the answer is fine-tuning. "Data changes frequently" almost always rules fine-tuning out.
+</Callout>
+
+- "Least operational overhead to build RAG on AWS" → **Amazon Bedrock Knowledge Bases**.
+- "Semantic search", "similarity search", "store embeddings" → a **vector store**; the default managed choice is **OpenSearch Serverless**.
+- "Data already in PostgreSQL" → **Aurora or RDS for PostgreSQL with pgvector**. "Relationships / knowledge graph" → **Neptune**. "JSON documents, MongoDB-compatible" → **DocumentDB**.
+- Embeddings capture **meaning**; the same embedding model must be used for documents and queries.
+- Chunks that are too large waste tokens and blur topics; too small lose context. Overlap and hierarchical chunking are the fixes.
+- Cost ladder: **prompting / in-context learning → RAG → fine-tuning → continued pre-training → pre-training**.
+- "Complete a multi-step task by calling APIs" → an **agent** (Bedrock Agents with action groups, or agents hosted on AgentCore).
+- Stale answers from RAG → **re-sync** the knowledge base, not retrain the model.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+RAG retrieves relevant pieces of your own data at question time and adds them to the prompt, so a foundation model answers from current, trusted sources and can cite them — without changing the model. Embedding models turn chunks of text into vectors that capture meaning; a vector store finds the chunks closest to the question. Chunking strategy, embedding choice and data freshness decide answer quality. Amazon Bedrock Knowledge Bases manages the whole pipeline, from S3 ingestion and chunking to Retrieve and RetrieveAndGenerate with citations. Pick a vector store by where your data lives: OpenSearch for search at scale, Aurora or RDS for PostgreSQL with pgvector for relational data, Neptune for graphs, DocumentDB for JSON documents. RAG is cheaper and fresher than fine-tuning, and agents build on it by planning steps and calling tools. Tomorrow: how foundation models are trained, fine-tuned and distilled.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={18} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Enterprise RAG" minutes={15} optional>
+
+A proof-of-concept RAG bot can be built in an afternoon. An **enterprise** RAG platform has to answer harder questions: Who may see which document? How do we keep the index fresh? How do we know answers are correct? What does it cost per question?
+
+<Diagram
+  caption="Reference architecture: enterprise RAG with secure ingestion, permission-aware retrieval, guardrails, an agent layer and evaluation"
+  code={`flowchart LR
+  subgraph SRC["Sources"]
+    S3[("S3 documents")]
+    SP["SharePoint and Confluence"]
+    DB[("Aurora PostgreSQL records")]
+  end
+  S3 --> ING["Knowledge Bases ingestion: parse, chunk, metadata"]
+  SP --> ING
+  ING --> EMB["Embedding model"] --> VS[("Vector store, encrypted with KMS")]
+  U["Employee app, authenticated"] --> API["API layer adds user groups as metadata filter"]
+  API --> AG["Agent on Bedrock Agents or AgentCore Runtime"]
+  AG --> RET["Retrieve with filter, rerank"]
+  RET --> VS
+  AG --> TOOLS["Action groups or AgentCore Gateway tools"] --> DB
+  AG --> GR["Bedrock Guardrails: grounding check, PII filter"] --> FM["Foundation model"]
+  FM --> ANS["Answer with citations"] --> U
+  AG --> OBS["CloudWatch, CloudTrail, evaluation jobs"]`}
+/>
+
+**Security and permissions.** Documents are encrypted at rest with AWS KMS and traffic stays private through VPC endpoints (AWS PrivateLink). The most common enterprise failure is a bot that reveals a document the user should never see. Tag each document with metadata such as department or clearance level during ingestion, and have the application add a metadata filter based on the signed-in user's groups to every Retrieve call. The agent's IAM role, or AgentCore Identity and Policy, limits which tools and data it can touch.
+
+**Freshness.** Schedule syncs (or trigger them when files change) and assign owners to document collections so outdated files are removed, not just superseded. Store a "last updated" metadata field and let the model mention it.
+
+**Quality.** Combine hybrid search with a reranker, test several chunking strategies on a set of real questions, and attach Guardrails with contextual grounding checks so unsupported answers are blocked or flagged. Evaluate retrieval and generation separately (Day 20): did we fetch the right chunks, and did the answer stay faithful to them?
+
+**Cost.** Cost per question is roughly embedding the query, the vector search, and FM input tokens (instructions plus retrieved chunks) plus output tokens. Retrieving fewer, better chunks, using a smaller model for simple questions, caching repeated prompt prefixes and choosing a vector store that matches your scale all reduce the bill. For very large but rarely queried collections, lower-cost vector storage such as Amazon S3 Vectors can make sense; for low-latency, high-traffic search, OpenSearch is the usual choice.
+
+**When to add GraphRAG or agents.** If users ask multi-hop questions ("which customers are affected by the supplier delay?"), GraphRAG with Neptune follows relationships that plain vector search misses. If users need things *done*, wrap retrieval inside an agent that can call tools — with narrow permissions and human approval for consequential actions.
+
+</Section>

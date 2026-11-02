@@ -1,0 +1,328 @@
+- id: q-day-19-001
+  set: day-19
+  type: single
+  stem: "A large language model is created by repeatedly hiding the next word in trillions of tokens of web pages, books and code and learning to predict it. Which description BEST fits this stage?"
+  options:
+    - { id: a, text: "Supervised fine-tuning on labelled prompt-completion pairs", explanation: "Incorrect. Fine-tuning uses a smaller set of human-labelled pairs; here the data provides its own labels." }
+    - { id: b, text: "Pre-training with self-supervised learning on unlabelled data", explanation: "Correct. Pre-training predicts hidden or next tokens in huge unlabelled corpora, so the data supplies its own labels." }
+    - { id: c, text: "Reinforcement learning from human feedback", explanation: "Incorrect. RLHF uses human rankings and a reward model after pre-training; it does not predict next words over raw text." }
+    - { id: d, text: "Retrieval Augmented Generation", explanation: "Incorrect. RAG adds retrieved text to prompts at question time and does not train the model." }
+  answer: [b]
+  explanation: "Pre-training is the first stage of building a foundation model. It uses self-supervised learning on enormous, broad, mostly unlabelled datasets, which produces a base model with general language knowledge. It needs weeks or months of compute on thousands of accelerators."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: easy
+
+- id: q-day-19-002
+  set: day-19
+  type: single
+  stem: "An energy company has 2 million unlabelled internal engineering reports. Its foundation model misunderstands the company's technical terminology. Which customisation approach BEST fits the data the company has?"
+  options:
+    - { id: a, text: "Fine-tuning on prompt-completion pairs", explanation: "Incorrect. Fine-tuning needs labelled input-output examples, which the company does not have." }
+    - { id: b, text: "Reinforcement learning from human feedback", explanation: "Incorrect. RLHF needs human rankings of responses and targets preferences such as helpfulness, not domain vocabulary." }
+    - { id: c, text: "Continued pre-training on the unlabelled reports", explanation: "Correct. Continued pre-training trains an existing model further on unlabelled domain text so it learns the domain's vocabulary." }
+    - { id: d, text: "Model distillation into a smaller model", explanation: "Incorrect. Distillation transfers existing capability to a smaller model; it does not add domain vocabulary." }
+  answer: [c]
+  explanation: "The data clue decides: unlabelled domain text points to continued pre-training, which uses the same self-supervised method as pre-training but on your domain's corpus. Labelled prompt-completion pairs would point to fine-tuning."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#examples
+  difficulty: easy
+
+- id: q-day-19-003
+  set: day-19
+  type: single
+  stem: "A company has 3,000 approved pairs of customer messages and ideal replies written in its brand voice. It wants the model to reply in that voice consistently. Which approach should it use?"
+  options:
+    - { id: a, text: "Fine-tuning on the labelled message-reply pairs", explanation: "Correct. Fine-tuning on labelled prompt-completion pairs changes how the model behaves, including tone and style." }
+    - { id: b, text: "Continued pre-training on the pairs as raw text", explanation: "Incorrect. Continued pre-training uses large volumes of unlabelled text to teach vocabulary, not a specific reply behaviour." }
+    - { id: c, text: "Pre-training a new model from scratch", explanation: "Incorrect. Pre-training from scratch is the most expensive option and is unnecessary for teaching a style." }
+    - { id: d, text: "Adding the pairs to a knowledge base for RAG", explanation: "Incorrect. RAG supplies facts at question time; it does not reliably change the model's style." }
+  answer: [a]
+  explanation: "Fine-tuning trains a pre-trained model further on a smaller labelled dataset of input-output pairs. It is the right tool for changing behaviour, style, format or task skill. Hundreds to a few thousand high-quality examples are often enough."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: easy
+
+- id: q-day-19-004
+  set: day-19
+  type: single
+  stem: "An AI provider's instruction-tuned model gives correct answers that are often blunt, overly long or unsafe. Reviewers can easily say which of two answers they prefer. What is the PRIMARY purpose of applying RLHF in this situation?"
+  options:
+    - { id: a, text: "To add the latest facts to the model without retraining", explanation: "Incorrect. Adding current facts without retraining is what RAG does; RLHF changes the model's weights." }
+    - { id: b, text: "To reduce the size of the model so it runs faster", explanation: "Incorrect. Making a smaller, faster model is the goal of distillation." }
+    - { id: c, text: "To teach the model the vocabulary of a specialist domain", explanation: "Incorrect. Domain vocabulary comes from continued pre-training on domain text." }
+    - { id: d, text: "To align the model's responses with human preferences such as helpfulness and harmlessness", explanation: "Correct. RLHF uses human rankings to train a reward model and then optimises the FM to produce responses people prefer." }
+  answer: [d]
+  explanation: "Reinforcement learning from human feedback aligns a model with what people actually prefer: helpful, honest, safe and appropriately detailed answers. Humans supply the definition of 'good' through rankings, and reinforcement learning supplies the optimisation loop."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: medium
+
+- id: q-day-19-005
+  set: day-19
+  type: ordering
+  stem: "Place the steps of reinforcement learning from human feedback (RLHF) in the correct order, from first to last."
+  options:
+    - { id: a, text: "Train a reward model to predict which responses humans prefer", explanation: "This is the third step: the reward model learns from the human rankings." }
+    - { id: b, text: "Human reviewers rank the responses according to guidelines", explanation: "This is the second step: rankings capture human preferences." }
+    - { id: c, text: "Use reinforcement learning to adjust the FM so its responses earn higher reward scores", explanation: "This is the last step: the reward model scores new outputs and the FM's weights are updated to maximise reward." }
+    - { id: d, text: "The model generates several responses to the same prompt", explanation: "This is the first step: candidate responses are needed before anyone can compare them." }
+  answer: [d, b, a, c]
+  explanation: "RLHF collects multiple responses, has humans rank them, trains a reward model on those rankings and then optimises the FM with reinforcement learning against the reward model, while keeping it close to the original model."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: medium
+
+- id: q-day-19-006
+  set: day-19
+  type: single
+  stem: "A retailer's product-description generator uses a large foundation model. Quality is excellent, but at 20 million requests a month the latency and inference cost are too high. Which approach BEST reduces cost and latency while keeping quality close to the current level for this task?"
+  options:
+    - { id: a, text: "Continued pre-training of the large model on product catalogues", explanation: "Incorrect. Continued pre-training adds domain vocabulary but keeps the same large, expensive model." }
+    - { id: b, text: "Model distillation, using the large model as teacher to train a smaller student model", explanation: "Correct. Distillation trains a smaller student on the teacher's responses, giving cheaper, faster inference with close-to-teacher quality on the target task." }
+    - { id: c, text: "Pre-training a new small model from scratch", explanation: "Incorrect. Pre-training from scratch is extremely expensive and would not reuse the large model's quality." }
+    - { id: d, text: "RLHF with human rankings of descriptions", explanation: "Incorrect. RLHF improves alignment with preferences but does not make the model smaller or cheaper to run." }
+  answer: [b]
+  explanation: "Choose distillation when a large model already gives the needed quality but inference cost or latency is too high. Amazon Bedrock Model Distillation generates teacher responses for your prompts and fine-tunes a smaller student model on them."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#examples
+  difficulty: medium
+
+- id: q-day-19-007
+  set: day-19
+  type: multi
+  stem: "A data scientist proposes fine-tuning a model on five years of customer chat transcripts. Which governance actions should happen BEFORE the training job starts? (Select TWO.)"
+  options:
+    - { id: a, text: "Detect and mask personally identifiable information such as card numbers in the transcripts", explanation: "Correct. PII should be removed or masked unless there is a lawful reason to keep it; tools such as Amazon Macie can find sensitive data." }
+    - { id: b, text: "Confirm that the company has consent and the rights to use the transcripts for training, and record their lineage", explanation: "Correct. Governance means knowing where data came from and whether you are allowed to train on it." }
+    - { id: c, text: "Increase the number of epochs so the model memorises every transcript", explanation: "Incorrect. Memorising data is overfitting and also raises the risk of leaking customer information." }
+    - { id: d, text: "Skip the validation set to give the model more training data", explanation: "Incorrect. Removing validation data hides overfitting; it is not a governance step." }
+    - { id: e, text: "Share the raw transcripts with all employees so more people can review them", explanation: "Incorrect. Governance limits access to sensitive data; it does not widen it." }
+  answer: [a, b]
+  explanation: "Data governance covers lineage, licences and consent, access control and the handling of PII. A governance review before training checks that the data may be used, masks sensitive fields and documents where the data came from."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#examples
+  difficulty: medium
+
+- id: q-day-19-008
+  set: day-19
+  type: single
+  stem: "A team fine-tunes a model for 20 epochs on 400 examples. Training loss approaches zero, but validation loss has been rising since epoch 4 and answers to new prompts become repetitive. Which change is MOST likely to help?"
+  options:
+    - { id: a, text: "Train for 40 epochs so the model converges fully", explanation: "Incorrect. More epochs would deepen the memorisation that is already causing poor results." }
+    - { id: b, text: "Remove the validation dataset because its loss is misleading", explanation: "Incorrect. The validation loss is correctly showing overfitting; removing it would hide the problem." }
+    - { id: c, text: "Reduce the number of epochs to about 4 and add more varied examples", explanation: "Correct. Stopping before validation loss rises and adding variety reduces overfitting." }
+    - { id: d, text: "Switch from fine-tuning to pre-training from scratch", explanation: "Incorrect. Pre-training from scratch is vastly more expensive and does not address overfitting on a small dataset." }
+  answer: [c]
+  explanation: "Falling training loss with rising validation loss means the model is memorising the examples (overfitting). Fewer epochs, more and more varied data, a lower learning rate or a parameter-efficient method are the usual fixes."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#examples
+  difficulty: medium
+
+- id: q-day-19-009
+  set: day-19
+  type: single
+  stem: "A base model continues text well but ignores requests such as 'List three risks' or 'Translate this into French'. Which fine-tuning method specifically teaches a model to follow instructions it has never seen?"
+  options:
+    - { id: a, text: "Instruction tuning on many instruction-response examples across many tasks", explanation: "Correct. Instruction tuning fine-tunes on many instruction-to-response examples so the model generalises to new instructions." }
+    - { id: b, text: "Continued pre-training on more web text", explanation: "Incorrect. More unlabelled text improves knowledge and vocabulary but does not teach instruction following." }
+    - { id: c, text: "Distillation into a smaller model", explanation: "Incorrect. Distillation copies an existing model's behaviour into a smaller model; it does not create instruction following on its own." }
+    - { id: d, text: "Increasing the context window", explanation: "Incorrect. A larger context window lets the model read more text but does not teach it to follow orders." }
+  answer: [a]
+  explanation: "Instruction tuning turns a base model into an instruct or chat model by fine-tuning on varied instruction-response pairs. Most models on Amazon Bedrock have already been instruction-tuned by their providers."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: medium
+
+- id: q-day-19-010
+  set: day-19
+  type: matching
+  stem: "Match each type of training data to the customisation technique that uses it."
+  options:
+    - { id: a, text: "Millions of words of unlabelled domain text", explanation: "Continued pre-training uses unlabelled domain text with self-supervised learning." }
+    - { id: b, text: "A few thousand labelled prompt-completion pairs", explanation: "Fine-tuning uses labelled input-output pairs to teach a task, style or format." }
+    - { id: c, text: "Human rankings of which response to a prompt is better", explanation: "RLHF uses human preference rankings to train a reward model." }
+    - { id: d, text: "Responses generated by a large teacher model for representative prompts", explanation: "Distillation fine-tunes a smaller student model on the teacher's responses." }
+  matchTargets:
+    - { id: t1, text: "Distillation" }
+    - { id: t2, text: "RLHF" }
+    - { id: t3, text: "Continued pre-training" }
+    - { id: t4, text: "Fine-tuning" }
+  answer: { a: t3, b: t4, c: t2, d: t1 }
+  explanation: "The type of data is the strongest clue: unlabelled domain text means continued pre-training, labelled pairs mean fine-tuning, human rankings mean RLHF and teacher-generated answers mean distillation. Fast-changing facts need none of these; they need RAG."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#exam-tips
+  difficulty: medium
+
+- id: q-day-19-011
+  set: day-19
+  type: single
+  stem: "A company wants to customise one large open model for five different internal tasks. It has limited GPU budget and is worried that fine-tuning will make the model worse at general tasks. Which approach BEST meets these needs?"
+  options:
+    - { id: a, text: "Full fine-tuning of all weights five times, keeping five complete copies of the model", explanation: "Incorrect. Full fine-tuning is the most compute- and storage-intensive option and carries a higher risk of forgetting." }
+    - { id: b, text: "Pre-training five smaller models from scratch", explanation: "Incorrect. Pre-training from scratch is far more expensive than any fine-tuning approach." }
+    - { id: c, text: "Continued pre-training on all five tasks' labelled examples", explanation: "Incorrect. Continued pre-training uses unlabelled domain text and does not produce separate task-specific behaviours cheaply." }
+    - { id: d, text: "Parameter-efficient fine-tuning such as LoRA, training a small adapter for each task on top of the frozen base model", explanation: "Correct. PEFT trains only small extra parameters, needs much less compute, reduces catastrophic forgetting and lets several adapters share one base model." }
+  answer: [d]
+  explanation: "Parameter-efficient fine-tuning freezes the original weights and trains a small number of extra parameters, such as LoRA adapters. It is cheaper than full fine-tuning, preserves general abilities better and allows one adapter per task."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: hard
+
+- id: q-day-19-012
+  set: day-19
+  type: single
+  stem: "A factory has only 3,000 labelled photos of product defects. Instead of training an image model from zero, the team starts from a model pre-trained on millions of general photos and retrains only its last layers. What is this technique called?"
+  options:
+    - { id: a, text: "Reinforcement learning from human feedback", explanation: "Incorrect. RLHF uses human rankings to align generative model outputs, not retraining layers of an image model on labelled photos." }
+    - { id: b, text: "Transfer learning", explanation: "Correct. Transfer learning reuses knowledge learned on one task or dataset as the starting point for a related task." }
+    - { id: c, text: "Model distillation", explanation: "Incorrect. Distillation trains a smaller student to imitate a larger teacher; here a pre-trained model is adapted to a new task." }
+    - { id: d, text: "Retrieval Augmented Generation", explanation: "Incorrect. RAG retrieves text into prompts for generative models and does not retrain layers." }
+  answer: [b]
+  explanation: "Transfer learning reuses what a model already knows so a new task needs far less data and compute. Fine-tuning a foundation model is itself a form of transfer learning."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: medium
+
+- id: q-day-19-013
+  set: day-19
+  type: single
+  stem: "After aggressive fine-tuning with a high learning rate on a narrow set of insurance-claim summaries, a model writes excellent claim summaries but has become noticeably worse at general tasks such as answering simple questions. What is this effect called, and what reduces it?"
+  options:
+    - { id: a, text: "Data drift; retrain on recent production data", explanation: "Incorrect. Drift is a change in real-world input data over time, not a loss of general skill caused by fine-tuning." }
+    - { id: b, text: "Hallucination; add a knowledge base", explanation: "Incorrect. Hallucination is inventing facts; the issue here is lost general ability after narrow training." }
+    - { id: c, text: "Catastrophic forgetting; use a lower learning rate, fewer epochs, parameter-efficient methods or some general examples in the training mix", explanation: "Correct. Narrow, aggressive fine-tuning can overwrite general abilities; gentler training and PEFT reduce the effect." }
+    - { id: d, text: "Underfitting; train for many more epochs", explanation: "Incorrect. The model fits the claim task very well; more epochs would make forgetting worse." }
+  answer: [c]
+  explanation: "Catastrophic forgetting happens when fine-tuning narrowly and aggressively overwrites what a model knew. Moderate learning rates, fewer epochs, parameter-efficient fine-tuning and mixing in general examples help preserve general abilities."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: hard
+
+- id: q-day-19-014
+  set: day-19
+  type: multi
+  stem: "Which statements correctly compare continued pre-training with fine-tuning? (Select TWO.)"
+  options:
+    - { id: a, text: "Continued pre-training uses unlabelled domain text, while fine-tuning uses labelled input-output examples", explanation: "Correct. This is the main difference in the data each technique needs." }
+    - { id: b, text: "Both techniques change the model's weights", explanation: "Correct. Both are training techniques that update the model's parameters, unlike RAG or prompt engineering." }
+    - { id: c, text: "Fine-tuning typically needs far more data than continued pre-training", explanation: "Incorrect. Continued pre-training uses large volumes of text; fine-tuning often works with hundreds to a few thousand pairs." }
+    - { id: d, text: "Continued pre-training is the best way to keep daily-changing facts current", explanation: "Incorrect. Retraining every day is impractical; RAG keeps fast-changing facts current." }
+    - { id: e, text: "Fine-tuning only changes the prompt, not the model", explanation: "Incorrect. Fine-tuning updates the model's weights; changing only the prompt is prompt engineering." }
+  answer: [a, b]
+  explanation: "Continued pre-training teaches a domain's vocabulary and knowledge from large unlabelled corpora; fine-tuning teaches a task, style or format from smaller labelled datasets. Both alter the weights, which is why neither is suitable for facts that change every day."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: hard
+
+- id: q-day-19-015
+  set: day-19
+  type: single
+  stem: "A start-up founder asks which way of obtaining a capable language model requires the MOST compute, data and cost. Which option should you name?"
+  options:
+    - { id: a, text: "Fine-tuning an existing foundation model with LoRA", explanation: "Incorrect. Parameter-efficient fine-tuning is one of the cheapest training approaches." }
+    - { id: b, text: "Building a RAG application with a knowledge base", explanation: "Incorrect. RAG involves no model training at all." }
+    - { id: c, text: "Distilling an existing model into a smaller one", explanation: "Incorrect. Distillation fine-tunes a small student on teacher responses, which is far cheaper than pre-training." }
+    - { id: d, text: "Pre-training a new foundation model from scratch", explanation: "Correct. Pre-training needs huge datasets and thousands of accelerators for weeks or months, often costing millions." }
+  answer: [d]
+  explanation: "Pre-training from scratch is the most expensive customisation option and is rarely right for a business. Prompting, RAG, fine-tuning, distillation and continued pre-training all reuse an existing foundation model."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: easy
+
+- id: q-day-19-016
+  set: day-19
+  type: single
+  stem: "A hospital group wants a general foundation model to understand clinical terminology and conventions, such as what 'contraindication' means in context, so that it performs better on medical tasks. Which term BEST describes this goal?"
+  options:
+    - { id: a, text: "Domain adaptation", explanation: "Correct. Domain adaptation specialises a general model for a field such as medicine, using continued pre-training, fine-tuning or both." }
+    - { id: b, text: "Instruction tuning", explanation: "Incorrect. Instruction tuning teaches a model to follow instructions in general, not a specific field's language." }
+    - { id: c, text: "Model distillation", explanation: "Incorrect. Distillation makes a smaller model imitate a larger one; it does not add domain understanding." }
+    - { id: d, text: "Prompt caching", explanation: "Incorrect. Prompt caching reduces cost and latency for repeated prompt prefixes and does not change what a model understands." }
+  answer: [a]
+  explanation: "Domain adaptation makes a general model understand a specialist field's terms and conventions. It is often done with continued pre-training on unlabelled domain text first, then fine-tuning on labelled domain examples."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: medium
+
+- id: q-day-19-017
+  set: day-19
+  type: multi
+  stem: "A team is preparing a fine-tuning dataset for a support assistant. The dataset contains many near-duplicate examples and replies that contradict each other, and every example is in English, although 30% of customers write in Spanish. Which actions BEST improve the dataset? (Select TWO.)"
+  options:
+    - { id: a, text: "Curate the data by removing near-duplicates and resolving contradictory examples", explanation: "Correct. Curation keeps relevant, high-quality, consistent examples; a few thousand clean examples beat many messy ones." }
+    - { id: b, text: "Add high-quality Spanish examples so the data represents the real customer base", explanation: "Correct. Representative data must reflect the languages and users the model will meet in production." }
+    - { id: c, text: "Duplicate every English example ten times to increase the dataset size", explanation: "Incorrect. Duplicates add no new information and encourage overfitting." }
+    - { id: d, text: "Keep the contradictory examples so the model learns both answers", explanation: "Incorrect. Contradictory labels confuse the model and lower quality." }
+    - { id: e, text: "Train for more epochs to compensate for the missing Spanish data", explanation: "Incorrect. More epochs cannot teach patterns that are absent from the data and increase overfitting." }
+  answer: [a, b]
+  explanation: "Data preparation for customisation covers curation (clean, relevant, consistent, deduplicated), governance, size, labelling quality and representativeness. Unrepresentative data creates a model that works well for some users and poorly for others."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: medium
+
+- id: q-day-19-018
+  set: day-19
+  type: single
+  stem: "A travel company plans to fine-tune a model every night so that it knows the latest fares, which change several times a day. An architect objects. What is the BEST reason for the objection?"
+  options:
+    - { id: a, text: "Fine-tuning can only be used for image models", explanation: "Incorrect. Fine-tuning is widely used for language models as well as image models." }
+    - { id: b, text: "Fine-tuning requires unlabelled data, and fares are labelled", explanation: "Incorrect. Fine-tuning uses labelled examples; the problem is how often the facts change." }
+    - { id: c, text: "Training cannot keep up with facts that change several times a day; RAG retrieves current fares at question time without retraining", explanation: "Correct. Fine-tuning changes behaviour and must be repeated whenever facts change, while RAG reflects updated data as soon as it is indexed." }
+    - { id: d, text: "Fine-tuned models cannot be used on Amazon Bedrock", explanation: "Incorrect. Amazon Bedrock supports creating and using private custom models." }
+  answer: [c]
+  explanation: "Customisation techniques change the model's weights, which takes time and money and goes stale as soon as facts change. Fine-tuning is for behaviour, style and task skill; fast-changing knowledge belongs in RAG."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#exam-tips
+  difficulty: hard
+
+- id: q-day-19-019
+  set: day-19
+  type: single
+  stem: "A team needs domain experts to rank pairs of model responses as preference data for RLHF and wants AWS to manage the human labelling workflow. Which AWS service should it use?"
+  options:
+    - { id: a, text: "Amazon Comprehend", explanation: "Incorrect. Comprehend is a natural language processing service for tasks such as sentiment and entity detection, not a human labelling workflow." }
+    - { id: b, text: "Amazon SageMaker Ground Truth", explanation: "Correct. SageMaker Ground Truth manages human workforces that label data or rank and rate model responses." }
+    - { id: c, text: "AWS Glue DataBrew", explanation: "Incorrect. DataBrew is a visual tool for cleaning and transforming data, not for managing human reviewers." }
+    - { id: d, text: "Amazon Polly", explanation: "Incorrect. Polly converts text to speech." }
+  answer: [b]
+  explanation: "Fine-tuning and RLHF depend on accurate human labels or rankings. Amazon SageMaker Ground Truth manages human labelling workflows, including ranking model responses, and can track agreement between labellers."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#explanation
+  difficulty: easy
+
+- id: q-day-19-020
+  set: day-19
+  type: multi
+  stem: "A company is fine-tuning a model with Amazon Bedrock custom models. Which statements are correct? (Select TWO.)"
+  options:
+    - { id: a, text: "Training data is provided as JSON Lines files in Amazon S3", explanation: "Correct. Bedrock customisation jobs read JSONL training and validation data from S3." }
+    - { id: b, text: "The resulting custom model is private to the company's account, and the data is not used to train the provider's base model", explanation: "Correct. Bedrock creates a private custom model and does not use customer data to improve the base model." }
+    - { id: c, text: "The company must provision and manage its own GPU instances for the job", explanation: "Incorrect. Bedrock customisation is a managed job with no infrastructure to manage; SageMaker AI is the option for full control." }
+    - { id: d, text: "The custom model is automatically shared with other Bedrock customers", explanation: "Incorrect. Custom models are private to the account that created them." }
+    - { id: e, text: "Fine-tuning jobs accept only unlabelled text", explanation: "Incorrect. Fine-tuning uses labelled prompt-completion pairs; unlabelled text is used for continued pre-training." }
+  answer: [a, b]
+  explanation: "Amazon Bedrock offers managed fine-tuning, continued pre-training and distillation for supported models. You provide JSONL data in S3, choose hyperparameters and receive a private custom model, which then needs an inference option such as Provisioned Throughput."
+  domain: D3
+  taskStatement: "3.3"
+  lessonRef: day-19#hands-on
+  difficulty: easy

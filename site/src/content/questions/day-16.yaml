@@ -1,0 +1,329 @@
+- id: q-day-16-001
+  set: day-16
+  type: single
+  stem: "A developer sends a model the prompt: 'Classify the sentiment of this review as positive, negative or neutral: The delivery was late but the staff were friendly.' The prompt contains no example classifications. Which prompting technique is this?"
+  options:
+    - { id: a, text: "Few-shot prompting", explanation: "Incorrect. Few-shot prompting includes several worked examples, and this prompt has none." }
+    - { id: b, text: "Chain-of-thought prompting", explanation: "Incorrect. Chain-of-thought asks the model to reason step by step; this prompt asks only for a label." }
+    - { id: c, text: "Zero-shot prompting", explanation: "Correct. The task is described without any examples, which is zero-shot prompting." }
+    - { id: d, text: "Single-shot prompting", explanation: "Incorrect. Single-shot prompting includes exactly one example of input and output." }
+  answer: [c]
+  explanation: "Zero-, single- and few-shot describe how many examples are included in the prompt: none, one or several. Large modern models handle many common tasks zero-shot."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: easy
+
+- id: q-day-16-002
+  set: day-16
+  type: single
+  stem: "A prompt contains four example support tickets, each followed by its correct category, and then a new ticket with the category left blank for the model to complete. Which technique is being used?"
+  options:
+    - { id: a, text: "Few-shot prompting", explanation: "Correct. Several input-output examples in the prompt show the model the pattern and labels to follow." }
+    - { id: b, text: "Fine-tuning", explanation: "Incorrect. Fine-tuning trains the model on a dataset and changes its weights; examples in a prompt do not." }
+    - { id: c, text: "Negative prompting", explanation: "Incorrect. A negative prompt tells the model what to avoid; it is not a set of examples." }
+    - { id: d, text: "Zero-shot prompting", explanation: "Incorrect. Zero-shot prompting includes no examples." }
+  answer: [a]
+  explanation: "Few-shot prompting places several examples in the prompt so the model infers the format, labels and tone. Good examples are representative, consistent in format and balanced across categories."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: easy
+
+- id: q-day-16-003
+  set: day-16
+  type: single
+  stem: "A prompt reads: 'You are a support analyst. Summarise the review below for the product team. Review: (text). Reply in two bullet points of under 30 words.' Which part of the prompt is 'Reply in two bullet points of under 30 words'?"
+  options:
+    - { id: a, text: "Context", explanation: "Incorrect. Context is background that shapes the answer, such as the analyst role and the product-team audience." }
+    - { id: b, text: "Input data", explanation: "Incorrect. The input data is the review text the model works on." }
+    - { id: c, text: "Instruction", explanation: "Incorrect. The instruction is the task itself: 'Summarise the review'." }
+    - { id: d, text: "Output indicator", explanation: "Correct. The output indicator specifies the format, length or structure of the response." }
+  answer: [d]
+  explanation: "The four parts of a prompt are instruction (the task), context (background, role, audience), input data (the content to process) and output indicator (format and length of the answer)."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: medium
+
+- id: q-day-16-004
+  set: day-16
+  type: single
+  stem: "A payroll assistant often gives wrong totals for overtime questions such as: 'An employee worked 46 hours; hours over 40 are paid at 1.5 times the $20 rate. What is the gross pay?' Which prompt change is MOST likely to improve accuracy?"
+  options:
+    - { id: a, text: "Raise the temperature so the model tries different answers", explanation: "Incorrect. Higher temperature increases randomness, which tends to reduce accuracy on calculations." }
+    - { id: b, text: "Ask the model to work through the calculation step by step before giving the final answer", explanation: "Correct. Chain-of-thought prompting makes the model reason through each step, which improves accuracy on multi-step arithmetic." }
+    - { id: c, text: "Add a negative prompt saying 'Do not make mistakes'", explanation: "Incorrect. Telling the model not to make mistakes does not give it a method for reaching the right answer." }
+    - { id: d, text: "Shorten the prompt to only 'Gross pay?'", explanation: "Incorrect. Removing information makes the task harder, not easier." }
+  answer: [b]
+  explanation: "Chain-of-thought (CoT) prompting asks the model to reason step by step, for example 40 × 20 = 800, 6 × 30 = 180, total 980. It helps with maths, logic and multi-condition problems, at the cost of longer output."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: medium
+
+- id: q-day-16-005
+  set: day-16
+  type: single
+  stem: "A designer uses an image-generation model to create product photos. The images keep including blurry backgrounds and watermark-like text. What is the BEST way to tell the model to exclude these elements?"
+  options:
+    - { id: a, text: "List 'blurry background, text, watermark' in the negative prompt field", explanation: "Correct. A negative prompt lists unwanted elements so the image model steers away from them." }
+    - { id: b, text: "Add 'blurry background, text, watermark' to the main prompt", explanation: "Incorrect. Mentioning elements in the main prompt can actually make them more likely to appear." }
+    - { id: c, text: "Increase the maximum tokens", explanation: "Incorrect. Maximum tokens limits text length and is not how image content is controlled." }
+    - { id: d, text: "Use chain-of-thought prompting", explanation: "Incorrect. Chain-of-thought helps with reasoning tasks, not with excluding visual elements." }
+  answer: [a]
+  explanation: "Negative prompts tell a model what to avoid. Image models such as Amazon Nova Canvas provide a separate negative prompt field; put unwanted elements there rather than in the main description."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: easy
+
+- id: q-day-16-006
+  set: day-16
+  type: single
+  stem: "A company updated a production prompt for its support assistant, and answer quality dropped. The team wants to return to the previous prompt immediately and keep a history of prompt changes in the future. Which AWS capability fits BEST?"
+  options:
+    - { id: a, text: "Amazon Bedrock Knowledge Bases", explanation: "Incorrect. Knowledge Bases manage document retrieval for RAG, not versions of prompts." }
+    - { id: b, text: "Fine-tuning the model on the previous prompt", explanation: "Incorrect. Fine-tuning creates a custom model and is not a way to store or roll back prompts." }
+    - { id: c, text: "Amazon Bedrock Prompt Management with prompt versions", explanation: "Correct. Prompt Management stores prompts with their settings and creates immutable versions, so applications can switch back to an earlier version." }
+    - { id: d, text: "Prompt caching", explanation: "Incorrect. Prompt caching reduces the cost of a repeated prefix; it does not track or restore prompt versions." }
+  answer: [c]
+  explanation: "Amazon Bedrock Prompt Management stores prompts, their variables, model and inference settings, lets you compare variants, and creates immutable versions that applications reference — making rollback and change history straightforward."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: medium
+
+- id: q-day-16-007
+  set: day-16
+  type: single
+  stem: "Forty developers write their own prompts for the same customer-reply task, and response quality varies widely. Which approach will MOST improve consistency?"
+  options:
+    - { id: a, text: "Let each developer choose a different temperature", explanation: "Incorrect. Different settings would increase inconsistency, not reduce it." }
+    - { id: b, text: "Ask each developer to write longer prompts", explanation: "Incorrect. Longer prompts are not necessarily better, and each would still differ." }
+    - { id: c, text: "Switch every developer to a larger model", explanation: "Incorrect. A larger model does not stop forty differently worded prompts from producing different results." }
+    - { id: d, text: "Create one tested prompt template with variables for the changing details and have every application use it", explanation: "Correct. A shared template phrases every request the same way, can be reviewed once and separates fixed instructions from changing input." }
+  answer: [d]
+  explanation: "Prompt templates are reusable prompts with placeholders filled at run time. They give consistency, quality control, easier maintenance and a safe slot for user input. Bedrock Prompt Management can store and version them."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: medium
+
+- id: q-day-16-008
+  set: day-16
+  type: single
+  stem: "A bank asks a model to label transactions as Groceries, Travel or Utilities. Zero-shot, the model sometimes invents labels such as 'Food & Drink'. The bank wants a fix that requires no training and no new model. What should it do?"
+  options:
+    - { id: a, text: "Fine-tune the model on 5,000 labelled transactions", explanation: "Incorrect. Fine-tuning would work but requires training and a custom model, which the bank wants to avoid." }
+    - { id: b, text: "List the allowed labels in the instruction and add a few consistent examples, one per label, to the prompt", explanation: "Correct. Few-shot examples plus a clear list of allowed labels show the model exactly which outputs are valid, with no training." }
+    - { id: c, text: "Raise the temperature so the model explores other labels", explanation: "Incorrect. More randomness would produce more invented labels." }
+    - { id: d, text: "Pre-train a model on banking text", explanation: "Incorrect. Pre-training is extremely expensive and unnecessary for a three-label task." }
+  answer: [b]
+  explanation: "Few-shot prompting is in-context learning: examples in the prompt teach labels and format without changing weights. Fine-tuning changes the model and needs a training job. Combine few-shot examples with low temperature for repeatable labels."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#examples
+  difficulty: hard
+
+- id: q-day-16-009
+  set: day-16
+  type: single
+  stem: "A developer wants a model to return extracted data in a company-specific JSON layout. The developer includes exactly one example of an input document and the matching JSON output before the real document. Which technique is this?"
+  options:
+    - { id: a, text: "Zero-shot prompting", explanation: "Incorrect. Zero-shot prompting includes no examples." }
+    - { id: b, text: "Prompt chaining", explanation: "Incorrect. Prompt chaining splits a task into several prompts where each output feeds the next." }
+    - { id: c, text: "Single-shot (one-shot) prompting", explanation: "Correct. Exactly one example of input and desired output is single-shot prompting, a good way to show a format." }
+    - { id: d, text: "Few-shot prompting", explanation: "Incorrect. Few-shot uses several examples; this prompt uses one." }
+  answer: [c]
+  explanation: "Single-shot prompting includes one example; it is often enough to demonstrate an exact output format. Add more examples (few-shot) if the model is still inconsistent."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: medium
+
+- id: q-day-16-010
+  set: day-16
+  type: single
+  stem: "An application inserts a long customer email into a prompt, and the model sometimes confuses sentences in the email with the developer's instructions. Which prompt engineering practice BEST addresses this?"
+  options:
+    - { id: a, text: "Wrap the email in clear delimiters, such as XML-style tags or triple quotes, and state that the text inside is data to process", explanation: "Correct. Delimiters separate input data from instructions so the model can tell them apart." }
+    - { id: b, text: "Remove the instruction and send only the email", explanation: "Incorrect. Without an instruction the model does not know what task to perform." }
+    - { id: c, text: "Increase top-k", explanation: "Incorrect. Top-k affects word choice randomness, not the separation of instructions from data." }
+    - { id: d, text: "Ask the model to be creative", explanation: "Incorrect. Creativity does not help the model distinguish data from instructions." }
+  answer: [a]
+  explanation: "Using delimiters to separate instructions from input data is a core best practice. It improves clarity and also reduces the risk of instructions hidden in user content being followed (prompt injection, Day 17)."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: medium
+
+- id: q-day-16-011
+  set: day-16
+  type: single
+  stem: "A team adds 'Think step by step and explain your reasoning' to every prompt in a simple FAQ assistant that looks up store opening hours. Accuracy does not change, but cost and latency rise. What is the MOST likely explanation?"
+  options:
+    - { id: a, text: "Chain-of-thought prompts disable prompt caching", explanation: "Incorrect. Adding the phrase does not disable caching; the extra cost comes from longer output." }
+    - { id: b, text: "The model needs fine-tuning before chain-of-thought can work", explanation: "Incorrect. Chain-of-thought is a prompting technique that works without training." }
+    - { id: c, text: "Chain-of-thought lowers the temperature automatically", explanation: "Incorrect. Prompt wording does not change inference parameters." }
+    - { id: d, text: "Chain-of-thought generates extra reasoning tokens, which adds cost and latency and helps little on simple lookups", explanation: "Correct. CoT pays off on multi-step reasoning; on simple lookups it only lengthens the output." }
+  answer: [d]
+  explanation: "Chain-of-thought increases output length and therefore cost and latency. Use it where multi-step reasoning matters — maths, logic, multi-rule policy checks — not for simple factual lookups."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: hard
+
+- id: q-day-16-012
+  set: day-16
+  type: single
+  stem: "In an Amazon Bedrock chat application, a developer wants the assistant's role, tone and rules to apply to every turn of the conversation, separately from each user's messages. Where should these instructions go?"
+  options:
+    - { id: a, text: "In a stop sequence", explanation: "Incorrect. A stop sequence only tells the model where to stop generating." }
+    - { id: b, text: "In the system prompt", explanation: "Correct. A system prompt holds instructions such as role, tone and rules that apply across the whole conversation." }
+    - { id: c, text: "In the negative prompt field of an image model", explanation: "Incorrect. Negative prompt fields belong to image generation and list unwanted elements." }
+    - { id: d, text: "In the model's training data", explanation: "Incorrect. Changing training data requires training; the requirement is met with prompting." }
+  answer: [b]
+  explanation: "Many models accept a system prompt separate from user messages; in the Amazon Bedrock Converse API it is a separate field. It sets the role, tone and rules for every turn, while user messages carry specific requests."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: easy
+
+- id: q-day-16-013
+  set: day-16
+  type: single
+  stem: "A few-shot prompt for routing tickets contains nine Billing examples and one Technical example. The model now labels most technical tickets as Billing. What is the BEST fix?"
+  options:
+    - { id: a, text: "Remove all examples and rely on zero-shot", explanation: "Incorrect. Removing examples loses the format guidance; the problem is their imbalance, not their presence." }
+    - { id: b, text: "Raise the temperature", explanation: "Incorrect. Randomness does not correct a bias introduced by the examples." }
+    - { id: c, text: "Use a balanced, representative set of examples covering each category in the same format", explanation: "Correct. Unbalanced examples bias the model toward the over-represented label; balanced examples fix it." }
+    - { id: d, text: "Increase maximum tokens", explanation: "Incorrect. Response length has nothing to do with which label is chosen." }
+  answer: [c]
+  explanation: "Few-shot examples should be representative (cover every category), consistent (same format) and balanced (similar numbers per category). An over-represented label in the examples biases the model's answers."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: hard
+
+- id: q-day-16-014
+  set: day-16
+  type: single
+  stem: "A single long prompt asks a model to extract facts from a claim, check them against five policy rules, draft a reply and shorten it to 80 words. Results are unreliable and hard to debug. Which technique BEST improves reliability and testability?"
+  options:
+    - { id: a, text: "Role prompting with a stronger persona", explanation: "Incorrect. A persona changes tone and vocabulary but does not make a complex multi-step task easier to test." }
+    - { id: b, text: "Prompt chaining, splitting the job into a sequence of prompts where each output feeds the next", explanation: "Correct. Each step does one job, can be tested on its own and can even use a cheaper model where appropriate." }
+    - { id: c, text: "Zero-shot prompting with no instructions", explanation: "Incorrect. Removing instructions makes a complex task less reliable." }
+    - { id: d, text: "A higher top-p value", explanation: "Incorrect. More variety in word choice does not structure the task." }
+  answer: [b]
+  explanation: "Breaking complex tasks into steps is a recommended best practice. Prompt chaining runs one focused prompt per step; Amazon Bedrock Flows can orchestrate such chains. Each extra call adds some latency and cost."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: hard
+
+- id: q-day-16-015
+  set: day-16
+  type: multi
+  stem: "A team is writing prompts for a product-description generator. Which TWO practices follow prompt engineering best practice? (Select TWO.)"
+  options:
+    - { id: a, text: "Specify the audience, length and format, for example '60–80 words for first-time runners'", explanation: "Correct. Clear, specific instructions about audience, length and format produce more useful output." }
+    - { id: b, text: "Keep the instruction vague so the model can be creative", explanation: "Incorrect. Vague prompts produce generic results; specificity is a core best practice." }
+    - { id: c, text: "Tell the model it may say 'I don't know' when information is missing", explanation: "Correct. Allowing the model to admit missing information reduces hallucinations." }
+    - { id: d, text: "Put API keys in the system prompt so the model can call tools", explanation: "Incorrect. Secrets must never be placed in prompts; they can be leaked." }
+    - { id: e, text: "Judge a new prompt by reading one output and deploying it if it looks good", explanation: "Incorrect. Prompts should be tested against a set of realistic inputs and compared with alternatives." }
+  answer: [a, c]
+  explanation: "Best practices include being clear and specific, giving context and a role, specifying output format, using delimiters, providing examples, breaking complex tasks into steps, allowing 'I don't know', and iterating with a test set."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: medium
+
+- id: q-day-16-016
+  set: day-16
+  type: multi
+  stem: "Which TWO capabilities does Amazon Bedrock Prompt Management provide? (Select TWO.)"
+  options:
+    - { id: a, text: "Storing prompts with variables and an attached model and inference configuration", explanation: "Correct. Prompts are stored with {{variable}} placeholders, a chosen model and inference parameters." }
+    - { id: b, text: "Training a new foundation model from your prompts", explanation: "Incorrect. Prompt Management does not train models." }
+    - { id: c, text: "Creating immutable prompt versions that applications can reference", explanation: "Correct. Versions are snapshots, so the draft can change without affecting production, and rollback is easy." }
+    - { id: d, text: "Converting documents into vector embeddings for retrieval", explanation: "Incorrect. Embedding and retrieving documents is the job of Amazon Bedrock Knowledge Bases." }
+    - { id: e, text: "Automatically blocking harmful content in user input", explanation: "Incorrect. Blocking harmful content is the role of Amazon Bedrock Guardrails." }
+  answer: [a, c]
+  explanation: "Amazon Bedrock Prompt Management lets you create, test and compare prompts, store variables and model settings, create versions, and reuse prompts in applications and Amazon Bedrock Flows."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: medium
+
+- id: q-day-16-017
+  set: day-16
+  type: multi
+  stem: "Which THREE are building blocks of a well-structured prompt? (Select THREE.)"
+  options:
+    - { id: a, text: "Instruction describing the task", explanation: "Correct. The instruction tells the model what to do." }
+    - { id: b, text: "Context such as role, audience or background facts", explanation: "Correct. Context shapes the answer's depth, vocabulary and focus." }
+    - { id: c, text: "Output indicator describing format and length", explanation: "Correct. The output indicator defines the structure of the answer." }
+    - { id: d, text: "The model's weights", explanation: "Incorrect. Weights belong to the model itself and are not part of a prompt." }
+    - { id: e, text: "A vector index", explanation: "Incorrect. A vector index is part of a RAG retrieval system, not a prompt component." }
+  answer: [a, b, c]
+  explanation: "A prompt can contain an instruction, context, input data and an output indicator. Not every prompt needs all four, but knowing them helps diagnose a weak prompt."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#explanation
+  difficulty: easy
+
+- id: q-day-16-018
+  set: day-16
+  type: multi
+  stem: "For which TWO tasks is chain-of-thought prompting MOST likely to improve results? (Select TWO.)"
+  options:
+    - { id: a, text: "Checking whether an expense claim breaks any of five policy rules", explanation: "Correct. Several conditions must be evaluated in turn, which benefits from step-by-step reasoning." }
+    - { id: b, text: "Translating a single short greeting into Spanish", explanation: "Incorrect. A simple translation does not need multi-step reasoning." }
+    - { id: c, text: "Solving a multi-step pricing calculation with a discount and shipping fee", explanation: "Correct. Arithmetic with several steps is a classic chain-of-thought use case." }
+    - { id: d, text: "Returning a store's opening hours from the prompt context", explanation: "Incorrect. A simple lookup gains nothing from step-by-step reasoning and just costs more tokens." }
+    - { id: e, text: "Generating a product image without a watermark", explanation: "Incorrect. Excluding image elements is done with a negative prompt." }
+  answer: [a, c]
+  explanation: "Chain-of-thought prompting asks the model to reason step by step and is most valuable for maths, logic, planning and multi-condition checks. It increases output length, so avoid it for simple tasks."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#examples
+  difficulty: medium
+
+- id: q-day-16-019
+  set: day-16
+  type: ordering
+  stem: "Place these steps for publishing a reusable prompt with Amazon Bedrock Prompt Management in the correct order."
+  options:
+    - { id: a, text: "Create a version of the chosen draft", explanation: "Fourth: a version is an immutable snapshot of the tested draft." }
+    - { id: b, text: "Create the prompt and write the template with {{variables}}", explanation: "First: the template with placeholders is the starting point." }
+    - { id: c, text: "Reference the version from the application", explanation: "Fifth: applications call the fixed version so later draft edits cannot affect production." }
+    - { id: d, text: "Select a model and set inference parameters", explanation: "Second: the prompt is stored together with the model and settings it should run with." }
+    - { id: e, text: "Test with sample variable values and compare variants", explanation: "Third: test and compare before freezing a version." }
+  answer: [b, d, e, a, c]
+  explanation: "Write the template, attach model and inference settings, test and compare variants, create an immutable version, then have applications reference that version. Improvements continue in the draft and become new versions."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#hands-on
+  difficulty: medium
+
+- id: q-day-16-020
+  set: day-16
+  type: matching
+  stem: "Match each requirement to the prompting technique that fits it BEST."
+  options:
+    - { id: a, text: "Translate a sentence into French with no examples", explanation: "Zero-shot fits because translation is a common task the model can do without examples." }
+    - { id: b, text: "Teach the model a company's own six ticket categories", explanation: "Few-shot fits because examples show the model the custom labels and format." }
+    - { id: c, text: "Solve a logic puzzle that requires several reasoning steps", explanation: "Chain-of-thought fits because step-by-step reasoning improves multi-step problems." }
+    - { id: d, text: "Keep text and watermarks out of a generated image", explanation: "A negative prompt fits because it lists elements the image model should avoid." }
+  matchTargets:
+    - { id: t1, text: "Chain-of-thought prompting" }
+    - { id: t2, text: "Negative prompt" }
+    - { id: t3, text: "Zero-shot prompting" }
+    - { id: t4, text: "Few-shot prompting" }
+  answer: { a: t3, b: t4, c: t1, d: t2 }
+  explanation: "Zero-shot handles common tasks without examples; few-shot teaches custom labels and formats; chain-of-thought helps multi-step reasoning; negative prompts exclude unwanted content."
+  domain: D3
+  taskStatement: "3.2"
+  lessonRef: day-16#examples
+  difficulty: easy

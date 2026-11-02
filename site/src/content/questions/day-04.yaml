@@ -1,0 +1,328 @@
+- id: q-day-04-001
+  set: day-04
+  type: single
+  stem: "Inside a neural network, each neuron multiplies its inputs by weights, adds a bias and then passes the result through one more function before sending it on. What is the role of that final function?"
+  options:
+    - { id: a, text: "It is an activation function that decides how strongly the neuron fires and adds non-linearity", explanation: "Correct. Activation functions such as ReLU, sigmoid and softmax shape the neuron's output and let the network model non-linear patterns." }
+    - { id: b, text: "It is a loss function that measures how wrong the network's prediction is", explanation: "Incorrect. The loss function is applied once to the network's final output during training, not inside every neuron." }
+    - { id: c, text: "It is an optimiser that updates the neuron's weights after each prediction", explanation: "Incorrect. Weights are updated by gradient descent during training, not by a function inside the neuron's forward calculation." }
+    - { id: d, text: "It is a tokenizer that converts the inputs into numbers", explanation: "Incorrect. Tokenization prepares text before it enters the network; neurons already receive numbers." }
+  answer: [a]
+  explanation: "An artificial neuron computes a weighted sum of its inputs plus a bias and applies an activation function. The activation function adds non-linearity — without it, stacked layers would collapse into a single linear calculation and could only model straight-line relationships."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: easy
+
+- id: q-day-04-002
+  set: day-04
+  type: single
+  stem: "A factory wants to detect cracks in product photos taken on its assembly line. Which type of neural network is designed for this kind of data?"
+  options:
+    - { id: a, text: "Recurrent neural network (RNN)", explanation: "Incorrect. RNNs process sequences step by step, such as time-series or text, not the spatial patterns in a photo." }
+    - { id: b, text: "Convolutional neural network (CNN)", explanation: "Correct. CNNs slide learned filters across images to detect edges, textures and shapes, which makes them the classic choice for image tasks." }
+    - { id: c, text: "Linear regression model", explanation: "Incorrect. Linear regression predicts a number from structured features and cannot learn visual patterns from raw pixels." }
+    - { id: d, text: "K-means clustering", explanation: "Incorrect. K-means groups unlabelled items and does not learn to recognise cracks in images." }
+  answer: [b]
+  explanation: "Convolutional neural networks are built for grid-like data such as images. Their filters detect local patterns wherever they appear, and stacked layers combine edges into shapes and objects. That makes CNNs the standard architecture for image classification and defect detection."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: easy
+
+- id: q-day-04-003
+  set: day-04
+  type: single
+  stem: "Why did transformer models largely replace recurrent neural networks for training large language models?"
+  options:
+    - { id: a, text: "Transformers need no training data because they are rule-based", explanation: "Incorrect. Transformers are neural networks that learn from enormous amounts of data." }
+    - { id: b, text: "Transformers use convolution filters that slide across sentences", explanation: "Incorrect. Sliding filters describe CNNs; transformers rely on self-attention." }
+    - { id: c, text: "Self-attention lets transformers process all tokens in parallel and link distant words directly", explanation: "Correct. Parallel processing makes training on many GPUs efficient, and attention connects any token to any other regardless of distance." }
+    - { id: d, text: "Transformers keep a hidden state that is passed from one word to the next", explanation: "Incorrect. A hidden state passed step by step is how RNNs work, and it is the reason they are slow to train and forget long-range context." }
+  answer: [c]
+  explanation: "RNNs read tokens one at a time, which is slow to train and weak at long-range context. Transformers use self-attention to look at every token at once and weigh how relevant each token is to every other, so they train in parallel and scale to billions of parameters — the basis of modern LLMs."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: medium
+
+- id: q-day-04-004
+  set: day-04
+  type: single
+  stem: "A veterinary start-up has only 1,800 labelled X-ray images and a small budget. It wants an accurate image classifier quickly. Which approach is MOST appropriate?"
+  options:
+    - { id: a, text: "Train a large CNN from scratch on the 1,800 images for many epochs", explanation: "Incorrect. Training from scratch on so few images would overfit badly and need far more compute than the budget allows." }
+    - { id: b, text: "Use k-means clustering to group the X-rays", explanation: "Incorrect. Clustering finds unlabelled groups; the start-up has labels and needs a classifier." }
+    - { id: c, text: "Wait until the company has collected several million labelled images", explanation: "Incorrect. Transfer learning makes good results possible with small datasets now; waiting is unnecessary." }
+    - { id: d, text: "Fine-tune a pre-trained image model using transfer learning", explanation: "Correct. A model pre-trained on millions of general images already knows edges and shapes, so only the task-specific layers must learn from the 1,800 images." }
+  answer: [d]
+  explanation: "Transfer learning reuses a model pre-trained on a large general dataset and adapts it to a new task with a small labelled dataset. It needs less data, less training time and less compute than training from scratch. Amazon SageMaker JumpStart provides pre-trained models ready to fine-tune."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: easy
+
+- id: q-day-04-005
+  set: day-04
+  type: multi
+  stem: "Which statements correctly describe deep learning compared with traditional machine learning? (Select TWO.)"
+  options:
+    - { id: a, text: "Deep learning learns useful features automatically from raw data such as pixels or text", explanation: "Correct. Many hidden layers build a hierarchy of features without people engineering them by hand." }
+    - { id: b, text: "Deep learning typically needs more data and more compute, such as GPUs", explanation: "Correct. Millions of weights must be learned, so deep learning usually needs large datasets and accelerated hardware." }
+    - { id: c, text: "Deep learning models are usually easier to explain than decision trees", explanation: "Incorrect. Deep networks are often described as black boxes; decision trees are far easier to explain." }
+    - { id: d, text: "Deep learning is always more accurate than traditional ML on small tabular datasets", explanation: "Incorrect. On small structured tables, traditional ML such as gradient-boosted trees is often as accurate, cheaper and easier to explain." }
+    - { id: e, text: "Deep learning cannot be used for images or audio", explanation: "Incorrect. Unstructured data such as images, audio and text is exactly where deep learning excels." }
+  answer: [a, b]
+  explanation: "Deep learning uses neural networks with many hidden layers that learn features directly from raw, unstructured data. The trade-off is that it usually needs more data and compute and is harder to explain. Traditional ML remains a strong choice for structured data, especially when explainability matters."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: medium
+
+- id: q-day-04-006
+  set: day-04
+  type: single
+  stem: "During training, a neural network's error has been calculated and each weight's contribution to that error is known. Which technique now nudges every weight a small step in the direction that reduces the error?"
+  options:
+    - { id: a, text: "Gradient descent", explanation: "Correct. Gradient descent updates each weight by a small step, controlled by the learning rate, in the direction that lowers the loss." }
+    - { id: b, text: "Positional encoding", explanation: "Incorrect. Positional encoding tells a transformer where each token sits in a sequence; it does not update weights." }
+    - { id: c, text: "Pooling", explanation: "Incorrect. Pooling shrinks feature maps in a CNN during the forward pass; it does not adjust weights." }
+    - { id: d, text: "Inference", explanation: "Incorrect. Inference uses a trained model to make predictions and does not change its weights." }
+  answer: [a]
+  explanation: "The training loop is forward pass, loss calculation, backpropagation and weight update. Backpropagation works out how much each weight contributed to the error; gradient descent then moves each weight a small step downhill on the loss. The step size is the learning rate hyperparameter."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: medium
+
+- id: q-day-04-007
+  set: day-04
+  type: ordering
+  stem: "Place the steps of one training iteration of a neural network in the correct order, from first to last."
+  options:
+    - { id: a, text: "Use backpropagation to calculate each weight's contribution to the error", explanation: "This is the third step: once the loss is known, backpropagation works backwards from the output to assign responsibility to each weight." }
+    - { id: b, text: "Feed a batch of training examples forward through the network to get predictions", explanation: "This is the first step: the forward pass produces predictions with the current weights." }
+    - { id: c, text: "Update the weights with gradient descent", explanation: "This is the last step: each weight moves a small step in the direction that reduces the loss." }
+    - { id: d, text: "Compare predictions with the labels using a loss function", explanation: "This is the second step: the loss function measures how wrong the predictions are." }
+  answer: [b, d, a, c]
+  explanation: "Each training iteration runs a forward pass, measures the error with a loss function, uses backpropagation to find each weight's share of the error, and updates the weights with gradient descent. Repeating this over the whole dataset is one epoch, and training runs for many epochs."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: medium
+
+- id: q-day-04-008
+  set: day-04
+  type: matching
+  stem: "Match each scenario to the model architecture or technique that fits it BEST."
+  options:
+    - { id: a, text: "Locate every pedestrian in dash-camera frames", explanation: "A CNN fits because detecting objects in images relies on spatial patterns that convolution filters learn." }
+    - { id: b, text: "A chatbot that writes long, context-aware replies to customer emails", explanation: "A transformer fits because self-attention handles long context and decoder transformers generate text." }
+    - { id: c, text: "Process a stream of sensor readings one step at a time while carrying a memory of earlier readings", explanation: "An RNN or LSTM fits because it reads sequences step by step and keeps a hidden state as memory." }
+    - { id: d, text: "Predict loan default from 20 tidy columns where regulators require a clear explanation", explanation: "Traditional ML such as a gradient-boosted tree fits because the data is structured and explainability matters more than deep feature learning." }
+  matchTargets:
+    - { id: t1, text: "Convolutional neural network (CNN)" }
+    - { id: t2, text: "Recurrent neural network (RNN/LSTM)" }
+    - { id: t3, text: "Transformer" }
+    - { id: t4, text: "Traditional ML (for example XGBoost)" }
+  answer: { a: t1, b: t3, c: t2, d: t4 }
+  explanation: "Choose the architecture from the data: images suit CNNs, step-by-step sequences suit RNNs or LSTMs, and language with long context or generation suits transformers. Small structured datasets with explainability requirements usually suit traditional ML rather than deep learning."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#examples
+  difficulty: medium
+
+- id: q-day-04-009
+  set: day-04
+  type: single
+  stem: "A neural network must sort photos into one of 10 product categories and return a probability for each category that adds up to 1. Which activation function is typically used in the output layer?"
+  options:
+    - { id: a, text: "ReLU", explanation: "Incorrect. ReLU is common in hidden layers; it does not turn scores into probabilities that add up to 1." }
+    - { id: b, text: "Softmax", explanation: "Correct. Softmax converts a list of class scores into probabilities that sum to 1, which suits multi-class classification." }
+    - { id: c, text: "Positional encoding", explanation: "Incorrect. Positional encoding is not an activation function; it adds word-order information in transformers." }
+    - { id: d, text: "Pooling", explanation: "Incorrect. Pooling shrinks feature maps inside a CNN; it is not used to produce class probabilities." }
+  answer: [b]
+  explanation: "For multi-class classification the output layer has one neuron per class with a softmax activation, producing a probability for each class that sums to 1. Sigmoid suits a single yes/no probability, and ReLU is the usual choice in hidden layers."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: easy
+
+- id: q-day-04-010
+  set: day-04
+  type: single
+  stem: "A credit union has 6,000 rows of member data in 25 well-defined columns and must explain every loan decision to a regulator. A consultant proposes a 40-layer deep neural network. What is the BEST recommendation?"
+  options:
+    - { id: a, text: "Accept the proposal because deeper networks are always more accurate", explanation: "Incorrect. Depth helps with unstructured data and complex patterns; it is not automatically better on a small structured table." }
+    - { id: b, text: "Use a CNN because it handles any type of data equally well", explanation: "Incorrect. CNNs are designed for image-like data, not small tables of member attributes." }
+    - { id: c, text: "Use a traditional ML model such as a gradient-boosted tree, which suits structured data and is easier to explain", explanation: "Correct. Small structured data plus strict explainability points to traditional ML, which is cheaper and more transparent than a deep network." }
+    - { id: d, text: "Use transfer learning from a pre-trained image model to reduce training time", explanation: "Incorrect. An image model's learned features do not transfer to tabular loan data." }
+  answer: [c]
+  explanation: "Deep learning shines on large volumes of unstructured data. For a few thousand rows of structured data with regulatory explainability requirements, traditional ML such as XGBoost is usually as accurate, far cheaper to train and run, and much easier to explain."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#exam-tips
+  difficulty: hard
+
+- id: q-day-04-011
+  set: day-04
+  type: single
+  stem: "A traffic-monitoring system must find every car in a street image and draw a box around each one. Which computer vision task is this?"
+  options:
+    - { id: a, text: "Image classification", explanation: "Incorrect. Image classification assigns one label to the whole image and does not locate individual objects." }
+    - { id: b, text: "Sentiment analysis", explanation: "Incorrect. Sentiment analysis is an NLP task that judges the tone of text." }
+    - { id: c, text: "Optical character recognition", explanation: "Incorrect. OCR reads text from images, such as number plates, rather than locating every car." }
+    - { id: d, text: "Object detection", explanation: "Correct. Object detection identifies which objects are present and where, using bounding boxes." }
+  answer: [d]
+  explanation: "Image classification says what is in an image, object detection says what and where with bounding boxes, segmentation marks the exact pixels of each object, and OCR reads text. Amazon Rekognition provides object and scene detection without training a model."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: easy
+
+- id: q-day-04-012
+  set: day-04
+  type: single
+  stem: "A legal team wants software to find every person, company and date mentioned in thousands of contracts. Which natural language processing task does this describe?"
+  options:
+    - { id: a, text: "Named entity recognition", explanation: "Correct. Named entity recognition finds and labels mentions of people, organisations, places and dates in text." }
+    - { id: b, text: "Machine translation", explanation: "Incorrect. Translation converts text from one language to another; it does not extract entities." }
+    - { id: c, text: "Text-to-speech", explanation: "Incorrect. Text-to-speech turns text into audio and does not identify entities." }
+    - { id: d, text: "Image segmentation", explanation: "Incorrect. Image segmentation is a computer vision task that outlines objects in images." }
+  answer: [a]
+  explanation: "Named entity recognition (NER) is a core NLP task: it locates and classifies entities such as people, organisations, locations and dates. Amazon Comprehend provides entity detection as a pre-trained managed service."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: medium
+
+- id: q-day-04-013
+  set: day-04
+  type: multi
+  stem: "Which values does a neural network learn by itself during training? (Select TWO.)"
+  options:
+    - { id: a, text: "The weights on connections between neurons", explanation: "Correct. Weights are learned parameters adjusted by gradient descent during training." }
+    - { id: b, text: "The bias of each neuron", explanation: "Correct. Biases are also learned parameters, updated together with the weights." }
+    - { id: c, text: "The learning rate", explanation: "Incorrect. The learning rate is a hyperparameter chosen before training to control the size of each update." }
+    - { id: d, text: "The number of hidden layers", explanation: "Incorrect. The architecture, including the number of layers, is a design choice (hyperparameter) made before training." }
+    - { id: e, text: "The number of epochs", explanation: "Incorrect. The number of epochs is a hyperparameter that controls how long training runs." }
+  answer: [a, b]
+  explanation: "Weights and biases are the model's parameters: they start random and are learned through backpropagation and gradient descent. Settings such as learning rate, number of layers and number of epochs are hyperparameters that people choose before training."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#exam-tips
+  difficulty: medium
+
+- id: q-day-04-014
+  set: day-04
+  type: single
+  stem: "A team's LSTM model summarises 80-page reports. Training is slow because words are processed one after another, and the summaries miss facts from the first pages. Which architecture would BEST address both problems?"
+  options:
+    - { id: a, text: "A deeper LSTM with more recurrent layers", explanation: "Incorrect. A deeper LSTM still processes tokens sequentially, so training remains slow and long-range context still fades." }
+    - { id: b, text: "A transformer that uses self-attention", explanation: "Correct. Self-attention processes all tokens in parallel and lets any token attend directly to any other, fixing both speed and long-range context." }
+    - { id: c, text: "A CNN with larger pooling layers", explanation: "Incorrect. CNNs are designed for spatial patterns in images and are not the standard choice for long-document summarisation." }
+    - { id: d, text: "A k-means model that groups paragraphs", explanation: "Incorrect. Clustering groups items but cannot generate summaries." }
+  answer: [b]
+  explanation: "RNNs and LSTMs are sequential, which limits parallel training, and their memory of early tokens fades over long inputs. Transformers replace recurrence with self-attention, processing whole sequences in parallel and connecting distant tokens directly. Encoder–decoder and decoder transformers are the standard for summarisation."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: hard
+
+- id: q-day-04-015
+  set: day-04
+  type: single
+  stem: "A student builds a network with five hidden layers but removes all activation functions. The model performs no better than a single linear model. What explains this?"
+  options:
+    - { id: a, text: "Five hidden layers are too few for any network to learn", explanation: "Incorrect. Small networks can learn non-linear patterns if they have activation functions." }
+    - { id: b, text: "The learning rate must be zero when there are no activation functions", explanation: "Incorrect. The learning rate is unrelated to whether activation functions are present." }
+    - { id: c, text: "Without activation functions the stacked layers collapse into one linear calculation, so the network cannot model non-linear patterns", explanation: "Correct. Activation functions add the non-linearity that makes extra layers useful." }
+    - { id: d, text: "Activation functions store the training data, so the network has nothing to learn from", explanation: "Incorrect. Activation functions do not store data; they transform each neuron's output." }
+  answer: [c]
+  explanation: "A chain of multiply-and-add steps is itself just one multiply-and-add, so depth adds nothing without non-linearity. Activation functions such as ReLU let each layer bend the function, which is what allows deep networks to model curves and complex patterns."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: medium
+
+- id: q-day-04-016
+  set: day-04
+  type: single
+  stem: "Researchers inspect a trained image CNN layer by layer. What do the FIRST convolutional layers typically detect?"
+  options:
+    - { id: a, text: "Complete objects such as faces and cars", explanation: "Incorrect. Whole objects are recognised in the later layers, which combine simpler features." }
+    - { id: b, text: "The final class probabilities", explanation: "Incorrect. Class probabilities come from the output layer, usually with softmax." }
+    - { id: c, text: "The order of words in a sentence", explanation: "Incorrect. Word order concerns sequence models such as transformers, not the first layers of an image CNN." }
+    - { id: d, text: "Simple features such as edges and colour blobs", explanation: "Correct. Early layers learn simple local patterns, which later layers combine into textures, shapes and whole objects." }
+  answer: [d]
+  explanation: "Deep networks learn a hierarchy of features. In a CNN the first layers detect edges and colours, middle layers combine them into textures and parts such as an eye or a wheel, and late layers recognise complete objects. Nobody programs these features; the network discovers them during training."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: medium
+
+- id: q-day-04-017
+  set: day-04
+  type: multi
+  stem: "Which statements correctly describe how a transformer model handles text? (Select TWO.)"
+  options:
+    - { id: a, text: "Self-attention weighs how relevant every token is to every other token in the input", explanation: "Correct. Self-attention lets each token draw on the whole context, for example linking 'it' to the right noun." }
+    - { id: b, text: "Positional encoding adds information about where each token sits in the sequence", explanation: "Correct. Because tokens are processed in parallel, transformers need positional encoding to know word order." }
+    - { id: c, text: "Tokens are processed strictly one at a time, passing a hidden state forward", explanation: "Incorrect. Step-by-step processing with a hidden state describes RNNs, not transformers." }
+    - { id: d, text: "Small filters slide across a grid of pixels to detect edges", explanation: "Incorrect. Sliding filters over pixels describes convolutional neural networks." }
+    - { id: e, text: "Pre-training requires every sentence to be labelled by humans", explanation: "Incorrect. Transformer foundation models are pre-trained with self-supervised learning, such as predicting the next or a masked token, without human labels." }
+  answer: [a, b]
+  explanation: "Transformers process all tokens in parallel and use self-attention to relate every token to every other. Positional encoding restores word-order information. Their self-supervised pre-training on unlabelled text is what makes billion-parameter language models possible."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: hard
+
+- id: q-day-04-018
+  set: day-04
+  type: single
+  stem: "A CNN trained to sort recycling photos reaches 99% training accuracy but only 78% validation accuracy. Which combination of actions would MOST likely improve validation accuracy?"
+  options:
+    - { id: a, text: "Add data augmentation such as flipped and rotated photos, use dropout and apply early stopping", explanation: "Correct. These techniques reduce overfitting: augmentation adds variety, dropout prevents reliance on single neurons and early stopping halts training before memorisation." }
+    - { id: b, text: "Train for twice as many epochs with the same data", explanation: "Incorrect. Longer training on the same data would deepen the overfitting." }
+    - { id: c, text: "Remove the validation set and report the training accuracy", explanation: "Incorrect. This hides the problem instead of fixing it; validation data shows how the model generalises." }
+    - { id: d, text: "Replace the softmax output layer with a ReLU output layer", explanation: "Incorrect. Changing the output activation would break the class probabilities and does nothing for overfitting." }
+  answer: [a]
+  explanation: "A large gap between training and validation accuracy means overfitting. For neural networks, common fixes are more or augmented data, dropout, regularisation and early stopping — and transfer learning when labelled data is scarce."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#examples
+  difficulty: medium
+
+- id: q-day-04-019
+  set: day-04
+  type: multi
+  stem: "Which AWS services provide pre-trained computer vision capabilities without the customer training a model? (Select TWO.)"
+  options:
+    - { id: a, text: "Amazon Rekognition", explanation: "Correct. Rekognition detects objects, scenes, faces, text and unsafe content in images and video." }
+    - { id: b, text: "Amazon Textract", explanation: "Correct. Textract extracts text, forms and tables from scanned documents and images." }
+    - { id: c, text: "Amazon Polly", explanation: "Incorrect. Polly converts text to speech; it does not analyse images." }
+    - { id: d, text: "Amazon Transcribe", explanation: "Incorrect. Transcribe converts speech to text; it is a speech service, not computer vision." }
+    - { id: e, text: "Amazon Translate", explanation: "Incorrect. Translate converts text between languages; it does not analyse images." }
+  answer: [a, b]
+  explanation: "Computer vision extracts meaning from images and video. On AWS, Amazon Rekognition handles image and video analysis and Amazon Textract reads documents. Polly, Transcribe and Translate are speech and language services."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: easy
+
+- id: q-day-04-020
+  set: day-04
+  type: single
+  stem: "A team needs a transformer model that reads support tickets and assigns each one a category. The model never has to generate new text. Which transformer family is typically suited to this understanding-only task?"
+  options:
+    - { id: a, text: "Decoder-only models that generate text one token at a time", explanation: "Incorrect. Decoder models such as GPT-style models are built for generation; they can classify, but generation is their main strength." }
+    - { id: b, text: "Diffusion models that generate images from noise", explanation: "Incorrect. Diffusion models generate images; they are not transformer text classifiers." }
+    - { id: c, text: "Encoder models such as BERT that read and understand text", explanation: "Correct. Encoder transformers build a representation of the whole input and suit classification and entity extraction." }
+    - { id: d, text: "Recurrent models that keep a hidden state", explanation: "Incorrect. RNNs are not transformers; the question asks for a transformer family." }
+  answer: [c]
+  explanation: "Transformers come in three families: encoders (such as BERT) for understanding tasks like classification and entity extraction, decoders (GPT-style models, Claude, Llama, Amazon Nova) for generation, and encoder–decoders (such as T5) for sequence-to-sequence tasks like translation and summarisation."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-04#explanation
+  difficulty: hard

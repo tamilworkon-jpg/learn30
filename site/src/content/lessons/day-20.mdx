@@ -1,0 +1,309 @@
+---
+day: 20
+kind: lesson
+title: 'Evaluating FMs & FM apps'
+summary: 'Learn how to tell whether a foundation model or a generative AI application is good enough: human evaluation, benchmark datasets, Amazon Bedrock Model Evaluation, automatic metrics (ROUGE, BLEU, BERTScore), LLM-as-a-judge, evaluating RAG systems, agents and workflows, and the business metrics — task completion, user satisfaction, cost per interaction — that decide whether the solution meets its objectives.'
+domains: [D3]
+taskStatements: ['3.4']
+sources:
+  - { provider: udemy, title: 'Evaluating Foundation Models; ROUGE, BLEU, BERTScore; Amazon Bedrock Model Evaluation' }
+  - { provider: skillbuilder, title: 'Developing Generative AI Solutions; Optimizing Foundation Models' }
+  - { provider: aws-docs, title: 'Evaluate the performance of Amazon Bedrock resources', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/evaluation.html' }
+objectives:
+  - Compare human evaluation, benchmark datasets and automatic evaluation of foundation models
+  - Describe the evaluation types in Amazon Bedrock Model Evaluation, including LLM-as-a-judge and RAG evaluation
+  - Choose between ROUGE, BLEU and BERTScore for a task and explain what each measures
+  - Evaluate RAG systems, agents and multi-step workflows component by component
+  - Link technical metrics to business objectives such as task completion, user satisfaction and cost per interaction
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'Human evaluation judges subjective quality (helpfulness, tone, accuracy for experts) but is slow and costly; automatic metrics are fast and repeatable but miss nuance — use both.'
+  - 'Benchmark datasets (such as MMLU or HELM suites) compare models on standard tasks; your own representative test set shows fitness for your use case.'
+  - 'ROUGE = overlap with a reference, recall-oriented, for summaries; BLEU = precision-oriented n-gram overlap, for translation; BERTScore = semantic similarity using embeddings.'
+  - 'Amazon Bedrock Model Evaluation offers automatic (programmatic), human (your own work team) and LLM-as-a-judge evaluations, plus evaluation of RAG with Knowledge Bases.'
+  - 'Evaluate RAG in two parts — retrieval (context relevance and coverage) and generation (faithfulness, correctness, citations) — and agents by task completion, tool use and steps.'
+  - 'Business fit: task completion rate, user satisfaction, cost per interaction, latency and impact on KPIs such as handling time or conversion.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 19" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="Measuring whether a model is good enough" minutes={16}>
+
+### Why evaluation is hard for generative AI
+
+For a traditional classifier, evaluation is straightforward: compare each prediction with the correct label and compute accuracy, precision or recall (Day 6). Generative AI is different. Ask ten people to summarise the same article and you get ten different, equally good summaries. There is rarely one "correct" output, so "Is this answer good?" splits into several questions:
+
+- Is it **correct** and **faithful** to the facts or source documents?
+- Is it **relevant** and **complete** — does it answer what was asked?
+- Is it **coherent**, well written and in the right **tone**?
+- Is it **safe** — free of toxicity, bias and leaked private data?
+- Is it **fast and cheap enough** for the business case?
+
+No single number answers all of these. A good evaluation plan combines several methods: **human evaluation**, **benchmark datasets**, **automatic metrics** and **model-based judging** — and then checks the result against **business objectives**.
+
+### Human evaluation (human-in-the-loop)
+
+People remain the gold standard for judging qualities that are subjective or need expertise: Is this medical summary clinically accurate? Is this marketing copy on-brand? Would a customer find this reply helpful?
+
+Common formats:
+
+- **Rating scales** — reviewers score each response, for example 1 to 5 for helpfulness (a *Likert scale*).
+- **Thumbs up / thumbs down** — a quick binary judgement.
+- **Comparison or ranking** — reviewers see responses from two models side by side and choose the better one, or rank several. Comparisons are often more consistent than absolute scores.
+
+Good practice: write clear **guidelines** with examples, use **subject-matter experts** where accuracy matters, have several reviewers rate the same items and check how often they agree (**inter-rater agreement**), and hide which model produced which answer to avoid bias.
+
+The downside: human evaluation is **slow, expensive and hard to scale**. You cannot ask experts to read 50,000 responses every time you change a prompt. So teams use humans to evaluate a carefully chosen sample, to calibrate automatic methods and to review high-risk outputs — and use automation for everything else.
+
+Human-in-the-loop also continues **after launch**: users' thumbs-up and thumbs-down ratings, escalations to human agents and expert spot checks are evaluation data too.
+
+### Benchmark datasets
+
+A **benchmark** is a standard, public dataset of tasks with known answers, used to compare models on equal terms. Model providers publish benchmark scores so you can compare models before trying them. Examples you may see:
+
+- **MMLU** (Massive Multitask Language Understanding) — multiple-choice questions across dozens of subjects, testing general knowledge and reasoning.
+- **HELM** (Holistic Evaluation of Language Models) — a framework that evaluates models across many scenarios and metrics, including accuracy, robustness, fairness and toxicity.
+- **GLUE / SuperGLUE** — classic language-understanding tasks.
+- **HumanEval** and similar sets — code generation, checked by running unit tests.
+- Safety-focused datasets — for example sets of prompts designed to provoke **toxic** or **biased** output.
+
+Benchmarks are useful for **shortlisting** models, but treat them with care. A model that tops a public leaderboard may not be the best for *your* task, your language or your style. Public benchmark questions may also have leaked into training data (*data contamination*), inflating scores. The fix is to build your own **evaluation dataset** — sometimes called a *golden dataset* — of realistic prompts with reference answers that represent your users, including edge cases and difficult or adversarial inputs. It becomes the yardstick for every model, prompt or configuration change.
+
+### Automatic metrics: ROUGE, BLEU and BERTScore
+
+When you have **reference answers** written by people, you can score a generated text automatically by comparing it with the reference.
+
+**ROUGE** (Recall-Oriented Understudy for Gisting Evaluation) measures how much of the **reference** text appears in the generated text — it is **recall-oriented**. ROUGE-N counts overlapping *n-grams* (sequences of n words: ROUGE-1 for single words, ROUGE-2 for word pairs); ROUGE-L looks at the longest common subsequence. It is the classic metric for **summarisation**: did the summary capture the key content of the reference summary?
+
+**BLEU** (Bilingual Evaluation Understudy) measures how many of the **generated** text's n-grams appear in one or more reference texts — it is **precision-oriented** — with a *brevity penalty* so very short outputs cannot score highly by saying almost nothing. It is the classic metric for **machine translation**.
+
+Both ROUGE and BLEU count **exact word overlap**. That is their weakness: "The car is fast" and "The automobile is quick" mean the same thing but share few words, so they score poorly.
+
+**BERTScore** fixes this by comparing **meaning** rather than exact words. It uses contextual **embeddings** from a BERT-style model (the same idea as yesterday's embeddings) and measures the similarity between the words of the generated text and the reference. Paraphrases score well. Use it when wording can vary but meaning must match.
+
+| Metric | Compares | Orientation | Classic use | Weakness |
+|---|---|---|---|---|
+| ROUGE | Word / n-gram overlap with reference | Recall | Summarisation | Misses paraphrases |
+| BLEU | Word / n-gram overlap with reference(s) | Precision, brevity penalty | Translation | Misses paraphrases |
+| BERTScore | Embedding similarity | Semantic | Any generation where meaning matters | Needs a reference; ignores facts outside it |
+
+Other automatic measures you may meet: **accuracy** and **F1** for classification-style tasks, **exact match** for short factual answers, and **perplexity** — how "surprised" a language model is by text; lower is better for language modelling but it says little about usefulness. Automatic **toxicity** classifiers score harmful content, and **robustness** tests check whether small changes to a prompt, such as typos, change the answer.
+
+### LLM-as-a-judge
+
+Reference-based metrics need reference answers and still miss qualities such as helpfulness. **LLM-as-a-judge** uses a strong foundation model as an automated reviewer. You give the judge model the prompt, the response (and optionally a reference answer or retrieved context) and a **rubric**, for example: "Score 1–5 for correctness and completeness and explain your score."
+
+- **Advantages:** scales to thousands of responses in minutes, much cheaper than human review, can score subjective qualities (helpfulness, coherence, tone, harmfulness) and explains its scores.
+- **Limitations:** the judge can be biased — preferring longer answers, the first answer shown, or text written in its own style — and can be wrong. **Calibrate** it: have humans score a sample and check that the judge agrees with them.
+
+Many teams use a layered approach: automatic metrics and LLM-as-a-judge on everything, humans on a sample and on high-risk cases.
+
+### Amazon Bedrock Model Evaluation
+
+**Amazon Bedrock Model Evaluation** (Evaluations in the Bedrock console) lets you evaluate and compare models — and RAG setups — without building your own evaluation tooling. You create an **evaluation job**, and the results, including a report and per-prompt scores, are stored in Amazon S3.
+
+- **Automatic (programmatic) evaluation** — choose a task type such as text generation, summarisation, question answering or classification and metrics such as **accuracy**, **robustness** and **toxicity**. Use **built-in curated datasets** or bring your own prompt dataset (JSONL in S3).
+- **Human evaluation** — bring your **own work team** of reviewers. You define the metrics (for example relevance, style, brand voice) and the rating method (thumbs up/down, Likert scale, comparison of two models). Bedrock sets up the review interface and collects the ratings.
+- **LLM-as-a-judge evaluation** — a judge model you select scores responses on quality metrics such as correctness, completeness, faithfulness, helpfulness, coherence and following instructions, and responsible-AI metrics such as harmfulness, stereotyping and refusal. You can also define **custom metrics**.
+- **RAG evaluation** — evaluate an Amazon Bedrock knowledge base (or your own RAG system's outputs): **retrieval-only** jobs score the retrieved context for **relevance** and **coverage**; **retrieve-and-generate** jobs also score the answer for correctness, completeness, **faithfulness** (no hallucination beyond the context) and **citation** quality.
+
+Because jobs are repeatable, you can run the same evaluation each time you change the model, prompt, chunking strategy or guardrail, and compare the results. Amazon SageMaker AI offers similar foundation model evaluations through **SageMaker Clarify**, useful when models are hosted or customised in SageMaker AI.
+
+### Evaluating RAG systems, agents and workflows
+
+An application is more than a model. A RAG system or an agent can fail at several points, so evaluate **each component and the whole**.
+
+**RAG.** Split the question in two:
+
+1. **Retrieval quality** — did we fetch the right chunks? Measure *context relevance* (are the retrieved chunks about the question?) and *context coverage* or recall (do they contain everything needed to answer?).
+2. **Generation quality** — given those chunks, is the answer *faithful* (supported by the context, no invented facts), *relevant*, *correct* and properly *cited*?
+
+The split tells you what to fix. Bad retrieval → change chunking, embeddings, filters or reranking. Good retrieval but unfaithful answers → change the prompt, the model or add grounding checks in Guardrails.
+
+**Agents.** For an agent, the final answer is not enough; the *path* matters too:
+
+- **Task completion (goal success) rate** — did the agent actually achieve the user's goal (booking changed, ticket resolved)?
+- **Tool-use accuracy** — did it choose the right tool with the right parameters?
+- **Trajectory and efficiency** — how many steps, retries and model calls did it take? Fewer steps usually means lower latency and cost.
+- **Safety and policy compliance** — did it stay within allowed actions and ask for human confirmation where required?
+
+Traces from Bedrock Agents and **AgentCore Observability** show every reasoning step and tool call, so you can see where a task went wrong.
+
+**Workflows.** For multi-step pipelines (classify → extract → summarise → draft), measure each step's quality and the **end-to-end** outcome; a small error early in the chain can ruin the final result.
+
+### Does it meet the business objective?
+
+A model with excellent ROUGE scores can still be a failed project. Task statement 3.4 asks you to judge whether an FM application meets **business objectives**, using **alignment metrics** such as:
+
+- **Task completion rate** — the share of conversations where the user's goal is achieved without escalation.
+- **User satisfaction** — CSAT surveys, thumbs-up rate, net promoter score.
+- **Cost per interaction** — model tokens, retrieval, infrastructure and human escalation, divided by the number of interactions.
+- **Latency** — time to first token and total response time.
+- **Business KPIs** — average handling time, deflection (containment) rate in a contact centre, conversion rate, revenue per visit, employee productivity, error rate.
+
+Two habits connect technical and business evaluation. **Offline evaluation** happens before launch on your golden dataset. **Online evaluation** happens after launch with real users — for example an **A/B test** that sends some traffic to a new model and compares task completion, satisfaction and cost with the current one. Agree on success criteria *before* you build: "Resolve 40% of password-reset chats without a human, at under five cents per conversation, with satisfaction at least 4 out of 5" is a goal you can actually measure.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="Choosing an evaluation method: reference answers, subjectivity and scale decide between automatic metrics, LLM-as-a-judge and human review"
+  code={`flowchart TD
+  S["Need to evaluate generated output"] --> R{"Have reference answers?"}
+  R -->|Yes, wording may vary| BS["BERTScore: semantic similarity"]
+  R -->|Yes, summaries| RO["ROUGE: recall of reference n-grams"]
+  R -->|Yes, translations| BL["BLEU: precision of n-grams"]
+  R -->|No| SUB{"Subjective or expert quality?"}
+  SUB -->|High stakes or nuance| HU["Human evaluation: own work team, ratings or comparisons"]
+  SUB -->|Need scale| LJ["LLM-as-a-judge with a rubric, calibrated on human samples"]
+  HU --> BIZ["Check business metrics: task completion, satisfaction, cost per interaction"]
+  LJ --> BIZ
+  BS --> BIZ
+  RO --> BIZ
+  BL --> BIZ`}
+/>
+
+<Diagram
+  caption="Evaluating a RAG application in two halves: retrieval quality first, then generation quality, then the business outcome"
+  code={`flowchart LR
+  Q["Test question from golden dataset"] --> RET["Retriever"]
+  RET --> C["Retrieved chunks"]
+  C --> M1["Retrieval metrics: context relevance, context coverage"]
+  C --> GEN["Foundation model"]
+  GEN --> A["Answer with citations"]
+  A --> M2["Generation metrics: faithfulness, correctness, completeness, citation quality"]
+  M1 --> FIX1["Low? Fix chunking, embeddings, filters, reranking"]
+  M2 --> FIX2["Low? Fix prompt, model, grounding guardrail"]
+  A --> M3["Business: task completion, satisfaction, cost"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Scenario | Best evaluation approach | Why |
+|---|---|---|
+| Compare three models' news summaries against human-written summaries | ROUGE (plus BERTScore) | Summarisation with references; ROUGE is recall-oriented |
+| Score an English-to-German translation model against reference translations | BLEU | Precision-oriented n-gram metric designed for translation |
+| Generated answers are correct paraphrases but score low on ROUGE | BERTScore | Measures meaning, not exact word overlap |
+| Judge whether clinical summaries are medically accurate | Human evaluation by clinicians | Expert, high-stakes judgement |
+| Score 20,000 chatbot replies for helpfulness overnight | LLM-as-a-judge, calibrated on a human-rated sample | Scales to large volumes, scores subjective quality |
+| Shortlist models for general reasoning before testing your own data | Public benchmarks such as MMLU | Standard comparison on equal terms |
+| RAG bot cites the wrong policy documents | RAG evaluation: retrieval metrics | Problem is context relevance, not generation |
+| Leadership asks whether the support bot is worth its cost | Task completion, CSAT, cost per interaction | Business alignment metrics |
+
+**Worked example — ROUGE versus BLEU.** A reference summary reads "Profits rose 10% thanks to strong sales in Asia." Model A writes "Profits rose 10%." Model B writes "Profits rose 10% thanks to strong sales in Asia and Europe, said the company." Model A's words almost all appear in the reference, so its *precision* is high — but its brevity hurts it on BLEU's brevity penalty, and it misses half the reference content, so ROUGE (*recall*) is low. Model B contains all the reference words, so ROUGE is high, while its extra words lower precision. Remember: **ROUGE asks "how much of the reference did you cover?"; BLEU asks "how much of what you wrote is in the reference?"**
+
+**Worked example — the misleading average.** A customer-service bot scores 4.3 out of 5 for helpfulness from an LLM judge. Yet the contact centre's escalation rate has not fallen. Digging in, the team finds the judge rewards long, polite answers, while users wanted short instructions that actually solved their problem. The task completion rate was only 22%. They change the rubric to reward resolution, calibrate the judge against 300 human-rated conversations and add task completion as the primary metric.
+
+**Worked example — RAG triage.** A knowledge-base evaluation shows high faithfulness (answers stick to the retrieved context) but low context coverage (the retrieved chunks often miss part of the answer). The fix is on the retrieval side — larger or hierarchical chunks, more chunks returned or a reranker — not a different foundation model.
+
+**Worked example — choosing between two models.** Model X scores slightly better on an LLM-judge correctness metric; Model Y is 60% cheaper and twice as fast, and its scores are within the margin that humans could not distinguish in a blind comparison. For a high-volume FAQ assistant, Model Y better meets the business objective. For a legal drafting tool where accuracy is paramount, the small quality gain of Model X may justify its cost.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={3}>
+
+<Callout type="realWorld" title="An online retailer evaluates its shopping assistant before and after launch">
+An online retailer is building a shopping assistant that answers product questions from a Bedrock knowledge base and can place items in the basket through an agent action. Before writing much code, the product owner, the data science team and customer service agree on success criteria: at least 70% task completion, satisfaction of 4 out of 5 or better, no more than 2% of answers with unsupported claims, and a cost under three cents per conversation.
+</Callout>
+
+**Offline evaluation.** The team builds a golden dataset of 1,500 real customer questions taken from chat logs (with personal data removed), covering every product category, common misspellings and some tricky or adversarial prompts. Experts write reference answers for 300 of them. Three candidate models are compared with Bedrock Model Evaluation: an automatic job for accuracy, robustness and toxicity; an LLM-as-a-judge job for correctness, completeness and helpfulness; and a RAG evaluation of the knowledge base for context relevance, coverage, faithfulness and citation quality. A team of eight customer-service experts performs a human comparison on a 200-question sample, and their ratings are used to check that the LLM judge agrees with people.
+
+The results surprise them: the largest model is only marginally better than a mid-sized one, at four times the cost. Retrieval coverage is the weakest metric, so they switch to hierarchical chunking and add a reranker, which improves both faithfulness and correctness more than any model change did.
+
+**Agent evaluation.** For the "add to basket" action, they measure tool-use accuracy (right product, size and quantity) and the number of steps per task. Early traces show the agent sometimes searching three times before acting; a clearer instruction reduces the average from 4.1 to 2.6 steps, cutting latency and cost.
+
+**Online evaluation.** After launch, 10% of traffic goes to the assistant in an A/B test. The team tracks task completion, thumbs-up rate, conversion and cost per conversation daily, and reviews a weekly sample of conversations by hand. Every change to prompts, models or chunking reruns the offline evaluation first. That discipline — **agreed business metrics, a representative golden dataset, layered evaluation methods and continuous monitoring** — is exactly what task statement 3.4 describes.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: create a model evaluation job in Amazon Bedrock" minutes={8}>
+
+<HandsOnLab
+  goal="Walk through creating evaluation jobs in Amazon Bedrock: an automatic job with built-in metrics, an LLM-as-a-judge job, and a human evaluation with your own work team, then read the results."
+  asOf="November 2026"
+  steps={[
+    { text: 'In the Amazon Bedrock console, open Evaluations and choose Create. Notice the evaluation types: automatic (programmatic or LLM-as-a-judge), human, and RAG evaluation for knowledge bases.', screen: { service: 'Amazon Bedrock', path: ['Inference and assessment', 'Evaluations', 'Create'], menu: ['Model catalog', 'Playgrounds', 'Knowledge Bases', 'Guardrails', 'Evaluations'], active: 'Evaluations', fields: [{ label: 'Automatic: programmatic', value: 'Built-in metrics and datasets' }, { label: 'Automatic: LLM-as-a-judge', value: 'Evaluator model scores quality' }, { label: 'Human: bring your own work team', value: 'Your reviewers rate outputs' }, { label: 'RAG', value: 'Evaluate a knowledge base' }], highlight: 'Automatic: programmatic' } },
+    { text: 'For a programmatic job, pick the model to evaluate, a task type such as text summarisation and the metrics. Choose a built-in dataset or your own JSONL prompt dataset in S3.', screen: { service: 'Amazon Bedrock', path: ['Evaluations', 'Create automatic evaluation'], fields: [{ label: 'Model', value: 'An Amazon Nova text model' }, { label: 'Task type', value: 'Text summarization' }, { label: 'Metrics', value: 'Accuracy · Robustness · Toxicity' }, { label: 'Prompt dataset', value: 's3://acme-eval/golden/summaries.jsonl' }], highlight: 'Metrics', note: 'Results are written to S3' } },
+    { text: 'For an LLM-as-a-judge job, choose an evaluator model and the metrics it should score, such as correctness, completeness, helpfulness, faithfulness and harmfulness.', screen: { service: 'Amazon Bedrock', path: ['Evaluations', 'Create LLM-as-a-judge evaluation'], fields: [{ label: 'Evaluator model', value: 'A strong judge model' }, { label: 'Quality metrics', value: 'Correctness · Completeness · Helpfulness' }, { label: 'Responsible AI metrics', value: 'Harmfulness · Stereotyping · Refusal' }], highlight: 'Create', note: 'Calibrate the judge against human ratings' } },
+    { text: 'Open a completed job. Compare scores between models, then drill into individual prompts with low scores to understand why they failed.', screen: { service: 'Amazon Bedrock', path: ['Evaluations', 'summaries-model-compare', 'Results'], fields: [{ label: 'Model A correctness', value: '0.86' }, { label: 'Model B correctness', value: '0.84' }, { label: 'Model B relative cost', value: '25% of Model A' }], highlight: 'View prompt-level results' } },
+  ]}
+  expectedOutcome="You can name the Bedrock evaluation types, know which needs your own reviewers, which uses a judge model and which evaluates a knowledge base, and you weigh scores against cost before choosing a model."
+  checks={[
+    { q: 'You need clinicians to rate the medical accuracy of summaries. Which evaluation type?', a: 'Human evaluation with your own work team.' },
+    { q: 'You want quality scores for 10,000 responses overnight without reference answers. Which type?', a: 'LLM-as-a-judge evaluation, calibrated against a human-rated sample.' },
+    { q: 'Your RAG bot often answers from the wrong documents. Which evaluation helps locate the problem?', a: 'A RAG evaluation of the knowledge base — check retrieval metrics such as context relevance and coverage.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="ROUGE, BLEU or BERTScore?">
+**Summarisation → ROUGE** (recall of the reference). **Translation → BLEU** (precision with brevity penalty). **Meaning matters more than exact words → BERTScore** (embeddings). If an option says ROUGE or BLEU "understands synonyms", it is wrong — they count word overlap.
+</Callout>
+
+- "Subjective quality, brand voice, expert accuracy" → **human evaluation** (Bedrock: bring your own work team).
+- "Evaluate at scale without human reviewers, score helpfulness" → **LLM-as-a-judge**.
+- "Compare models on standard tasks" → **benchmark datasets**; "fit for our use case" → **your own representative dataset**.
+- "Least effort to compare FMs on AWS" → **Amazon Bedrock Model Evaluation**.
+- RAG: separate **retrieval** (context relevance, coverage) from **generation** (faithfulness, correctness, citations).
+- Agents: **task completion rate**, tool-use accuracy, number of steps, latency.
+- "Does the solution meet business goals?" → **task completion, user satisfaction, cost per interaction**, conversion or handling-time KPIs — not ROUGE.
+- After launch: **A/B testing**, user feedback and monitoring are evaluation too.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+Generative output rarely has one right answer, so evaluation combines methods. Humans judge subjective and expert quality but are slow and costly; benchmarks compare models on standard tasks but must be backed by your own representative dataset. ROUGE (recall, summaries), BLEU (precision, translation) and BERTScore (meaning, via embeddings) score text against references, while LLM-as-a-judge scores qualities such as helpfulness at scale and should be calibrated against people. Amazon Bedrock Model Evaluation runs automatic, human, LLM-as-a-judge and RAG evaluations. Evaluate RAG retrieval and generation separately and agents by task completion, tool use and steps. Finally, success is measured in business terms: task completion, satisfaction and cost per interaction. Tomorrow: the Week 3 review.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={20} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="A continuous evaluation pipeline for FM applications" minutes={15} optional>
+
+Evaluation is not a one-off gate before launch. Prompts, models, documents and user behaviour all change, so mature teams treat evaluation like automated testing in software: every change runs the evaluation suite, and production is monitored continuously.
+
+<Diagram
+  caption="Reference architecture: offline evaluation gates every change, online evaluation monitors real traffic, and findings flow back into the golden dataset"
+  code={`flowchart LR
+  CH["Change: prompt, model, chunking, guardrail"] --> PIPE["CI pipeline"]
+  GD[("Golden dataset in S3: prompts, references, edge cases")] --> PIPE
+  PIPE --> AUTO["Bedrock automatic and LLM-as-a-judge jobs"]
+  PIPE --> RAGE["Bedrock RAG evaluation of knowledge base"]
+  AUTO --> GATE{"Meets thresholds?"}
+  RAGE --> GATE
+  GATE -->|No| CH
+  GATE -->|Yes| HS["Human review of sample"] --> AB["A/B test with 10 percent of traffic"]
+  AB --> MON["CloudWatch dashboards: task completion, CSAT, latency, cost per interaction"]
+  AB --> TR["Agent traces, AgentCore Observability"]
+  MON --> FB["User feedback and failures"] --> GD
+  TR --> FB`}
+/>
+
+**Offline gate.** The golden dataset lives in Amazon S3 and is versioned. A pipeline starts Bedrock evaluation jobs whenever a prompt template, model version, chunking setting or guardrail changes. Thresholds are agreed in advance — for example correctness at least 0.85, faithfulness at least 0.95, toxicity effectively zero — and a change that falls below them does not ship.
+
+**Human sample.** Even when automatic scores pass, domain experts review a stratified sample, focusing on high-risk categories. Their ratings also keep the LLM judge honest: if judge and humans disagree more than an agreed amount, the rubric or judge model is revised.
+
+**Online evaluation.** New versions go to a slice of traffic first. Amazon CloudWatch dashboards track the business alignment metrics: task completion, thumbs-up rate, escalations, latency and cost per interaction (from token counts and infrastructure cost). Agent traces show where multi-step tasks fail. AWS CloudTrail records who changed what, which supports governance (Day 27).
+
+**Closing the loop.** Every failure found in production — a wrong answer, an unsafe reply, an abandoned conversation — becomes a new test case in the golden dataset, so the same mistake is caught automatically next time. Over months the dataset grows into the most valuable asset of the project: an executable definition of what "good" means for this business.
+
+**Trade-offs.** More evaluation costs money: judge-model tokens, human reviewer time and slower releases. Match the depth to the risk — a lunch-menu bot needs a light suite; a lending or clinical assistant needs extensive human review, fairness checks and documented results that auditors can inspect.
+
+</Section>

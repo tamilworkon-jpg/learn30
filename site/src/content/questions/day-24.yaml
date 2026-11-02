@@ -1,0 +1,330 @@
+- id: q-day-24-001
+  set: day-24
+  type: single
+  stem: "A regulator requires a bank to show exactly how its credit model turns each applicant's inputs into a decision, by reading the model itself rather than relying on approximations. Which type of model BEST meets this requirement?"
+  options:
+    - { id: a, text: "A deep neural network with many hidden layers", explanation: "Incorrect. Deep networks have millions of weights that cannot be read directly; they need post-hoc approximations to explain." }
+    - { id: b, text: "A large language model prompted to make the decision", explanation: "Incorrect. LLMs are the most opaque models; even their builders cannot trace exactly why an output was produced." }
+    - { id: c, text: "A logistic regression or small decision tree", explanation: "Correct. These transparent models are interpretable by design: their coefficients or rules show exactly how inputs become a decision." }
+    - { id: d, text: "A large ensemble of hundreds of gradient-boosted trees", explanation: "Incorrect. Large ensembles are accurate but opaque; their combined logic is too complex to read and needs tools such as SHAP." }
+  answer: [c]
+  explanation: "Transparent (white-box) models such as linear and logistic regression, small decision trees and rule-based systems can be read directly. Opaque (black-box) models such as deep networks, large ensembles and foundation models require post-hoc explanation techniques."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: easy
+
+- id: q-day-24-002
+  set: day-24
+  type: single
+  stem: "A data science team must give auditors a single, versioned document for its in-house churn model that records the intended uses, a risk rating, training details and evaluation results. Which AWS feature should the team use?"
+  options:
+    - { id: a, text: "AWS AI Service Cards", explanation: "Incorrect. AI Service Cards are AWS's documentation for its own AI services, not for models a customer builds." }
+    - { id: b, text: "Amazon SageMaker Model Cards", explanation: "Correct. SageMaker Model Cards document your own models, including intended uses, risk rating, training details and evaluation results, and can be versioned and exported." }
+    - { id: c, text: "Amazon SageMaker Clarify", explanation: "Incorrect. Clarify computes bias metrics and explanations; its reports can be added to a model card, but it is not the documentation tool." }
+    - { id: d, text: "Amazon Bedrock Guardrails", explanation: "Incorrect. Guardrails filter prompts and responses of generative AI apps; they do not document models." }
+  answer: [b]
+  explanation: "SageMaker Model Cards are the transparency and documentation tool for your own models. They can link to the SageMaker Model Registry, include Clarify and evaluation results, and be exported as PDF for auditors."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: easy
+
+- id: q-day-24-003
+  set: day-24
+  type: single
+  stem: "A company uses Amazon Rekognition face comparison in a building-access application. The risk team wants AWS's own description of the feature's intended use cases, limitations and responsible AI design choices. Where should the team look?"
+  options:
+    - { id: a, text: "AWS AI Service Cards", explanation: "Correct. AI Service Cards are AWS transparency documents describing intended uses, limitations, design choices and deployment best practices for AWS AI services." }
+    - { id: b, text: "Amazon SageMaker Model Cards", explanation: "Incorrect. Model Cards are created by customers to document their own models, not AWS-managed services." }
+    - { id: c, text: "Amazon Bedrock Model Evaluations", explanation: "Incorrect. Bedrock evaluations compare foundation models and knowledge bases; they do not document Rekognition." }
+    - { id: d, text: "SageMaker Model Monitor", explanation: "Incorrect. Model Monitor watches models deployed on SageMaker AI endpoints for drift." }
+  answer: [a]
+  explanation: "Model Cards document your models; AI Service Cards document AWS's AI services and models. When a solution consumes an AWS AI service, its service card helps you understand and document that service's behaviour."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: easy
+
+- id: q-day-24-004
+  set: day-24
+  type: single
+  stem: "A company must choose between three foundation models for summarising support tickets. It wants scores for accuracy, robustness and toxicity, measured on 500 of its own prompts stored in Amazon S3. Which solution meets this requirement with the LEAST effort?"
+  options:
+    - { id: a, text: "SageMaker Clarify SHAP explanations for each model", explanation: "Incorrect. SHAP explains feature contributions for ML predictions; it does not score summaries for accuracy, robustness and toxicity." }
+    - { id: b, text: "Amazon Bedrock Guardrails with high content filters", explanation: "Incorrect. Guardrails filter content at runtime; they do not produce comparative evaluation scores." }
+    - { id: c, text: "A SageMaker Model Card for each model", explanation: "Incorrect. Model cards document evaluation results but do not run the evaluation." }
+    - { id: d, text: "An automatic model evaluation job in Amazon Bedrock with a custom prompt dataset", explanation: "Correct. Bedrock automatic evaluation scores models on metrics such as accuracy, robustness and toxicity using built-in or your own prompt datasets." }
+  answer: [d]
+  explanation: "Amazon Bedrock Model Evaluations supports automatic (programmatic) evaluation with built-in metrics, human evaluation and LLM-as-a-judge. Results are written to S3 and shown in a report card, providing evidence for model selection."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: easy
+
+- id: q-day-24-005
+  set: day-24
+  type: single
+  stem: "A marketing team needs to know which of two foundation models writes product descriptions that best match its friendly, informal brand voice. Which Amazon Bedrock evaluation approach is MOST appropriate?"
+  options:
+    - { id: a, text: "An automatic evaluation using only the accuracy metric", explanation: "Incorrect. Accuracy against reference text does not capture a subjective quality such as brand voice." }
+    - { id: b, text: "A human evaluation in which the team's own copywriters rate responses on brand voice", explanation: "Correct. Human evaluation with your own work team and custom criteria suits subjective qualities that metrics cannot capture." }
+    - { id: c, text: "SageMaker Model Monitor model quality monitoring", explanation: "Incorrect. Model Monitor tracks deployed SageMaker models over time; it does not compare foundation models on style." }
+    - { id: d, text: "An automatic evaluation using only the toxicity metric", explanation: "Incorrect. Toxicity shows whether content is harmful, not whether it matches the brand voice." }
+  answer: [b]
+  explanation: "Use automatic metrics for measurable qualities, human evaluation for subjective qualities such as tone, style and helpfulness, and LLM-as-a-judge when you need rubric-based scoring at scale."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#examples
+  difficulty: medium
+
+- id: q-day-24-006
+  set: day-24
+  type: single
+  stem: "Which statement BEST describes the difference between interpretability and explainability?"
+  options:
+    - { id: a, text: "Interpretability applies only to generative AI, and explainability applies only to traditional ML", explanation: "Incorrect. Both ideas apply to any model; the difference is how understanding is achieved." }
+    - { id: b, text: "Interpretability means the model is accurate, and explainability means it is fair", explanation: "Incorrect. Neither term is about accuracy or fairness; they describe how well people can understand a model." }
+    - { id: c, text: "Interpretability is understanding a model's internal mechanics directly; explainability gives post-hoc reasons for the outputs of complex models", explanation: "Correct. You can read an interpretable model such as a decision tree; opaque models need separate techniques to approximate why they produced an output." }
+    - { id: d, text: "Interpretability and explainability both mean publishing the training data", explanation: "Incorrect. Publishing data relates to transparency, and neither term requires it." }
+  answer: [c]
+  explanation: "Interpretability: a person can follow how the model works internally (coefficients, rules). Explainability: techniques such as SHAP, LIME, partial dependence and counterfactuals approximate why an opaque model produced a given output. Transparency is the broader openness about how and why AI is used."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: medium
+
+- id: q-day-24-007
+  set: day-24
+  type: single
+  stem: "A startup wants to fine-tune a high-scoring open-weight model and sell access to it. The model's licence permits research use only. What should the startup do?"
+  options:
+    - { id: a, text: "Choose a model whose licence permits commercial use and fine-tuning, and record the licence", explanation: "Correct. A non-commercial licence forbids the planned use; selecting a suitably licensed model avoids IP and contractual risk." }
+    - { id: b, text: "Proceed, because publicly available weights can be used for any purpose", explanation: "Incorrect. Open weights do not mean unrestricted use; the licence defines what is allowed." }
+    - { id: c, text: "Proceed, because fine-tuning creates a new model that is free of the original licence", explanation: "Incorrect. Licences typically cover derivative models, so fine-tuning does not remove the restrictions." }
+    - { id: d, text: "Proceed, because hosting the model on AWS replaces the original licence", explanation: "Incorrect. The hosting platform does not override the model provider's licence terms." }
+  answer: [a]
+  explanation: "Open-source and open-weight models increase transparency, but licences differ: permissive (such as Apache 2.0 or MIT), custom or community licences with acceptable use restrictions, and non-commercial licences. Always check commercial use, fine-tuning and redistribution rights, attribution and prohibited uses."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: medium
+
+- id: q-day-24-008
+  set: day-24
+  type: single
+  stem: "In the name of transparency, a stakeholder asks a payments company to publish the exact rules and thresholds its fraud-detection model uses. Which response BEST balances transparency with safety?"
+  options:
+    - { id: a, text: "Publish everything, because full transparency is always the most responsible option", explanation: "Incorrect. Publishing exact rules would teach fraudsters how to evade detection, harming customers." }
+    - { id: b, text: "Publish nothing and refuse to document the model internally", explanation: "Incorrect. Internal documentation is essential for accountability and audits." }
+    - { id: c, text: "Replace the model with a random approval process so there is nothing to reveal", explanation: "Incorrect. This removes fraud protection entirely and is not a transparency measure." }
+    - { id: d, text: "Publish a summary of how AI is used, and give full details only to auditors and regulators", explanation: "Correct. Tailored transparency gives the public meaningful information while keeping details that would help attackers restricted to those who need them." }
+  answer: [d]
+  explanation: "Safety and security can conflict with transparency. Revealing exact detection rules, system prompts or guardrail settings can help attackers, and detailed explanations can leak private data. Disclosure is tailored to the audience."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: medium
+
+- id: q-day-24-009
+  set: day-24
+  type: single
+  stem: "An insurer compares a logistic regression model (84% accurate) with a gradient-boosted ensemble (87% accurate) for approving claims. It must give a reason for every denial. Which approach is responsible if the insurer chooses the ensemble?"
+  options:
+    - { id: a, text: "Deploy the ensemble without explanations, because higher accuracy outweighs the need for reasons", explanation: "Incorrect. The requirement to explain denials does not disappear because a model is more accurate." }
+    - { id: b, text: "Deploy the ensemble with validated SageMaker Clarify SHAP explanations and document the choice in a model card", explanation: "Correct. An opaque model can be used responsibly when strong post-hoc explanations are validated and the trade-off is documented." }
+    - { id: c, text: "Ask a large language model to write a plausible reason for each denial", explanation: "Incorrect. A generated reason that is not derived from the model's actual decision is not a faithful explanation and may be false." }
+    - { id: d, text: "Deploy both models and use whichever approves more claims", explanation: "Incorrect. This does not provide explanations and makes decisions inconsistent." }
+  answer: [b]
+  explanation: "Interpretability vs performance is a trade-off. Both options can be responsible: a transparent model with built-in reasons, or a more accurate opaque model with validated explanations and documentation. Deploying an opaque model with no explanations for decisions that affect people is not acceptable."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#examples
+  difficulty: hard
+
+- id: q-day-24-010
+  set: day-24
+  type: single
+  stem: "A hospital's AI tool shows radiologists a heat map of the image region that drove its score, a confidence level and similar past cases. The radiologist always makes the final call and can override the tool. Which human-centred design principle for explainable AI does this BEST illustrate?"
+  options:
+    - { id: a, text: "Design for human and AI learning", explanation: "Incorrect. That principle is about humans and AI improving each other over time, such as feeding corrections back for retraining; the features described support a decision in the moment." }
+    - { id: b, text: "Design for unbiased decision-making", explanation: "Incorrect. That principle focuses on identifying and reducing bias in the process; the scenario focuses on supporting an expert's high-stakes decision." }
+    - { id: c, text: "Design for amplified decision-making", explanation: "Correct. Clear explanations, confidence levels and the ability to override help a person make a better high-stakes decision under pressure." }
+    - { id: d, text: "Design for full automation", explanation: "Incorrect. This is not a human-centred design principle, and the scenario keeps a human in control." }
+  answer: [c]
+  explanation: "AWS training lists three principles for human-centred explainable AI: design for amplified decision-making, design for unbiased decision-making, and design for human and AI learning. Supporting an expert with explanations, confidence and override is amplified decision-making."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: medium
+
+- id: q-day-24-011
+  set: day-24
+  type: single
+  stem: "A lender wants every declined applicant to receive an explanation such as 'If your debt-to-income ratio were below 40%, your application would likely be approved.' Which explanation technique produces this kind of statement?"
+  options:
+    - { id: a, text: "A partial dependence plot", explanation: "Incorrect. Partial dependence shows how the average prediction changes with one feature across the population, not the smallest change for one applicant." }
+    - { id: b, text: "A global feature importance ranking", explanation: "Incorrect. Global importance summarises which features matter most overall, not what an individual should change." }
+    - { id: c, text: "A confusion matrix", explanation: "Incorrect. A confusion matrix summarises prediction errors; it does not explain individual decisions." }
+    - { id: d, text: "A counterfactual explanation", explanation: "Correct. Counterfactual explanations state the smallest change to the input that would change the outcome, which is highly actionable for end users." }
+  answer: [d]
+  explanation: "Counterfactual explanations tell a person what would need to be different for a different result. They complement SHAP feature attributions (which features drove this decision) and partial dependence (how a feature affects predictions on average)."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: medium
+
+- id: q-day-24-012
+  set: day-24
+  type: single
+  stem: "A team wants to score thousands of chatbot responses for correctness, completeness and harmfulness, with a written reason for each score, faster and more cheaply than human reviewers. Which Amazon Bedrock evaluation approach fits BEST?"
+  options:
+    - { id: a, text: "Human evaluation with the team's own reviewers", explanation: "Incorrect. Human evaluation is valuable for subjective judgements but is slower and more expensive at this scale." }
+    - { id: b, text: "LLM-as-a-judge evaluation", explanation: "Correct. A separate evaluator model scores responses against criteria such as correctness, completeness and harmfulness and explains its scores, at scale." }
+    - { id: c, text: "SageMaker Clarify pre-training bias analysis", explanation: "Incorrect. Pre-training bias analysis examines tabular datasets, not chatbot responses." }
+    - { id: d, text: "A Bedrock Guardrails word filter", explanation: "Incorrect. Word filters block specific terms at runtime and do not score response quality." }
+  answer: [b]
+  explanation: "LLM-as-a-judge uses an evaluator model to grade responses with reasons. It scales cheaply, while human evaluation remains best for nuanced subjective qualities and automatic metrics for measurable ones."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: easy
+
+- id: q-day-24-013
+  set: day-24
+  type: single
+  stem: "Employees do not trust an internal policy assistant built on an Amazon Bedrock knowledge base, because they cannot check where its answers come from. Which change would MOST improve both transparency and veracity?"
+  options:
+    - { id: a, text: "Show the source passages and document links behind each answer", explanation: "Correct. Citations let users verify answers themselves and expose ungrounded responses, improving transparency and truthfulness together." }
+    - { id: b, text: "Increase the model's temperature so answers sound more natural", explanation: "Incorrect. Higher temperature adds randomness and does nothing to show where answers come from." }
+    - { id: c, text: "Hide the fact that answers are generated by AI", explanation: "Incorrect. Hiding AI use reduces transparency and would damage trust further when discovered." }
+    - { id: d, text: "Switch to a larger model without changing the interface", explanation: "Incorrect. A larger model may be more capable, but users still could not verify the source of answers." }
+  answer: [a]
+  explanation: "For generative AI, full internal explanations are not possible, so transparency comes from disclosure, citations from retrieval-augmented generation, agent traces, documented limitations and evaluations. Source attribution also supports veracity because users can verify claims."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: hard
+
+- id: q-day-24-014
+  set: day-24
+  type: single
+  stem: "A team plans to submit a large language model's own step-by-step reasoning as the official explanation of how the model reached its answers to a regulator. Which concern is MOST valid?"
+  options:
+    - { id: a, text: "LLMs cannot produce step-by-step text, so the plan is impossible", explanation: "Incorrect. LLMs can easily produce reasoning text; the concern is whether that text is faithful." }
+    - { id: b, text: "Step-by-step reasoning always exposes the model's training data", explanation: "Incorrect. Reasoning text does not inherently reveal training data; the issue is faithfulness, not data exposure." }
+    - { id: c, text: "The reasoning must first be converted into SHAP values by Model Monitor", explanation: "Incorrect. Model Monitor does not convert LLM text into SHAP values, and that would not solve the faithfulness problem." }
+    - { id: d, text: "A model's self-described reasoning is not guaranteed to reflect how it actually produced the answer", explanation: "Correct. Generated reasoning can be plausible but unfaithful, so it should be supported by evaluations, citations, traces and documentation." }
+  answer: [d]
+  explanation: "Foundation models are highly opaque. Asking them to show reasoning can help users, but it is not a guaranteed account of the model's internal process. Regulators should receive evidence such as evaluation results, model cards and source attributions."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: hard
+
+- id: q-day-24-015
+  set: day-24
+  type: multi
+  stem: "Which models are generally considered transparent (interpretable by design)? (Select TWO.)"
+  options:
+    - { id: a, text: "Linear regression", explanation: "Correct. Each coefficient shows exactly how much a feature changes the prediction." }
+    - { id: b, text: "A small decision tree", explanation: "Correct. Its if-then rules can be read and followed by a person." }
+    - { id: c, text: "A deep convolutional neural network", explanation: "Incorrect. Deep networks are opaque and need post-hoc explanation." }
+    - { id: d, text: "A large language model", explanation: "Incorrect. LLMs with billions of parameters are among the most opaque models." }
+    - { id: e, text: "A transformer-based image generation model", explanation: "Incorrect. Large generative models are opaque by nature." }
+  answer: [a, b]
+  explanation: "Transparent models (linear and logistic regression, small decision trees, rule-based systems) can be read directly. Deep neural networks and foundation models are opaque and rely on post-hoc techniques, citations and documentation."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: easy
+
+- id: q-day-24-016
+  set: day-24
+  type: multi
+  stem: "Which capabilities are provided by Amazon Bedrock Model Evaluations? (Select TWO.)"
+  options:
+    - { id: a, text: "Automatic evaluation of models using built-in or custom prompt datasets", explanation: "Correct. Automatic evaluation computes metrics such as accuracy, robustness and toxicity on curated or your own datasets." }
+    - { id: b, text: "Human evaluation in which your own work team rates model responses", explanation: "Correct. Human evaluation supports custom criteria and subjective judgements." }
+    - { id: c, text: "Real-time masking of PII in chatbot responses", explanation: "Incorrect. Runtime PII masking is a Bedrock Guardrails sensitive information filter." }
+    - { id: d, text: "SHAP feature attributions for tabular ML models", explanation: "Incorrect. SHAP explanations for ML models come from SageMaker Clarify." }
+    - { id: e, text: "Scheduled drift monitoring of SageMaker AI endpoints", explanation: "Incorrect. Endpoint drift monitoring is SageMaker Model Monitor." }
+  answer: [a, b]
+  explanation: "Amazon Bedrock Model Evaluations offers automatic evaluation, human evaluation, LLM-as-a-judge and knowledge base (RAG) evaluation, with results saved to S3. Runtime filtering, SHAP explanations and drift monitoring belong to Guardrails, Clarify and Model Monitor."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: medium
+
+- id: q-day-24-017
+  set: day-24
+  type: multi
+  stem: "A company plans to fine-tune an open-weight model from a public model hub and use it in a paid product. Which licence terms must the company check? (Select TWO.)"
+  options:
+    - { id: a, text: "Whether commercial use and fine-tuning of the model are permitted", explanation: "Correct. Some licences forbid commercial use or restrict derivative models." }
+    - { id: b, text: "Acceptable use restrictions and attribution requirements", explanation: "Correct. Custom and community licences often prohibit certain uses and require specific attribution." }
+    - { id: c, text: "Whether the model weights are larger than 10 GB", explanation: "Incorrect. File size is an engineering concern, not a licence term." }
+    - { id: d, text: "Whether the model was trained on GPUs", explanation: "Incorrect. The training hardware does not affect what the licence allows." }
+    - { id: e, text: "Whether the model supports streaming responses", explanation: "Incorrect. Streaming is a technical feature, not a licence condition." }
+  answer: [a, b]
+  explanation: "Before using an open model or dataset, check commercial use, modification and fine-tuning rights, redistribution, attribution and prohibited uses. Licensing connects directly to the intellectual property risk of generative AI."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: medium
+
+- id: q-day-24-018
+  set: day-24
+  type: multi
+  stem: "A bank is designing explanations for an AI-assisted loan process. Which practices follow human-centred design for explainable AI? (Select THREE.)"
+  options:
+    - { id: a, text: "Tailor explanations to each audience, such as plain-language reasons for customers and SHAP values for data scientists", explanation: "Correct. Different people need different explanations to understand and act." }
+    - { id: b, text: "Show loan officers the key factors and confidence level, and let them override the recommendation", explanation: "Correct. This supports amplified decision-making with a human in control." }
+    - { id: c, text: "Give customers a way to contest a decision and reach a human", explanation: "Correct. Contestability and human contact are core to human-centred AI." }
+    - { id: d, text: "Show only a single risk score with no reasons, to keep the screen simple", explanation: "Incorrect. A bare score gives people nothing to act on and encourages automation bias." }
+    - { id: e, text: "Avoid telling customers that AI is involved, to prevent confusion", explanation: "Incorrect. Disclosure of AI use is a basic transparency practice." }
+    - { id: f, text: "Use the same technical SHAP chart for customers, regulators and engineers", explanation: "Incorrect. Technical charts suit data scientists but not customers; explanations should match the audience." }
+  answer: [a, b, c]
+  explanation: "Human-centred explainable AI puts the people who use and are affected by the system first: tailored explanations, honest uncertainty, override for experts, disclosure of AI use and a route to contest decisions."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#explanation
+  difficulty: medium
+
+- id: q-day-24-019
+  set: day-24
+  type: ordering
+  stem: "Arrange these model types from the MOST interpretable to the MOST opaque."
+  options:
+    - { id: a, text: "Deep neural network", explanation: "Fourth: millions of weights make it opaque, so it needs post-hoc explanation." }
+    - { id: b, text: "Linear regression", explanation: "First: each coefficient can be read directly." }
+    - { id: c, text: "Large language model", explanation: "Last: billions of parameters make it the most opaque; transparency relies on citations, traces, evaluations and documentation." }
+    - { id: d, text: "Ensemble of gradient-boosted trees such as XGBoost", explanation: "Third: many combined trees are too complex to read but can be explained with SHAP and partial dependence." }
+    - { id: e, text: "Small decision tree", explanation: "Second: its rules can be followed, though deep trees become harder to read." }
+  answer: [b, e, d, a, c]
+  explanation: "As models become more flexible they generally become harder to explain: linear models and small trees can be read directly, tree ensembles and deep networks need post-hoc techniques, and foundation models are the most opaque."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#diagram
+  difficulty: medium
+
+- id: q-day-24-020
+  set: day-24
+  type: matching
+  stem: "Match each transparency need to the AWS tool that BEST meets it."
+  options:
+    - { id: a, text: "Document an in-house model's intended uses, risk rating and evaluation results", explanation: "SageMaker Model Cards document your own models for stakeholders and auditors." }
+    - { id: b, text: "Understand the documented limitations of an AWS AI service the company consumes", explanation: "AWS AI Service Cards are AWS's transparency documents for its own AI services." }
+    - { id: c, text: "Compare candidate foundation models with evidence before selecting one", explanation: "Amazon Bedrock Model Evaluations provides automatic, human and LLM-as-a-judge evaluation." }
+    - { id: d, text: "Explain why an ML model declined one specific applicant", explanation: "SageMaker Clarify gives local SHAP feature attributions for individual predictions." }
+  matchTargets:
+    - { id: t3, text: "Amazon Bedrock Model Evaluations" }
+    - { id: t1, text: "Amazon SageMaker Model Cards" }
+    - { id: t4, text: "Amazon SageMaker Clarify" }
+    - { id: t2, text: "AWS AI Service Cards" }
+  answer: { a: t1, b: t2, c: t3, d: t4 }
+  explanation: "Model Cards document your models; AI Service Cards document AWS's services; Bedrock Model Evaluations compares foundation models with evidence; Clarify explains ML predictions. Clarify and evaluation reports are often attached to model cards."
+  domain: D4
+  taskStatement: "4.2"
+  lessonRef: day-24#examples
+  difficulty: hard

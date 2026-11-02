@@ -1,0 +1,330 @@
+- id: q-day-13-001
+  set: day-13
+  type: single
+  stem: "A telecom company wants an LLM in Amazon Bedrock to summarise 500,000 archived support tickets. The summaries are needed by the end of next week. Which inference option is MOST cost-effective?"
+  options:
+    - { id: a, text: "On-demand inference called once per ticket from a script", explanation: "Incorrect. On-demand works, but it is priced at the full per-token rate; no one is waiting, so the discounted batch option is cheaper." }
+    - { id: b, text: "Provisioned throughput with a 6-month commitment", explanation: "Incorrect. A long commitment for a one-off job would leave paid capacity idle afterwards." }
+    - { id: c, text: "A real-time SageMaker AI endpoint running 24/7", explanation: "Incorrect. A permanently running endpoint adds hourly cost and management for a job that does not need real-time answers." }
+    - { id: d, text: "Batch inference with the tickets in a JSONL file in Amazon S3", explanation: "Correct. Batch inference processes large offline jobs asynchronously from S3 at a discount to on-demand pricing for supported models." }
+  answer: [d]
+  explanation: "When results are not needed immediately and the dataset is large, Bedrock batch inference is the most cost-effective choice: prompts go in a JSONL file in S3, results are written back to S3, and supported models are priced around 50% below on-demand."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: easy
+
+- id: q-day-13-002
+  set: day-13
+  type: single
+  stem: "A new internal writing assistant will be used by a few hundred employees. Usage is unpredictable and the company does not want any commitment or idle cost. Which Amazon Bedrock pricing option fits BEST?"
+  options:
+    - { id: a, text: "On-demand", explanation: "Correct. On-demand charges per input and output token with no commitment, so the company pays only for what is used." }
+    - { id: b, text: "Provisioned throughput", explanation: "Incorrect. Provisioned throughput is billed per hour whether used or not, which creates idle cost for unpredictable traffic." }
+    - { id: c, text: "Batch inference", explanation: "Incorrect. Batch is asynchronous and suits offline jobs; employees waiting for answers need interactive responses." }
+    - { id: d, text: "A custom model with continued pre-training", explanation: "Incorrect. Customisation adds training, storage and hosting costs and is not a pricing option for this need." }
+  answer: [a]
+  explanation: "On-demand is the default for prototypes, variable traffic and most applications: pay per token, no minimum, subject to account quotas. Provisioned throughput suits steady, high volume; batch suits offline jobs."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: easy
+
+- id: q-day-13-003
+  set: day-13
+  type: single
+  stem: "A company fine-tuned a foundation model in Amazon Bedrock on its product documentation. It now needs to serve the custom model to a production app with steady, high traffic and predictable performance. Which option should it use for inference?"
+  options:
+    - { id: a, text: "Batch inference only", explanation: "Incorrect. Batch is asynchronous; a production app serving users needs interactive responses." }
+    - { id: b, text: "The base model's on-demand endpoint, which automatically includes the fine-tuning", explanation: "Incorrect. The base model does not include your customisation; the custom model is a separate private copy." }
+    - { id: c, text: "Provisioned throughput for the custom model", explanation: "Correct. Provisioned throughput reserves model units for guaranteed capacity and is required to serve customised models for many models in Bedrock." }
+    - { id: d, text: "Amazon Quick", explanation: "Incorrect. Amazon Quick is an application for business users, not an inference option for custom models." }
+  answer: [c]
+  explanation: "Custom models often need dedicated capacity. Provisioned throughput buys model units billed per hour, giving guaranteed throughput for steady production traffic. Some models now support on-demand inference for custom versions, so check per model."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-day-13-004
+  set: day-13
+  type: single
+  stem: "Every request to a company's support chatbot begins with the same 3,000-token system prompt containing rules and examples, followed by a short customer question. Which Amazon Bedrock feature will MOST reduce input cost and response latency?"
+  options:
+    - { id: a, text: "Increasing the maximum output tokens", explanation: "Incorrect. A higher output limit can only increase cost and does nothing for the repeated input." }
+    - { id: b, text: "Prompt caching on the system prompt", explanation: "Correct. Prompt caching stores the repeated prefix so later requests read it from the cache at a large discount and with lower latency." }
+    - { id: c, text: "Switching to batch inference", explanation: "Incorrect. Batch is asynchronous and unsuitable for a live chatbot." }
+    - { id: d, text: "Using a model with a larger context window", explanation: "Incorrect. A larger context window allows more tokens; it does not make repeated tokens cheaper." }
+  answer: [b]
+  explanation: "Prompt caching lets you mark a cache checkpoint after a repeated prefix such as a long system prompt or document. Cache hits are billed at a large discount (AWS quotes up to about 90%) and respond faster; the cache expires after minutes without reuse."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-day-13-005
+  set: day-13
+  type: single
+  stem: "A finance manager wants to receive an email automatically when the month's Amazon Bedrock spending reaches 80% of the planned amount. Which AWS service should be configured?"
+  options:
+    - { id: a, text: "AWS Budgets", explanation: "Correct. AWS Budgets sends alerts by email or Amazon SNS when actual or forecasted cost crosses a threshold you set." }
+    - { id: b, text: "AWS Cost Explorer", explanation: "Incorrect. Cost Explorer analyses historical cost and forecasts it, but threshold alerts are configured in AWS Budgets." }
+    - { id: c, text: "Amazon Bedrock Guardrails", explanation: "Incorrect. Guardrails filter content for safety; they do not track spending." }
+    - { id: d, text: "AWS Transform", explanation: "Incorrect. AWS Transform modernises applications and has nothing to do with spending alerts." }
+  answer: [a]
+  explanation: "AWS Budgets is proactive: set a cost or usage budget for an account, service or tag and get alerts on actual or forecasted spend; budget actions can respond automatically. Cost Explorer is the analytical tool for past spending and trends."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: easy
+
+- id: q-day-13-006
+  set: day-13
+  type: single
+  stem: "A company's AI spending rose sharply last quarter. Several teams run different GenAI applications, each tagged with an app cost allocation tag. Which AWS service lets the company analyse past costs by application to find the cause?"
+  options:
+    - { id: a, text: "Amazon Bedrock Knowledge Bases", explanation: "Incorrect. Knowledge Bases provide managed RAG, not cost analysis." }
+    - { id: b, text: "AWS Budgets budget actions", explanation: "Incorrect. Budget actions respond when a threshold is crossed; they do not break down historical costs by tag." }
+    - { id: c, text: "Amazon Bedrock AgentCore Observability", explanation: "Incorrect. AgentCore Observability traces agent steps; it is not a billing analysis tool." }
+    - { id: d, text: "AWS Cost Explorer grouped by the app tag", explanation: "Correct. Cost Explorer visualises historical cost and usage and can filter and group by service, Region or cost allocation tag." }
+  answer: [d]
+  explanation: "AWS Cost Explorer analyses where money went: filter by service such as Amazon Bedrock, group by cost allocation tags or linked accounts, view trends and forecast future spend. Bedrock application inference profiles let model usage carry such tags."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: easy
+
+- id: q-day-13-007
+  set: day-13
+  type: single
+  stem: "An application's Amazon Bedrock on-demand bill is about $5,000 per month, with traffic that varies through the day and never hits quotas. A team member suggests buying one model unit of provisioned throughput at an illustrative $40 per hour to save money. What is the BEST assessment?"
+  options:
+    - { id: a, text: "Provisioned throughput will be cheaper because reserved capacity always costs less than on-demand", explanation: "Incorrect. Reserved capacity is only cheaper when it is busy enough; it is billed every hour whether used or not." }
+    - { id: b, text: "On-demand remains cheaper; one model unit would cost about $29,000 per month even when idle", explanation: "Correct. $40 × about 730 hours ≈ $29,200 per month, almost six times the current on-demand bill." }
+    - { id: c, text: "Provisioned throughput is required because the application uses a base model", explanation: "Incorrect. Base models can be used on-demand; provisioned throughput is typically required for many custom models, not base models." }
+    - { id: d, text: "The application should move to batch inference to remove all costs", explanation: "Incorrect. Batch reduces cost for offline jobs, but this interactive application cannot use asynchronous results, and batch is not free." }
+  answer: [b]
+  explanation: "Compare the monthly on-demand token bill with the monthly cost of reserved capacity. Provisioned throughput makes sense for steady, high traffic, guaranteed capacity or custom models; with modest, variable traffic it mostly buys idle time."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#examples
+  difficulty: hard
+
+- id: q-day-13-008
+  set: day-13
+  type: single
+  stem: "A legal firm wants a foundation model to write summaries in its house style. Adding five example summaries to the prompt already produces results the lawyers accept. A developer proposes fine-tuning the model instead. Which approach is MOST cost-effective?"
+  options:
+    - { id: a, text: "Pre-train a new model on the firm's documents", explanation: "Incorrect. Pre-training from scratch is by far the most expensive option and is unnecessary here." }
+    - { id: b, text: "Fine-tune the model and serve it with provisioned throughput", explanation: "Incorrect. Fine-tuning adds training, storage and dedicated hosting costs for a result that prompting already achieves." }
+    - { id: c, text: "Keep using prompt engineering with the few-shot examples", explanation: "Correct. In-context learning only adds some input tokens and already meets the requirement, so it is the cheapest adequate option." }
+    - { id: d, text: "Run continued pre-training on all of the firm's archives", explanation: "Incorrect. Continued pre-training needs far more data and compute than this simple style requirement justifies." }
+  answer: [c]
+  explanation: "Customisation is a cost ladder: prompt engineering and in-context learning < RAG < fine-tuning < continued pre-training < pre-training from scratch. Climb only when the step below does not meet the requirement."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-day-13-009
+  set: day-13
+  type: single
+  stem: "A retailer's product and promotion details change every week. It wants a GenAI assistant to answer questions using the current details while keeping customisation costs low. Which approach is MOST cost-effective?"
+  options:
+    - { id: a, text: "Retrieval-augmented generation over a knowledge base that is updated when details change", explanation: "Correct. Updating documents in a knowledge base is far cheaper than retraining a model every week, and answers stay current." }
+    - { id: b, text: "Fine-tune the model every week on the new details", explanation: "Incorrect. Weekly fine-tuning means repeated training jobs, storage fees and dedicated hosting for each new custom model." }
+    - { id: c, text: "Pre-train a retail-specific model from scratch", explanation: "Incorrect. Pre-training is the most expensive option and still would not keep up with weekly changes." }
+    - { id: d, text: "Raise the temperature so the model infers the new promotions", explanation: "Incorrect. Temperature controls randomness; the model cannot infer information it has never seen." }
+  answer: [a]
+  explanation: "For frequently changing knowledge, RAG is the cost-effective choice: the model stays the same and only the documents change. Fine-tuning is better suited to stable behaviour or style changes, and it carries training, storage and hosting costs."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-day-13-010
+  set: day-13
+  type: single
+  stem: "A product owner asks which cost components to expect when creating and using a fine-tuned model in Amazon Bedrock. Which answer is MOST complete?"
+  options:
+    - { id: a, text: "Only the normal per-token price of the base model", explanation: "Incorrect. Customisation adds training, storage and often dedicated inference capacity on top of normal usage." }
+    - { id: b, text: "Training billed by tokens processed (dataset size × epochs), a monthly storage fee for the model, and inference capacity that is often provisioned throughput", explanation: "Correct. These are the three extra cost components of a custom model." }
+    - { id: c, text: "A one-time training fee with free unlimited inference afterwards", explanation: "Incorrect. Inference on a custom model is never free; it is often billed hourly through provisioned throughput." }
+    - { id: d, text: "A per-user licence fee charged by Amazon Quick", explanation: "Incorrect. Amazon Quick pricing is unrelated to custom model costs in Bedrock." }
+  answer: [b]
+  explanation: "Custom models cost more than training alone: training scales with dataset size and epochs, each custom model has a monthly storage fee, and serving it often requires provisioned throughput billed per hour whether or not requests arrive."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-day-13-011
+  set: day-13
+  type: single
+  stem: "A logistics company classifies 20 million emails per month with a large model. Accuracy is excellent but the per-token cost and latency are too high. The task is narrow and stable. Which approach BEST lowers inference cost while keeping accuracy close to the large model for this task?"
+  options:
+    - { id: a, text: "Buy provisioned throughput for the large model", explanation: "Incorrect. Reserved capacity may help throughput, but the large model's cost and latency per request remain high." }
+    - { id: b, text: "Continued pre-training of the large model on all company emails", explanation: "Incorrect. Continued pre-training adds substantial cost and keeps the same large, slow model." }
+    - { id: c, text: "Use model distillation to train a smaller student model from the large teacher model", explanation: "Correct. Distillation transfers the teacher's behaviour on this task to a smaller, faster and cheaper student model, paid for once and saving on every request." }
+    - { id: d, text: "Increase the maximum output tokens so answers are more complete", explanation: "Incorrect. More output tokens increase cost; classification needs very short outputs." }
+  answer: [c]
+  explanation: "Distillation is the customisation option that saves money at inference time: a large teacher generates answers used to train a smaller student, which serves requests faster and at a fraction of the per-token price for that specific use case."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-13#explanation
+  difficulty: hard
+
+- id: q-day-13-012
+  set: day-13
+  type: single
+  stem: "A European bank's chatbot is throttled during peak hours in its single AWS Region. Customer conversations must be processed within the EU. Which approach BEST increases throughput while meeting the residency requirement?"
+  options:
+    - { id: a, text: "Use a global cross-Region inference profile so requests can go to any Region worldwide", explanation: "Incorrect. Global profiles may process requests in any supported Region, which could break the EU-only requirement." }
+    - { id: b, text: "Move the workload to a Region outside the EU with more capacity", explanation: "Incorrect. Processing outside the EU violates the residency requirement." }
+    - { id: c, text: "Switch the chatbot to batch inference", explanation: "Incorrect. Batch is asynchronous and cannot serve live conversations." }
+    - { id: d, text: "Call the model through an EU geographic cross-Region inference profile", explanation: "Correct. A geographic profile routes requests across several EU Regions for higher throughput while keeping processing within the EU." }
+  answer: [d]
+  explanation: "Cross-Region inference uses inference profiles to spread requests across Regions, smoothing bursts and increasing effective throughput. Geographic profiles (such as US or EU) keep processing within that geography; global profiles do not."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-day-13-013
+  set: day-13
+  type: single
+  stem: "Which statement about token-based pricing for text models in Amazon Bedrock is correct?"
+  options:
+    - { id: a, text: "Output tokens are usually priced higher than input tokens, and prices vary widely between models", explanation: "Correct. Generating each output token takes a full pass through the model, and the price per token can differ greatly between small and large models." }
+    - { id: b, text: "Only output tokens are billed; input tokens are free", explanation: "Incorrect. Both input tokens (system prompt, history, retrieved passages, question) and output tokens are billed." }
+    - { id: c, text: "All models in Bedrock share the same price per token", explanation: "Incorrect. Prices can differ by 10 to 100 times between the smallest and largest models." }
+    - { id: d, text: "Retrieved RAG passages are not counted as input tokens", explanation: "Incorrect. Everything sent to the model, including retrieved passages, counts as input tokens." }
+  answer: [a]
+  explanation: "Cost per request ≈ input tokens × input price + output tokens × output price. The three levers are sending fewer tokens, generating fewer tokens and using a cheaper model that still meets requirements."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: easy
+
+- id: q-day-13-014
+  set: day-13
+  type: single
+  stem: "In which workload would prompt caching provide the LEAST benefit?"
+  options:
+    - { id: a, text: "A chat assistant that sends the same long system prompt with every message", explanation: "Incorrect. A long, fixed prefix reused constantly is the ideal case for prompt caching." }
+    - { id: b, text: "A tool that sends a few unique, short prompts per hour with no shared beginning", explanation: "Correct. With no repeated prefix and long gaps between requests, there is nothing to reuse and the cache would expire between calls." }
+    - { id: c, text: "A user asking ten questions about the same 80-page contract in a short session", explanation: "Incorrect. The long contract is a repeated prefix, so caching saves cost and latency on each follow-up." }
+    - { id: d, text: "An agent that sends the same tool definitions on every reasoning step", explanation: "Incorrect. Repeated tool definitions are a good caching candidate." }
+  answer: [b]
+  explanation: "Prompt caching pays off when the identical prefix is reused frequently, because the cache expires after a few minutes without hits and some models charge slightly more to write to it. Unique, infrequent prompts gain nothing."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-13#explanation
+  difficulty: hard
+
+- id: q-day-13-015
+  set: day-13
+  type: multi
+  stem: "A company runs a high-volume customer chatbot on a large model in Amazon Bedrock. Most questions are simple, and every request repeats a long system prompt. Which actions will reduce cost with little impact on answer quality? (Select TWO.)"
+  options:
+    - { id: a, text: "Enable prompt caching for the repeated system prompt", explanation: "Correct. Cached prefix tokens are billed at a large discount and responses start faster." }
+    - { id: b, text: "Route simple questions to a smaller model, for example with intelligent prompt routing", explanation: "Correct. Smaller models are much cheaper per token and are good enough for simple questions; hard ones can still go to the large model." }
+    - { id: c, text: "Buy provisioned throughput sized for the daily peak and keep it running all month", explanation: "Incorrect. With spiky traffic, capacity sized for the peak sits idle much of the time and is billed every hour." }
+    - { id: d, text: "Increase the maximum output tokens so answers are longer", explanation: "Incorrect. Output tokens are the most expensive tokens; longer answers raise cost." }
+    - { id: e, text: "Send the full conversation history with every turn instead of a summary", explanation: "Incorrect. Resending full history increases input tokens; summarising older turns reduces them." }
+  answer: [a, b]
+  explanation: "Cost levers: right-size the model (route only hard requests to large models), cache repeated prompt prefixes, keep prompts and answers short, move offline work to batch and cache common answers in the application."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-day-13-016
+  set: day-13
+  type: multi
+  stem: "A healthcare company is choosing the AWS Region for a new Amazon Bedrock application. Which factors should drive the decision? (Select TWO.)"
+  options:
+    - { id: a, text: "Whether the required model and features are available in the Region", explanation: "Correct. Not every model or feature (batch, provisioned throughput, customisation) is available in every Region." }
+    - { id: b, text: "Data-residency and compliance requirements for patient data", explanation: "Correct. Regulations may require data to be processed and stored in a specific country or geography." }
+    - { id: c, text: "The programming language the application is written in", explanation: "Incorrect. Programming language does not depend on the Region." }
+    - { id: d, text: "The alphabetical order of Region names", explanation: "Incorrect. Region names have no bearing on cost, availability or compliance." }
+    - { id: e, text: "The colour scheme of the application's user interface", explanation: "Incorrect. UI design has nothing to do with Region selection." }
+  answer: [a, b]
+  explanation: "Region choice balances model availability, data residency and compliance, latency to users, price differences and resilience. Cross-Region inference and multi-Region designs add throughput and redundancy."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-day-13-017
+  set: day-13
+  type: multi
+  stem: "Which statements about Amazon Bedrock inference pricing options are correct? (Select THREE.)"
+  options:
+    - { id: a, text: "On-demand charges per input and output token with no commitment", explanation: "Correct. On-demand is pay as you go, subject to account quotas." }
+    - { id: b, text: "Batch inference reads prompts from Amazon S3, writes results to S3 and is discounted for supported models", explanation: "Correct. Batch is asynchronous and cheaper than on-demand for large offline jobs." }
+    - { id: c, text: "Provisioned throughput is billed per model unit per hour whether or not requests arrive", explanation: "Correct. Reserved capacity is billed for as long as it exists." }
+    - { id: d, text: "Batch inference returns each result within milliseconds", explanation: "Incorrect. Batch jobs typically complete within hours, not milliseconds." }
+    - { id: e, text: "Provisioned throughput can only be bought with a three-year commitment", explanation: "Incorrect. It is available with no commitment or with 1-month or 6-month commitments." }
+    - { id: f, text: "On-demand guarantees unlimited throughput with no quotas", explanation: "Incorrect. On-demand capacity is shared and limited by account quotas; very large bursts may be throttled." }
+  answer: [a, b, c]
+  explanation: "On-demand: per token, no commitment, quotas apply. Batch: asynchronous via S3, discounted. Provisioned throughput: model units billed hourly (no commitment, 1 month or 6 months), for guaranteed capacity and many custom models."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: hard
+
+- id: q-day-13-018
+  set: day-13
+  type: multi
+  stem: "Which statements correctly describe AWS Budgets and AWS Cost Explorer? (Select TWO.)"
+  options:
+    - { id: a, text: "AWS Budgets sends alerts when actual or forecasted spend crosses a threshold", explanation: "Correct. Budgets is proactive and can notify by email or Amazon SNS, and run budget actions." }
+    - { id: b, text: "AWS Cost Explorer analyses historical cost and usage, grouped by service or tag, and forecasts future spend", explanation: "Correct. Cost Explorer is the analytical tool for where money went and the trend." }
+    - { id: c, text: "AWS Budgets lowers the per-token price of Bedrock models", explanation: "Incorrect. Budgets monitors and alerts; it does not change prices." }
+    - { id: d, text: "AWS Cost Explorer automatically blocks Bedrock API calls when spending is high", explanation: "Incorrect. Cost Explorer is for analysis; automated responses are configured as budget actions in AWS Budgets." }
+    - { id: e, text: "AWS Cost Explorer is used to define prompt caching checkpoints", explanation: "Incorrect. Cache checkpoints are set in the prompt sent to Bedrock, not in a billing tool." }
+  answer: [a, b]
+  explanation: "Use AWS Budgets to warn before money is gone (alerts on actual or forecasted spend, optional budget actions) and AWS Cost Explorer to analyse past spending by service, Region or tag and forecast trends. Tagging usage by application makes both far more useful."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#explanation
+  difficulty: easy
+
+- id: q-day-13-019
+  set: day-13
+  type: ordering
+  stem: "Order these ways of adapting a foundation model from the LOWEST to the HIGHEST typical cost."
+  options:
+    - { id: a, text: "Fine-tuning", explanation: "Third: adds training cost, monthly storage and often dedicated hosting." }
+    - { id: b, text: "Pre-training a model from scratch", explanation: "Last: by far the most expensive, requiring enormous data and compute." }
+    - { id: c, text: "Prompt engineering and in-context learning", explanation: "First: only extra input tokens, with no training or hosting changes." }
+    - { id: d, text: "Retrieval-augmented generation (RAG)", explanation: "Second: adds a vector store, retrieval and larger prompts, but no model training." }
+    - { id: e, text: "Continued pre-training", explanation: "Fourth: needs much more data and compute than fine-tuning." }
+  answer: [c, d, a, e, b]
+  explanation: "The customisation cost ladder runs prompt engineering → RAG → fine-tuning → continued pre-training → pre-training from scratch. Choose the lowest rung that meets the requirement; distillation is a special case that reduces inference cost."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-13#explanation
+  difficulty: medium
+
+- id: q-day-13-020
+  set: day-13
+  type: matching
+  stem: "Match each workload with the Amazon Bedrock cost option or technique that fits it BEST."
+  options:
+    - { id: a, text: "Generate descriptions for 1 million catalogue products by Friday", explanation: "Batch inference: large offline job, no one waiting, discounted price." }
+    - { id: b, text: "A prototype app with unpredictable, modest traffic", explanation: "On-demand: pay per token with no commitment or idle cost." }
+    - { id: c, text: "A fine-tuned model serving steady, very high production traffic", explanation: "Provisioned throughput: guaranteed capacity, and required for many custom models." }
+    - { id: d, text: "Many questions about the same long document in one session", explanation: "Prompt caching: the repeated document prefix is read from the cache at a discount." }
+  matchTargets:
+    - { id: t1, text: "Batch inference" }
+    - { id: t2, text: "On-demand" }
+    - { id: t3, text: "Provisioned throughput" }
+    - { id: t4, text: "Prompt caching" }
+  answer: { a: t1, b: t2, c: t3, d: t4 }
+  explanation: "Choose the option by asking whether someone is waiting, how steady and large the traffic is, whether a custom model is involved, and whether requests repeat a long prefix."
+  domain: D2
+  taskStatement: "2.3"
+  lessonRef: day-13#examples
+  difficulty: medium

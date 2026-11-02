@@ -1,0 +1,297 @@
+---
+day: 15
+kind: lesson
+title: 'Choosing & tuning foundation models'
+summary: 'Pick the right foundation model for a job using clear selection criteria — modality, quality, cost, latency, context length, languages, size, customisation support and prompt caching — then control its behaviour with inference parameters such as temperature, top-p, top-k, maximum tokens and stop sequences. Finish with the customisation spectrum from in-context learning through RAG, fine-tuning and distillation to pre-training, and the cost of each step.'
+domains: [D3]
+taskStatements: ['3.1']
+sources:
+  - { provider: udemy, title: 'Amazon Bedrock; Foundation Model Selection; Inference Parameters' }
+  - { provider: skillbuilder, title: 'Developing Generative AI Solutions' }
+  - { provider: skillbuilder, title: 'Optimizing Foundation Models' }
+  - { provider: aws-docs, title: 'Influence response generation with inference parameters', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/inference-parameters.html' }
+  - { provider: aws-docs, title: 'Prompt caching for faster model inference', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html' }
+objectives:
+  - List the criteria for selecting a foundation model and apply them to a business scenario
+  - Explain how prompt caching reduces cost and latency for repeated context
+  - Describe the effect of temperature, top-p, top-k, maximum tokens and stop sequences on model output
+  - Order the customisation options from in-context learning to pre-training by cost, effort and data needed
+  - Choose the cheapest customisation approach that meets a requirement
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'Choose an FM by modality, quality on your task, cost, latency, context window, languages, size, customisation support, licence and responsible-AI features — the biggest model is not automatically the best.'
+  - 'Prompt caching stores a repeated prompt prefix (long instructions or documents) so later requests reuse it — lower cost and latency.'
+  - 'Temperature, top-p and top-k control randomness: low = focused and repeatable, high = varied and creative. Max tokens caps length; stop sequences end output early.'
+  - 'Customisation spectrum, cheapest first: in-context learning (prompting) → RAG → fine-tuning → distillation → continued pre-training → pre-training from scratch.'
+  - 'Prompting and RAG change no model weights; fine-tuning, distillation and pre-training create a custom model that usually needs Provisioned Throughput or a dedicated deployment.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 14" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="Choosing a model, steering it and customising it" minutes={15}>
+
+### Week 3 begins: from "what is GenAI" to "how do I build with it"
+
+Week 2 explained what foundation models (FMs) are and where they fit in a business. Domain 3 — the heaviest domain on the exam at 28% — asks a builder's questions: *Which model should I use? How do I steer its answers? When do I need to customise it, and how much will that cost?* Today answers all three. The rest of the week goes deeper into prompts (Days 16–17), RAG (Day 18), training (Day 19) and evaluation (Day 20).
+
+A useful analogy: choosing an FM is like hiring for a job. You do not hire the most expensive senior consultant to answer the phone, and you do not ask a junior assistant to write the legal strategy. You match skills, speed, languages and salary to the role — then you give clear instructions, and only invest in formal training when instructions are not enough.
+
+### Selection criteria for a foundation model
+
+Amazon Bedrock offers models from Amazon (the **Amazon Nova** family and Amazon Titan embeddings) and from providers such as Anthropic, Meta, Mistral AI, Cohere, AI21 Labs, Stability AI and others, all through one API. That choice is powerful but means you must decide. The exam expects you to weigh these criteria:
+
+| Criterion | Question to ask | Example |
+|---|---|---|
+| **Modality** | What goes in and what must come out — text, image, audio, video, embeddings? | Product photos in, captions out needs a multimodal model; image creation needs an image-generation model such as Amazon Nova Canvas |
+| **Task quality** | How well does it perform on *my* task and data, not just a public benchmark? | Run a model evaluation with your own prompts |
+| **Cost** | What is the price per input and output token (or per image), and how many requests per day? | A high-volume FAQ bot favours a small, cheap model |
+| **Latency** | How fast must the answer appear? | A live voice assistant needs low latency; an overnight report does not |
+| **Context window** | How much text can one request hold (prompt plus documents plus history)? | Summarising a 300-page contract needs a large context window |
+| **Languages** | Does it support the languages your users speak? | A support bot for Japanese and Portuguese customers |
+| **Model size / complexity** | Small, fast and cheap — or large and capable of complex reasoning? | Classification of short tickets versus multi-step legal analysis |
+| **Customisation support** | Can it be fine-tuned, distilled or used with Knowledge Bases and Agents? | You plan to fine-tune on your brand voice later |
+| **Licence and compliance** | Are commercial use, data handling and Region availability acceptable? | Data must stay in an EU Region |
+| **Responsible AI** | How does it handle safety, bias and harmful requests? Is there a model card? | A children's education app |
+
+Two rules of thumb. First, **the largest model is not automatically the best** — it is slower and more expensive, and a smaller model often matches it on narrow tasks. Second, **test with your own data**. Amazon Bedrock *model evaluation* lets you compare models with automatic metrics, human reviewers or an LLM acting as a judge (Day 20).
+
+### Model size, speed and price go together
+
+Within one family, providers usually offer tiers. Amazon Nova, for example, includes a very small text-only model for fast, low-cost tasks, larger multimodal models that understand text, images and video, plus separate creative models for images (Nova Canvas), video (Nova Reel) and speech (Nova Sonic). Other providers follow the same pattern of small/fast and large/capable tiers. When a scenario says *"lowest cost"* or *"lowest latency"* for a *simple* task, the answer is usually the smaller tier; when it says *"complex reasoning"* or *"highest accuracy"*, a larger tier is justified.
+
+### Prompt caching: pay once for the part that repeats
+
+Many applications send the same long prefix with every request: a 4,000-word system prompt, a product manual, or a long document the user asks several questions about. Without caching, the model re-reads and you re-pay for that prefix every single time.
+
+**Prompt caching** in Amazon Bedrock lets you mark a *cache checkpoint* in the prompt. The first request processes the prefix and stores it; later requests that start with the identical prefix read it from the cache, which is billed at a much lower rate and returns the first token faster. The cache lives for a few minutes after its last use, so it suits bursts of related requests. Put the stable content (instructions, documents) *first* and the changing content (the user's question) *last*, because only an identical prefix can be reused. Prompt caching is supported on selected models, so it is one more selection criterion.
+
+Do not confuse it with caching *answers*. Prompt caching does not return a stored response — the model still generates a fresh answer to each new question.
+
+### How a model chooses its next word
+
+To understand inference parameters, remember Day 8: an LLM generates text one **token** at a time. For each step it calculates a probability for every token in its vocabulary. After *"The capital of France is"*, the token *Paris* might have 92% probability, *a* 3%, *located* 2%, and thousands of others share the rest. Inference parameters decide how the model picks from that list.
+
+### The inference parameters you must know
+
+- **Temperature** (typically 0 to 1) reshapes the probabilities. **Low temperature** sharpens the distribution so the most likely token almost always wins: answers are focused, consistent and repeatable — ideal for facts, extraction, classification and code. **High temperature** flattens the distribution so less likely tokens get picked more often: answers are more varied and creative — ideal for brainstorming, slogans and stories, but with more risk of drifting or inventing facts.
+- **Top-p** (nucleus sampling, 0 to 1) keeps only the smallest set of tokens whose probabilities add up to *p*. With top-p 0.9 the model ignores the unlikely tail that makes up the last 10%. Lower top-p means a narrower, safer choice.
+- **Top-k** keeps only the *k* most likely tokens. Top-k 1 always picks the single most likely token; top-k 250 allows much more variety. Not every model exposes top-k.
+- **Maximum tokens** (response length) caps how many tokens the model may generate. It controls cost and length — but if it is too low the answer is cut off mid-sentence. It does not make the model *summarise*; it simply stops.
+- **Stop sequences** are strings that tell the model to stop as soon as it produces them, for example `</answer>` or a blank line. Useful for keeping output in a fixed format or stopping after one item.
+
+Some models also offer **length** or **repetition penalties** to discourage repeating the same words. Providers generally recommend adjusting temperature *or* top-p, not both at once, so that you can see the effect of each change.
+
+### Parameters at work: one prompt, three settings
+
+Imagine the prompt *"Describe our new hiking boot in one sentence."*
+
+- At **temperature 0** the model gives essentially the same sentence every time: *"A lightweight, waterproof hiking boot built for all-day comfort."* Safe, predictable, a little bland.
+- At **temperature 0.7** it varies the wording between runs while staying on topic — a sensible default for conversational assistants.
+- At **temperature 1.0 with top-p 1.0** you may get *"Conquer muddy ridgelines in boots that laugh at puddles."* — lively, but occasionally it might claim features the boot does not have.
+
+Now set **maximum tokens to 8**: the sentence stops after a few words, mid-thought. Add the stop sequence **"."**: generation ends at the first full stop, guaranteeing a single sentence. This is how developers make output both the right *style* and the right *shape*.
+
+### Parameters for other modalities
+
+Image-generation models have their own controls. A **seed** fixes the random starting point so the same prompt and seed reproduce the same image. A **prompt strength** setting (often called CFG scale) decides how strictly the image follows the text. You can also set the number of images, their size and a **negative prompt** listing what to avoid (Day 16). Embedding models have almost no generation parameters at all — they always return the same vector for the same input, which is exactly what search needs.
+
+### Selection is also about embeddings
+
+RAG systems use *two* models: an **embedding model** that turns documents and questions into vectors, and a **text-generation model** that writes the answer. Choose the embedding model by language support, the vector size your store accepts, and quality on your documents. Amazon Titan Text Embeddings and Cohere Embed are common choices in Bedrock. Changing the embedding model later means re-embedding every document, so pick carefully up front.
+
+### Common selection mistakes
+
+- **Choosing on leaderboards alone.** Public benchmarks measure general skills; your task may be narrow and domain-specific.
+- **Ignoring output cost.** Output tokens are usually priced higher than input tokens, so a model that writes long answers costs more than you expect.
+- **Forgetting the context window.** Long chat histories plus retrieved documents can exceed it, causing errors or forgotten instructions.
+- **Locking in.** Bedrock's single API makes switching models cheap, so design prompts and evaluations so you can try new models as they launch.
+
+### A quick mental model
+
+Think of temperature and top-p as a *creativity dial*, maximum tokens as a *page limit* and stop sequences as a *"stop here" sign*. None of them adds knowledge. If answers are factually wrong because the model lacks your company's information, changing temperature will not fix it — you need better context (prompting or RAG) or customisation.
+
+### The customisation spectrum
+
+When a general model is not good enough out of the box, you have a ladder of options. Climb only as high as you need: each step costs more money, time, data and skill.
+
+1. **In-context learning (prompt engineering)** — put instructions and a few examples in the prompt. No training, no change to the model, results in minutes. Limited by the context window and paid for on every request.
+2. **Retrieval-augmented generation (RAG)** — retrieve relevant passages from your documents at question time and add them to the prompt. The model's weights do not change; knowledge stays up to date because you update documents, not the model. Amazon Bedrock Knowledge Bases manages this for you (Day 18).
+3. **Fine-tuning** — continue training a pre-trained model on a smaller *labelled* dataset (prompt–response pairs) so it learns a style, format or specialised task. Changes the model weights and produces a custom model (Day 19).
+4. **Distillation** — a large *teacher* model generates responses that are used to train a smaller *student* model. The student becomes nearly as good as the teacher on your specific task while being faster and cheaper to run. Amazon Bedrock Model Distillation automates this.
+5. **Continued pre-training** — keep training on large amounts of *unlabelled* domain text (for example medical journals) so the model absorbs domain vocabulary and knowledge.
+6. **Pre-training from scratch** — build your own foundation model on massive data with huge compute. Months of work and very high cost; almost never the right exam answer for a business scenario.
+
+### Cost trade-offs at a glance
+
+| Approach | Changes weights? | Data needed | Up-front cost | Per-request cost | Keeps knowledge current? |
+|---|---|---|---|---|---|
+| In-context learning | No | A few examples | Very low | Grows with prompt length | Only what you paste in |
+| RAG | No | Your documents | Low–medium (vector store, ingestion) | Retrieval plus longer prompts | Yes — update the documents |
+| Fine-tuning | Yes | Hundreds to thousands of labelled pairs | Medium–high (training jobs) | Custom model hosting | No — retrain to update |
+| Distillation | Yes (student) | Prompts; teacher creates responses | Medium | Low (small student model) | No |
+| Continued pre-training | Yes | Large unlabelled domain corpus | High | Custom model hosting | No |
+| Pre-training | Yes (new model) | Massive corpus | Very high | Your own hosting | No |
+
+A detail the exam likes: in Amazon Bedrock, a fine-tuned, distilled or continued-pre-trained model generally needs **Provisioned Throughput** (or on-demand inference for custom models where supported) before you can use it. That is an ongoing cost to include in the comparison — not just the training job.
+
+### Choosing on the ladder
+
+Ask in order: *Can a better prompt do it?* → *Is the problem missing or changing knowledge?* (RAG) → *Is the problem style, format or a specialised skill that prompts cannot teach consistently?* (fine-tuning) → *Is a big model good enough but too slow or expensive?* (distillation) → *Does the model not understand the domain's language at all?* (continued pre-training). Pre-training from scratch is for organisations building foundation models, not for a typical business application.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="Customisation spectrum: each step up costs more time, data and money — start at the bottom and climb only when needed"
+  code={`flowchart LR
+  ICL["1 In-context learning: prompts and examples"] --> RAG["2 RAG: retrieve your documents at query time"]
+  RAG --> FT["3 Fine-tuning: labelled pairs change weights"]
+  FT --> DS["4 Distillation: teacher trains smaller student"]
+  DS --> CPT["5 Continued pre-training: unlabelled domain text"]
+  CPT --> PT["6 Pre-training from scratch: build a new FM"]
+  NOTE["No weight change: steps 1 and 2"] -.-> ICL
+  NOTE -.-> RAG`}
+/>
+
+<Diagram
+  caption="How temperature, top-k and top-p narrow the candidate tokens before the model samples the next word"
+  code={`flowchart LR
+  P["Prompt: The capital of France is"] --> D["Probabilities for every token"]
+  D --> T["Temperature: sharpen when low, flatten when high"]
+  T --> K["Top-k: keep the k most likely tokens"]
+  K --> TP["Top-p: keep tokens until cumulative probability reaches p"]
+  TP --> S["Sample next token"]
+  S --> C{"Stop sequence or max tokens reached?"}
+  C -->|No| D
+  C -->|Yes| O["Return response"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={4}>
+
+| Scenario | Best choice | Why |
+|---|---|---|
+| Extract invoice numbers and totals into JSON | Temperature 0 (or very low), stop sequence after the JSON | Accuracy and repeatability matter, not creativity |
+| Brainstorm 20 names for a new snack brand | Higher temperature or top-p | Variety is the goal |
+| Answers keep stopping mid-sentence | Increase maximum tokens | The output hit the length cap |
+| A chatbot must answer from a 200-page policy manual for every user | Prompt caching for the manual, or RAG if the manual changes or is too big | Avoid paying for the same long prefix every time |
+| Model ignores the company's newest product range launched last week | RAG with Bedrock Knowledge Bases | The knowledge is missing and changes often; weights need not change |
+| Replies must always follow the brand's tone and a fixed structure, and prompts are not consistent enough | Fine-tuning on example replies | Teaches style and format permanently |
+| A large model gives great answers but costs too much at 5 million requests a day | Distillation into a smaller model | Keeps task quality, cuts cost and latency |
+| Model misunderstands specialist legal vocabulary | Continued pre-training on legal texts | Builds domain language understanding from unlabelled data |
+
+**Worked example — choosing a model.** *A travel company wants a chatbot that answers in English, Spanish and German, replies within a second, handles 2 million chats a month, and only needs to answer common booking questions.* Modality: text in, text out. Languages: three — check support. Latency and volume point to a **small, fast, low-cost model**. Complex reasoning is not required, so a top-tier model would waste money. The team shortlists two small models, runs a Bedrock model evaluation on 300 real past chats, and picks the one with the best accuracy per dollar.
+
+**Worked example — tuning parameters.** *The same company uses a model to write marketing emails, and legal complains that the emails sometimes invent discounts.* Lowering temperature makes the output more conservative, but the real fix is to *give the model the actual offers* in the prompt (or via RAG) and instruct it to use only those. Parameters shape style and randomness; context supplies facts.
+
+**Worked example — the cost ladder.** *A bank wants its assistant to answer questions about 40 internal policy documents that are revised monthly.* Fine-tuning would bake in last month's policies and require retraining every month. RAG keeps answers current by retrieving from the latest documents and can cite them. RAG is the cheaper and more maintainable choice.
+
+**Spot the clue — quick drill.**
+
+- "Most deterministic, same answer every time" → temperature at or near 0.
+- "More creative and diverse output" → raise temperature or top-p.
+- "Limit response length and cost" → maximum tokens.
+- "Stop generating when the model writes END" → stop sequence.
+- "Same long system prompt on every call; reduce cost" → prompt caching.
+- "Smaller, cheaper model that mimics a larger one" → distillation.
+- "Teach domain vocabulary from unlabelled documents" → continued pre-training.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={2}>
+
+<Callout type="realWorld" title="An insurer right-sizes its claims assistant">
+An insurer launched a claims assistant on the largest model it could find. Quality was excellent, but each claim summary took several seconds and the monthly bill grew with every new customer. The team ran a **Bedrock model evaluation** with 500 real claims and found that a mid-sized model matched the large one on summaries but not on complex fraud reasoning. They now send routine summaries to the smaller model at **low temperature**, keep the large model for the few complex cases, use **prompt caching** for the 3,000-word claims-handling guide that prefixes every request, and use **RAG** over policy documents instead of fine-tuning. Later, they **distilled** the large model's fraud explanations into a smaller student model to cut cost further.
+</Callout>
+
+The lesson generalises: model choice is not a one-time decision. Teams start with prompting on a capable model, measure quality and cost, then move individual workloads down to cheaper models or up the customisation ladder when evidence says it is worth it. Evaluations with your own data, not leaderboard rankings, drive each move.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: compare models and parameters in the Bedrock playground" minutes={8}>
+
+<HandsOnLab
+  goal="See how model choice and inference parameters change the answer, speed and token cost in the Amazon Bedrock chat playground."
+  asOf="November 2026"
+  steps={[
+    { text: 'Open the Amazon Bedrock console, choose Chat / Text under Playgrounds and select a small Amazon Nova model. Ask for three slogans for a reusable water bottle.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text'], menu: ['Model catalog', 'Playgrounds', 'Prompt management', 'Knowledge Bases', 'Guardrails'], active: 'Playgrounds', fields: [{ label: 'Model', value: 'Amazon Nova (small text model)' }, { label: 'Prompt', value: 'Write three slogans for a reusable water bottle.' }] } },
+    { text: 'In the configuration panel set temperature to 0 and run the prompt twice. The slogans are almost identical each time. Then set temperature to 0.9 and run it again: the slogans change on every run.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text', 'Configurations'], fields: [{ label: 'Temperature', value: '0 → 0.9' }, { label: 'Top P', value: '0.9' }, { label: 'Maximum length', value: '512' }], highlight: 'Run', note: 'Low temperature = repeatable; high = varied' } },
+    { text: 'Set maximum length to 20 tokens and add the stop sequence "3." to see output cut short. Restore 512 tokens and remove the stop sequence.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text', 'Configurations'], fields: [{ label: 'Maximum length', value: '20' }, { label: 'Stop sequences', value: '3.' }], note: 'Output stops at the cap or the stop sequence' } },
+    { text: 'Turn on Compare mode and pick a larger model next to the small one. Send the same prompt and read the metrics under each answer: latency and input/output token counts.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text', 'Compare mode'], fields: [{ label: 'Model A latency', value: 'faster, fewer cost units' }, { label: 'Model B latency', value: 'slower, higher price per token' }], highlight: 'Model metrics' } },
+  ]}
+  expectedOutcome="You can explain that temperature and top-p control randomness, maximum length and stop sequences control where output ends, and that the right model balances quality against latency and cost for the task."
+  checks={[
+    { q: 'You need the same classification label every time for the same input. Which parameter do you lower?', a: 'Temperature (towards 0); you could also lower top-p or top-k.' },
+    { q: 'Answers are being cut off mid-sentence. What do you change?', a: 'Increase the maximum tokens (maximum length) setting.' },
+    { q: 'A small model gives answers as good as a large one for your task. Why choose the small one?', a: 'Lower cost per token and lower latency for the same quality.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={1}>
+
+<Callout type="examTrap" title="Parameters do not add knowledge">
+If a scenario says the model gives wrong or outdated facts about the company, the answer is better context (RAG or prompt content) — not a temperature change. Temperature changes randomness, not knowledge.
+</Callout>
+
+- "Deterministic", "consistent", "factual" → **low temperature** (or low top-p / top-k).
+- "Creative", "diverse" → **higher temperature** or top-p.
+- "Responses truncated" → raise **maximum tokens**; "stop at a marker" → **stop sequence**.
+- "Repeated long prompt prefix, reduce cost and latency" → **prompt caching**.
+- "Least effort / lowest cost to improve answers" → **prompt engineering** first.
+- "Up-to-date or proprietary knowledge" → **RAG / Knowledge Bases**; "style, tone, format" → **fine-tuning**.
+- "Smaller, cheaper, faster model with similar accuracy" → **distillation**.
+- Custom models in Bedrock usually need **Provisioned Throughput** — an extra cost.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+Choose a foundation model by matching modality, task quality, cost, latency, context window, languages, size, customisation support, licence and responsible-AI behaviour to the job — and test with your own data. Prompt caching cuts the cost and latency of a repeated prompt prefix. Temperature, top-p and top-k control randomness; maximum tokens and stop sequences control where output ends; none of them adds knowledge. When prompting is not enough, climb the customisation ladder — RAG, fine-tuning, distillation, continued pre-training, pre-training — only as far as the requirement demands. Tomorrow you will master the cheapest rung: prompt engineering.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={15} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Architecting model choice: evaluation, routing and caching" minutes={15} optional>
+
+In production, many teams do not pick *one* model. They build a thin layer that chooses a model per request. Amazon Bedrock provides several building blocks for this.
+
+- **Model evaluation jobs** compare candidate models on a prompt dataset stored in Amazon S3, using automatic metrics, human review or an LLM-as-a-judge, and write reports back to S3. Run them before launch and whenever a new model version appears.
+- **Intelligent prompt routing** uses a router that sends each prompt to one of several models in the same family, predicting which one will give a good enough answer at the lowest cost — simple questions go to the small model, harder ones to the larger one.
+- **Prompt caching** reduces cost for the shared prefix, while **batch inference** processes large offline jobs at a lower price than on-demand calls.
+- **Cross-Region inference** spreads on-demand requests across Regions to absorb traffic peaks, while **Provisioned Throughput** reserves capacity for predictable high volume or for custom models.
+- **Amazon CloudWatch** metrics and model invocation logging track latency, token usage and errors so that cost and quality can be reviewed every month.
+
+<Diagram
+  caption="Reference architecture: an application layer that evaluates, routes and caches requests across Amazon Bedrock models"
+  code={`flowchart LR
+  U["Users and apps"] --> API["Application backend"]
+  API --> PC["Prompt with cache checkpoint: stable prefix first"]
+  PC --> R{"Intelligent prompt routing"}
+  R -->|simple| SM["Small fast model"]
+  R -->|complex| LG["Large capable model"]
+  API --> B["Batch inference for offline jobs"]
+  B --> S3[("Amazon S3 results")]
+  SM --> CW["CloudWatch metrics and invocation logs"]
+  LG --> CW
+  EV["Model evaluation jobs on S3 prompt dataset"] -.->|choose candidates| R
+  CW -.->|monthly cost and quality review| EV`}
+/>
+
+**Trade-offs.** Routing saves money but adds a decision you must monitor — a router that sends too many hard prompts to a small model lowers quality. Caching only helps when the prefix is identical and requests arrive within the cache lifetime; dynamic content placed before the checkpoint breaks it. Provisioned Throughput gives guaranteed capacity but bills by the hour whether used or not, so it suits steady workloads. The architect's job is to keep a feedback loop — evaluate, route, observe, re-evaluate — so that model choice keeps pace with new models and changing traffic.
+
+</Section>

@@ -7,6 +7,8 @@ export default defineConfig({
   base: '/',
   trailingSlash: 'ignore',
   integrations: [mdx(), preact()],
+  // Shiki colours code with inline style attributes, which the strict CSP blocks; code blocks are styled in CSS instead.
+  markdown: { syntaxHighlight: false },
   preview: { host: true, port: 4321, allowedHosts: ['localhost', '.devtunnels.ms', '.app.github.dev'] },
   experimental: {
     // Astro hashes its own inline scripts/styles into a <meta> CSP (Constitution VII).

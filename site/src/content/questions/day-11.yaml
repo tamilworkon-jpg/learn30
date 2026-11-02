@@ -1,0 +1,329 @@
+- id: q-day-11-001
+  set: day-11
+  type: single
+  stem: "A retailer's new chatbot tells a customer that purchases can be returned within 90 days and quotes a policy section number. The company's real return window is 30 days and the quoted section does not exist. Which generative AI limitation does this show?"
+  options:
+    - { id: a, text: "Nondeterminism", explanation: "Incorrect. Nondeterminism means the same prompt can produce different outputs on different runs; the problem here is that the content is false." }
+    - { id: b, text: "Hallucination", explanation: "Correct. A hallucination is fluent, confident output that is factually wrong, such as an invented policy and section number." }
+    - { id: c, text: "Interpretability", explanation: "Incorrect. Interpretability is about being unable to see why a model produced an output, not about the output being invented." }
+    - { id: d, text: "Latency", explanation: "Incorrect. Latency is response time; a fast or slow answer can still be false." }
+  answer: [b]
+  explanation: "LLMs predict the most plausible next token, not the true one, so they can invent facts with full confidence. Hallucinations are most likely for private company information the model has never seen; grounding answers in the real policy with RAG is the usual mitigation."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: easy
+
+- id: q-day-11-002
+  set: day-11
+  type: single
+  stem: "A company uses one foundation model to summarise sales calls, translate FAQ pages into Spanish and classify support emails by topic. The team switches between these tasks by changing the prompt only. Which advantage of generative AI does this BEST illustrate?"
+  options:
+    - { id: a, text: "Adaptability", explanation: "Correct. One pre-trained model can perform many different tasks just by changing the prompt, without training a separate model per task." }
+    - { id: b, text: "Deterministic output", explanation: "Incorrect. Generative models are nondeterministic; determinism is not an advantage they offer." }
+    - { id: c, text: "Full interpretability", explanation: "Incorrect. Large foundation models are hard to interpret; this is a limitation, not an advantage." }
+    - { id: d, text: "No token costs", explanation: "Incorrect. Every input and output token is billed; switching tasks does not remove usage cost." }
+  answer: [a]
+  explanation: "Adaptability means a single foundation model handles summarisation, translation, classification, question answering and more through prompts. Traditional ML usually needs one model and one labelled dataset per task."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: easy
+
+- id: q-day-11-003
+  set: day-11
+  type: single
+  stem: "An insurance company generates claim acknowledgement letters with an LLM. Auditors complain that the same input produces noticeably different wording on each run. Which change will MOST directly make the output more consistent?"
+  options:
+    - { id: a, text: "Increase the temperature parameter", explanation: "Incorrect. Higher temperature makes sampling more random and creative, which increases variation." }
+    - { id: b, text: "Choose a model with a larger context window", explanation: "Incorrect. The context window limits how many tokens fit in a request; it does not control randomness in generation." }
+    - { id: c, text: "Switch to the largest model in the catalogue", explanation: "Incorrect. Larger models are still nondeterministic; size does not remove sampling variation." }
+    - { id: d, text: "Lower the temperature parameter and use a fixed prompt template", explanation: "Correct. Lower temperature makes output more focused and repeatable, and a template with a structured format reduces variation further." }
+  answer: [d]
+  explanation: "Nondeterminism comes from sampling the next token from a probability distribution. Lowering temperature (and using templates and structured output formats) reduces variation, although it does not guarantee identical output on every run."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-day-11-004
+  set: day-11
+  type: single
+  stem: "A payroll provider must calculate income tax deductions for 5,000 employees each month according to fixed published rules. A manager suggests using a generative AI model for the calculation. What is the BEST response?"
+  options:
+    - { id: a, text: "Use the largest available FM because it has the best reasoning ability", explanation: "Incorrect. Even the most capable FM can make arithmetic errors and is nondeterministic; model size does not make it exact." }
+    - { id: b, text: "Use an FM with a high temperature so it can handle unusual cases creatively", explanation: "Incorrect. Creativity is the opposite of what an exact rule-based calculation needs." }
+    - { id: c, text: "Use ordinary rule-based code, because the task needs an exact, deterministic and auditable result", explanation: "Correct. When one exact, repeatable answer is required and the rules are known, traditional code is accurate, auditable and cheaper." }
+    - { id: d, text: "Fine-tune an FM on last year's payslips so it learns the tax rules", explanation: "Incorrect. Fine-tuning does not turn a probabilistic generator into an exact calculator, and the rules are already known." }
+  answer: [c]
+  explanation: "Generative AI is the wrong tool when a deterministic outcome is required: exact calculations, fixed rules and fully auditable results. Use GenAI where variety and language matter and a checkable, approximately right answer is acceptable."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-day-11-005
+  set: day-11
+  type: single
+  stem: "A streaming company adds AI-generated personalised upgrade suggestions. Leadership wants to know whether the feature increases the average amount of revenue each subscriber brings in per month. Which metric should the team track?"
+  options:
+    - { id: a, text: "Average revenue per user (ARPU)", explanation: "Correct. ARPU is total revenue divided by the number of users, so it directly shows whether each subscriber is bringing in more revenue." }
+    - { id: b, text: "Customer satisfaction (CSAT)", explanation: "Incorrect. CSAT measures how users feel about an experience, not how much revenue they generate." }
+    - { id: c, text: "Model latency", explanation: "Incorrect. Latency is a model or system metric describing response time, not a revenue measure." }
+    - { id: d, text: "Deflection rate", explanation: "Incorrect. Deflection rate is the share of questions resolved without a human, a support-efficiency metric." }
+  answer: [a]
+  explanation: "Average revenue per user (ARPU) = total revenue ÷ number of users. Personalisation and upsell features aim to raise it. Customer lifetime value (CLV) is the related metric for revenue over the whole customer relationship."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: easy
+
+- id: q-day-11-006
+  set: day-11
+  type: single
+  stem: "A car manufacturer is building an in-car voice assistant that must start answering drivers in well under one second. Answers are short and the questions are simple. Which model selection factor should carry the MOST weight?"
+  options:
+    - { id: a, text: "The largest context window available", explanation: "Incorrect. Questions and answers are short, so a huge context window adds nothing here." }
+    - { id: b, text: "Latency, favouring a smaller, faster model that meets the quality bar", explanation: "Correct. Performance requirements such as time to first token are the key factor for real-time voice, and smaller models respond faster." }
+    - { id: c, text: "Image-generation capability", explanation: "Incorrect. The assistant answers spoken questions; generating images is not a requirement." }
+    - { id: d, text: "Support for continued pre-training", explanation: "Incorrect. Customisation options can matter, but they do not address the strict response-time requirement in this scenario." }
+  answer: [b]
+  explanation: "Model selection factors include modality, capability, latency and throughput, cost, context window, language support, customisation options, compliance and licensing. For a real-time voice assistant with simple questions, latency dominates, which usually points to a smaller model."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-day-11-007
+  set: day-11
+  type: single
+  stem: "An online store adds a GenAI shopping assistant that answers product questions on its website. The CFO asks for evidence that the assistant helps sell more products. Which metric is MOST appropriate?"
+  options:
+    - { id: a, text: "The ROUGE score of the assistant's answers", explanation: "Incorrect. ROUGE compares generated text with reference text; it is a model metric, not evidence of sales." }
+    - { id: b, text: "The number of tokens generated per day", explanation: "Incorrect. Token volume describes usage and cost, not whether visitors buy more." }
+    - { id: c, text: "The conversion rate of sessions that used the assistant compared with sessions that did not", explanation: "Correct. Conversion rate measures the share of visitors who buy; comparing assistant and non-assistant sessions shows the business impact." }
+    - { id: d, text: "The model's average response time", explanation: "Incorrect. Response time is a technical metric; a fast assistant may still not increase sales." }
+  answer: [c]
+  explanation: "Business value is shown with business metrics. For a shopping assistant the question 'does it sell more?' is answered by conversion rate (and possibly ARPU or average order value), ideally measured in an A/B comparison against a baseline."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#examples
+  difficulty: medium
+
+- id: q-day-11-008
+  set: day-11
+  type: single
+  stem: "A contact centre handles 400,000 chats a year at a human cost of $6 per chat. A GenAI assistant would resolve 50% of chats without a human at $0.50 per chat, and building and running it costs $250,000 a year. What is the first-year ROI of the assistant?"
+  options:
+    - { id: a, text: "77%", explanation: "Incorrect. This divides the net benefit ($850,000) by the gross savings ($1,100,000) instead of by the cost." }
+    - { id: b, text: "440%", explanation: "Incorrect. This divides the gross savings ($1,100,000) by the cost without first subtracting the cost." }
+    - { id: c, text: "380%", explanation: "Incorrect. This ignores the assistant's $0.50 cost per chat: 200,000 × $6 = $1,200,000, minus $250,000 = $950,000, divided by $250,000 = 380%." }
+    - { id: d, text: "340%", explanation: "Correct. Savings = 200,000 chats × ($6.00 − $0.50) = $1,100,000. Net benefit = $1,100,000 − $250,000 = $850,000. ROI = $850,000 ÷ $250,000 = 340%." }
+  answer: [d]
+  explanation: "ROI = (benefit − cost) ÷ cost. The assistant resolves 200,000 chats, saving $5.50 each ($1,100,000). Subtracting the $250,000 cost gives $850,000, and dividing by the cost gives 340%. ROI depends heavily on the deflection rate and the cost per interaction, so both should be monitored after launch."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#examples
+  difficulty: hard
+
+- id: q-day-11-009
+  set: day-11
+  type: single
+  stem: "A lender is required by regulation to tell every rejected applicant the specific reasons their loan was declined. A team proposes letting a large foundation model make the approve or decline decision. Which limitation of generative AI is the MAIN concern?"
+  options:
+    - { id: a, text: "Responsiveness", explanation: "Incorrect. Responsiveness is an advantage of GenAI, not a limitation." }
+    - { id: b, text: "Interpretability", explanation: "Correct. A large FM is effectively a black box; it cannot reliably state the true reasons for a decision, which the regulation requires." }
+    - { id: c, text: "Content generation", explanation: "Incorrect. Content generation is an advantage; the issue is explaining decisions." }
+    - { id: d, text: "Limited language support", explanation: "Incorrect. Nothing in the scenario involves multiple languages." }
+  answer: [b]
+  explanation: "Interpretability is the ability to understand why a model produced an output. Asking an FM to explain itself yields a plausible explanation, not necessarily the real reason. For regulated decisions that must be explained, prefer a transparent model or rules, with GenAI at most assisting a human."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-day-11-010
+  set: day-11
+  type: single
+  stem: "An HR assistant built on a foundation model gives employees wrong answers about the company's own leave and expense policies. Which approach will MOST effectively reduce these errors?"
+  options:
+    - { id: a, text: "Ground the answers in the actual policy documents using retrieval-augmented generation, such as Amazon Bedrock Knowledge Bases, and show citations", explanation: "Correct. RAG retrieves the relevant passages from trusted documents and supplies them to the model, so answers are based on the real policies and can be checked." }
+    - { id: b, text: "Increase the temperature so the model explores more possible answers", explanation: "Incorrect. Higher temperature adds randomness and would make wrong answers more likely, not less." }
+    - { id: c, text: "Switch to a larger model without changing anything else", explanation: "Incorrect. A larger model has still never seen the private policies and can still hallucinate them." }
+    - { id: d, text: "Remove the system prompt to give the model more freedom", explanation: "Incorrect. Removing instructions does not provide the missing policy knowledge and reduces control over the output." }
+  answer: [a]
+  explanation: "Hallucination and missing private knowledge are best mitigated by grounding: retrieving trusted documents with RAG (for example Amazon Bedrock Knowledge Bases), asking for citations and optionally using contextual grounding checks in Bedrock Guardrails."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-day-11-011
+  set: day-11
+  type: single
+  stem: "A product team asks a foundation model about a smartphone their company released last month. The model replies that it has no information about that phone. What is the MOST likely reason?"
+  options:
+    - { id: a, text: "The temperature was set too low", explanation: "Incorrect. Temperature controls randomness, not what knowledge the model has." }
+    - { id: b, text: "The model is overfitting to the prompt", explanation: "Incorrect. Overfitting is a training issue; it does not explain missing knowledge about recent events." }
+    - { id: c, text: "The output token limit was too small", explanation: "Incorrect. A small output limit truncates answers but does not remove knowledge." }
+    - { id: d, text: "The release happened after the model's knowledge cut-off", explanation: "Correct. A model knows nothing that happened after its training data was collected unless that information is supplied in the prompt." }
+  answer: [d]
+  explanation: "Every foundation model has a knowledge cut-off. Recent events and private data must be provided at inference time, for example by retrieving documents with RAG and placing them in the prompt."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: easy
+
+- id: q-day-11-012
+  set: day-11
+  type: single
+  stem: "A hotel group needs to label 3 million guest reviews per month as positive, negative or neutral. In testing, a large model scores 95% accuracy and a small model scores 94% at about one-twentieth of the price. A one-point difference has no business impact. Which model should the team choose?"
+  options:
+    - { id: a, text: "The large model, because the most capable model is always the safest choice", explanation: "Incorrect. The biggest model is not automatically best; here it costs about 20 times more for a difference that does not matter." }
+    - { id: b, text: "Both models in parallel for every review, keeping the more confident answer", explanation: "Incorrect. Running both would cost more than the large model alone for no business benefit." }
+    - { id: c, text: "The small model, because it meets the quality requirement at a much lower cost", explanation: "Correct. The best choice is the smallest, cheapest model that meets the quality, latency and compliance requirements." }
+    - { id: d, text: "Neither; sentiment labelling can only be done by humans", explanation: "Incorrect. Sentiment classification is a common, well-suited task for language models." }
+  answer: [c]
+  explanation: "Cost and size are key model selection factors. For a simple, high-volume classification task where both models meet the requirement, the smaller model gives nearly the same quality at a fraction of the price and with lower latency."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#examples
+  difficulty: medium
+
+- id: q-day-11-013
+  set: day-11
+  type: single
+  stem: "A bank launched an AI assistant for its advisers and wants a metric it can review every week to detect problems early, long before effects show up in long-term customer value. Which metric BEST serves this purpose?"
+  options:
+    - { id: a, text: "Customer lifetime value", explanation: "Incorrect. CLV is a lagging indicator that only becomes clear after customers stay or leave over a long period." }
+    - { id: b, text: "The share of assistant answers that advisers accept without major edits", explanation: "Correct. Answer acceptance rate is a leading indicator that moves quickly and signals quality problems early." }
+    - { id: c, text: "Annual return on investment", explanation: "Incorrect. ROI is usually calculated over a year or more, so it cannot steer the project week by week." }
+    - { id: d, text: "Year-over-year revenue growth", explanation: "Incorrect. Revenue growth is a slow, lagging measure influenced by many factors besides the assistant." }
+  answer: [b]
+  explanation: "Lagging indicators such as CLV, annual ROI and revenue growth move slowly. Leading indicators such as answer acceptance rate, escalation rate, thumbs-up ratings and repeat-contact rate move quickly and predict the lagging ones, so problems can be fixed early."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: hard
+
+- id: q-day-11-014
+  set: day-11
+  type: single
+  stem: "A team's business case for a document-research assistant compares the expected time savings only with the model's per-token prices. A finance reviewer says the cost side is incomplete. Which costs are MOST likely missing?"
+  options:
+    - { id: a, text: "Supporting services such as the vector store and monitoring, plus people to maintain the knowledge base, review outputs and run evaluations", explanation: "Correct. Total cost of ownership includes supporting services, people, evaluation and governance, and the risk cost of errors — not just tokens." }
+    - { id: b, text: "The cost of training the foundation model from scratch", explanation: "Incorrect. Using a pre-trained model through an API avoids pre-training costs; that is a key advantage of foundation models." }
+    - { id: c, text: "Licensing fees for every employee's operating system", explanation: "Incorrect. General IT costs unrelated to the assistant do not belong in its business case." }
+    - { id: d, text: "Nothing; token prices cover all costs of a managed service", explanation: "Incorrect. Token prices cover model usage only; storage, compute for the app, logging and people are separate costs." }
+  answer: [a]
+  explanation: "A realistic GenAI business case counts total cost of ownership: model usage, supporting services (vector store, storage, application compute, logging), people (engineers, subject-matter experts, reviewers), evaluation and governance, and the expected cost of errors. Benefits should separate hard savings from soft benefits."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: hard
+
+- id: q-day-11-015
+  set: day-11
+  type: multi
+  stem: "Which of the following are advantages of generative AI? (Select TWO.)"
+  options:
+    - { id: a, text: "Natural conversation, with users asking follow-up questions in their own words", explanation: "Correct. Users interact in natural language and the model keeps conversational context, so no query language or training is needed." }
+    - { id: b, text: "Guaranteed identical output for identical prompts", explanation: "Incorrect. Generative models are nondeterministic; identical output is not guaranteed." }
+    - { id: c, text: "Fast content generation at scale, such as thousands of product descriptions", explanation: "Correct. FMs can produce large volumes of text, images and code quickly." }
+    - { id: d, text: "Complete transparency into why each answer was produced", explanation: "Incorrect. Large FMs are black boxes; low interpretability is a limitation." }
+    - { id: e, text: "Answers that are always factually correct", explanation: "Incorrect. FMs can hallucinate and be inaccurate, so outputs must be grounded and checked." }
+  answer: [a, c]
+  explanation: "The advantages named in the exam guide are adaptability, responsiveness, natural conversation and content generation (plus simplicity and speed to market). Determinism, interpretability and guaranteed accuracy are exactly the areas where GenAI is weak."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: easy
+
+- id: q-day-11-016
+  set: day-11
+  type: multi
+  stem: "A utility company is launching a customer-facing assistant that answers questions about tariffs and billing rules. Which measures will help reduce the risk of the assistant giving false answers? (Select THREE.)"
+  options:
+    - { id: a, text: "Retrieve answers from the official tariff documents with RAG and require citations", explanation: "Correct. Grounding in trusted documents is the primary mitigation for hallucination and outdated knowledge." }
+    - { id: b, text: "Use contextual grounding checks in Amazon Bedrock Guardrails", explanation: "Correct. Grounding checks flag responses that are not supported by the retrieved source content." }
+    - { id: c, text: "Route high-stakes cases, such as disputed bills, to a human agent for review", explanation: "Correct. A human in the loop catches errors where the impact of a wrong answer is high." }
+    - { id: d, text: "Raise the temperature to make answers more varied", explanation: "Incorrect. More randomness increases the chance of inaccurate output." }
+    - { id: e, text: "Remove citations to keep answers shorter", explanation: "Incorrect. Citations let users and reviewers verify answers; removing them makes errors harder to catch." }
+    - { id: f, text: "Ask the model to explain its reasoning and treat that explanation as proof of accuracy", explanation: "Incorrect. A model's self-explanation is plausible text, not proof; it does not reveal the true reason or guarantee correctness." }
+  answer: [a, b, c]
+  explanation: "Limitations are managed by design: ground answers with RAG and citations, use Guardrails grounding checks, evaluate before launch and keep humans in the loop for high-stakes decisions. Higher temperature, fewer citations and trusting self-explanations all increase risk."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: hard
+
+- id: q-day-11-017
+  set: day-11
+  type: multi
+  stem: "An engineering firm wants an FM to summarise 400-page equipment manuals in a single request and produce the summaries in Japanese, German and Portuguese. Which model selection factors are MOST important for this use case? (Select TWO.)"
+  options:
+    - { id: a, text: "Context window size", explanation: "Correct. Processing a 400-page manual in one request requires a model with a very large context window (or a chunking strategy)." }
+    - { id: b, text: "Language support", explanation: "Correct. The summaries must be produced in Japanese, German and Portuguese, so strong support for those languages is essential." }
+    - { id: c, text: "Image-generation capability", explanation: "Incorrect. The task is text summarisation; generating images is not required." }
+    - { id: d, text: "Being the largest model in the catalogue", explanation: "Incorrect. Size alone is not a requirement; the best choice is the smallest model that meets the needs." }
+    - { id: e, text: "Speech-to-speech support", explanation: "Incorrect. No audio input or output is involved in this use case." }
+  answer: [a, b]
+  explanation: "Model selection starts from the requirements: modality, capability, latency, cost, context window, language support, customisation, compliance and licensing. Long documents in one request point to context window; multilingual output points to language support."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-day-11-018
+  set: day-11
+  type: multi
+  stem: "A steering committee wants to judge the business value of a GenAI customer-service assistant rather than its technical quality. Which metrics should it use? (Select TWO.)"
+  options:
+    - { id: a, text: "Return on investment (ROI)", explanation: "Correct. ROI compares the net benefit of the assistant with its cost, a core business metric." }
+    - { id: b, text: "ROUGE score against reference answers", explanation: "Incorrect. ROUGE is a model metric for text overlap, not a measure of business value." }
+    - { id: c, text: "Customer lifetime value (CLV)", explanation: "Correct. Better service and retention increase the total revenue a customer brings over the relationship." }
+    - { id: d, text: "Temperature setting of the model", explanation: "Incorrect. Temperature is an inference parameter, not a metric." }
+    - { id: e, text: "Time to first token", explanation: "Incorrect. Time to first token is a latency metric describing the model, not the business outcome." }
+  answer: [a, c]
+  explanation: "Business metrics include ROI, conversion rate, ARPU, CLV, efficiency, cost per interaction and CSAT. Model metrics such as ROUGE and latency show whether the model works, not whether the project pays off."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: easy
+
+- id: q-day-11-019
+  set: day-11
+  type: ordering
+  stem: "A company wants to prove the business value of a new GenAI assistant. Place the steps in the order recommended in the lesson, from first to last."
+  options:
+    - { id: a, text: "Scale to all users and keep tracking benefit and cost metrics", explanation: "This is the last step: scale only once measured results support the case, then keep monitoring." }
+    - { id: b, text: "Agree on business metrics and measure their baseline values", explanation: "This is the first step: without a baseline before launch you cannot show what changed." }
+    - { id: c, text: "Run a pilot that compares the assistant with the existing process", explanation: "This is the second step: a pilot, often an A/B test, produces measured results." }
+    - { id: d, text: "Compare the pilot results with the baseline", explanation: "This is the third step: the difference from the baseline is the evidence of value." }
+  answer: [b, c, d, a]
+  explanation: "Good practice is to agree on metrics and measure baselines before launch, run a pilot against the old process, compare the measured results with the baseline and then scale while continuing to track both benefit and cost metrics."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium
+
+- id: q-day-11-020
+  set: day-11
+  type: matching
+  stem: "Match each observed problem with the generative AI limitation it illustrates."
+  options:
+    - { id: a, text: "A legal research tool cites a court case that never existed", explanation: "Hallucination: fluent, confident output that is false." }
+    - { id: b, text: "The same product-description prompt yields a different description every run", explanation: "Nondeterminism: generation samples tokens, so outputs vary between runs." }
+    - { id: c, text: "A team cannot determine which inputs led the model to recommend one supplier over another", explanation: "Interpretability: large models are black boxes whose reasoning cannot be inspected." }
+    - { id: d, text: "A model is unaware of an interest-rate change announced last week", explanation: "Knowledge cut-off: the model knows nothing after its training data was collected unless it is supplied in the prompt." }
+  matchTargets:
+    - { id: t1, text: "Hallucination" }
+    - { id: t2, text: "Nondeterminism" }
+    - { id: t3, text: "Interpretability" }
+    - { id: t4, text: "Knowledge cut-off" }
+  answer: { a: t1, b: t2, c: t3, d: t4 }
+  explanation: "Hallucination is invented content, nondeterminism is varying output for the same prompt, interpretability is the inability to see why a model answered as it did, and the knowledge cut-off means recent events are unknown unless provided — for example through RAG."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-11#explanation
+  difficulty: medium

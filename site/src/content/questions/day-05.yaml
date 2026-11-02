@@ -1,0 +1,331 @@
+- id: q-day-05-001
+  set: day-05
+  type: single
+  stem: "A payroll team wants to use machine learning to calculate each employee's income-tax deduction from salary and published tax bands. What is the BEST advice?"
+  options:
+    - { id: a, text: "Train a regression model on past payslips to predict each deduction", explanation: "Incorrect. A regression model would only approximate the rules and would sometimes be wrong, which is unacceptable for tax." }
+    - { id: b, text: "Do not use ML; implement the published tax rules in ordinary code", explanation: "Correct. The answer is deterministic and must be exact every time, so rules in code are cheaper, explainable and always correct." }
+    - { id: c, text: "Use a foundation model on Amazon Bedrock to calculate the deduction from a prompt", explanation: "Incorrect. Foundation models are probabilistic and can make arithmetic or rule errors; they are the wrong tool for exact calculations." }
+    - { id: d, text: "Use clustering to group employees into tax bands", explanation: "Incorrect. Tax bands are already defined by fixed rules, so there is nothing for an unsupervised model to discover." }
+  answer: [b]
+  explanation: "ML predictions are probabilistic — right most of the time, not every time. When a result must be exact and follows known rules, such as tax, interest or fixed eligibility criteria, ordinary code is the correct solution. Recognising when not to use AI is part of task statement 1.2."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: easy
+
+- id: q-day-05-002
+  set: day-05
+  type: single
+  stem: "A news app wants a feature that reads each article aloud to users in a natural-sounding voice. Which AWS service should it use?"
+  options:
+    - { id: a, text: "Amazon Transcribe", explanation: "Incorrect. Transcribe converts speech into text — the opposite direction." }
+    - { id: b, text: "Amazon Comprehend", explanation: "Incorrect. Comprehend analyses text for sentiment, entities and key phrases; it does not produce audio." }
+    - { id: c, text: "Amazon Polly", explanation: "Correct. Polly converts text into lifelike speech in many voices and languages." }
+    - { id: d, text: "Amazon Lex", explanation: "Incorrect. Lex builds conversational bots; simply reading articles aloud is a text-to-speech task." }
+  answer: [c]
+  explanation: "Amazon Polly is the text-to-speech service: it turns text into lifelike speech, and SSML tags can control pauses, emphasis and pronunciation. Remember the pair: Polly speaks, Transcribe listens."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: easy
+
+- id: q-day-05-003
+  set: day-05
+  type: single
+  stem: "An online training company wants to generate subtitles for hundreds of recorded video lectures. Which AWS service provides this capability with the LEAST effort?"
+  options:
+    - { id: a, text: "Amazon Transcribe", explanation: "Correct. Transcribe converts speech in audio and video into text, with timestamps that can be used for subtitles." }
+    - { id: b, text: "Amazon Polly", explanation: "Incorrect. Polly converts text into speech, not speech into text." }
+    - { id: c, text: "Amazon Rekognition", explanation: "Incorrect. Rekognition analyses what is visible in images and video; it does not transcribe spoken words." }
+    - { id: d, text: "Amazon Personalize", explanation: "Incorrect. Personalize produces recommendations from user interaction data." }
+  answer: [a]
+  explanation: "Amazon Transcribe is the managed speech-to-text service. It works on batch files or live streams and supports subtitles, speaker diarization, custom vocabularies and PII redaction — no model training required."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: easy
+
+- id: q-day-05-004
+  set: day-05
+  type: single
+  stem: "A lender receives thousands of scanned loan applications. It needs the applicant name, income and loan amount as key–value pairs, plus the rows of a table of existing debts. Which service fits BEST?"
+  options:
+    - { id: a, text: "Amazon Comprehend", explanation: "Incorrect. Comprehend analyses text that is already digital; it does not read scanned forms or tables." }
+    - { id: b, text: "Amazon Translate", explanation: "Incorrect. Translate converts text between languages and does not extract structured fields." }
+    - { id: c, text: "Amazon Polly", explanation: "Incorrect. Polly produces speech from text." }
+    - { id: d, text: "Amazon Textract", explanation: "Correct. Textract extracts printed and handwritten text plus structure — form key–value pairs and tables — from scanned documents." }
+  answer: [d]
+  explanation: "Amazon Textract goes beyond basic OCR: it understands document structure, returning form fields as key–value pairs, tables with rows and columns, and answers to queries about the document. That makes it the standard choice for applications, claims forms and invoices."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-day-05-005
+  set: day-05
+  type: multi
+  stem: "In which situations is AI or ML MOST likely NOT the right solution? (Select TWO.)"
+  options:
+    - { id: a, text: "The result must be exact and follows fixed, known rules every time", explanation: "Correct. ML is probabilistic, so deterministic rule-based answers belong in ordinary code." }
+    - { id: b, text: "The cost of collecting data, building and running a model exceeds the expected benefit", explanation: "Correct. A cost–benefit analysis should come first; if a simple rule or manual process is cheaper, AI is not justified." }
+    - { id: c, text: "Millions of product images must be checked for unsafe content every day", explanation: "Incorrect. High volume that needs judgement is a classic case where AI adds value through scale and automation." }
+    - { id: d, text: "Each shopper should see products tailored to their browsing history", explanation: "Incorrect. Personalisation is a key AI value driver, served for example by Amazon Personalize." }
+    - { id: e, text: "Investigators need a risk score to prioritise which claims to review", explanation: "Incorrect. Decision support for people is a well-established AI use case." }
+  answer: [a, b]
+  explanation: "AI adds value through automation, scalability, decision support and personalisation. It is a poor choice when an exact, deterministic answer is required, when costs outweigh benefits, when good data is missing, or when unexplainable errors are unacceptable."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-day-05-006
+  set: day-05
+  type: single
+  stem: "A travel company wants a chatbot that understands requests such as 'book a hotel in Rome for two nights' and asks for any missing details like dates. Which AWS service is designed for this?"
+  options:
+    - { id: a, text: "Amazon Polly", explanation: "Incorrect. Polly can speak a bot's replies, but it does not understand requests or manage a conversation." }
+    - { id: b, text: "Amazon Lex", explanation: "Correct. Lex builds voice and text bots using intents, sample utterances and slots, and prompts the user for missing slot values." }
+    - { id: c, text: "Amazon Textract", explanation: "Incorrect. Textract extracts data from documents." }
+    - { id: d, text: "Amazon Rekognition", explanation: "Incorrect. Rekognition analyses images and video." }
+  answer: [b]
+  explanation: "Amazon Lex provides conversational interfaces. You define intents (BookHotel), sample utterances and slots (city, dates); Lex understands the request, asks for missing information and can call AWS Lambda to fulfil it."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: easy
+
+- id: q-day-05-007
+  set: day-05
+  type: matching
+  stem: "Match each business requirement to the AWS managed AI service that fits it BEST."
+  options:
+    - { id: a, text: "Detect whether customer reviews are positive or negative", explanation: "Amazon Comprehend fits because sentiment analysis of text is one of its built-in capabilities." }
+    - { id: b, text: "Show 'recommended for you' items on a shopping site", explanation: "Amazon Personalize fits because it builds real-time recommendations from interaction data." }
+    - { id: c, text: "Make a product catalogue available in German and Japanese", explanation: "Amazon Translate fits because it performs neural machine translation between languages." }
+    - { id: d, text: "Flag unsafe images uploaded by users", explanation: "Amazon Rekognition fits because it includes content moderation for images and video." }
+    - { id: e, text: "Give a phone menu a lifelike spoken voice", explanation: "Amazon Polly fits because it converts text to speech." }
+  matchTargets:
+    - { id: t1, text: "Amazon Comprehend" }
+    - { id: t2, text: "Amazon Translate" }
+    - { id: t3, text: "Amazon Rekognition" }
+    - { id: t4, text: "Amazon Personalize" }
+    - { id: t5, text: "Amazon Polly" }
+  answer: { a: t1, b: t4, c: t2, d: t3, e: t5 }
+  explanation: "Each managed AI service does one job well: Comprehend understands text, Translate converts languages, Rekognition analyses images and video, Personalize recommends, and Polly speaks. They need no ML expertise and are called through an API."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#examples
+  difficulty: medium
+
+- id: q-day-05-008
+  set: day-05
+  type: single
+  stem: "A retail chain has sales data for 900 stores but no predefined store categories. It wants to discover natural groups of stores with similar sales patterns. Which ML technique fits?"
+  options:
+    - { id: a, text: "Clustering", explanation: "Correct. Clustering finds natural groups in unlabelled data, which is exactly what discovering store segments requires." }
+    - { id: b, text: "Regression", explanation: "Incorrect. Regression predicts a number, such as next month's sales, rather than discovering groups." }
+    - { id: c, text: "Binary classification", explanation: "Incorrect. Classification needs predefined labelled categories, which the chain does not have." }
+    - { id: d, text: "Reinforcement learning", explanation: "Incorrect. Reinforcement learning learns actions through rewards; it is not used to group stores." }
+  answer: [a]
+  explanation: "Choose the technique from the output: a number means regression, a known category means classification, and natural groups without labels mean clustering. Here there is no target column, so clustering is the right choice."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-day-05-009
+  set: day-05
+  type: single
+  stem: "A bank must approve or decline card applications in under 50 milliseconds using 30 structured applicant fields. Regulators require a clear reason for every decline. Which approach is MOST appropriate?"
+  options:
+    - { id: a, text: "Send each application to a large foundation model on Amazon Bedrock and ask for a decision", explanation: "Incorrect. A foundation model adds latency and cost per request, can vary its answers and is harder to explain for a regulated, structured decision." }
+    - { id: b, text: "Use Amazon Comprehend to analyse the applicant fields", explanation: "Incorrect. Comprehend analyses free text; it does not make credit decisions from structured fields." }
+    - { id: c, text: "Train a traditional ML model, such as a gradient-boosted tree, on SageMaker AI", explanation: "Correct. Structured data, a single narrow decision, strict explainability and millisecond latency all favour traditional ML." }
+    - { id: d, text: "Use clustering to place applicants into approve and decline groups", explanation: "Incorrect. The bank has labelled outcomes and needs a classifier; clustering does not learn a known target." }
+  answer: [c]
+  explanation: "Traditional ML suits structured data, one narrow prediction, regulation and explainability requirements, and tight latency and cost constraints. Foundation models suit unstructured data, generation and many tasks with few labels."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: hard
+
+- id: q-day-05-010
+  set: day-05
+  type: single
+  stem: "A company collects free-text survey comments. It wants to know the overall sentiment of each comment and detect any personal information, such as names and phone numbers, so it can be removed. Which service meets both needs?"
+  options:
+    - { id: a, text: "Amazon Textract", explanation: "Incorrect. Textract extracts text and structure from documents but does not analyse sentiment." }
+    - { id: b, text: "Amazon Lex", explanation: "Incorrect. Lex builds conversational bots; it is not used to analyse batches of survey comments." }
+    - { id: c, text: "Amazon Polly", explanation: "Incorrect. Polly converts text to speech." }
+    - { id: d, text: "Amazon Comprehend", explanation: "Correct. Comprehend detects sentiment, entities, key phrases, language and PII in text." }
+  answer: [d]
+  explanation: "Amazon Comprehend is the managed NLP service for text insights. Built-in features include sentiment, entity and key-phrase detection, dominant language and PII detection; custom classification and custom entity recognition can be trained with your own labels."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-day-05-011
+  set: day-05
+  type: single
+  stem: "A social media start-up must automatically screen every photo and video that users upload for violent or explicit content. It has no ML team. Which service should it use?"
+  options:
+    - { id: a, text: "Amazon Rekognition", explanation: "Correct. Rekognition's content moderation detects unsafe content in images and video through an API, with no model training." }
+    - { id: b, text: "Amazon Comprehend", explanation: "Incorrect. Comprehend moderates and analyses text, not images or video." }
+    - { id: c, text: "Amazon Personalize", explanation: "Incorrect. Personalize builds recommendations from user interactions." }
+    - { id: d, text: "Amazon Transcribe", explanation: "Incorrect. Transcribe converts speech to text and does not judge visual content." }
+  answer: [a]
+  explanation: "Amazon Rekognition analyses images and stored or streaming video: labels, faces, text in images, PPE detection and moderation of unsafe content. As a managed service it needs no ML expertise, which suits a small team."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-day-05-012
+  set: day-05
+  type: single
+  stem: "A utility receives long, free-form complaint letters. Agents want a short summary of each letter and a suggested next step. The company has no labelled training data and wants results within weeks. Which approach fits BEST?"
+  options:
+    - { id: a, text: "Train a custom regression model on SageMaker AI", explanation: "Incorrect. Regression predicts a number; it cannot write summaries, and there is no labelled data to train on." }
+    - { id: b, text: "Use a foundation model on Amazon Bedrock with a well-designed prompt", explanation: "Correct. Summarising unstructured text and suggesting actions is a generative task that a pre-trained foundation model can do without labelled training data." }
+    - { id: c, text: "Use Amazon Comprehend sentiment analysis only", explanation: "Incorrect. Sentiment shows the tone of each letter but does not produce a summary or a suggested next step." }
+    - { id: d, text: "Write rules in code that copy the first three sentences of each letter", explanation: "Incorrect. Fixed rules cannot reliably capture the key points of free-form letters; this is not a deterministic problem." }
+  answer: [b]
+  explanation: "Foundation models suit unstructured data, content generation such as summaries, many tasks with few or no labels, and fast time to value. Managed AI services like Comprehend cover narrower analysis tasks, and traditional ML needs labelled data for a single prediction."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: hard
+
+- id: q-day-05-013
+  set: day-05
+  type: multi
+  stem: "A company receives voicemails in Spanish. Its back-office team reads only English and needs each voicemail as English text. Which AWS services should be combined? (Select TWO.)"
+  options:
+    - { id: a, text: "Amazon Transcribe", explanation: "Correct. Transcribe first converts the Spanish speech into Spanish text." }
+    - { id: b, text: "Amazon Translate", explanation: "Correct. Translate then converts the Spanish text into English text." }
+    - { id: c, text: "Amazon Polly", explanation: "Incorrect. Polly produces speech from text; the team needs text, not audio." }
+    - { id: d, text: "Amazon Rekognition", explanation: "Incorrect. Rekognition analyses images and video, not voicemail audio." }
+    - { id: e, text: "Amazon Personalize", explanation: "Incorrect. Personalize recommends items and has no role in converting voicemails." }
+  answer: [a, b]
+  explanation: "Managed AI services are often chained: Transcribe turns speech into text and Translate turns text into another language. Comprehend could then add sentiment or entities, and Polly could read a reply aloud."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#examples
+  difficulty: medium
+
+- id: q-day-05-014
+  set: day-05
+  type: single
+  stem: "A video-streaming service wants to show each subscriber a personalised row of titles based on what they and similar viewers have watched. Which AWS service provides this with the LEAST ML expertise?"
+  options:
+    - { id: a, text: "Amazon Lex", explanation: "Incorrect. Lex builds chatbots and voice bots." }
+    - { id: b, text: "Amazon Textract", explanation: "Incorrect. Textract extracts data from documents." }
+    - { id: c, text: "Amazon Personalize", explanation: "Correct. Personalize trains and hosts recommendation models from interaction data such as views, clicks and purchases." }
+    - { id: d, text: "Amazon Translate", explanation: "Incorrect. Translate converts text between languages." }
+  answer: [c]
+  explanation: "Amazon Personalize delivers real-time recommendations using technology that grew out of Amazon.com. You supply interaction data and optional item and user data; Personalize handles the algorithm, training and hosting."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: easy
+
+- id: q-day-05-015
+  set: day-05
+  type: ordering
+  stem: "Place these steps for deciding whether and how to apply AI to a business problem in the correct order, from first to last."
+  options:
+    - { id: a, text: "Confirm that enough good, representative data is available", explanation: "This is the third step: once an exact rule-based answer is ruled out, check that the data exists to learn from." }
+    - { id: b, text: "Define the business problem and how success will be measured", explanation: "This is the first step: everything else depends on a clear goal and a success metric." }
+    - { id: c, text: "Choose the ML technique and the AWS service", explanation: "This is the last step: only after AI is justified do you pick regression, classification or clustering and the service." }
+    - { id: d, text: "Check whether an exact, rule-based answer is required", explanation: "This is the second step: if the answer must be deterministic, ordinary code is the solution and AI is not needed." }
+    - { id: e, text: "Compare the expected benefit with the cost to build and run the solution", explanation: "This is the fourth step: even with good data, AI is only worth it if the benefit outweighs the cost." }
+  answer: [b, d, a, e, c]
+  explanation: "Start from the business goal, rule out problems that need exact rule-based answers, confirm data availability and quality, do a cost–benefit analysis, and only then choose the technique and service. This order avoids building AI where a rule or a manual process would be better."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#diagram
+  difficulty: medium
+
+- id: q-day-05-016
+  set: day-05
+  type: single
+  stem: "A small company with no data scientists needs to detect the language of incoming customer emails. Which option meets the requirement with the LEAST operational overhead?"
+  options:
+    - { id: a, text: "Train a custom language classifier on Amazon SageMaker AI", explanation: "Incorrect. Building and hosting a custom model requires ML skills and ongoing operations that are unnecessary here." }
+    - { id: b, text: "Deploy an open-source language model on Amazon EC2 instances", explanation: "Incorrect. Self-hosting a model means managing servers, scaling and patching." }
+    - { id: c, text: "Write keyword rules for every possible language", explanation: "Incorrect. Hand-written keyword rules for many languages are brittle and costly to maintain." }
+    - { id: d, text: "Call the Amazon Comprehend dominant-language detection API", explanation: "Correct. Comprehend detects the dominant language with a pre-trained model through a simple API, with no training or servers." }
+  answer: [d]
+  explanation: "When a scenario stresses 'least operational overhead' or 'no ML expertise', the answer is usually a managed AI service. Comprehend's built-in language detection is pre-trained and pay-per-use."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-day-05-017
+  set: day-05
+  type: multi
+  stem: "Which requirements point toward a traditional ML model rather than a foundation model? (Select TWO.)"
+  options:
+    - { id: a, text: "Each prediction must be explainable to a regulator and the same input must always give the same output", explanation: "Correct. Traditional ML models are more consistent and easier to explain, which suits regulated decisions." }
+    - { id: b, text: "Millions of predictions per hour with millisecond latency and a very low cost per prediction", explanation: "Correct. Small task-specific models are faster and far cheaper per prediction than large foundation models." }
+    - { id: c, text: "Drafting personalised marketing emails in several languages", explanation: "Incorrect. Content generation across languages is a foundation-model strength." }
+    - { id: d, text: "Answering questions over thousands of unstructured PDF documents with no labelled data", explanation: "Incorrect. Unstructured documents and no labels favour a foundation model, typically with retrieval-augmented generation." }
+    - { id: e, text: "Handling many different language tasks with one model and little training", explanation: "Incorrect. Versatility across many tasks through prompting is a defining advantage of foundation models." }
+  answer: [a, b]
+  explanation: "Regulation, explainability, consistency and operational constraints such as latency, volume and cost per prediction favour traditional ML. Unstructured data, content generation and many tasks with few labels favour foundation models."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: hard
+
+- id: q-day-05-018
+  set: day-05
+  type: single
+  stem: "Employees want to ask natural-language questions and get answers drawn from the company's HR policy documents. Which AI application family and AWS capability does this describe?"
+  options:
+    - { id: a, text: "A knowledge base using retrieval-augmented generation, such as Amazon Bedrock Knowledge Bases", explanation: "Correct. Answering questions from company documents is the knowledge-base application family, built with RAG on Bedrock Knowledge Bases." }
+    - { id: b, text: "A recommendation system built with Amazon Personalize", explanation: "Incorrect. Personalize recommends items from interaction data; it does not answer questions from documents." }
+    - { id: c, text: "Speech recognition with Amazon Transcribe", explanation: "Incorrect. Transcribe converts speech to text; the requirement is answering questions from documents." }
+    - { id: d, text: "Forecasting with a regression model on SageMaker AI", explanation: "Incorrect. Forecasting predicts future numeric values, not answers to policy questions." }
+  answer: [a]
+  explanation: "The exam guide lists knowledge bases as a real-world AI application. They let a foundation model answer questions using a company's own documents through retrieval-augmented generation. On AWS this is Amazon Bedrock Knowledge Bases, covered in depth on Day 18."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: medium
+
+- id: q-day-05-019
+  set: day-05
+  type: multi
+  stem: "An insurer now uses AI to read 20,000 claim forms a week that staff previously typed in by hand, and processing time has dropped from days to minutes. Which value drivers does this BEST illustrate? (Select TWO.)"
+  options:
+    - { id: a, text: "Automation of repetitive work", explanation: "Correct. Reading and keying forms is repetitive work that AI now performs, freeing staff for higher-value tasks." }
+    - { id: b, text: "Scalability to high volumes", explanation: "Correct. Processing tens of thousands of forms quickly is a volume no team could match by hand." }
+    - { id: c, text: "A guarantee that every extracted value is 100% correct", explanation: "Incorrect. AI output is probabilistic; there is no guarantee of perfect accuracy, which is why human review of uncertain cases is common." }
+    - { id: d, text: "Removing the need for any data", explanation: "Incorrect. AI always depends on data; managed services hide the training data but still process the customer's documents." }
+    - { id: e, text: "Producing a deterministic, rule-based calculation", explanation: "Incorrect. Deterministic rule-based work is where AI is not needed." }
+  answer: [a, b]
+  explanation: "AI adds value through automation, scalability, decision support and personalisation. Replacing manual data entry is automation, and handling 20,000 forms a week in minutes is scalability."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#explanation
+  difficulty: easy
+
+- id: q-day-05-020
+  set: day-05
+  type: single
+  stem: "A retailer analyses photos of store shelves. It wants to identify which product types appear in each photo and read the brand names printed on the packaging. Which single service covers both needs?"
+  options:
+    - { id: a, text: "Amazon Textract", explanation: "Incorrect. Textract is designed for documents such as forms, tables and invoices, and does not label objects in shelf photos." }
+    - { id: b, text: "Amazon Rekognition", explanation: "Correct. Rekognition detects objects and scenes and can also detect text that appears in images." }
+    - { id: c, text: "Amazon Comprehend", explanation: "Incorrect. Comprehend analyses text that is already digital; it cannot look at photos." }
+    - { id: d, text: "Amazon Personalize", explanation: "Incorrect. Personalize generates recommendations and does not analyse images." }
+  answer: [b]
+  explanation: "Rekognition handles image and video analysis, including labels for objects and scenes and detection of text in images such as signs and packaging. Textract is the choice when the input is a document whose structure — forms, tables, key–value pairs — matters."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-05#exam-tips
+  difficulty: hard

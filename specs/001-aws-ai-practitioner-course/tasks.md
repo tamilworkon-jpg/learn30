@@ -372,63 +372,63 @@ Every lesson task: **TC** = TC-L for that day + listed facts; **Plan** = 1) mark
 Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) → author → Q7 independent answer-key review → green; **Verify** = `npm run test -- question-sets`.
 
 ### Week 1
-- [ ] T114 [P] [US1] Author site/src/content/lessons/day-04.mdx — neural networks, deep learning, CNN, RNN, transformers/attention, transfer learning, CV & NLP; Deep Dive "From pixels/tokens to predictions" (TS 1.1) — TC-L
-- [ ] T115 [P] [US2] Author site/src/content/questions/day-04.yaml (20 Q, TS 1.1) — TC-Q
-- [ ] T116 [P] [US1] Author site/src/content/lessons/day-05.mdx — AI value, when NOT to use AI, regression/classification/clustering choice, traditional ML vs FM, Comprehend, Transcribe, Translate, Lex, Polly, Rekognition, Textract, Personalize (service decision diagram); Deep Dive "Call-centre analytics pipeline" (TS 1.2) — TC-L
-- [ ] T117 [P] [US2] Author site/src/content/questions/day-05.yaml (20 Q, TS 1.2) — TC-Q
-- [ ] T118 [P] [US1] Author site/src/content/lessons/day-06.mdx — ML pipeline, data services (S3, Glue, DataBrew, EMR, Lake Formation, Redshift, Data Exchange), SageMaker AI features, FM sources, managed API vs self-hosted, Amazon Quick & Kiro, MLOps, model + business metrics; Deep Dive "End-to-end MLOps on SageMaker AI" (TS 1.3) — TC-L
-- [ ] T119 [P] [US2] Author site/src/content/questions/day-06.yaml (20 Q, TS 1.3) — TC-Q
+- [x] T114 [P] [US1] Author site/src/content/lessons/day-04.mdx — neural networks, deep learning, CNN, RNN, transformers/attention, transfer learning, CV & NLP; Deep Dive "From pixels/tokens to predictions" (TS 1.1) — TC-L
+- [x] T115 [P] [US2] Author site/src/content/questions/day-04.yaml (20 Q, TS 1.1) — TC-Q
+- [x] T116 [P] [US1] Author site/src/content/lessons/day-05.mdx — AI value, when NOT to use AI, regression/classification/clustering choice, traditional ML vs FM, Comprehend, Transcribe, Translate, Lex, Polly, Rekognition, Textract, Personalize (service decision diagram); Deep Dive "Call-centre analytics pipeline" (TS 1.2) — TC-L
+- [x] T117 [P] [US2] Author site/src/content/questions/day-05.yaml (20 Q, TS 1.2) — TC-Q
+- [x] T118 [P] [US1] Author site/src/content/lessons/day-06.mdx — ML pipeline, data services (S3, Glue, DataBrew, EMR, Lake Formation, Redshift, Data Exchange), SageMaker AI features, FM sources, managed API vs self-hosted, Amazon Quick & Kiro, MLOps, model + business metrics; Deep Dive "End-to-end MLOps on SageMaker AI" (TS 1.3) — TC-L
+- [x] T119 [P] [US2] Author site/src/content/questions/day-06.yaml (20 Q, TS 1.3) — TC-Q
 - [ ] T120 [US4] Author site/src/content/lessons/day-07.mdx (`kind: review`) — D1 concept map, top-20 facts, traps — TC: W1–W2 for day 07
 - [ ] T121 [US4] Author site/src/content/questions/week-1.yaml (57 new Q, TS 1.1–1.3 + 4.1) — TC-Q
 - [ ] T122 REVIEW Week 1 content: regression + screenshots Days 4–7
 
 ### Week 2
-- [ ] T123 [P] [US1] Author site/src/content/lessons/day-08.mdx — tokens, chunking, embeddings, vectors, transformer LLMs, FMs, multimodal, diffusion; Deep Dive "Embedding pipeline" (TS 2.1) — TC-L
-- [ ] T124 [P] [US2] Author site/src/content/questions/day-08.yaml (20 Q, TS 2.1) — TC-Q
-- [ ] T125 [P] [US1] Author site/src/content/lessons/day-09.mdx — FM lifecycle, GenAI use cases, token pricing, context engineering; Deep Dive "Context window budget" (TS 2.1) — TC-L
-- [ ] T126 [P] [US2] Author site/src/content/questions/day-09.yaml (20 Q, TS 2.1) — TC-Q
-- [ ] T127 [P] [US1] Author site/src/content/lessons/day-10.mdx — agentic AI, tools, memory, orchestration, multi-agent patterns, MCP; Deep Dive "Multi-agent system with MCP on AgentCore" (TS 2.1, 3.1) — TC-L
-- [ ] T128 [P] [US2] Author site/src/content/questions/day-10.yaml (20 Q, TS 2.1, 3.1) — TC-Q
-- [ ] T129 [P] [US1] Author site/src/content/lessons/day-11.mdx — GenAI advantages/limitations, selection factors, business metrics; Deep Dive "Business case for a GenAI assistant" (TS 2.2) — TC-L
-- [ ] T130 [P] [US2] Author site/src/content/questions/day-11.yaml (20 Q, TS 2.2) — TC-Q
-- [ ] T131 [P] [US1] Author site/src/content/lessons/day-12.mdx — Bedrock (Nova), SageMaker AI & JumpStart, Amazon Quick, Kiro, Strands Agents, AgentCore, AWS Transform; Deep Dive "Bedrock vs SageMaker AI vs Quick" (TS 2.3) — TC-L
-- [ ] T132 [P] [US2] Author site/src/content/questions/day-12.yaml (20 Q, TS 2.3) — TC-Q
-- [ ] T133 [P] [US1] Author site/src/content/lessons/day-13.mdx — on-demand/batch/provisioned throughput, custom models, prompt caching, regions, Budgets, Cost Explorer; Deep Dive "Cost model for 1M chats/month" (TS 2.3, 3.1) — TC-L
-- [ ] T134 [P] [US2] Author site/src/content/questions/day-13.yaml (20 Q, TS 2.3, 3.1) — TC-Q
+- [x] T123 [P] [US1] Author site/src/content/lessons/day-08.mdx — tokens, chunking, embeddings, vectors, transformer LLMs, FMs, multimodal, diffusion; Deep Dive "Embedding pipeline" (TS 2.1) — TC-L
+- [x] T124 [P] [US2] Author site/src/content/questions/day-08.yaml (20 Q, TS 2.1) — TC-Q
+- [x] T125 [P] [US1] Author site/src/content/lessons/day-09.mdx — FM lifecycle, GenAI use cases, token pricing, context engineering; Deep Dive "Context window budget" (TS 2.1) — TC-L
+- [x] T126 [P] [US2] Author site/src/content/questions/day-09.yaml (20 Q, TS 2.1) — TC-Q
+- [x] T127 [P] [US1] Author site/src/content/lessons/day-10.mdx — agentic AI, tools, memory, orchestration, multi-agent patterns, MCP; Deep Dive "Multi-agent system with MCP on AgentCore" (TS 2.1, 3.1) — TC-L
+- [x] T128 [P] [US2] Author site/src/content/questions/day-10.yaml (20 Q, TS 2.1, 3.1) — TC-Q
+- [x] T129 [P] [US1] Author site/src/content/lessons/day-11.mdx — GenAI advantages/limitations, selection factors, business metrics; Deep Dive "Business case for a GenAI assistant" (TS 2.2) — TC-L
+- [x] T130 [P] [US2] Author site/src/content/questions/day-11.yaml (20 Q, TS 2.2) — TC-Q
+- [x] T131 [P] [US1] Author site/src/content/lessons/day-12.mdx — Bedrock (Nova), SageMaker AI & JumpStart, Amazon Quick, Kiro, Strands Agents, AgentCore, AWS Transform; Deep Dive "Bedrock vs SageMaker AI vs Quick" (TS 2.3) — TC-L
+- [x] T132 [P] [US2] Author site/src/content/questions/day-12.yaml (20 Q, TS 2.3) — TC-Q
+- [x] T133 [P] [US1] Author site/src/content/lessons/day-13.mdx — on-demand/batch/provisioned throughput, custom models, prompt caching, regions, Budgets, Cost Explorer; Deep Dive "Cost model for 1M chats/month" (TS 2.3, 3.1) — TC-L
+- [x] T134 [P] [US2] Author site/src/content/questions/day-13.yaml (20 Q, TS 2.3, 3.1) — TC-Q
 - [ ] T135 [US4] Author site/src/content/lessons/day-14.mdx (`kind: review`, D1–D2) — TC: W1–W2
 - [ ] T136 [US4] Author site/src/content/questions/week-2.yaml (57 new Q, D1–D2) — TC-Q
 - [ ] T137 REVIEW Week 2 content; log
 
 ### Week 3
-- [ ] T138 [P] [US1] Author site/src/content/lessons/day-15.mdx — FM selection criteria, inference parameters, customization spectrum ICL→RAG→fine-tune→distillation→pre-train (TS 3.1) — TC-L
-- [ ] T139 [P] [US2] Author site/src/content/questions/day-15.yaml (20 Q, TS 3.1) — TC-Q
-- [ ] T140 [P] [US1] Author site/src/content/lessons/day-16.mdx — prompt anatomy, negative prompts, zero/single/few-shot, CoT, templates, best practices, Bedrock Prompt Management (TS 3.2) — TC-L
-- [ ] T141 [P] [US2] Author site/src/content/questions/day-16.yaml (20 Q, TS 3.2) — TC-Q
-- [ ] T142 [P] [US1] Author site/src/content/lessons/day-17.mdx — injection, hijacking, jailbreaking, poisoning, exposure; Guardrails, output filtering (TS 3.2, 5.1) — TC-L
-- [ ] T143 [P] [US2] Author site/src/content/questions/day-17.yaml (20 Q, TS 3.2, 5.1) — TC-Q
-- [ ] T144 [P] [US1] Author site/src/content/lessons/day-18.mdx — RAG, Knowledge Bases, chunking, vector stores (OpenSearch, Aurora/RDS PostgreSQL, Neptune, DocumentDB), agents; Deep Dive "Enterprise RAG" (TS 3.1) — TC-L
-- [ ] T145 [P] [US2] Author site/src/content/questions/day-18.yaml (20 Q, TS 3.1) — TC-Q
-- [ ] T146 [P] [US1] Author site/src/content/lessons/day-19.mdx — pre-training, fine-tuning, continued pre-training, instruction tuning, distillation, RLHF, data prep (TS 3.3) — TC-L
-- [ ] T147 [P] [US2] Author site/src/content/questions/day-19.yaml (20 Q, TS 3.3) — TC-Q
-- [ ] T148 [P] [US1] Author site/src/content/lessons/day-20.mdx — human eval, benchmarks, Bedrock Model Evaluation, ROUGE/BLEU/BERTScore, LLM-as-a-judge, RAG/agent evaluation, business alignment metrics (TS 3.4) — TC-L
-- [ ] T149 [P] [US2] Author site/src/content/questions/day-20.yaml (20 Q, TS 3.4) — TC-Q
+- [x] T138 [P] [US1] Author site/src/content/lessons/day-15.mdx — FM selection criteria, inference parameters, customization spectrum ICL→RAG→fine-tune→distillation→pre-train (TS 3.1) — TC-L
+- [x] T139 [P] [US2] Author site/src/content/questions/day-15.yaml (20 Q, TS 3.1) — TC-Q
+- [x] T140 [P] [US1] Author site/src/content/lessons/day-16.mdx — prompt anatomy, negative prompts, zero/single/few-shot, CoT, templates, best practices, Bedrock Prompt Management (TS 3.2) — TC-L
+- [x] T141 [P] [US2] Author site/src/content/questions/day-16.yaml (20 Q, TS 3.2) — TC-Q
+- [x] T142 [P] [US1] Author site/src/content/lessons/day-17.mdx — injection, hijacking, jailbreaking, poisoning, exposure; Guardrails, output filtering (TS 3.2, 5.1) — TC-L
+- [x] T143 [P] [US2] Author site/src/content/questions/day-17.yaml (20 Q, TS 3.2, 5.1) — TC-Q
+- [x] T144 [P] [US1] Author site/src/content/lessons/day-18.mdx — RAG, Knowledge Bases, chunking, vector stores (OpenSearch, Aurora/RDS PostgreSQL, Neptune, DocumentDB), agents; Deep Dive "Enterprise RAG" (TS 3.1) — TC-L
+- [x] T145 [P] [US2] Author site/src/content/questions/day-18.yaml (20 Q, TS 3.1) — TC-Q
+- [x] T146 [P] [US1] Author site/src/content/lessons/day-19.mdx — pre-training, fine-tuning, continued pre-training, instruction tuning, distillation, RLHF, data prep (TS 3.3) — TC-L
+- [x] T147 [P] [US2] Author site/src/content/questions/day-19.yaml (20 Q, TS 3.3) — TC-Q
+- [x] T148 [P] [US1] Author site/src/content/lessons/day-20.mdx — human eval, benchmarks, Bedrock Model Evaluation, ROUGE/BLEU/BERTScore, LLM-as-a-judge, RAG/agent evaluation, business alignment metrics (TS 3.4) — TC-L
+- [x] T149 [P] [US2] Author site/src/content/questions/day-20.yaml (20 Q, TS 3.4) — TC-Q
 - [ ] T150 [US4] Author site/src/content/lessons/day-21.mdx (`kind: review`, D1–D3) — TC: W1–W2
 - [ ] T151 [US4] Author site/src/content/questions/week-3.yaml (57 new Q, D1–D3) — TC-Q
 - [ ] T152 REVIEW Week 3 content; log
 
 ### Week 4
-- [ ] T153 [P] [US1] Author site/src/content/lessons/day-22.mdx — responsible AI dimensions, datasets, bias/variance effects, legal risks (TS 4.1) — TC-L
-- [ ] T154 [P] [US2] Author site/src/content/questions/day-22.yaml (20 Q, TS 4.1) — TC-Q
-- [ ] T155 [P] [US1] Author site/src/content/lessons/day-23.mdx — Guardrails, Clarify, Model Monitor, human review concept, label quality, audits, subgroup analysis, sustainability (TS 4.1) — TC-L
-- [ ] T156 [P] [US2] Author site/src/content/questions/day-23.yaml (20 Q, TS 4.1) — TC-Q
-- [ ] T157 [P] [US1] Author site/src/content/lessons/day-24.mdx — transparency, explainability, Model Cards, Bedrock Model Evaluations, licensing, trade-offs, human-centred design (TS 4.2) — TC-L
-- [ ] T158 [P] [US2] Author site/src/content/questions/day-24.yaml (20 Q, TS 4.2) — TC-Q
-- [ ] T159 [P] [US1] Author site/src/content/lessons/day-25.mdx — shared responsibility, IAM, KMS, VPC/PrivateLink, Macie, Secrets Manager, AgentCore Identity & Policy, Guardrails, audit logging, toxicity; Exam Trap WAF/GuardDuty (TS 5.1) — TC-L
-- [ ] T160 [P] [US2] Author site/src/content/questions/day-25.yaml (20 Q, TS 5.1) — TC-Q
-- [ ] T161 [P] [US1] Author site/src/content/lessons/day-26.mdx — secure data engineering, lineage & cataloguing, Model Cards, hallucination detection, RAG grounding, confidence scoring (TS 5.1) — TC-L
-- [ ] T162 [P] [US2] Author site/src/content/questions/day-26.yaml (20 Q, TS 5.1) — TC-Q
-- [ ] T163 [P] [US1] Author site/src/content/lessons/day-27.mdx — Config, Inspector, Artifact, CloudTrail, CloudWatch, Trusted Advisor, Well-Architected Tool, data lifecycle/residency/retention, Generative AI Security Scoping Matrix (TS 5.2) — TC-L
-- [ ] T164 [P] [US2] Author site/src/content/questions/day-27.yaml (20 Q, TS 5.2) — TC-Q
+- [x] T153 [P] [US1] Author site/src/content/lessons/day-22.mdx — responsible AI dimensions, datasets, bias/variance effects, legal risks (TS 4.1) — TC-L
+- [x] T154 [P] [US2] Author site/src/content/questions/day-22.yaml (20 Q, TS 4.1) — TC-Q
+- [x] T155 [P] [US1] Author site/src/content/lessons/day-23.mdx — Guardrails, Clarify, Model Monitor, human review concept, label quality, audits, subgroup analysis, sustainability (TS 4.1) — TC-L
+- [x] T156 [P] [US2] Author site/src/content/questions/day-23.yaml (20 Q, TS 4.1) — TC-Q
+- [x] T157 [P] [US1] Author site/src/content/lessons/day-24.mdx — transparency, explainability, Model Cards, Bedrock Model Evaluations, licensing, trade-offs, human-centred design (TS 4.2) — TC-L
+- [x] T158 [P] [US2] Author site/src/content/questions/day-24.yaml (20 Q, TS 4.2) — TC-Q
+- [x] T159 [P] [US1] Author site/src/content/lessons/day-25.mdx — shared responsibility, IAM, KMS, VPC/PrivateLink, Macie, Secrets Manager, AgentCore Identity & Policy, Guardrails, audit logging, toxicity; Exam Trap WAF/GuardDuty (TS 5.1) — TC-L
+- [x] T160 [P] [US2] Author site/src/content/questions/day-25.yaml (20 Q, TS 5.1) — TC-Q
+- [x] T161 [P] [US1] Author site/src/content/lessons/day-26.mdx — secure data engineering, lineage & cataloguing, Model Cards, hallucination detection, RAG grounding, confidence scoring (TS 5.1) — TC-L
+- [x] T162 [P] [US2] Author site/src/content/questions/day-26.yaml (20 Q, TS 5.1) — TC-Q
+- [x] T163 [P] [US1] Author site/src/content/lessons/day-27.mdx — Config, Inspector, Artifact, CloudTrail, CloudWatch, Trusted Advisor, Well-Architected Tool, data lifecycle/residency/retention, Generative AI Security Scoping Matrix (TS 5.2) — TC-L
+- [x] T164 [P] [US2] Author site/src/content/questions/day-27.yaml (20 Q, TS 5.2) — TC-Q
 - [ ] T165 [US4] Author site/src/content/lessons/day-28.mdx (`kind: review`, D1–D5) — TC: W1–W2
 - [ ] T166 [US4] Author site/src/content/questions/week-4.yaml (57 new Q, D1–D5) — TC-Q
 - [ ] T167 REVIEW Week 4 content; log

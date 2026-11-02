@@ -1,0 +1,330 @@
+- id: q-day-08-001
+  set: day-08
+  type: single
+  stem: "A finance team reviews its Amazon Bedrock bill and sees on-demand charges expressed per 1,000 or per million units of text. Which unit is being counted?"
+  options:
+    - { id: a, text: "Characters in the prompt only", explanation: "Incorrect. Charges are not counted per character, and output is billed as well as input." }
+    - { id: b, text: "Tokens, with input and output counted separately", explanation: "Correct. On-demand text models are billed per token, and input tokens and output tokens are priced separately." }
+    - { id: c, text: "Whole words in the response only", explanation: "Incorrect. Models process sub-word tokens, not whole words, and input is billed too." }
+    - { id: d, text: "API calls, regardless of their length", explanation: "Incorrect. On-demand text generation is priced by the number of tokens processed, not a flat fee per call." }
+  answer: [b]
+  explanation: "A token is the unit of text a model reads and writes, often part of a word. Context windows, latency and on-demand prices are all measured in tokens, and input and output tokens are counted separately."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: easy
+
+- id: q-day-08-002
+  set: day-08
+  type: single
+  stem: "A product manager wants a quick estimate of how many English words fit into 8,000 tokens. Which estimate is MOST reasonable?"
+  options:
+    - { id: a, text: "About 2,000 words", explanation: "Incorrect. That would mean four tokens per word; in English a token is usually smaller than a word but not that small." }
+    - { id: b, text: "About 32,000 words", explanation: "Incorrect. That confuses tokens with characters; one token is roughly four characters, not four words." }
+    - { id: c, text: "About 6,000 words", explanation: "Correct. A common rule of thumb is that one token is roughly three-quarters of an English word, so 8,000 tokens is about 6,000 words." }
+    - { id: d, text: "Exactly 8,000 words", explanation: "Incorrect. Tokens are sub-word pieces, so a word often uses more than one token." }
+  answer: [c]
+  explanation: "As a rule of thumb, one English token is about four characters or three-quarters of a word, so 1,000 tokens is about 750 words. Other languages and source code usually need more tokens per word, and each model family has its own tokenizer."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: easy
+
+- id: q-day-08-003
+  set: day-08
+  type: single
+  stem: "An assistant sends a long system prompt, an entire 300-page manual and the conversation history to an LLM. Requests fail because they are too long. Which approach BEST solves the problem while keeping answers grounded in the manual?"
+  options:
+    - { id: a, text: "Chunk the manual, embed the chunks and send only the few chunks most relevant to each question", explanation: "Correct. Retrieving focused chunks keeps the request within the context window and still supplies the relevant facts." }
+    - { id: b, text: "Ask the model to generate a longer response so the input is balanced", explanation: "Incorrect. The context window covers prompt plus response, so a longer response makes the problem worse." }
+    - { id: c, text: "Switch to a diffusion model that has no token limit", explanation: "Incorrect. Diffusion models generate images from noise; they are not used to answer questions from a manual." }
+    - { id: d, text: "Remove the conversation history and keep sending the whole manual", explanation: "Incorrect. The whole manual alone is far larger than needed and still wastes tokens and money on irrelevant text." }
+  answer: [a]
+  explanation: "The context window is the maximum number of tokens a model can consider at once, including the response. Instead of pasting whole documents, split them into chunks, embed them and retrieve only the passages relevant to each question — the basis of retrieval-augmented generation (RAG)."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: medium
+
+- id: q-day-08-004
+  set: day-08
+  type: single
+  stem: "An insurer splits policy PDFs into 2,000-token chunks for a question-answering assistant. Answers are vague, and the retrieved passages contain many unrelated paragraphs. What is the MOST likely fix?"
+  options:
+    - { id: a, text: "Use larger chunks so each one contains more of the policy", explanation: "Incorrect. The chunks are already too large; making them larger blurs their meaning further." }
+    - { id: b, text: "Use a different embedding model for queries than for documents", explanation: "Incorrect. Documents and queries must use the same embedding model, otherwise their vectors cannot be compared." }
+    - { id: c, text: "Increase the vector dimensions of the chat model", explanation: "Incorrect. Vector dimensions belong to the embedding model, and the problem here is chunk size, not dimensions." }
+    - { id: d, text: "Use smaller chunks of a few hundred tokens with some overlap, or hierarchical chunking", explanation: "Correct. Smaller, focused chunks produce sharper embeddings and retrieve less unrelated text; overlap or hierarchical chunking keeps the context." }
+  answer: [d]
+  explanation: "Chunks that are too large mix several topics, so their embeddings are a blurry average and retrieval drags in noise. Chunks that are too small lose context. Smaller chunks with overlap, or hierarchical chunking (small child chunks linked to larger parents), usually balance precision and context."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#examples
+  difficulty: medium
+
+- id: q-day-08-005
+  set: day-08
+  type: single
+  stem: "When configuring fixed-size chunking, a developer sets an overlap of some tokens between neighbouring chunks. What is the purpose of the overlap?"
+  options:
+    - { id: a, text: "To avoid losing a sentence or idea that crosses a chunk boundary", explanation: "Correct. Overlap repeats a little text at the end of one chunk and the start of the next, so ideas that cross boundaries stay intact." }
+    - { id: b, text: "To reduce the total number of chunks stored", explanation: "Incorrect. Overlap repeats text, so it slightly increases storage rather than reducing the number of chunks." }
+    - { id: c, text: "To encrypt chunks before they are stored in the vector store", explanation: "Incorrect. Overlap has nothing to do with encryption; it is a chunking setting." }
+    - { id: d, text: "To let the chat model generate longer answers", explanation: "Incorrect. Overlap affects how documents are split for retrieval, not how long the model's answers are." }
+  answer: [a]
+  explanation: "Fixed-size chunking cuts text every N tokens, which can split a sentence or rule in half. Adding overlap repeats some tokens between neighbouring chunks so that the meaning that crosses a boundary is preserved in at least one chunk."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: easy
+
+- id: q-day-08-006
+  set: day-08
+  type: single
+  stem: "A company is creating an Amazon Bedrock knowledge base from hundreds of short FAQ documents. Each file contains a single question and its answer of about 100 words. Which chunking strategy is MOST appropriate?"
+  options:
+    - { id: a, text: "Semantic chunking to split each file where the topic changes", explanation: "Incorrect. Each file holds only one short topic, so there is nothing meaningful to split." }
+    - { id: b, text: "Hierarchical chunking with parent and child chunks", explanation: "Incorrect. Hierarchical chunking suits long, structured documents such as manuals, not 100-word files." }
+    - { id: c, text: "No chunking, so each file is treated as one chunk", explanation: "Correct. Short, self-contained files are already the right size, so each file can be one chunk." }
+    - { id: d, text: "Fixed-size chunks of 20 tokens with no overlap", explanation: "Incorrect. Tiny chunks would split each answer into fragments that lose their context." }
+  answer: [c]
+  explanation: "Bedrock Knowledge Bases offers default, fixed-size, hierarchical, semantic and no-chunking strategies. When each document is already a short, self-contained passage, such as one FAQ per file, no chunking keeps each answer whole."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: medium
+
+- id: q-day-08-007
+  set: day-08
+  type: single
+  stem: "Which statement BEST describes an embedding in generative AI?"
+  options:
+    - { id: a, text: "A short text summary that an LLM writes about a document", explanation: "Incorrect. A summary is text; an embedding is a list of numbers." }
+    - { id: b, text: "A vector of numbers that represents the meaning of content, so similar content has nearby vectors", explanation: "Correct. Embeddings encode meaning as vectors; content with similar meaning lands close together." }
+    - { id: c, text: "A set of keywords extracted from a document for exact-match search", explanation: "Incorrect. Embeddings capture meaning beyond exact keywords, which is why they enable semantic search." }
+    - { id: d, text: "The encryption key used to protect a vector database", explanation: "Incorrect. Embeddings are representations of content, not security keys." }
+  answer: [b]
+  explanation: "An embedding model turns text, images or audio into a vector — a list of numbers with a fixed number of dimensions. Similar meanings produce vectors that are close together, which lets systems search, recommend and cluster by meaning."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: easy
+
+- id: q-day-08-008
+  set: day-08
+  type: single
+  stem: "A team embedded 500,000 support articles with one embedding model. To save cost, it switched only the query side to a different, newer embedding model. Search results immediately became irrelevant. What should the team do?"
+  options:
+    - { id: a, text: "Increase the number of results returned by the vector store", explanation: "Incorrect. Returning more results from incomparable vectors still returns irrelevant results." }
+    - { id: b, text: "Switch to a larger text-generation model", explanation: "Incorrect. The text model only writes answers; it cannot fix retrieval that compares vectors from two different embedding models." }
+    - { id: c, text: "Add more overlap between chunks", explanation: "Incorrect. Chunk overlap is unrelated to the mismatch between document and query embeddings." }
+    - { id: d, text: "Re-embed all articles with the new model, or use the original model for queries", explanation: "Correct. Documents and queries must be embedded with the same model because vectors from different models are not comparable." }
+  answer: [d]
+  explanation: "Each embedding model creates its own vector space. A query vector from one model cannot be meaningfully compared with document vectors from another. When you change the embedding model, re-embed the whole corpus so all vectors share one space."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#examples
+  difficulty: medium
+
+- id: q-day-08-009
+  set: day-08
+  type: single
+  stem: "A developer needs to measure how similar a query embedding is to each stored document embedding in a semantic search application. Which technique is MOST commonly used for text embeddings?"
+  options:
+    - { id: a, text: "ROUGE score between the two vectors", explanation: "Incorrect. ROUGE compares generated text with reference text; it is an evaluation metric, not a vector similarity measure." }
+    - { id: b, text: "Counting the words the query and document have in common", explanation: "Incorrect. Word overlap is keyword matching; embeddings are compared by vector maths so that different wording with the same meaning still matches." }
+    - { id: c, text: "Cosine similarity between the vectors", explanation: "Correct. Cosine similarity compares the direction of two vectors and is the most common similarity measure for text embeddings." }
+    - { id: d, text: "Mean squared error between the documents' token IDs", explanation: "Incorrect. Token IDs are arbitrary identifiers; comparing them says nothing about meaning." }
+  answer: [c]
+  explanation: "Similarity between embeddings is measured with metrics such as cosine similarity (most common for text), dot product or Euclidean distance. Finding the closest k vectors is k-nearest-neighbour search, which vector stores accelerate with special indexes."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: medium
+
+- id: q-day-08-010
+  set: day-08
+  type: single
+  stem: "A help centre's keyword search fails when customers type 'laptop will not turn on', because the matching article is titled 'Device fails to power up'. Which solution BEST addresses this?"
+  options:
+    - { id: a, text: "Generate embeddings for the articles and queries, store them in a vector store and use similarity search", explanation: "Correct. Embeddings capture meaning, so a query and an article with different words but the same meaning have nearby vectors." }
+    - { id: b, text: "Add more keywords to every article title manually", explanation: "Incorrect. Manual synonyms cannot anticipate every phrasing and do not scale; it is still keyword matching." }
+    - { id: c, text: "Use a diffusion model to rewrite article titles", explanation: "Incorrect. Diffusion models generate images; they are not used for text search." }
+    - { id: d, text: "Increase the context window of the chat model", explanation: "Incorrect. A larger context window does not help find the right article; finding it is a retrieval problem." }
+  answer: [a]
+  explanation: "Semantic search compares the meaning of a query with the meaning of documents using embeddings. Vectors for 'laptop will not turn on' and 'device fails to power up' are close together even though the words differ, so similarity search finds the right article."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#examples
+  difficulty: hard
+
+- id: q-day-08-011
+  set: day-08
+  type: single
+  stem: "Which feature of the transformer architecture lets a model relate each token to every other token in its context, for example linking the word 'it' to the noun it refers to?"
+  options:
+    - { id: a, text: "Chunk overlap", explanation: "Incorrect. Overlap is a document-splitting setting for retrieval, not part of the model architecture." }
+    - { id: b, text: "Self-attention", explanation: "Correct. Self-attention weighs how much every token in the context matters to each token, which is how transformers resolve references." }
+    - { id: c, text: "The forward noising process", explanation: "Incorrect. Adding noise step by step is how diffusion models are trained, not how transformers relate tokens." }
+    - { id: d, text: "Reading text strictly one word at a time from left to right", explanation: "Incorrect. That describes older recurrent models; transformers process all tokens in parallel with attention." }
+  answer: [b]
+  explanation: "The transformer, introduced in 2017, replaced step-by-step recurrent processing with self-attention. Each token attends to all other tokens to decide which ones matter, and all tokens are processed in parallel, which lets transformers train efficiently at large scale."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: medium
+
+- id: q-day-08-012
+  set: day-08
+  type: single
+  stem: "A user is surprised that an LLM confidently wrote a fluent but incorrect product specification. Which description of how LLMs generate text BEST explains this behaviour?"
+  options:
+    - { id: a, text: "LLMs look up each answer in a verified database before responding", explanation: "Incorrect. A plain LLM does not consult a verified database; it generates text from patterns learned in training." }
+    - { id: b, text: "LLMs copy the closest document from their training data word for word", explanation: "Incorrect. LLMs generate new token sequences rather than retrieving stored documents." }
+    - { id: c, text: "LLMs generate images first and then describe them in text", explanation: "Incorrect. Text LLMs predict tokens directly; image generation is a separate kind of model." }
+    - { id: d, text: "LLMs predict the most plausible next token repeatedly, so they can produce likely-sounding text that is not true", explanation: "Correct. Next-token prediction optimises for plausible continuations, not verified facts, which can cause hallucinations." }
+  answer: [d]
+  explanation: "An LLM tokenizes the prompt, computes probabilities for the next token, picks one, appends it and repeats. Because it produces plausible text rather than checked facts, it can hallucinate. Grounding with retrieved documents (RAG) reduces this risk."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: medium
+
+- id: q-day-08-013
+  set: day-08
+  type: single
+  stem: "Which characteristic MOST distinguishes a foundation model from a traditional ML model?"
+  options:
+    - { id: a, text: "It is trained on a small labelled dataset for one specific task", explanation: "Incorrect. That describes a traditional task-specific model, the opposite of a foundation model." }
+    - { id: b, text: "It can only be used for image classification", explanation: "Incorrect. Foundation models cover text, images, audio and more, and handle many tasks." }
+    - { id: c, text: "It is pre-trained on a broad, massive dataset and can be adapted to many different tasks", explanation: "Correct. Broad pre-training, often self-supervised, lets one foundation model handle many tasks guided by prompts or adaptation." }
+    - { id: d, text: "It never needs a prompt to produce output", explanation: "Incorrect. Foundation models are usually guided by prompts; prompting is how they are adapted to each task." }
+  answer: [c]
+  explanation: "A foundation model is a large model pre-trained on broad data, often with self-supervised learning, so it can be adapted to many tasks — summarising, drafting, extracting, answering — through prompts, retrieval or fine-tuning. Traditional ML usually trains one model per task."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: easy
+
+- id: q-day-08-014
+  set: day-08
+  type: single
+  stem: "A marketing team asks how a diffusion model creates a new product image from the prompt 'linen dress on a sunny beach'. Which explanation is MOST accurate?"
+  options:
+    - { id: a, text: "It starts from random noise and removes noise step by step, with the prompt's embedding guiding each step", explanation: "Correct. Diffusion models learn to denoise; at generation time they turn pure noise into an image that matches the prompt." }
+    - { id: b, text: "It retrieves the most similar stock photo from a vector store and returns it unchanged", explanation: "Incorrect. That is similarity search over existing images, not generation of a new image." }
+    - { id: c, text: "It predicts the next word of the prompt repeatedly until an image description is complete", explanation: "Incorrect. That describes a text LLM generating tokens, not a diffusion model generating pixels." }
+    - { id: d, text: "A generator and a discriminator compete until the discriminator cannot tell real from fake", explanation: "Incorrect. That describes a GAN, a different family of generative model." }
+  answer: [a]
+  explanation: "During training, a diffusion model learns to predict and remove noise that was added to real images in many small steps. To generate, it starts from random noise and denoises step by step, guided by the text prompt. Stable Diffusion is a well-known example on Amazon Bedrock."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: hard
+
+- id: q-day-08-015
+  set: day-08
+  type: multi
+  stem: "Which statements about tokens are correct? (Select TWO.)"
+  options:
+    - { id: a, text: "On-demand text models typically price input tokens and output tokens separately", explanation: "Correct. Input and output tokens are counted and priced separately, and output tokens usually cost more." }
+    - { id: b, text: "The context window limit covers both the prompt and the generated response", explanation: "Correct. The context window is the total number of tokens the model can handle at once, including its output." }
+    - { id: c, text: "Every English word is always exactly one token", explanation: "Incorrect. Common words may be one token, but longer or rarer words are split into several sub-word tokens." }
+    - { id: d, text: "All foundation models share the same tokenizer, so token counts are identical across models", explanation: "Incorrect. Each model family has its own tokenizer, so the same text can produce different token counts." }
+    - { id: e, text: "Tokens matter only for image-generation models", explanation: "Incorrect. Tokens are central to text models: they define context windows, pricing and generation speed." }
+  answer: [a, b]
+  explanation: "Tokens are sub-word pieces produced by a model-specific tokenizer. The context window counts prompt plus response tokens, on-demand pricing is per input and output token, and longer outputs take longer because models generate one token at a time."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: medium
+
+- id: q-day-08-016
+  set: day-08
+  type: multi
+  stem: "An insurance company is reviewing requirements for a new assistant. Which requirements need a multimodal model rather than a text-only LLM? (Select TWO.)"
+  options:
+    - { id: a, text: "Answer a question about a photo of a damaged car submitted with a claim", explanation: "Correct. The input includes an image, so the model must understand images as well as text." }
+    - { id: b, text: "Summarise the key events in a recorded video of a property inspection", explanation: "Correct. The input is video, a different modality from text." }
+    - { id: c, text: "Translate a claim letter from English to Spanish", explanation: "Incorrect. Both input and output are text, which a text-only LLM can handle." }
+    - { id: d, text: "Classify the sentiment of written customer reviews", explanation: "Incorrect. This is a text-in, text-out task that does not require other modalities." }
+    - { id: e, text: "Draft a polite email explaining a claim decision", explanation: "Incorrect. Drafting text from a text prompt needs only a text model." }
+  answer: [a, b]
+  explanation: "A modality is a type of data: text, image, audio or video. Multimodal models accept and/or produce more than one modality — for example Amazon Nova Lite and Nova Pro accept text, images and video and reply in text. Pure text tasks do not need a multimodal model."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: hard
+
+- id: q-day-08-017
+  set: day-08
+  type: multi
+  stem: "A solutions architect needs to store document embeddings and run k-nearest-neighbour search on AWS. Which services can serve as the vector store? (Select TWO.)"
+  options:
+    - { id: a, text: "Amazon OpenSearch Service", explanation: "Correct. OpenSearch Service (including OpenSearch Serverless) supports vector indexes and k-NN search." }
+    - { id: b, text: "Amazon Polly", explanation: "Incorrect. Polly converts text to speech; it does not store or search vectors." }
+    - { id: c, text: "Amazon Aurora PostgreSQL with the pgvector extension", explanation: "Correct. Aurora PostgreSQL with pgvector stores embeddings and supports similarity search." }
+    - { id: d, text: "Amazon Translate", explanation: "Incorrect. Translate converts text between languages; it is not a database." }
+    - { id: e, text: "AWS Glue DataBrew", explanation: "Incorrect. DataBrew is a visual data-preparation tool, not a vector store." }
+  answer: [a, c]
+  explanation: "Vector stores index embeddings for fast approximate nearest-neighbour search. On AWS, options include Amazon OpenSearch Service, Amazon Aurora PostgreSQL and Amazon RDS for PostgreSQL with pgvector, and Amazon Neptune Analytics."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: medium
+
+- id: q-day-08-018
+  set: day-08
+  type: multi
+  stem: "A company is building the ingestion side of a semantic search system over 50,000 internal documents stored in Amazon S3. Which steps belong in this ingestion pipeline? (Select THREE.)"
+  options:
+    - { id: a, text: "Split each document into chunks", explanation: "Correct. Chunking creates focused passages that can be embedded and retrieved individually." }
+    - { id: b, text: "Convert each chunk into a vector with an embedding model", explanation: "Correct. The embedding model turns each chunk into a vector that captures its meaning." }
+    - { id: c, text: "Write the vectors and their metadata to a vector store", explanation: "Correct. The vector store indexes the embeddings, with metadata such as source and access level, for fast similarity search." }
+    - { id: d, text: "Generate an image for each document with a diffusion model", explanation: "Incorrect. Image generation plays no part in indexing documents for semantic search." }
+    - { id: e, text: "Raise the temperature of the text-generation model", explanation: "Incorrect. Temperature is an inference parameter for generating text; it is not part of ingesting documents." }
+    - { id: f, text: "Embed each document with a different embedding model to add variety", explanation: "Incorrect. All documents and queries must use the same embedding model so their vectors are comparable." }
+  answer: [a, b, c]
+  explanation: "Ingestion parses documents, chunks them, embeds each chunk with one embedding model and stores the vectors plus metadata in a vector store. At query time, the question is embedded with the same model and the nearest chunks are retrieved."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#real-world
+  difficulty: hard
+
+- id: q-day-08-019
+  set: day-08
+  type: ordering
+  stem: "Place the steps a transformer LLM follows to produce a response in the correct order, from first to last."
+  options:
+    - { id: a, text: "Transformer layers apply self-attention and compute probabilities for the next token", explanation: "This is the third step: the layers relate every token to the others and score each candidate next token." }
+    - { id: b, text: "The tokenizer converts the prompt text into token IDs", explanation: "This is the first step: the model only processes token IDs, not raw text." }
+    - { id: c, text: "One token is selected, appended to the sequence and the process repeats", explanation: "This is the fourth step: generation is a loop that adds one token at a time." }
+    - { id: d, text: "Each token ID is turned into an embedding with position information", explanation: "This is the second step: embeddings plus position give the layers a numeric representation of each token and its place." }
+    - { id: e, text: "Generation stops at a stop token or the length limit, and the tokens are converted back into text", explanation: "This is the last step: the finished token sequence is detokenized into the response." }
+  answer: [b, d, a, c, e]
+  explanation: "Text is tokenized, tokens are embedded with their positions, transformer layers with self-attention produce next-token probabilities, one token is chosen and appended, and the loop repeats until a stop token or the maximum length; the tokens are then turned back into text."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#explanation
+  difficulty: medium
+
+- id: q-day-08-020
+  set: day-08
+  type: matching
+  stem: "Match each requirement to the generative AI building block that addresses it."
+  options:
+    - { id: a, text: "Create banner images from a text description", explanation: "Diffusion models generate images by removing noise step by step, guided by the prompt." }
+    - { id: b, text: "Answer a question about a photo uploaded by a user", explanation: "A multimodal model accepts an image and text together and replies in text." }
+    - { id: c, text: "Find past campaigns with a similar meaning to a new brief", explanation: "Embeddings with similarity search find content with nearby meaning even when the words differ." }
+    - { id: d, text: "Break a 300-page manual into passages that can be retrieved individually", explanation: "Chunking splits long documents into focused passages before embedding." }
+  matchTargets:
+    - { id: t1, text: "Chunking" }
+    - { id: t2, text: "Embeddings and similarity search" }
+    - { id: t3, text: "Multimodal model" }
+    - { id: t4, text: "Diffusion model" }
+  answer: { a: t4, b: t3, c: t2, d: t1 }
+  explanation: "Chunking prepares long documents for retrieval, embeddings and similarity search find related meaning, multimodal models work across data types such as images and text, and diffusion models generate images from noise."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-08#examples
+  difficulty: easy

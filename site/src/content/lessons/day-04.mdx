@@ -1,0 +1,337 @@
+---
+day: 4
+kind: lesson
+title: 'Neural networks & deep learning'
+summary: 'Look inside a neural network — neurons, weights, activation functions and layers — and see how training with a loss function, backpropagation and gradient descent works. Then meet the deep-learning architectures the exam names: convolutional networks for images, recurrent networks for sequences and transformers with attention, plus transfer learning and the main computer-vision and NLP tasks.'
+domains: [D1]
+taskStatements: ['1.1']
+sources:
+  - { provider: udemy, title: 'Deep Learning; Neural Networks; CNN; RNN; Transformers; Transfer Learning' }
+  - { provider: skillbuilder, title: 'Fundamentals of Machine Learning and Artificial Intelligence' }
+  - { provider: aws-docs, title: 'What is deep learning? (AWS)', url: 'https://aws.amazon.com/what-is/deep-learning/' }
+  - { provider: aws-docs, title: 'Amazon SageMaker JumpStart pretrained models', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jumpstart.html' }
+objectives:
+  - Describe a neural network in terms of neurons, weights, biases, activation functions and layers
+  - Explain how a network learns using a loss function, backpropagation and gradient descent
+  - Explain what makes deep learning different from traditional ML and when it is worth the cost
+  - Match CNNs, RNNs and transformers to the data and tasks they suit
+  - Explain transfer learning and why it saves data, time and money
+  - Recognise common computer-vision and natural language processing tasks and the AWS services that perform them
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'A neural network is layers of neurons: each neuron multiplies inputs by learned weights, adds a bias and applies an activation function.'
+  - 'Training = forward pass, measure error with a loss function, backpropagation, then gradient descent adjusts the weights; repeat for many epochs.'
+  - 'Deep learning = many hidden layers that learn features automatically from raw data; needs lots of data and GPU compute.'
+  - 'CNNs suit images (filters detect edges, shapes, objects); RNNs/LSTMs process sequences step by step; transformers use self-attention in parallel and power LLMs.'
+  - 'Transfer learning reuses a pre-trained model and fine-tunes it on a small labelled dataset — less data, time and cost.'
+  - 'Computer vision: classification, object detection, segmentation, OCR (Rekognition, Textract). NLP: sentiment, entities, translation, summarisation (Comprehend, Translate, Bedrock).'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 3" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="How neural networks and deep learning work" minutes={14}>
+
+### Why we need neural networks
+
+Yesterday's algorithms — linear regression, decision trees, XGBoost — work brilliantly on tables of numbers where a person has already chosen useful columns (*features*) such as "tenure" or "monthly spend". But how would you write features for a photo? Which pixel values mean "cat"? Nobody can list them by hand. **Neural networks** solve this by learning useful features *directly from raw data* — pixels, sound waves, words. That ability is what made modern computer vision, speech recognition and generative AI possible.
+
+### The artificial neuron
+
+A neural network is built from simple units called **neurons** (or nodes), loosely inspired by brain cells. Each neuron does three small things:
+
+1. It receives several **inputs** (numbers) and multiplies each by a **weight** — how important that input is.
+2. It adds the results together plus a **bias** — an adjustable offset, a bit like the starting point of a scale.
+3. It passes the total through an **activation function**, which decides how strongly the neuron "fires". Common choices are **ReLU** (keep positive values, turn negatives into zero), **sigmoid** (squash any value into the range 0 to 1, useful for probabilities) and **softmax** (turn a list of scores into probabilities that add up to 1, used for picking one class out of many).
+
+**Analogy.** Imagine deciding whether to go for a run. Inputs: is it sunny, do I have time, am I tired. You weigh each one (time matters a lot, sun a little, tiredness counts against). You add them up, and if the total passes a threshold you go. A neuron does exactly that arithmetic — except it *learns* the weights from data instead of you choosing them.
+
+The weights and biases are the model's **parameters** (Day 2). A small network has thousands; a large language model has billions.
+
+Without activation functions, stacking layers would be pointless: a chain of multiply-and-add steps collapses into one big multiply-and-add, which can only draw straight lines. The activation function adds **non-linearity**, letting the network model curves, corners and the messy patterns of real data.
+
+### Layers: input, hidden, output
+
+Neurons are organised in **layers**:
+
+- The **input layer** receives the raw data — one input per pixel, per feature or per token value.
+- One or more **hidden layers** transform the data. Each hidden layer takes the previous layer's outputs as its inputs.
+- The **output layer** produces the answer — one neuron for a yes/no probability, one per class for multi-class classification (with softmax), or a single number for regression.
+
+When every neuron in one layer connects to every neuron in the next, the network is **fully connected** (also called dense or feed-forward). Information flows forward from input to output; that is the **forward pass**, and it is exactly what happens at **inference** time.
+
+### How a network learns: loss, backpropagation and gradient descent
+
+At the start, weights are random, so predictions are nonsense. Training fixes that with a repeated loop:
+
+1. **Forward pass** — feed a batch of training examples through the network and get predictions.
+2. **Loss** — a **loss function** measures how wrong the predictions are compared with the labels. Bigger loss, worse model.
+3. **Backpropagation** — the network works backwards from the output, calculating how much each weight contributed to the error.
+4. **Gradient descent** — every weight is nudged a small step in the direction that reduces the loss. The size of the step is the **learning rate**, a hyperparameter.
+5. **Repeat** — one pass through the whole training set is an **epoch**; training usually runs for many epochs.
+
+**Analogy.** Gradient descent is like walking down a foggy hill to reach the valley. You cannot see the bottom, but you can feel which way the ground slopes under your feet, so you take a step downhill, feel again, and step again. Steps that are too big (learning rate too high) make you overshoot and bounce around; steps that are too small take forever. Everything you learned on Day 2 still applies: train too long on too little data and the network overfits, so teams use validation data, early stopping, regularisation and techniques such as *dropout* (randomly switching off neurons during training so the network cannot rely on any single one).
+
+### What makes learning "deep"
+
+**Deep learning** simply means neural networks with **many hidden layers** — from a handful to hundreds. Depth matters because each layer builds on the one before, learning a **hierarchy of features**. In an image model the first layers detect edges and colour blobs, middle layers combine them into textures and shapes (an eye, a wheel), and late layers recognise whole objects (a face, a car). Nobody programmed those features; the network discovered them.
+
+Compared with traditional ML, deep learning:
+
+| | Traditional ML | Deep learning |
+|---|---|---|
+| Best data | Structured, tabular | Unstructured: images, audio, text, video |
+| Features | Mostly engineered by people | Learned automatically from raw data |
+| Data needed | Hundreds to thousands of rows can work | Usually large datasets (or transfer learning) |
+| Compute | CPUs are usually enough | GPUs or AI accelerators, often for hours or days |
+| Explainability | Often easy (trees, coefficients) | Hard — a "black box" of millions of weights |
+| Typical examples | Churn, credit scoring, pricing | Image recognition, speech-to-text, translation, LLMs |
+
+Deep learning is not automatically better. For a tidy table of customer records, a gradient-boosted tree is often as accurate, far cheaper and much easier to explain. Choose deep learning when the data is unstructured or the patterns are too complex to describe with hand-made features.
+
+On AWS, deep-learning training runs on GPU instances or on AWS-designed chips — **AWS Trainium** for training and **AWS Inferentia** for low-cost inference — usually managed through **Amazon SageMaker AI**.
+
+### Convolutional neural networks (CNNs): seeing images
+
+A photo is a grid of pixels, and nearby pixels are related. A fully connected network ignores that layout and would need an enormous number of weights. A **convolutional neural network (CNN)** instead slides small **filters** (for example 3 × 3 pixels) across the image. Each filter learns to spot one pattern — a vertical edge, a curve, a patch of fur — wherever it appears. **Pooling** layers then shrink the feature maps, keeping the strongest signals and making the model tolerant of small shifts. Stacking convolution and pooling layers produces the edge → shape → object hierarchy, and a final fully connected layer with softmax outputs the class probabilities.
+
+**Analogy.** A CNN is like a team of inspectors each holding a small magnifying glass that looks for one detail. They sweep the whole picture, report where they found their detail, and a manager combines the reports into a verdict.
+
+CNNs power image classification, object detection, face analysis, medical-image screening and document OCR. Well-known architectures include ResNet and EfficientNet; you only need to recognise that they are CNNs for images.
+
+### Recurrent neural networks (RNNs): remembering sequences
+
+Text, speech and sensor readings are **sequences** — order matters. A **recurrent neural network (RNN)** reads a sequence one step at a time and keeps a **hidden state**, a running memory of what it has seen so far, which it passes to the next step. That makes RNNs a natural fit for time-series forecasting, speech recognition and early machine translation.
+
+Plain RNNs struggle to remember things from far back in a long sequence (the *vanishing gradient* problem). **Long short-term memory (LSTM)** and **GRU** networks add "gates" that decide what to keep and what to forget, extending the memory. But all RNNs share two limits: they process tokens one after another, so training is slow and hard to parallelise, and very long-range connections still fade.
+
+### Transformers and attention: the architecture behind LLMs
+
+The **transformer**, introduced in the 2017 paper *Attention Is All You Need*, replaced recurrence with **self-attention**. Instead of reading word by word, the model looks at **all tokens at once** and, for every token, calculates how much attention to pay to every other token.
+
+Take the sentence *"The trophy did not fit in the suitcase because it was too big."* What does *it* refer to? Self-attention lets the model link *it* strongly to *trophy* and weakly to *suitcase*, using the whole context. Because word order is no longer implied by step-by-step reading, transformers add **positional encoding** — extra information that tells the model where each token sits in the sequence.
+
+Why transformers won:
+
+- **Parallel processing** — all tokens are handled at the same time, so training scales efficiently across many GPUs.
+- **Long-range context** — any token can attend directly to any other, however far apart.
+- **Scale** — with enough data and compute, transformers keep improving, which made billion-parameter **foundation models** practical.
+
+There are three family members worth recognising: **encoder** models (such as BERT) read and understand text and suit classification and entity extraction; **decoder** models (such as GPT-style models, Claude, Llama and Amazon Nova) generate text one token at a time and power chatbots; **encoder–decoder** models (such as T5) transform one sequence into another, as in translation and summarisation. Transformers are not only for text: **vision transformers** split an image into patches and treat them like tokens, and multimodal models combine text, images, audio and video.
+
+### Transfer learning: standing on a giant's shoulders
+
+Training a deep network from scratch can need millions of labelled examples and weeks of GPU time. **Transfer learning** avoids that. You take a model **pre-trained** on a huge general dataset — an image model trained on millions of photos, or a language model trained on trillions of words — and adapt it to your task with a much smaller labelled dataset.
+
+Because the early layers have already learned general features (edges and shapes, or grammar and word meanings), only the later layers need to learn your specific task. There are two common approaches:
+
+- **Feature extraction** — freeze the pre-trained layers and train only a new output layer.
+- **Fine-tuning** — continue training some or all layers on your data with a small learning rate.
+
+**Analogy.** A professional pianist learning the organ does not start from zero — reading music and finger technique transfer, and only the pedals and stops are new.
+
+Transfer learning means less data, faster training and lower cost. **Amazon SageMaker JumpStart** offers hundreds of pre-trained models you can deploy or fine-tune with a few clicks, and on Day 19 you will see how fine-tuning foundation models is the same idea at a larger scale.
+
+### Computer vision and natural language processing
+
+Two application areas named in the exam guide sit on top of these architectures.
+
+**Computer vision (CV)** — getting meaning from images and video:
+
+- **Image classification** — what is in this picture? ("defective" or "OK")
+- **Object detection** — what objects are present and where? (bounding boxes around each car)
+- **Image segmentation** — which exact pixels belong to each object? (outline a tumour on a scan)
+- **Facial analysis** — detect faces and attributes, compare faces
+- **Optical character recognition (OCR)** — read text from images and documents
+
+AWS services: **Amazon Rekognition** (labels, faces, content moderation, text in images, video analysis) and **Amazon Textract** (text, forms and tables from documents).
+
+**Natural language processing (NLP)** — understanding and generating human language:
+
+- **Sentiment analysis** — is this review positive, negative or mixed?
+- **Named entity recognition** — find people, places, organisations, dates
+- **Translation**, **summarisation**, **question answering** and **text generation**
+- **Speech** — speech-to-text and text-to-speech (often grouped with NLP)
+
+AWS services: **Amazon Comprehend** (sentiment, entities, key phrases, PII detection), **Amazon Translate**, **Amazon Transcribe** (speech-to-text), **Amazon Polly** (text-to-speech), **Amazon Lex** (chatbots) and, for generative tasks, foundation models on **Amazon Bedrock**. You will learn to choose between these services tomorrow.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="A small feed-forward neural network: the forward pass makes predictions, backpropagation sends the error back to adjust the weights"
+  code={`flowchart LR
+  subgraph IN["Input layer"]
+    x1["Feature 1"]
+    x2["Feature 2"]
+    x3["Feature 3"]
+  end
+  subgraph HID["Hidden layers: weights, bias, activation"]
+    h1["Neuron"]
+    h2["Neuron"]
+    h3["Neuron"]
+    h4["Neuron"]
+  end
+  subgraph OUT["Output layer"]
+    y["Prediction"]
+  end
+  x1 --> h1 & h2
+  x2 --> h2 & h3
+  x3 --> h3 & h4
+  h1 & h2 & h3 & h4 --> y
+  y --> L["Loss: compare with label"]
+  L -.->|backpropagation and gradient descent| HID`}
+/>
+
+<Diagram
+  caption="Choosing a deep-learning architecture: CNN for images, RNN or LSTM for step-by-step sequences, transformer for language and large-scale multimodal models"
+  code={`flowchart TD
+  D{"What is the input data?"} -->|Images or video frames| C["CNN: filters find edges, shapes, objects"]
+  D -->|Short sequences, time-series| R["RNN or LSTM: hidden state carries memory step by step"]
+  D -->|Text, long context, many tasks| T["Transformer: self-attention over all tokens in parallel"]
+  C --> CV["Classification, detection, segmentation, OCR"]
+  R --> SQ["Forecasting, early speech and translation"]
+  T --> LLM["LLMs and foundation models, translation, summarisation"]
+  P["Little labelled data?"] --> TL["Transfer learning: start from a pre-trained model and fine-tune"]`}
+/>
+
+<Diagram
+  caption="Transfer learning: reuse the general layers of a pre-trained model and retrain only the task-specific top on a small dataset"
+  code={`flowchart LR
+  BIG[("Huge general dataset")] --> PRE["Pre-trained model: general features"]
+  PRE --> FZ["Early layers kept: edges, shapes or grammar"]
+  FZ --> NEW["New output layer trained on your data"]
+  SMALL[("Small labelled dataset: 2,000 images")] --> NEW
+  NEW --> M["Custom model: e.g. defect or OK"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Scenario | Architecture or technique | Why |
+|---|---|---|
+| Spot scratches on phone screens from production-line photos | CNN (image classification or object detection) | Spatial patterns in images |
+| Predict tomorrow's energy use from hourly readings | RNN/LSTM, or classic time-series models | Ordered sequence data |
+| A chatbot that drafts replies to customer emails | Transformer (decoder LLM) | Long context, text generation |
+| Classify 3,000 labelled X-rays when no team can label millions | Transfer learning from a pre-trained image model | Small labelled dataset |
+| Find every person, company and date in contracts | NLP named entity recognition (encoder transformer, or Amazon Comprehend) | Understand text, no generation needed |
+| Predict loan default from 20 tidy columns | Traditional ML (for example XGBoost), not deep learning | Structured data, explainability matters |
+
+**Worked example — reading a training log.** *A team trains a CNN to sort recycling photos into 6 classes. The output layer has 6 neurons with softmax. For one photo it outputs 0.81 plastic, 0.10 glass, 0.05 metal and small values for the rest.* The prediction is "plastic" with 81% confidence, and the six probabilities add up to 1. If the label was "glass", the loss is high for this example, and backpropagation will adjust the weights so that next time the glass score rises. After 30 epochs the training accuracy is 99% but validation accuracy is 78% — classic overfitting, so the team adds data augmentation (flipped and rotated photos), dropout and early stopping.
+
+**Worked example — why transfer learning.** *A small hospital has 1,500 labelled skin-lesion images.* Training a CNN from scratch on 1,500 images would overfit badly. Starting from a model pre-trained on millions of general photos and fine-tuning it on the 1,500 images gives far better accuracy in hours instead of weeks, at a fraction of the compute cost.
+
+**Spot the clue — quick drill.**
+
+- "Each neuron multiplies inputs by weights, adds a bias, applies a function" → artificial neuron with activation function.
+- "Adjust weights in the direction that reduces the error" → gradient descent (with backpropagation calculating the direction).
+- "Filters slide across the image" → CNN.
+- "Keeps a hidden state from one step to the next" → RNN/LSTM.
+- "Weighs the relevance of every word to every other word, in parallel" → transformer self-attention.
+- "Reuse a model trained on a large dataset for a new, related task" → transfer learning.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={2}>
+
+<Callout type="realWorld" title="A manufacturer moves quality control to deep learning">
+A car-parts manufacturer inspected welds by eye; inspectors missed about one defect in twenty at the end of long shifts. The team photographed 4,000 welds, had experts label them, and **fine-tuned a pre-trained CNN** from SageMaker JumpStart instead of training from scratch. The model now flags suspect welds in under a second on the production line, and inspectors review only the flagged ones. A separate **transformer-based** model on Amazon Bedrock summarises shift reports, and **Amazon Comprehend** tags maintenance notes with the machine and fault type so recurring problems are easy to find.
+</Callout>
+
+Look at why each technique was chosen. Weld photos are images, so a CNN fits. Only 4,000 labelled images existed, so transfer learning was essential — the general visual features (edges, textures) came for free from the pre-trained model. Shift reports need language generation, which is a transformer's strength, and tagging entities in notes is a classic NLP task that a managed service handles without any training at all.
+
+The team also learned some practical lessons. Lighting changes in winter made accuracy drop until they added photos from different seasons — data representativeness again. And because the model is a black box, they keep a human inspector in the loop for every rejected part, which builds trust and creates fresh labels for retraining.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: fine-tune a pre-trained image model with SageMaker JumpStart" minutes={8}>
+
+<HandsOnLab
+  goal="See transfer learning in practice: pick a pre-trained image-classification model in Amazon SageMaker JumpStart, fine-tune it on a small labelled dataset and deploy it."
+  asOf="November 2026"
+  steps={[
+    { text: 'In SageMaker AI Studio, open JumpStart and filter models by the task "Image classification". Each model card shows the architecture, the dataset it was pre-trained on and whether it can be fine-tuned.', screen: { service: 'Amazon SageMaker AI Studio', path: ['JumpStart', 'Models', 'Task: Image classification'], menu: ['Home', 'JumpStart', 'Data', 'Jobs', 'Models', 'Deployments'], active: 'JumpStart', fields: [{ label: 'Model', value: 'ResNet-50 (CNN), pre-trained on ImageNet' }, { label: 'Fine-tunable', value: 'Yes' }], highlight: 'Train', note: 'Pre-trained on millions of general photos' } },
+    { text: 'Choose Train (fine-tune). Point the job at an S3 folder with one sub-folder per class — here about 2,000 labelled weld photos — and keep the suggested hyperparameters.', screen: { service: 'Amazon SageMaker AI Studio', path: ['JumpStart', 'ResNet-50', 'Fine-tune'], fields: [{ label: 'Training data', value: 's3://plant-ml/welds/ (good/, defect/)' }, { label: 'Epochs', value: '5' }, { label: 'Learning rate', value: '0.001' }, { label: 'Instance', value: 'ml.g5.xlarge (GPU)' }], highlight: 'Submit', note: 'Small dataset + GPU = transfer learning' } },
+    { text: 'Watch the training job metrics. Validation accuracy climbs quickly because the early layers already know edges and textures; only the top layers adapt to welds.', screen: { service: 'Amazon SageMaker AI', path: ['Training', 'Training jobs', 'weld-resnet-ft-001'], menu: ['Training jobs', 'Hyperparameter tuning jobs', 'Models'], active: 'Training jobs', fields: [{ label: 'Status', value: 'Completed · 14 minutes' }, { label: 'Validation accuracy', value: '0.96' }] } },
+    { text: 'Deploy the fine-tuned model to an endpoint and send a test photo. The response contains a probability for each class from the softmax output layer.', screen: { service: 'Amazon SageMaker AI Studio', path: ['Deployments', 'Endpoints', 'weld-classifier'], fields: [{ label: 'Status', value: 'InService' }, { label: 'Test result', value: 'defect 0.93 · good 0.07' }], highlight: 'Test inference' } },
+  ]}
+  expectedOutcome="You can explain why a pre-trained CNN fine-tuned on 2,000 images trains in minutes and performs well, and you can read the class probabilities that a softmax output layer returns."
+  checks={[
+    { q: 'Why did the job need only 2,000 images and a few epochs?', a: 'Transfer learning: the pre-trained layers already learned general visual features, so only the task-specific layers had to learn.' },
+    { q: 'What kind of neural network is ResNet-50, and why does it suit this task?', a: 'A convolutional neural network (CNN); its filters detect spatial patterns in images.' },
+    { q: 'The endpoint returns defect 0.93 and good 0.07. What produced these numbers?', a: 'The softmax activation in the output layer, which turns class scores into probabilities that add up to 1.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={1}>
+
+<Callout type="examTrap" title="Deep learning is not always the answer">
+If the data is a small, structured table and the scenario stresses explainability, low cost or regulation, traditional ML usually beats deep learning. Choose deep learning when the data is unstructured (images, audio, free text) or the patterns are too complex for hand-made features.
+</Callout>
+
+- Images → **CNN**. Sequences step by step → **RNN/LSTM**. Language, long context, LLMs → **transformer** with **self-attention**.
+- Transformers process tokens **in parallel**; RNNs process them **one at a time**. Positional encoding gives transformers word order.
+- "Little labelled data" + "pre-trained model" → **transfer learning** (SageMaker JumpStart).
+- Weights and biases are **learned parameters**; learning rate, epochs and number of layers are **hyperparameters**.
+- **Backpropagation** works out each weight's share of the error; **gradient descent** updates the weights.
+- CV tasks → Rekognition / Textract; NLP tasks → Comprehend / Translate / Transcribe / Polly / Lex; generation → Bedrock.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+A neural network is layers of neurons that multiply inputs by learned weights, add a bias and apply an activation function. Training repeats a forward pass, a loss calculation, backpropagation and a gradient-descent update for many epochs. Deep learning stacks many hidden layers that learn a hierarchy of features from raw, unstructured data, at the cost of more data, more compute and less explainability. CNNs suit images, RNNs and LSTMs suit step-by-step sequences, and transformers use self-attention to process whole sequences in parallel — the foundation of LLMs. Transfer learning reuses pre-trained models so that small datasets are enough. Computer vision and NLP are the two big application areas, served on AWS by services such as Rekognition, Textract, Comprehend, Translate and Bedrock. Tomorrow you will learn when AI adds value, when it does not, and which managed AI service fits each use case.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={4} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="From pixels/tokens to predictions" minutes={15} optional>
+
+Neural networks only understand numbers, so every input must first become a **tensor** — a multi-dimensional array.
+
+**Pixels to a prediction.** A 224 × 224 colour photo becomes a 224 × 224 × 3 tensor (height, width, red-green-blue channels), with each value scaled to a small range. The CNN's convolution layers turn it into stacks of feature maps that get smaller but "deeper" (more channels), pooling shrinks them further, and a final fully connected layer produces one score per class. Softmax converts the scores into probabilities. At inference the model returns, for example, *defect 0.93, good 0.07*, and the application applies a business threshold — perhaps sending anything above 0.5 for human review.
+
+**Tokens to a prediction.** Text is split into **tokens** (words or word pieces), each token is mapped to an ID, and each ID is looked up in an **embedding** table that turns it into a vector of hundreds or thousands of numbers. Positional encoding is added, then a stack of transformer blocks applies self-attention and small feed-forward networks. The final layer produces a probability for every token in the vocabulary; a decoder model picks the next token, appends it and repeats — that loop is how an LLM writes a paragraph. Day 8 covers tokens and embeddings in depth.
+
+**On AWS.** The same pipeline appears whether you build or buy. Build: raw images and text land in Amazon S3, a SageMaker AI training job on GPU or Trainium instances learns (or fine-tunes) the weights, the model artifact is stored back in S3 and registered, and a SageMaker AI endpoint on GPU or Inferentia instances serves predictions. Buy: Amazon Rekognition, Amazon Comprehend and Amazon Bedrock hide the tensors, layers and hardware behind an API call — you send an image or text and receive labels, entities or generated text.
+
+<Diagram
+  caption="Architecture: from raw pixels and tokens to predictions, built on SageMaker AI or consumed as managed AI services"
+  code={`flowchart LR
+  subgraph Data
+    IMG["Images"] --> S3[("Amazon S3")]
+    TXT["Text"] --> S3
+  end
+  subgraph Build["Build with SageMaker AI"]
+    S3 --> PRE["Pre-process: resize to tensors, tokenize to IDs"]
+    PRE --> TR["Training job on GPU or Trainium: CNN or transformer"]
+    TR --> ART[("Model artifact in S3")]
+    ART --> EP["Endpoint on GPU or Inferentia"]
+  end
+  subgraph Buy["Buy: managed AI services"]
+    RK["Amazon Rekognition"]
+    CP["Amazon Comprehend"]
+    BR["Amazon Bedrock FMs"]
+  end
+  APP["Application"] -->|image or text| EP
+  APP -->|API call| RK & CP & BR
+  EP -->|class probabilities| APP`}
+/>
+
+**Trade-offs.** Building gives full control over the architecture and data and can be cheaper at very high volume, but needs ML skills, labelled data and GPU budget. Managed services need no ML expertise and scale automatically, but cover only the tasks they were designed for. A useful rule: start with a managed service or a pre-trained model, and move to custom training only when accuracy, domain-specific labels or cost at scale justify it.
+
+</Section>

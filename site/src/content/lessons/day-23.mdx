@@ -1,0 +1,289 @@
+---
+day: 23
+kind: lesson
+title: 'Responsible AI tooling'
+summary: 'Put responsible AI into practice with AWS tools: Amazon Bedrock Guardrails to filter harmful content, denied topics, PII and ungrounded answers; Amazon SageMaker Clarify to detect bias before and after training and explain predictions; Amazon SageMaker Model Monitor to catch data, quality, bias and attribution drift in production; human review workflows, label-quality checks, human audits and subgroup analysis; and sustainable, right-sized model selection.'
+domains: [D4]
+taskStatements: ['4.1']
+sources:
+  - { provider: udemy, title: 'Amazon Bedrock Guardrails; SageMaker Clarify; SageMaker Model Monitor; Responsible AI' }
+  - { provider: skillbuilder, title: 'Responsible Artificial Intelligence Practices' }
+  - { provider: aws-docs, title: 'Amazon Bedrock User Guide — Detect and filter harmful content by using Amazon Bedrock Guardrails', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html' }
+  - { provider: aws-docs, title: 'Amazon SageMaker AI Developer Guide — Fairness, model explainability and bias detection with SageMaker Clarify', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/clarify-configure-processing-jobs.html' }
+objectives:
+  - Configure the policies of Amazon Bedrock Guardrails — content filters, denied topics, word filters, sensitive information filters, contextual grounding and Automated Reasoning checks
+  - Use SageMaker Clarify to detect pre-training and post-training bias and to explain predictions with feature attributions
+  - Choose the right SageMaker Model Monitor type — data quality, model quality, bias drift or feature attribution drift
+  - Describe human review of low-confidence predictions, label-quality analysis, human audits and subgroup analysis
+  - Select models responsibly with sustainability and environmental impact in mind
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+examTraps: ['Amazon Augmented AI']
+keyPoints:
+  - 'Bedrock Guardrails: content filters, denied topics, word filters, sensitive information (PII) filters, contextual grounding checks and Automated Reasoning checks — on prompts and responses, for any model via the ApplyGuardrail API.'
+  - 'SageMaker Clarify detects bias before training (data) and after training (predictions) and explains predictions with SHAP feature attributions.'
+  - 'SageMaker Model Monitor watches endpoints for data quality, model quality, bias drift and feature attribution drift against a baseline.'
+  - 'Route low-confidence or high-impact predictions to human reviewers; check label quality with consensus and audits; analyse metrics per subgroup.'
+  - 'Sustainable selection: the smallest model that meets the need, distillation, efficient hardware (Inferentia, Trainium, Graviton) and no idle capacity.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 22" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="AWS tools for responsible AI" minutes={15}>
+
+### From principles to tools
+
+Yesterday you learned *what* responsible AI means. Today is about *how* AWS helps you do it. A useful way to organise the tools is by the question they answer:
+
+| Question | AWS tool |
+|---|---|
+| Is my generative AI app saying or accepting something harmful, off-topic, private or ungrounded? | **Amazon Bedrock Guardrails** |
+| Is my data or my model biased, and why did the model make this prediction? | **Amazon SageMaker Clarify** |
+| Has my deployed model drifted — in data, quality, bias or explanations? | **Amazon SageMaker Model Monitor** |
+| Should a person check this prediction before it takes effect? | **Human review workflows** (Amazon Augmented AI, A2I) |
+| Are my training labels correct and consistent? | **SageMaker Ground Truth** label-quality features and human audits |
+| Is this the right-sized, most efficient model for the job? | **Responsible model selection** (sustainability) |
+
+Keep this table in mind: many exam questions simply describe one of these questions in business language and ask which tool fits.
+
+### Amazon Bedrock Guardrails
+
+**Amazon Bedrock Guardrails** is a set of configurable safeguards that sit between users and a foundation model. A guardrail evaluates the **user's prompt** before it reaches the model and the **model's response** before it reaches the user. If a policy is violated, the guardrail blocks the content and returns a message you define (for example "Sorry, I can't help with that"), or masks the sensitive part. Think of it as a bouncer at the door and a proofreader at the exit.
+
+A guardrail combines several policies:
+
+- **Content filters** — detect harmful categories: **hate, insults, sexual, violence and misconduct**, each with an adjustable strength (none, low, medium, high) set separately for prompts and responses. A **prompt attack** filter detects jailbreak attempts and prompt injection. Content filters can also be applied to images for supported models.
+- **Denied topics** — subjects your application must not discuss, defined in plain natural language with a few example phrases. A bank's assistant might deny "investment advice"; a children's homework helper might deny "dating".
+- **Word filters** — block exact words or phrases (competitor names, internal code names) and an AWS-managed **profanity** list.
+- **Sensitive information filters** — detect personally identifiable information (PII) such as names, email addresses, phone numbers, credit card and account numbers, and either **block** the whole message or **mask** the PII (for example replacing it with `{NAME}`). You can add **custom regular expressions** for your own formats, such as employee IDs.
+- **Contextual grounding checks** — for retrieval-augmented generation and summarisation, score whether the response is **grounded** in the supplied source material and **relevant** to the user's question, and block responses below your thresholds. This is a direct control against hallucinations.
+- **Automated Reasoning checks** — validate responses against a formal policy you provide (for example HR leave rules) using logic-based verification, and flag answers that contradict the rules.
+
+Guardrails work with Bedrock models, **Bedrock Agents** and **Bedrock Knowledge Bases**. Through the **ApplyGuardrail API** you can also evaluate any text without calling a Bedrock model — so the same guardrail can protect a model hosted on SageMaker AI, on another platform or self-hosted. You can create several guardrails, version them and reuse one guardrail across many applications so the policy is consistent. Guardrails do not change the model itself; they filter what goes in and out.
+
+### Amazon SageMaker Clarify
+
+**SageMaker Clarify** answers two questions for ML models: *is it biased?* and *why did it predict that?*
+
+**Bias detection** works on a **facet** — the attribute that defines the groups you care about, such as age band or gender — and a positive outcome, such as "loan approved".
+
+- **Pre-training bias** is measured on the *dataset* before any model is trained. Examples: **class imbalance (CI)** — is one facet much rarer than another? — and **difference in proportions of labels (DPL)** — does one group have far more positive labels in the historical data? Finding bias here lets you fix the data early, which is cheapest.
+- **Post-training bias** is measured on the *model's predictions*. Examples: **disparate impact (DI)** — the ratio of positive prediction rates between groups — and differences in accuracy, recall or false positive rate between groups.
+
+**Explainability** uses **SHAP** (Shapley values, from game theory) to give **feature attributions**: how much each input feature pushed a prediction up or down. Clarify reports global explanations (which features matter most overall) and local explanations (why *this* applicant was declined). It can also produce partial dependence plots that show how the prediction changes as one feature changes.
+
+Clarify runs as a processing job and is built into SageMaker Studio, SageMaker Data Wrangler (a quick bias report while preparing data), SageMaker Autopilot and SageMaker Model Monitor. It also offers **foundation model evaluations** for qualities such as accuracy, toxicity and robustness of LLMs — you will meet the Bedrock equivalent tomorrow.
+
+### Amazon SageMaker Model Monitor
+
+A model that was fair and accurate at launch can degrade as the world changes. **SageMaker Model Monitor** watches models deployed on SageMaker AI endpoints (and batch transform jobs). You enable **data capture** to record requests and responses, create a **baseline** from your training data, and schedule monitoring jobs that compare live traffic with that baseline. Violations appear as reports and **Amazon CloudWatch** metrics, so you can raise alarms or trigger retraining. There are four monitor types:
+
+| Monitor | Watches for | Example |
+|---|---|---|
+| **Data quality** | Input data drifting from the training baseline (missing values, new categories, shifted distributions) | Average applicant income doubles after a product change |
+| **Model quality** | Accuracy, precision, recall and similar metrics falling — needs **ground-truth labels** collected later | Fraud recall drops from 85% to 60% |
+| **Bias drift** | Clarify bias metrics changing over time | Approval-rate gap between age groups widens |
+| **Feature attribution drift** | Clarify feature importance changing | Postcode suddenly becomes the top driver of decisions |
+
+Remember: **Clarify** measures bias and explanations at a point in time; **Model Monitor** runs those checks continuously in production.
+
+### Human review of predictions
+
+Some predictions should not take effect without a person checking them — low-confidence results, or decisions with high impact on people. **Amazon Augmented AI (A2I)** provided managed human review workflows for this pattern; it is not listed in the v1.2 exam guide, so learn the **concept**: define a condition (for example *confidence below 80%*, or *every loan rejection*), route matching predictions to a human work team, and use their decisions as the final outcome and as new labelled data. Workforces can be your own employees, a vendor or a public crowd. Human review improves safety and fairness, catches model blind spots and provides the feedback needed to improve the model — at the cost of time and money, so it is usually applied selectively.
+
+### Label quality, human audits and subgroup analysis
+
+- **Label-quality analysis.** A model can only be as fair as its labels. **SageMaker Ground Truth** supports *annotation consolidation* — sending each item to several labellers and combining their answers, so disagreement highlights ambiguous or careless labels — plus **label verification** and **adjustment** jobs in which reviewers check and correct existing labels. Good practice adds clear labelling instructions with examples, a set of gold-standard items with known answers to measure labeller accuracy, and diverse labelling teams to reduce cultural bias.
+- **Human audits.** Periodically a person (or an independent team) reviews a random sample of the model's decisions and outputs, checks them against policy, and records findings. **Red teaming** is an adversarial version for generative AI: testers deliberately try to make the model produce harmful, biased or false content so weaknesses are found before attackers find them.
+- **Subgroup analysis.** Compute metrics for each group separately — accuracy, false positive and false negative rates, approval rates — instead of trusting the overall average. Clarify's facets automate this for ML models; for generative AI, build evaluation prompts that represent each group and compare results.
+
+### Responsible model selection and sustainability
+
+The exam guide explicitly mentions **environmental considerations and sustainability** when choosing a model. Training and running large models consume a lot of energy, water for cooling and hardware. Responsible choices include:
+
+- **Right-size the model** — use the smallest model that meets the quality bar. A small model (for example Amazon Nova Micro or Nova Lite) that handles a classification or extraction task well uses far less compute per request than the largest model.
+- **Reuse rather than retrain** — prompting, RAG or light fine-tuning of an existing foundation model avoids the huge cost of pre-training from scratch.
+- **Model distillation** — train a smaller "student" model to imitate a larger "teacher" for a specific task (Amazon Bedrock Model Distillation does this) to keep quality while cutting inference cost and energy.
+- **Efficient hardware** — AWS Inferentia (inference) and AWS Trainium (training) chips and Graviton processors deliver more work per watt for suitable workloads.
+- **Avoid idle capacity** — serverless and batch inference, auto scaling, and shutting down unused endpoints and notebooks.
+- **Measure** — the AWS Customer Carbon Footprint Tool reports emissions, and the AWS Well-Architected Framework has a **Sustainability pillar** with guidance.
+
+Sustainability usually aligns with cost: the efficient choice is often the cheaper one too.
+
+### Tuning the tools: strict is not always better
+
+Every safeguard has a trade-off between catching problems and getting in the way. A content filter set to *high* blocks more harmful text but also produces more **false positives** — a nurse asking about medication overdoses for patient safety, or a history student asking about a war, may be blocked. A filter set too low lets harmful content through. The same applies to grounding thresholds: a very high threshold rejects many correct answers that paraphrase the source; a very low one lets hallucinations pass. Teams therefore start from a sensible default, test the guardrail with a set of realistic prompts (both legitimate and malicious), review what was blocked, and adjust. Guardrail **versions** make this safe: you can test a new version while the old one stays in production.
+
+Monitoring needs similar care. If Model Monitor thresholds are too sensitive, the team receives alarms every day and starts ignoring them — a human version of automation bias. If they are too loose, drift goes unnoticed for months. Bias metrics also need context: a small difference between groups may be acceptable and explainable by legitimate factors, while a large one demands investigation. Write down which metric, which threshold and who responds before you switch monitoring on.
+
+### A checklist by lifecycle stage
+
+| Stage | Responsible AI action | Tool |
+|---|---|---|
+| Data preparation | Check representation and label balance per group | Clarify pre-training bias, Data Wrangler report |
+| Labelling | Consensus labelling, verification, gold-standard items | SageMaker Ground Truth |
+| Training and evaluation | Per-group metrics, explanations, robustness tests | Clarify post-training bias and SHAP |
+| Model selection | Smallest model that meets the bar; efficient hardware | Bedrock model choice, distillation, Inferentia |
+| Generative AI app | Filter prompts and responses; ground answers | Bedrock Guardrails |
+| Deployment | Human review for low-confidence or high-impact cases | Human review workflow |
+| Operations | Continuous drift and bias checks; periodic human audits | Model Monitor, CloudWatch, audit sampling |
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={4}>
+
+<Diagram
+  caption="Amazon Bedrock Guardrails checks the prompt on the way in and the response on the way out"
+  code={`flowchart LR
+  U["User prompt"] --> GI{"Guardrail input check: content, denied topics, words, PII, prompt attack"}
+  GI -->|Blocked| BM["Blocked message returned"]
+  GI -->|Allowed| M["Foundation model, agent or knowledge base"]
+  M --> GO{"Guardrail output check: content, PII masking, grounding and relevance"}
+  GO -->|Blocked| BM
+  GO -->|Allowed or masked| R["Response to user"]`}
+/>
+
+<Diagram
+  caption="Where Clarify, Model Monitor and human review fit in the ML lifecycle"
+  code={`flowchart LR
+  D["Training data"] --> C1["Clarify: pre-training bias"]
+  C1 --> T["Train model"]
+  T --> C2["Clarify: post-training bias and SHAP explanations"]
+  C2 --> E["Deploy endpoint with data capture"]
+  E --> MM["Model Monitor: data quality, model quality, bias drift, attribution drift"]
+  MM -->|Alarm in CloudWatch| RT["Investigate and retrain"]
+  RT --> D
+  E --> HR{"Low confidence or high impact?"}
+  HR -->|Yes| H["Human review"]
+  HR -->|No| A["Automatic decision"]`}
+/>
+
+<Diagram
+  caption="Sustainable model selection: try the lightest option that meets the quality bar first"
+  code={`flowchart TD
+  N["New use case"] --> S{"Does a small model with prompting meet the bar?"}
+  S -->|Yes| SM["Use the small model, serverless or batch"]
+  S -->|No| R{"Does RAG or light fine-tuning close the gap?"}
+  R -->|Yes| RF["Customise an existing model"]
+  R -->|No| L["Use a larger model; consider distillation to a smaller one"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={4}>
+
+| Requirement | Tool and feature |
+|---|---|
+| Stop a banking assistant from giving investment advice | Bedrock Guardrails — **denied topic** |
+| Hide customers' phone numbers in chatbot answers | Bedrock Guardrails — **sensitive information filter (mask)** |
+| Block users trying "ignore your instructions and…" | Bedrock Guardrails — **prompt attack** content filter |
+| Reject RAG answers not supported by the retrieved documents | Bedrock Guardrails — **contextual grounding check** |
+| Never mention a competitor's product name | Bedrock Guardrails — **word filter** |
+| Check whether the training data under-represents women before training | SageMaker Clarify — **pre-training bias** (class imbalance) |
+| Explain to a customer why their application was declined | SageMaker Clarify — **SHAP feature attributions** (local explanation) |
+| Get alerted when input data starts to look different from training data | SageMaker Model Monitor — **data quality** |
+| Detect that the approval gap between age groups is widening in production | SageMaker Model Monitor — **bias drift** |
+| Send document extractions with confidence below 90% to a person | **Human review workflow** (A2I concept) |
+| Find mislabelled images in a training set | Ground Truth — **consolidation and label verification** |
+| Cut the energy and cost of a simple classification chatbot | **Smaller model or distillation**, serverless inference |
+
+**Worked example — layering guardrails.** *A telecom company launches a customer-support assistant on Amazon Bedrock with a knowledge base of plan documents.* It configures one guardrail with: medium-to-high content filters for hate, insults, sexual content, violence and misconduct; the prompt-attack filter; a denied topic "legal advice"; PII masking for phone and account numbers in responses; a word filter for two competitor names; and a contextual grounding threshold so answers must be supported by the retrieved plan documents. Each policy addresses a different dimension from Day 22 — safety, robustness against attacks, privacy, legal risk and veracity.
+
+**Worked example — Clarify then Monitor.** *An insurer builds a claims-triage model.* Before training, a Clarify report shows claims from rural areas are only 4% of the data (class imbalance), so the team collects more. After training, Clarify shows similar recall across regions and that claim amount and policy age are the top features. In production, Model Monitor runs a bias drift check every day; three months later an alarm fires because the recall gap between regions has widened after a new rural partner joined. The team investigates and retrains with recent data.
+
+**Worked example — the right reviewer.** *A healthcare provider extracts fields from handwritten referral forms.* Extractions with confidence above 95% go straight through; anything lower, and every medication dosage, is routed to a trained clinical reviewer. The reviewers' corrections become new labelled data for the next model version. This is human review applied where risk is highest, not everywhere.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={2}>
+
+<Callout type="realWorld" title="A lender combines four tools for fair, explainable credit decisions">
+A consumer lender uses an ML model to recommend approve or decline on small loans. Before training, a **SageMaker Clarify** pre-training report revealed that applicants under 25 had a much lower share of positive labels in historical data, so the team reviewed whether past decisions had been unfair and rebalanced the data. After training, Clarify post-training metrics confirmed similar approval rates for equally qualified applicants across age bands, and SHAP explanations were used to generate the "main reasons" listed in every decline letter, as lending regulations require. **SageMaker Model Monitor** runs daily bias drift and feature attribution drift checks, with CloudWatch alarms to the model risk team. Every decline near the decision threshold is reviewed by a **human underwriter**. The lender also added a customer chatbot on Amazon Bedrock protected by **Bedrock Guardrails** with a denied topic for personalised financial advice and PII masking.
+</Callout>
+
+The pattern is typical of regulated industries: detect bias early, explain every adverse decision, monitor continuously, keep a human in the loop near the threshold, and guard the generative AI front door. When an exam scenario describes a bank, insurer or hospital, look for answers that combine these controls rather than a single tool.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: create a guardrail in Amazon Bedrock" minutes={8}>
+
+<HandsOnLab
+  goal="Walk through creating an Amazon Bedrock guardrail with content filters, a denied topic and PII masking, then test it against a model."
+  asOf="November 2026"
+  steps={[
+    { text: 'In the Amazon Bedrock console open Guardrails and choose Create guardrail. Name it and write the message users see when content is blocked.', screen: { service: 'Amazon Bedrock', path: ['Guardrails', 'Create guardrail', 'Guardrail details'], menu: ['Overview', 'Model catalog', 'Playgrounds', 'Guardrails', 'Knowledge Bases', 'Evaluations'], active: 'Guardrails', fields: [{ label: 'Name', value: 'support-assistant-guardrail' }, { label: 'Blocked message', value: 'Sorry, I can’t help with that. Please contact support.' }], highlight: 'Next' } },
+    { text: 'Configure content filters: set hate, insults, sexual, violence and misconduct to High for prompts and responses, and enable the prompt attack filter.', screen: { service: 'Amazon Bedrock', path: ['Create guardrail', 'Content filters'], fields: [{ label: 'Hate / Insults / Sexual / Violence / Misconduct', value: 'High (prompt) · High (response)' }, { label: 'Prompt attack', value: 'High' }], note: 'Safety and jailbreak protection' } },
+    { text: 'Add a denied topic “Investment advice” with a short definition and sample phrases, then add PII masking for phone numbers and email addresses.', screen: { service: 'Amazon Bedrock', path: ['Create guardrail', 'Denied topics and sensitive information'], fields: [{ label: 'Denied topic', value: 'Investment advice — recommending stocks, funds or crypto' }, { label: 'PII types', value: 'PHONE: Mask · EMAIL: Mask' }], highlight: 'Add filter' } },
+    { text: 'Enable a contextual grounding check, create the guardrail, then use the test panel: ask “Which stock should I buy?” and confirm the blocked message appears.', screen: { service: 'Amazon Bedrock', path: ['Guardrails', 'support-assistant-guardrail', 'Test'], fields: [{ label: 'Grounding threshold', value: '0.75' }, { label: 'Test result', value: 'Blocked — denied topic: Investment advice' }], highlight: 'Run', note: 'Trace shows which policy fired' } },
+  ]}
+  expectedOutcome="You can name each guardrail policy, say which risk it addresses, and explain that the guardrail checks both the prompt and the response without changing the model."
+  checks={[
+    { q: 'Which guardrail policy keeps a support bot from discussing medical diagnoses?', a: 'A denied topic.' },
+    { q: 'Your RAG assistant sometimes answers with facts not found in the retrieved documents. Which policy helps?', a: 'The contextual grounding check, which blocks responses that are not grounded in the source or not relevant to the query.' },
+    { q: 'Can you apply the same guardrail to a model hosted outside Amazon Bedrock?', a: 'Yes — call the ApplyGuardrail API on the input and output text.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="Clarify vs Model Monitor vs Guardrails">
+**Clarify** = measure bias and explain predictions (a report at a point in time). **Model Monitor** = keep checking a deployed SageMaker model for drift over time. **Guardrails** = filter prompts and responses of generative AI apps. If the question is about *harmful or off-topic chatbot content*, it is Guardrails, not Clarify.
+</Callout>
+
+- Block a subject entirely → **denied topic**; block specific words → **word filter**; hide PII → **sensitive information filter (mask)**.
+- Jailbreak or prompt injection → **prompt attack** filter. Hallucination in RAG → **contextual grounding check**.
+- Bias in the dataset before training → **Clarify pre-training bias**; bias in predictions → **Clarify post-training bias**.
+- "Why did the model decide this?" for an ML model → **Clarify SHAP feature attributions**.
+- Drift after deployment → **Model Monitor** (data quality, model quality, bias drift, feature attribution drift). Model quality monitoring needs **ground-truth labels**.
+- Low-confidence predictions to people → **human review workflow** (A2I concept, not listed in the v1.2 guide).
+- Sustainability → **smallest suitable model**, distillation, Inferentia/Trainium/Graviton, no idle endpoints.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+Amazon Bedrock Guardrails filters both prompts and responses with content filters (including prompt attacks), denied topics, word filters, PII filters, contextual grounding checks and Automated Reasoning checks, and works with any model through the ApplyGuardrail API. SageMaker Clarify detects bias before and after training and explains predictions with SHAP. SageMaker Model Monitor checks deployed models for data quality, model quality, bias drift and feature attribution drift. Human review handles low-confidence and high-impact predictions, label-quality checks and audits keep data trustworthy, and subgroup analysis exposes hidden unfairness. Choosing the smallest suitable model on efficient hardware is both sustainable and economical. Tomorrow: transparency and explainability.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={23} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="A responsible generative AI and ML architecture on AWS" minutes={15} optional>
+
+In production the tools are combined. The generative AI path protects every conversation with a guardrail and logs it; the ML path detects drift and bias and feeds a retraining loop. Both paths route risky cases to people and store evidence for audit.
+
+<Diagram
+  caption="Reference architecture: guardrailed GenAI assistant plus monitored ML model with human review and audit trail"
+  code={`flowchart LR
+  subgraph GenAI["Generative AI path"]
+    U["User app"] --> G1["Bedrock Guardrails: input"]
+    G1 --> KB["Bedrock Knowledge Base and model"]
+    KB --> G2["Bedrock Guardrails: output and grounding"]
+    G2 --> U
+  end
+  subgraph ML["ML path"]
+    EP["SageMaker AI endpoint with data capture"] --> MM["Model Monitor schedules"]
+    MM --> CW["CloudWatch alarms"]
+    CW --> PL["Retraining pipeline with Clarify reports"]
+    PL --> EP
+    EP --> HR["Human review for low confidence"]
+  end
+  G2 --> LOG[("Logs and evidence in S3")]
+  MM --> LOG
+  HR --> LOG`}
+/>
+
+**Design notes.** Guardrail interventions should be logged and reviewed: a rising rate of blocked prompts may indicate an attack, while many false blocks suggest thresholds are too strict and are hurting helpfulness. Monitoring schedules cost compute, so frequency should match risk — hourly for fraud, weekly for a slow-changing forecast. Model quality monitoring depends on collecting ground-truth labels after the fact (did the customer actually default?), which can take weeks; data quality and bias drift checks give earlier warning because they need only inputs and predictions. Human reviewers need clear instructions and their own quality checks, or they introduce new bias. Finally, every report — Clarify outputs, monitoring violations, reviewer decisions and guardrail configuration versions — becomes part of the evidence that governance teams use on Day 27.
+
+</Section>

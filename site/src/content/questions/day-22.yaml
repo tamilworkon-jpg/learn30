@@ -1,0 +1,332 @@
+- id: q-day-22-001
+  set: day-22
+  type: single
+  stem: "A company launched a voice assistant that frequently fails to understand customers with strong regional accents. The design team recruited test users from only one city. Which responsible AI dimension did the team MOST clearly neglect?"
+  options:
+    - { id: a, text: "Robustness", explanation: "Incorrect. Robustness is about stable behaviour under noisy, unusual or adversarial input; the root cause here is that whole groups of users were never considered in design and testing." }
+    - { id: b, text: "Inclusivity", explanation: "Correct. Inclusivity means designing for, collecting data from and testing with the full range of people who will use the system. Testing with one city's users left accented speakers out." }
+    - { id: c, text: "Veracity", explanation: "Incorrect. Veracity is about whether outputs are truthful; the problem here is who the system works for." }
+    - { id: d, text: "Controllability", explanation: "Incorrect. Controllability is the ability of humans to monitor, steer and override the system, which is not the issue described." }
+  answer: [b]
+  explanation: "Inclusivity is about who was considered when the system was designed, built and tested. Leaving regional accents out of data collection and testing makes unfair outcomes for those users very likely. Fairness describes the unequal outcome; inclusivity describes the process gap that caused it."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: easy
+
+- id: q-day-22-002
+  set: day-22
+  type: single
+  stem: "A legal research assistant built on a foundation model confidently cites a court ruling that does not exist. Which responsible AI dimension does this failure MOST directly violate?"
+  options:
+    - { id: a, text: "Fairness", explanation: "Incorrect. Fairness concerns equitable treatment of groups of people; an invented citation is a problem of truthfulness." }
+    - { id: b, text: "Inclusivity", explanation: "Incorrect. Inclusivity concerns who was considered in design and testing, not whether facts are true." }
+    - { id: c, text: "Veracity", explanation: "Correct. Veracity means outputs are truthful and accurate. Presenting an invented case as fact is a hallucination, a veracity failure." }
+    - { id: d, text: "Controllability", explanation: "Incorrect. Controllability is about humans being able to steer or stop the system, not about whether a specific answer is true." }
+  answer: [c]
+  explanation: "A hallucination is a confident but false output. It violates veracity, and in a legal setting it also creates legal and trust risk. Grounding answers in trusted sources with RAG and showing citations is the main control."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: easy
+
+- id: q-day-22-003
+  set: day-22
+  type: single
+  stem: "A company trains a model to shortlist engineering applicants using ten years of its own past hiring decisions. In that period, the company hired very few women for engineering roles. The model now ranks women lower. Which type of bias BEST explains this?"
+  options:
+    - { id: a, text: "Historical bias", explanation: "Correct. The data accurately records past decisions that were themselves unequal, and the model learned to repeat that pattern." }
+    - { id: b, text: "Automation bias", explanation: "Incorrect. Automation bias is people over-trusting a model's output; it does not explain why the model learned to rank women lower." }
+    - { id: c, text: "Confirmation bias", explanation: "Incorrect. Confirmation bias is a team looking only for results that support its beliefs; the issue here comes from the training data." }
+    - { id: d, text: "Measurement bias", explanation: "Incorrect. Measurement bias arises when a feature is measured differently or is a poor proxy; here the labels faithfully record an unequal past." }
+  answer: [a]
+  explanation: "Historical bias occurs when data correctly reflects an unfair past, so a model trained on it reproduces past inequities. Fixes include re-examining labels and outcomes, rebalancing data, removing proxy features and testing outcomes per group, with humans making the final decision."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: medium
+
+- id: q-day-22-004
+  set: day-22
+  type: single
+  stem: "An audit shows that loan officers accepted 99.6% of a credit model's recommendations, often within seconds and without reading the supporting documents. Which risk does this behaviour illustrate?"
+  options:
+    - { id: a, text: "Label bias", explanation: "Incorrect. Label bias is inconsistent or prejudiced human labels in training data, not how staff use a deployed model." }
+    - { id: b, text: "Sampling bias", explanation: "Incorrect. Sampling bias means some groups are missing or rare in the training data, which the audit does not describe." }
+    - { id: c, text: "Model overfitting", explanation: "Incorrect. Overfitting is a statistical property of the model; the audit describes human behaviour." }
+    - { id: d, text: "Automation bias", explanation: "Correct. Automation bias is people over-trusting a model's output and no longer applying their own judgment, which removes the value of human oversight." }
+  answer: [d]
+  explanation: "Automation bias is a human bias: reviewers rubber-stamp model outputs. It defeats controllability and human review. Responses include requiring reviewers to record a justification, sampling decisions for audit and training staff on the model's limitations."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: medium
+
+- id: q-day-22-005
+  set: day-22
+  type: single
+  stem: "To make a lending model fair, a team deletes the gender column from the training data. Testing still shows that equally qualified women are approved less often than men. What is the MOST likely reason?"
+  options:
+    - { id: a, text: "The model is underfitting because one column was removed", explanation: "Incorrect. Removing one column rarely causes underfitting, and underfitting would not by itself explain a gap specific to women." }
+    - { id: b, text: "Other features act as proxies that carry the same information as gender", explanation: "Correct. Features such as first name, certain hobbies or job titles can correlate with gender, so the model can still learn the biased pattern." }
+    - { id: c, text: "The model needs to be trained for more epochs", explanation: "Incorrect. Longer training does not remove bias learned from proxies; it may even memorise it more strongly." }
+    - { id: d, text: "The test set is too small to measure fairness at all", explanation: "Incorrect. Nothing suggests the test set is too small; the consistent gap points to proxy features." }
+  answer: [b]
+  explanation: "Removing a sensitive attribute does not remove bias when proxy features remain. Responsible practice keeps the attribute available for evaluation, measures outcomes per group, rebalances or corrects the data and monitors after deployment."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#exam-tips
+  difficulty: hard
+
+- id: q-day-22-006
+  set: day-22
+  type: single
+  stem: "When users add a small typo to a question, a customer-support chatbot gives the opposite answer to the one it gives for the correctly spelled question. Which responsible AI dimension is MOST at risk?"
+  options:
+    - { id: a, text: "Robustness", explanation: "Correct. Robustness means the system keeps working reliably when inputs are noisy, unusual or slightly changed. A typo should not flip the answer." }
+    - { id: b, text: "Transparency", explanation: "Incorrect. Transparency is about openness on how and why AI is used, not about stability under small input changes." }
+    - { id: c, text: "Inclusivity", explanation: "Incorrect. Inclusivity concerns which people were considered in design and testing; the issue here is instability to small input changes." }
+    - { id: d, text: "Governance", explanation: "Incorrect. Governance is the policies, roles and audits around AI, not the model's behaviour on noisy input." }
+  answer: [a]
+  explanation: "Robustness is about stability: a robust model gives consistent results for paraphrased, misspelled or slightly perturbed inputs and resists adversarial manipulation. Testing with perturbed prompts is a standard robustness check."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#examples
+  difficulty: easy
+
+- id: q-day-22-007
+  set: day-22
+  type: single
+  stem: "A skin-condition image classifier reaches 94% overall accuracy. Only 3% of the training images show darker skin tones. Which conclusion is MOST justified before deployment?"
+  options:
+    - { id: a, text: "The model is ready because 94% exceeds the target accuracy", explanation: "Incorrect. An overall score that meets the target says nothing about performance for an under-represented group." }
+    - { id: b, text: "The overall accuracy proves that the model treats all skin tones fairly", explanation: "Incorrect. Averages are dominated by the majority group and can hide poor results for small groups." }
+    - { id: c, text: "Accuracy may be much lower for darker skin tones, so the team should evaluate performance per skin tone", explanation: "Correct. Sampling bias plus a small group suggests subgroup inaccuracy; subgroup analysis is how you find it." }
+    - { id: d, text: "The team should crop skin out of the images to remove the sensitive attribute", explanation: "Incorrect. Skin is the subject of the images; removing it would destroy the task rather than fix representation." }
+  answer: [c]
+  explanation: "A high overall accuracy can hide much worse accuracy for a group that is rare in the data. Compute accuracy and error rates per group (subgroup analysis), and collect more representative data if gaps appear."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: medium
+
+- id: q-day-22-008
+  set: day-22
+  type: single
+  stem: "A card-fraud model has the same overall accuracy for customers in two regions. However, its false positive rate for Region B is twice the rate for Region A, so Region B customers have their cards frozen more often. Which statement is correct?"
+  options:
+    - { id: a, text: "The model is fair because overall accuracy is equal across regions", explanation: "Incorrect. Equal accuracy can hide different kinds of mistakes, and here one group bears more of the harmful errors." }
+    - { id: b, text: "False positives are not relevant to fairness; only false negatives matter", explanation: "Incorrect. Which error matters depends on the harm; for card freezes, false positives directly harm legitimate customers." }
+    - { id: c, text: "Fairness should be judged only by overall precision across all customers", explanation: "Incorrect. A single overall metric cannot show whether one group is treated worse; error rates must be compared per group." }
+    - { id: d, text: "The model may be unfair because the errors that harm customers fall unequally on one group", explanation: "Correct. Unequal error types are a fairness problem even when accuracy is equal; compare false positive and false negative rates per group." }
+  answer: [d]
+  explanation: "Fairness is not only about accuracy. If one group receives far more false alarms (or more missed cases), the model treats that group worse. Choose the fairness metric according to the harm, compare it across groups, and investigate the cause."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: hard
+
+- id: q-day-22-009
+  set: day-22
+  type: single
+  stem: "A marketing team asks an image-generation model for a mascot. The output closely resembles a famous trademarked cartoon character. Which legal risk of generative AI does this MOST directly create?"
+  options:
+    - { id: a, text: "Hallucination", explanation: "Incorrect. A hallucination is a confident but false statement; the risk here is reproducing protected creative work." }
+    - { id: b, text: "Intellectual property infringement", explanation: "Correct. Generating content that copies copyrighted or trademarked works can expose the publisher to IP claims." }
+    - { id: c, text: "Model underfitting", explanation: "Incorrect. Underfitting is a statistical modelling problem, not a legal risk." }
+    - { id: d, text: "Data drift", explanation: "Incorrect. Data drift is a change in input data over time; it is not a legal risk created by this image." }
+  answer: [b]
+  explanation: "Generative models can reproduce copyrighted text, code, images or recognisable characters from their training data. Controls include models with clear licensing and, where offered, IP indemnity, output filtering and human review before publishing."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: easy
+
+- id: q-day-22-010
+  set: day-22
+  type: single
+  stem: "An airline's generative AI assistant told a customer about a bereavement refund policy that does not exist, and the airline was later required to honour it. Which control would MOST directly reduce this risk?"
+  options:
+    - { id: a, text: "Increase the temperature so responses are more varied", explanation: "Incorrect. Higher temperature increases randomness and typically makes invented content more likely, not less." }
+    - { id: b, text: "Mask personal information in the assistant's responses", explanation: "Incorrect. PII masking addresses privacy; the problem here is a false statement about policy." }
+    - { id: c, text: "Ground answers in the official policy documents using RAG and show citations", explanation: "Correct. Grounding responses in trusted documents and citing them directly targets hallucinations, the cause of the false policy." }
+    - { id: d, text: "Translate the assistant's answers into more languages", explanation: "Incorrect. Translation widens reach but does nothing to stop the model inventing facts." }
+  answer: [c]
+  explanation: "Hallucinations create legal risk when a company's assistant states false facts that customers rely on. Grounding with retrieval-augmented generation, citations and, for important topics, human escalation are the primary controls."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: medium
+
+- id: q-day-22-011
+  set: day-22
+  type: single
+  stem: "An auditor asks an AI team where its training data came from, how it was collected, whether consent was obtained and which groups are known to be missing. The team cannot answer. Which dataset characteristic was MOST lacking?"
+  options:
+    - { id: a, text: "Documentation of the dataset (datasheet and lineage)", explanation: "Correct. Documented datasets record origin, collection method, consent, known gaps and intended use, which is exactly what the auditor needs." }
+    - { id: b, text: "Class balance between positive and negative labels", explanation: "Incorrect. Balance matters for fairness and accuracy, but it does not tell an auditor where the data came from or how it was collected." }
+    - { id: c, text: "Dataset size", explanation: "Incorrect. A larger dataset does not answer questions about origin, consent or known gaps." }
+    - { id: d, text: "Use of synthetic data", explanation: "Incorrect. Synthetic data can help balance a dataset but does not document the origin of the real data." }
+  answer: [a]
+  explanation: "Responsible datasets are inclusive, diverse, balanced, curated from known sources and documented. Documentation (datasheets for datasets, data lineage) is what makes later audits and investigations possible."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: medium
+
+- id: q-day-22-012
+  set: day-22
+  type: single
+  stem: "A bank must choose a model for consumer credit decisions. Model A is 91% accurate with similar error rates for all age groups. Model B is 92% accurate, but its false negative rate for applicants over 65 is double that of other groups. Which choice is MOST consistent with responsible AI?"
+  options:
+    - { id: a, text: "Choose Model B because higher overall accuracy always means a better model", explanation: "Incorrect. A one-point accuracy gain does not justify systematically worse treatment of a protected group in a high-impact decision." }
+    - { id: b, text: "Deploy both models and randomly assign applicants to each", explanation: "Incorrect. Random assignment would still subject some older applicants to the unfair model and adds no fairness benefit." }
+    - { id: c, text: "Choose Model B and delete the age column from its input data", explanation: "Incorrect. Removing the column does not remove bias when proxies such as retirement income remain." }
+    - { id: d, text: "Choose Model A and document the reasons for accepting slightly lower accuracy", explanation: "Correct. In a high-impact decision, equitable error rates outweigh a marginal accuracy gain, and documenting the trade-off supports governance." }
+  answer: [d]
+  explanation: "When a slightly higher overall score comes with unequal errors for a group in a high-impact use case such as lending, the responsible choice is usually the equitable model, with the trade-off decision recorded for auditors."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#examples
+  difficulty: hard
+
+- id: q-day-22-013
+  set: day-22
+  type: single
+  stem: "A complex insurance model was trained on data in which one customer group has only a few hundred examples. Its predictions for that group change sharply whenever the model is retrained on a slightly different sample. Which effect does this describe?"
+  options:
+    - { id: a, text: "Underfitting (high bias) for the majority group", explanation: "Incorrect. The instability affects the small group, and underfitting produces consistently poor predictions rather than erratic ones." }
+    - { id: b, text: "Overfitting (high variance) for the under-represented group", explanation: "Correct. With few examples, a complex model memorises their noise, so its predictions for that group swing with small changes in the data." }
+    - { id: c, text: "Automation bias among reviewers", explanation: "Incorrect. Automation bias is human over-reliance on a model, not instability in the model's predictions." }
+    - { id: d, text: "A hallucination", explanation: "Incorrect. Hallucinations are invented outputs of generative models; this is a statistical instability in a predictive model." }
+  answer: [b]
+  explanation: "Variance hurts small groups first: a flexible model fits the noise in their few examples, so predictions for them are erratic. More representative data, regularisation and per-group validation reduce the effect."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: medium
+
+- id: q-day-22-014
+  set: day-22
+  type: single
+  stem: "A health insurer uses a very simple model to predict treatment costs. The relationship between age and cost differs between two patient populations, and one population makes up 90% of the data. The model gives consistently worse predictions for the smaller population. Which explanation fits BEST?"
+  options:
+    - { id: a, text: "The model is overfitting and has memorised noise in the smaller population", explanation: "Incorrect. Overfitting produces erratic predictions from a model that is too complex; here a simple model is consistently wrong for one group." }
+    - { id: b, text: "Label bias introduced by inconsistent annotators", explanation: "Incorrect. Nothing in the scenario points to human labelling; costs are recorded values." }
+    - { id: c, text: "The model is underfitting and applies the majority population's pattern to everyone", explanation: "Correct. A model too simple to capture group differences learns the dominant pattern, so the minority group gets systematically worse predictions." }
+    - { id: d, text: "Data leakage from the test set into training", explanation: "Incorrect. Leakage makes scores look optimistic; it does not explain consistently worse predictions for one group." }
+  answer: [c]
+  explanation: "Underfitting (high bias) affects groups unequally when their patterns differ: the simple model fits the majority and is systematically wrong for others. A more expressive model, group-aware features where lawful, more data for the minority group and per-group evaluation help."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: hard
+
+- id: q-day-22-015
+  set: day-22
+  type: multi
+  stem: "Which characteristics of a training dataset BEST support responsible AI? (Select TWO.)"
+  options:
+    - { id: a, text: "Inclusive coverage of all the groups and situations the model will meet in production", explanation: "Correct. Inclusive data means the model learns from everyone it will serve, which reduces sampling bias." }
+    - { id: b, text: "Balanced representation, so that no group or class is too rare to learn from", explanation: "Correct. Balanced data prevents a model from ignoring a rare group or class while still appearing accurate." }
+    - { id: c, text: "Data scraped from any public website without review, to maximise volume", explanation: "Incorrect. Uncurated data may contain errors, toxic content or copyrighted material; responsible datasets come from curated, known sources." }
+    - { id: d, text: "Data from the majority customer group only, to maximise overall accuracy", explanation: "Incorrect. Excluding other groups creates sampling bias and poor performance for them." }
+    - { id: e, text: "No documentation, so that the data origin stays private", explanation: "Incorrect. Documentation of origin, collection and gaps is required for accountability and audits." }
+  answer: [a, b]
+  explanation: "Responsible datasets are inclusive, diverse, balanced, curated from known and licensed sources, and documented. Volume alone, majority-only data or undocumented sources all increase bias and legal risk."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: easy
+
+- id: q-day-22-016
+  set: day-22
+  type: multi
+  stem: "A legal team is reviewing a proposal to launch a public generative AI assistant. Which risks should the team list as legal risks of generative AI? (Select THREE.)"
+  options:
+    - { id: a, text: "Intellectual property infringement claims over generated content", explanation: "Correct. Outputs that reproduce copyrighted or trademarked material can lead to IP claims." }
+    - { id: b, text: "Biased or discriminatory model outputs", explanation: "Correct. Outputs that stereotype or exclude groups can breach anti-discrimination laws and harm trust." }
+    - { id: c, text: "Hallucinated statements that customers rely on", explanation: "Correct. False but confident statements, such as invented policies, can create obligations or liability." }
+    - { id: d, text: "Faster response times than the previous system", explanation: "Incorrect. Faster responses are a performance benefit, not a legal risk." }
+    - { id: e, text: "Lower cost per token than a larger model", explanation: "Incorrect. Lower cost is a business benefit, not a legal risk." }
+    - { id: f, text: "Using a smaller model to reduce energy consumption", explanation: "Incorrect. Right-sizing a model is a sustainability practice, not a legal risk." }
+  answer: [a, b, c]
+  explanation: "The legal risks named for generative AI are IP infringement, biased outputs, loss of customer trust, end-user risk and hallucinations, together with privacy and data leakage. Each has controls: licensed data and output filters, bias testing and guardrails, disclosure, safety filters and human review, and grounding with citations."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#explanation
+  difficulty: easy
+
+- id: q-day-22-017
+  set: day-22
+  type: multi
+  stem: "A loan-default model performs poorly for applicants over 70, who are only 3% of the training data. Which actions will MOST effectively address the problem? (Select TWO.)"
+  options:
+    - { id: a, text: "Collect or rebalance data so that older applicants are better represented", explanation: "Correct. More representative data addresses the sampling bias and reduces variance for the small group." }
+    - { id: b, text: "Evaluate accuracy and error rates per age band before launch and monitor them afterwards", explanation: "Correct. Subgroup analysis shows whether the fix worked and catches the problem if it returns in production." }
+    - { id: c, text: "Delete the age column so the model cannot see age", explanation: "Incorrect. Proxies such as retirement income and account tenure would still carry age information, and the representation problem remains." }
+    - { id: d, text: "Train for more epochs on the existing data", explanation: "Incorrect. Longer training on the same skewed data would further memorise the few older examples." }
+    - { id: e, text: "Report only the overall accuracy to stakeholders", explanation: "Incorrect. Reporting only the average hides the subgroup problem rather than fixing it." }
+  answer: [a, b]
+  explanation: "Poor performance for a rare group is fixed with representative data and verified with per-group evaluation before and after deployment. Removing the sensitive column or hiding the metric does not fix the cause."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#examples
+  difficulty: medium
+
+- id: q-day-22-018
+  set: day-22
+  type: multi
+  stem: "A retailer plans to use a generative model to create thousands of product images for its website. Which controls MOST directly reduce intellectual property risk? (Select TWO.)"
+  options:
+    - { id: a, text: "Choose a model with clear licensing terms and, where offered, IP indemnity for outputs", explanation: "Correct. Clear licensing and indemnity reduce exposure if generated content is challenged." }
+    - { id: b, text: "Have people review images before publication for resemblance to existing brands or artworks", explanation: "Correct. Human review catches outputs that copy protected works before they are published." }
+    - { id: c, text: "Increase the temperature to make images more creative", explanation: "Incorrect. More randomness does not stop a model reproducing protected content and is not an IP control." }
+    - { id: d, text: "Mask personal information in prompts", explanation: "Incorrect. PII masking is a privacy control, not an IP control." }
+    - { id: e, text: "Move the model to a lower-latency endpoint", explanation: "Incorrect. Latency has no effect on intellectual property risk." }
+  answer: [a, b]
+  explanation: "IP risk is managed through data and model provenance (licensed, curated training data; clear model licences; indemnity where available), output filtering and human review before publication."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#examples
+  difficulty: medium
+
+- id: q-day-22-019
+  set: day-22
+  type: ordering
+  stem: "Bias can enter an AI system at several stages. Place these stages in the order in which they occur in the AI lifecycle, from first to last."
+  options:
+    - { id: a, text: "Use in production, where people may over-trust outputs (automation bias)", explanation: "This is the last stage: automation bias appears when people act on the deployed model's outputs." }
+    - { id: b, text: "Data collection, where groups may be missing (sampling bias)", explanation: "This is the first stage: the data gathered decides who the model can learn about." }
+    - { id: c, text: "Evaluation, where averages can hide subgroup errors", explanation: "This is the fourth stage: after training, evaluation must slice results by group to reveal hidden errors." }
+    - { id: d, text: "Labelling, where annotators may label inconsistently (label bias)", explanation: "This is the second stage: collected data is labelled before it can train a supervised model." }
+    - { id: e, text: "Training, where a model may under- or overfit small groups", explanation: "This is the third stage: the model learns from the labelled data." }
+  answer: [b, d, e, c, a]
+  explanation: "Bias can enter during data collection (sampling, historical), labelling (label bias), training (under- or overfitting small groups), evaluation (averages hiding subgroup errors) and use (automation bias). Each stage has a check: representativeness, label consistency, per-group train and validation comparison, subgroup analysis, and human review with monitoring."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#diagram
+  difficulty: medium
+
+- id: q-day-22-020
+  set: day-22
+  type: matching
+  stem: "Match each AI failure to the responsible AI dimension it MOST directly violates."
+  options:
+    - { id: a, text: "A slightly reworded question produces the opposite answer", explanation: "Robustness: the system should behave consistently when inputs change slightly." }
+    - { id: b, text: "A chatbot states a statistic that does not exist", explanation: "Veracity: outputs should be truthful; an invented statistic is a hallucination." }
+    - { id: c, text: "A model provides instructions for making a dangerous weapon", explanation: "Safety: the system should avoid harmful outputs and actions." }
+    - { id: d, text: "Operators have no way to stop an automated process once it starts", explanation: "Controllability: humans must be able to monitor, steer and override the system." }
+    - { id: e, text: "Wheelchair users were never included when the system was designed and tested", explanation: "Inclusivity: the full range of users should be considered in design, data and testing." }
+  matchTargets:
+    - { id: t3, text: "Safety" }
+    - { id: t5, text: "Inclusivity" }
+    - { id: t1, text: "Robustness" }
+    - { id: t4, text: "Controllability" }
+    - { id: t2, text: "Veracity" }
+  answer: { a: t1, b: t2, c: t3, d: t4, e: t5 }
+  explanation: "Learn each dimension with a failure example: robustness (stable under changed input), veracity (truthful), safety (no harmful outputs or actions), controllability (humans can override) and inclusivity (everyone considered in design and testing)."
+  domain: D4
+  taskStatement: "4.1"
+  lessonRef: day-22#examples
+  difficulty: medium

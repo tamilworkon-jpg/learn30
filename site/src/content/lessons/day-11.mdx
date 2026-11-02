@@ -1,0 +1,302 @@
+---
+day: 11
+kind: lesson
+title: 'GenAI capabilities, limits & business value'
+summary: 'Weigh what generative AI does well — adaptability, responsiveness, natural conversation, fast content generation — against its limits: hallucinations, inaccuracy, nondeterminism and poor interpretability. Learn the factors for selecting a foundation model and the business metrics (ROI, conversion rate, ARPU, CLV, efficiency) that prove a GenAI project is worth it.'
+domains: [D2]
+taskStatements: ['2.2']
+sources:
+  - { provider: udemy, title: 'Generative AI Concepts; Foundation Models; Business Value of GenAI' }
+  - { provider: skillbuilder, title: 'Generative AI Use Cases and Applications' }
+  - { provider: aws-docs, title: 'Amazon Bedrock — Choosing a foundation model', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html' }
+objectives:
+  - Describe the advantages of generative AI (adaptability, responsiveness, conversation, content generation, speed to market)
+  - Identify the limitations of generative AI (hallucinations, inaccuracy, nondeterminism, interpretability) and how to mitigate them
+  - Decide when generative AI is the wrong tool for a problem
+  - Apply model selection factors (modality, capability, latency, cost, context window, customisation, compliance, licensing)
+  - Choose business metrics such as ROI, conversion rate, ARPU, CLV and efficiency to judge a GenAI solution
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'GenAI strengths: adaptable to many tasks from one model, responsive in real time, natural conversation, fast content generation, quick to prototype.'
+  - 'GenAI weaknesses: hallucinations (confident but false output), inaccuracy, nondeterminism (same prompt, different answers) and low interpretability.'
+  - 'Mitigate with grounding (RAG), guardrails, lower temperature, human review and evaluation — and avoid GenAI where a deterministic, auditable answer is required.'
+  - 'Model selection factors: modality, task capability, accuracy, latency, cost, context window, language support, customisation, compliance and licensing.'
+  - 'Business value is measured with business metrics — ROI, conversion rate, ARPU, customer lifetime value, efficiency, cost per interaction, CSAT — not just model accuracy.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 10" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="What GenAI is good at, where it fails, and how to prove value" minutes={16}>
+
+### A brilliant new colleague with a few quirks
+
+Imagine your company hires a new colleague who has read most of the public internet. They write fluently in dozens of languages, draft a marketing email in seconds, summarise a 60-page contract over coffee and never get tired. But they have two quirks: when they do not know something they sometimes *make it up* with total confidence, and if you ask the same question twice you may get two differently worded answers. You cannot look inside their head to see *why* they said what they said.
+
+That colleague is a foundation model (FM). Task statement 2.2 asks you to understand both sides — the **capabilities** that make generative AI valuable and the **limitations** that decide where and how it can be used safely — then to pick a suitable model and to measure **business value**. Exam questions in this area are usually scenarios: "a company wants…, which is a limitation they must consider?" or "which metric shows the chatbot is paying off?"
+
+### Advantages of generative AI
+
+- **Adaptability.** One pre-trained model can perform many different tasks — summarising, translating, classifying, answering questions, writing code — just by changing the prompt. Traditional ML usually needs one model trained per task, each with its own labelled dataset. Adaptability is why a single FM can serve the marketing, legal and support teams at the same time.
+- **Responsiveness.** Models generate answers in seconds (and can stream the first words almost immediately), so they can power real-time experiences: chat assistants, live agent help, interactive search.
+- **Natural conversation.** Users ask questions in their own words and follow up ("make it shorter", "now in Spanish"). The model keeps the context of the conversation, so people need no query language or training.
+- **Content generation at scale.** Text, images, code, audio and video can be produced in large volumes: thousands of product descriptions, personalised emails, synthetic training data, first drafts of reports.
+- **Simplicity and speed to market.** Because the model is already trained, a team can build a useful prototype in days through an API such as Amazon Bedrock, without collecting labelled data or managing training infrastructure.
+- **Personalisation.** Output can be tailored to each user's history, tone or language, which is hard and expensive to do by hand.
+- **Works with unstructured data.** FMs read emails, PDFs, transcripts and images directly — the 80–90% of enterprise data that classic ML struggled with.
+
+### Limitations and disadvantages
+
+**Hallucinations.** A model can produce text that sounds fluent and confident but is false — an invented policy, a non-existent court case, a made-up product feature. This happens because an LLM predicts the most *plausible* next token, not the *true* one; it has no built-in fact checker. Hallucinations are most likely when the answer is not in the training data, when the question is about private company information, or when the prompt pushes the model to answer anyway.
+
+**Inaccuracy and outdated knowledge.** Even without inventing things, a model can be wrong: it may misread a table, do arithmetic poorly, or rely on information that was correct at training time but has since changed. Every model has a **knowledge cut-off** — it knows nothing that happened after its training data was collected unless you supply it in the prompt.
+
+**Nondeterminism.** The same prompt can give different outputs on different runs. Generation involves *sampling* from a probability distribution over possible next tokens, controlled by inference parameters such as **temperature** (higher = more random and creative, lower = more focused and repeatable) and top-p. Nondeterminism is great for brainstorming but a problem when you need consistent, repeatable, testable answers — for example a compliance decision that must be the same every time. Lowering temperature reduces variation but does not guarantee identical output.
+
+**Interpretability.** Large neural networks with billions of parameters are effectively *black boxes*: you cannot point to the rule that produced an answer. Asking the model to "explain itself" produces a plausible explanation, not necessarily the true reason. This matters in regulated decisions (credit, hiring, medical) where you may have to explain *why* a decision was made. Day 24 returns to transparency and explainability.
+
+**Other risks you must weigh.**
+
+- **Bias and toxicity** learned from internet-scale training data.
+- **Data privacy and leakage** — sensitive information placed in prompts must be protected, and outputs could reveal private data.
+- **Intellectual property** — generated content may resemble copyrighted material; ownership questions are not always settled.
+- **Cost at scale** — every token in and out is billed; long prompts and verbose answers add up (Days 9 and 13).
+- **Latency** — large models can take several seconds for long answers.
+- **Security** — prompt injection and jailbreaking can make a model ignore its instructions (Day 17).
+
+### Mitigating the limitations
+
+You rarely solve these limitations by "picking a better model" alone. You design around them:
+
+| Limitation | Typical mitigations |
+|---|---|
+| Hallucination, outdated knowledge | Ground answers in trusted documents with **retrieval-augmented generation (RAG)**, e.g. Amazon Bedrock Knowledge Bases; ask for citations; use contextual grounding checks in Amazon Bedrock Guardrails |
+| Inaccuracy | Evaluate on test sets before launch, use tools (a calculator or database query) for facts and maths, keep a human in the loop for high-stakes outputs |
+| Nondeterminism | Lower temperature, use prompt templates and structured output formats, validate outputs automatically |
+| Interpretability | Prefer transparent models (or no ML) for decisions that must be explained; log prompts, sources and outputs for audit; document models with model cards |
+| Toxicity, bias, unsafe content | Amazon Bedrock Guardrails content filters and denied topics; diverse evaluation data; human review |
+| Privacy | Do not send unnecessary personal data; use Guardrails sensitive-information filters; encryption and access controls (Domain 5) |
+
+### When generative AI is the wrong tool
+
+Task statement 1.2 already taught that AI is not appropriate when a **deterministic outcome** is required or when costs outweigh benefits. For GenAI this is even sharper:
+
+- **Exact calculations and rules** — tax computation, interest calculation, inventory counts. Use ordinary code; a spreadsheet never hallucinates.
+- **Decisions that must be fully explainable** — some regulators require a clear reason for declining a loan. A transparent model or rule set may be mandatory.
+- **Zero tolerance for error with no human check** — dosing medication, safety-critical control systems.
+- **Simple, high-volume prediction on tabular data** — churn scoring or fraud detection on transaction tables are usually cheaper, faster and more accurate with traditional ML.
+- **When a cheaper solution already works** — a search box or an FAQ page may be enough.
+
+A useful rule: **use GenAI where variety, language and creativity are valuable and a "pretty good, checkable" answer is acceptable; avoid it where one exact, auditable answer is required.**
+
+### Model selection factors
+
+Amazon Bedrock offers models from many providers, plus thousands more through SageMaker JumpStart (Day 12). How do you choose? The exam lists *model selection factors*. Think of them as a checklist:
+
+1. **Modality and model type** — Does the task need text in and text out, images (understanding or generation), audio, video, or embeddings for search? A text-only model cannot read a scanned invoice; an embedding model cannot write an email.
+2. **Capability and quality for *your* task** — reasoning, coding, summarisation, multilingual ability. Benchmarks help, but evaluating on your own sample of real tasks is better (Day 20).
+3. **Performance requirements** — latency (time to first token, total response time) and throughput (requests per minute). A live voice assistant needs a fast model; an overnight report generator does not.
+4. **Cost** — price per input and output token varies a lot between models. Smaller models are often good enough for classification, extraction or routing and cost a fraction of the largest ones.
+5. **Context window** — how many tokens fit in one request. Summarising a 300-page document in one go needs a large context window; short chats do not.
+6. **Language support** — some models are much stronger in certain languages.
+7. **Customisation options** — can the model be fine-tuned, distilled or used with RAG? Is it available for the customisation method you need (Day 15 and Day 19)?
+8. **Constraints and compliance** — regional availability, data residency, industry regulations, responsible-AI requirements, and whether the provider documents the model's intended use and limitations.
+9. **Licensing and openness** — proprietary vs open-weight models, and licence terms for commercial use.
+10. **Size and efficiency** — bigger models are usually more capable but slower and more expensive; smaller models are cheaper, faster and more sustainable.
+
+The best answer in a scenario is almost never "the biggest model". It is the **smallest, cheapest model that meets the quality, latency and compliance requirements** of the use case.
+
+### Business value and metrics
+
+Model metrics (accuracy, ROUGE, latency) tell you whether the model works. **Business metrics** tell you whether the project is worth the money. Leaders fund projects that move business metrics. The exam guide names several; learn what each measures:
+
+- **Return on investment (ROI)** = (benefit − cost) ÷ cost. If an assistant saves \$500,000 a year and costs \$200,000 to build and run, ROI = 300,000 ÷ 200,000 = 150%.
+- **Conversion rate** — the share of visitors or leads who take a desired action (buy, sign up). A GenAI shopping assistant that answers questions might lift conversion from 2.0% to 2.4%.
+- **Average revenue per user (ARPU)** — total revenue ÷ number of users. Personalised recommendations or upsell suggestions aim to raise it.
+- **Customer lifetime value (CLV)** — the total revenue a customer brings over the whole relationship. Better service and retention increase CLV.
+- **Efficiency** — time saved per task, tickets handled per agent, documents processed per hour, average handle time.
+- **Cost per interaction / cost per user** — the full cost of serving one conversation or user, including tokens, infrastructure and human escalation.
+- **Customer satisfaction (CSAT) and net promoter score** — how users feel about the experience.
+- **Accuracy and quality in business terms** — share of answers accepted without edits, first-contact resolution, escalation or deflection rate (share of questions resolved without a human).
+- **Cross-domain performance** — how well one model serves several departments or tasks, which multiplies the return on a single investment.
+
+Good practice is to agree on **baseline values before launch**, run a pilot (often an A/B test against the old process), and track both the benefit metrics and the cost metrics afterwards.
+
+### Counting the full cost, not just the tokens
+
+A business case that compares benefits with token prices alone will look better than reality. The **total cost of ownership** of a GenAI feature usually includes:
+
+- **Model usage** — input and output tokens, images or seconds of audio, or hourly charges for reserved capacity (Day 13).
+- **Supporting services** — a vector store for RAG, storage for documents, compute for the application, logging and monitoring.
+- **People** — engineers to build and maintain the application, subject-matter experts who keep the knowledge base current, reviewers who check outputs in a human-in-the-loop design.
+- **Evaluation and governance** — building test sets, running evaluations before each change, security reviews and audits.
+- **Risk** — the expected cost of errors: a wrong answer that leads to a refund, a complaint or a regulatory finding.
+
+On the benefit side, separate **hard savings** (fewer contractor hours, lower cost per ticket) from **soft benefits** (happier customers, faster time to market). Finance teams trust hard savings more, so lead with them and present soft benefits as upside.
+
+### Leading and lagging indicators
+
+Some business metrics take months to move. Customer lifetime value, for example, only becomes clear after customers have stayed (or left) for a long time. These are **lagging indicators**. To steer a project week by week you also track **leading indicators** that move quickly and predict the lagging ones: answer acceptance rate, share of conversations resolved without escalation, thumbs-up ratings, time to first response, repeat-contact rate. If acceptance rate falls after a product launch, you know to update the knowledge base long before CSAT or CLV suffer.
+
+### Matching capabilities to use cases
+
+A quick way to answer scenario questions is to ask which capability the use case relies on, and which limitation could hurt it most:
+
+| Use case | Capability relied on | Biggest limitation to manage |
+|---|---|---|
+| Marketing copy and product descriptions | Content generation, personalisation | Brand tone and factual claims about products; human approval |
+| Customer-service chat | Conversation, responsiveness | Hallucinated policies; ground with RAG and escalate to humans |
+| Summarising meetings and calls | Working with unstructured data | Missing or misattributing key points; let users check the transcript |
+| Code assistance | Adaptability, content generation | Insecure or incorrect code; tests and code review |
+| Research over internal documents | Conversation, summarisation | Outdated or wrong sources; citations and document ownership |
+| Credit decisions | (Usually not a GenAI task) | Interpretability and determinism required; use transparent models |
+
+Notice the pattern: the more an output affects people's money, health or rights, the more you need grounding, human review and explainability — and the more likely the right answer is "do not let the FM decide on its own".
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="Should we use generative AI? Check the need for exact answers, explainability and tolerance for error before choosing a model"
+  code={`flowchart TD
+  S["Business problem"] --> D{"Need one exact, deterministic answer every time?"}
+  D -->|Yes| C["Use rules, code or traditional ML"]
+  D -->|No| E{"Must every decision be fully explainable to a regulator?"}
+  E -->|Yes| T["Prefer a transparent model or rules, GenAI only to assist a human"]
+  E -->|No| H{"Can errors be caught by grounding, guardrails or human review?"}
+  H -->|No| R["Redesign: add review step or do not use GenAI"]
+  H -->|Yes| G["GenAI is a good fit: choose the smallest model that meets quality, latency and cost"]`}
+/>
+
+<Diagram
+  caption="Each GenAI limitation has a matching mitigation: grounding, guardrails, low temperature, human review and logging"
+  code={`flowchart LR
+  L1["Hallucination and outdated knowledge"] --> M1["RAG with Bedrock Knowledge Bases, citations, grounding checks"]
+  L2["Nondeterminism"] --> M2["Lower temperature, templates, structured output"]
+  L3["Low interpretability"] --> M3["Transparent model for regulated decisions, audit logs, model cards"]
+  L4["Toxic or unsafe output"] --> M4["Bedrock Guardrails filters and denied topics"]
+  L5["Inaccuracy in high-stakes tasks"] --> M5["Evaluation before launch, human in the loop"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Scenario | Key consideration | Why |
+|---|---|---|
+| Chatbot quotes a refund policy that does not exist | Hallucination | Fluent but false output; ground answers in the real policy with RAG |
+| Same marketing prompt gives a different slogan every run | Nondeterminism | Sampling; lower temperature if consistency is needed |
+| Bank must explain each declined loan to the customer | Interpretability | A black-box FM cannot give its true reasons; use a transparent model |
+| Calculate payroll tax for 5,000 employees | Wrong tool | Deterministic rules; ordinary code is exact and cheaper |
+| One model drafts emails, summarises calls and translates FAQs | Adaptability, cross-domain performance | Prompts, not retraining, switch the task |
+| Voice assistant must respond in under a second | Latency as a selection factor | Choose a smaller, faster model |
+| Summarise 400-page technical manuals in one request | Context window as a selection factor | Needs a model with a large context window, or chunking |
+| Support assistant resolves 35% of chats without a human | Deflection rate / efficiency metric | Business value measured in human time saved |
+
+**Worked example — picking the right model.** A retailer wants to classify 2 million product reviews per month as *positive*, *negative* or *neutral*. A large frontier model gives 95% accuracy; a small model gives 94% at about one-twentieth of the price. For a simple classification task where one point of accuracy changes nothing for the business, the small model is the better choice. If the task were drafting legal responses, the extra quality of the larger model might be worth paying for.
+
+**Worked example — calculating ROI.** A contact centre handles 600,000 chats a year at a human cost of \$5 per chat (\$3,000,000). A GenAI assistant resolves 40% of chats on its own (240,000 chats) at \$0.25 each including tokens and infrastructure, plus \$300,000 a year to build and maintain. Savings: 240,000 × (\$5.00 − \$0.25) = \$1,140,000. Net benefit = \$1,140,000 − \$300,000 = \$840,000. ROI = 840,000 ÷ 300,000 = 280%. Notice that ROI depends on the *deflection rate* and the *cost per interaction* — two numbers to monitor after launch.
+
+**Worked example — choosing the metric.** An e-commerce company adds a shopping assistant to answer product questions. Leadership asks "is it making us money?" The best metrics are **conversion rate** and **ARPU** (or average order value) for sessions that used the assistant compared with those that did not. Model accuracy alone does not answer the question.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={3}>
+
+<Callout type="realWorld" title="An insurer's claims assistant: value with guard rails">
+A car insurer built a GenAI assistant that reads accident descriptions, photos and repair estimates and drafts a claim summary for a human adjuster. **Content generation** cut the time to write a summary from 25 minutes to 5. **Adaptability** let the same model translate letters for customers in four languages. In the pilot, the model sometimes **hallucinated** policy clauses, so the team switched to retrieval from the actual policy documents and required a citation for every clause; adjusters reject any summary without one. Because payouts are regulated and must be **explainable**, the final decision stays with the adjuster and a transparent rules engine calculates the amount — the FM never decides the money.
+</Callout>
+
+The business case was tracked from day one. Before the pilot the team measured a **baseline**: average handle time per claim, claims closed per adjuster per week and customer satisfaction. After three months the assistant had raised claims closed per adjuster by 30% (**efficiency**), lifted CSAT because customers heard back sooner, and cost about \$0.40 per claim in model usage (**cost per interaction**). Against the build and run cost, the projected **ROI** was well over 100% in the first year. Just as important, the team tracked the share of drafts accepted without major edits; when it dipped after a policy change, they updated the knowledge base rather than retraining the model.
+
+**A second story: a software company's sales emails.** A SaaS company used an FM to personalise outreach emails using each prospect's industry and recent news. The team A/B tested AI-personalised emails against the old templates. Reply rate rose from 3% to 5% and the **conversion rate** from trial to paid customer rose modestly, while the sales team spent half as long writing emails. They also learned a limitation: occasionally the model "remembered" outdated facts about a prospect's company because of its **knowledge cut-off**. The fix was to feed fresh company data into the prompt and have a salesperson approve each email before sending. This pattern — measurable business metric, known limitation, practical mitigation — is the shape of many exam scenarios.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: compare models in the Amazon Bedrock playground" minutes={8}>
+
+<HandsOnLab
+  goal="See nondeterminism, the effect of temperature and the trade-off between model size, latency and cost by comparing two models side by side in the Amazon Bedrock chat playground."
+  asOf="November 2026"
+  steps={[
+    { text: 'In the Amazon Bedrock console open the Chat / Text playground and turn on compare mode so you can send one prompt to two models.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text', 'Compare mode'], menu: ['Overview', 'Model catalog', 'Playgrounds', 'Guardrails', 'Knowledge Bases'], active: 'Playgrounds', highlight: 'Compare mode' } },
+    { text: 'Select a small model (for example Amazon Nova Micro) on the left and a larger model (for example Amazon Nova Pro) on the right. Enter: "Write a one-sentence slogan for a reusable water bottle."', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text'], fields: [{ label: 'Model A', value: 'Amazon Nova Micro' }, { label: 'Model B', value: 'Amazon Nova Pro' }, { label: 'Temperature', value: '0.9' }], highlight: 'Run' } },
+    { text: 'Run the same prompt three times. Note that the slogans change each run (nondeterminism). Then set temperature to 0.1 and run again — the answers become much more consistent.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text', 'Configurations'], fields: [{ label: 'Temperature', value: '0.1' }, { label: 'Top P', value: '0.9' }, { label: 'Response length', value: '200 tokens' }], note: 'Lower temperature = more repeatable output' } },
+    { text: 'Read the model metrics shown under each answer: latency, input tokens and output tokens. Compare them with each model price on the pricing page to estimate cost per 1,000 requests.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text', 'Model metrics'], fields: [{ label: 'Nova Micro latency', value: '0.4 s' }, { label: 'Nova Pro latency', value: '1.3 s' }, { label: 'Output tokens', value: '18 / 21' }], note: 'Illustrative values' } },
+    { text: 'Finally ask both models a question about your own company policy, such as "What is our refund window?" Both will guess or refuse — they have never seen your documents. That is why grounding with a knowledge base is needed.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text'], fields: [{ label: 'Prompt', value: 'What is our refund window?' }, { label: 'Answer', value: 'Many retailers offer 30 days…' }], note: 'Plausible guess = hallucination risk' } },
+  ]}
+  expectedOutcome="You have seen nondeterminism and the effect of temperature first-hand, compared latency and token usage of a small and a large model, and seen why private-knowledge questions need grounding."
+  checks={[
+    { q: 'You need the same answer to the same prompt for an audit. Which inference parameter do you lower first?', a: 'Temperature — lower values make output more focused and repeatable (though not guaranteed identical).' },
+    { q: 'Both models give similar quality for a simple task. Which should you pick?', a: 'The smaller model, because it is faster and cheaper while meeting the requirement.' },
+    { q: 'Why did the models answer the refund question badly?', a: 'They have no access to private company data and may hallucinate; ground them with RAG over the real policy.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="Business metric or model metric?">
+If the question asks whether a GenAI solution delivers **business value**, choose a business metric — ROI, conversion rate, ARPU, customer lifetime value, efficiency, cost per interaction or CSAT. Accuracy, ROUGE or latency describe the model, not the business outcome.
+</Callout>
+
+- "Confident answer that is factually wrong" → **hallucination**; mitigate with **RAG / grounding**, not with a bigger model.
+- "Same prompt, different answers" → **nondeterminism**; lower **temperature**.
+- "Cannot explain why the model produced an output" → **interpretability** limitation.
+- "Needs exact, repeatable result" (calculation, rule) → GenAI is **not appropriate**.
+- "One model handles many tasks without retraining" → **adaptability**.
+- Best model choice = smallest model that meets quality, latency, cost and compliance — not automatically the largest.
+- "Revenue per customer" → **ARPU**; "total value over the relationship" → **CLV**; "visitors who buy" → **conversion rate**.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+Generative AI is adaptable, responsive, conversational and fast at producing content, which lets teams ship useful features quickly. Its limits — hallucinations, inaccuracy, nondeterminism and low interpretability — mean you must ground answers, add guardrails, tune temperature, keep humans in the loop and avoid GenAI where an exact, explainable answer is required. Choose a model with a checklist: modality, capability, latency, cost, context window, language, customisation, compliance and licensing — and prefer the smallest model that does the job. Finally, prove value with business metrics such as ROI, conversion rate, ARPU, CLV, efficiency and cost per interaction, measured against a baseline. Tomorrow: the AWS services that put all of this into practice.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={11} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Business case for a GenAI assistant" minutes={15} optional>
+
+A mid-sized bank wants an internal assistant that helps 400 contact-centre agents answer customer questions about products and procedures. An architect has to turn this idea into a business case that a finance director will approve — and an architecture that controls the risks discussed today.
+
+**1. Define the problem and baseline.** Agents spend on average 3 minutes per call searching 2,000 pages of procedures; the centre handles 2.4 million calls a year. Baseline metrics: average handle time (AHT) 7 minutes, first-contact resolution 71%, CSAT 4.0/5.
+
+**2. Design the solution to address limitations.** Agents ask questions in natural language. The application retrieves the relevant procedure passages from a knowledge base (RAG) so answers are grounded and cited; Guardrails block off-topic requests and redact personal data; a small, fast model handles most questions, and the agent — a human in the loop — decides what to tell the customer. Every prompt, retrieved source and answer is logged for audit.
+
+<Diagram
+  caption="Architecture for a grounded contact-centre assistant: knowledge base retrieval, guardrails, model choice and business-metric dashboards"
+  code={`flowchart LR
+  agent["Contact-centre agent"] --> app["Assistant web app"]
+  app --> gr["Bedrock Guardrails: topics, PII redaction, grounding check"]
+  gr --> kb["Bedrock Knowledge Base over procedure documents in S3"]
+  kb --> fm["Small, fast FM on Amazon Bedrock"]
+  fm --> gr
+  app --> logs["CloudWatch logs: prompts, sources, answers"]
+  logs --> dash["Dashboard: handle time, acceptance rate, cost per interaction"]`}
+/>
+
+**3. Estimate costs.** Each assistant query uses roughly 3,000 input tokens (question plus retrieved passages) and 300 output tokens. With about 1.5 queries per call, that is 3.6 million queries a year. At illustrative prices for a small model, token costs are modest — tens of thousands of dollars a year — while vector storage, application hosting, monitoring and the team to maintain the knowledge base add more. Assume a total of \$450,000 in year one including build.
+
+**4. Estimate benefits.** If the assistant cuts AHT by 1 minute, that saves 2.4 million minutes (40,000 hours) a year. At a loaded cost of \$40 per agent hour, that is \$1.6 million. Higher first-contact resolution reduces repeat calls further; better CSAT supports customer retention and CLV.
+
+**5. Compute ROI and risks.** ROI year one ≈ (1,600,000 − 450,000) ÷ 450,000 ≈ 255%. Sensitivity: if AHT falls by only 20 seconds, benefit is about \$530,000 and ROI is still positive but small — so the pilot must measure AHT carefully. Risks: hallucinated procedures (mitigated by grounding, citations and agent judgement), outdated documents (owner per document, review cadence), and adoption (training, feedback button).
+
+**6. Plan the pilot.** Start with 40 agents for six weeks, compare their AHT, resolution rate and CSAT with a control group, and track answer acceptance rate and cost per interaction. Scale only if the measured numbers support the case.
+
+**Trade-offs to discuss.** A larger model might answer complex questions better but would raise cost per interaction and latency during live calls; routing only hard questions to a larger model is a common compromise. Fully automating answers to customers would raise efficiency further but increase the impact of a hallucination — keeping the human agent in the loop is the safer first step.
+
+</Section>

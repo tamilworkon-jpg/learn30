@@ -1,0 +1,309 @@
+---
+day: 12
+kind: lesson
+title: 'The AWS GenAI stack'
+summary: 'Tour the AWS generative and agentic AI stack: Amazon Bedrock and the Amazon Nova models, Amazon SageMaker AI and SageMaker JumpStart, Strands Agents and Amazon Bedrock AgentCore for building and running agents, and ready-made applications — Amazon Quick for business users, Kiro for developers and AWS Transform for modernisation. Finish with why AWS: security, compliance, shared responsibility, safety and speed to market.'
+domains: [D2]
+taskStatements: ['2.3']
+examTraps: ['Amazon Q']
+sources:
+  - { provider: udemy, title: 'Amazon Bedrock and GenAI; Amazon SageMaker AI; AWS GenAI applications' }
+  - { provider: skillbuilder, title: 'Developing Generative AI Solutions; Amazon Bedrock Getting Started' }
+  - { provider: aws-docs, title: 'What is Amazon Bedrock?', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html' }
+  - { provider: aws-docs, title: 'Amazon SageMaker JumpStart pretrained models', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jumpstart.html' }
+  - { provider: aws-docs, title: 'Amazon Bedrock AgentCore developer guide', url: 'https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html' }
+objectives:
+  - Identify what Amazon Bedrock and the Amazon Nova model family provide
+  - Distinguish Amazon SageMaker AI and SageMaker JumpStart from Amazon Bedrock
+  - Describe Strands Agents and the Amazon Bedrock AgentCore services for building and operating agents
+  - Recognise Amazon Quick, Kiro and AWS Transform and who each is for
+  - Explain the advantages of AWS GenAI services and AWS infrastructure (security, compliance, shared responsibility, safety)
+  - Choose the right AWS service for a GenAI scenario
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'Amazon Bedrock = fully managed, serverless API access to foundation models from Amazon (Nova) and other providers, plus Knowledge Bases, Agents, Guardrails, evaluation and customisation.'
+  - 'Amazon SageMaker AI = build, train and deploy your own models with full control; SageMaker JumpStart = hub of pre-trained models you deploy and fine-tune in your own account.'
+  - 'Strands Agents = open-source SDK to build agents; Amazon Bedrock AgentCore = services to run agents securely at scale (Runtime, Memory, Gateway, Identity, Observability, Policy).'
+  - 'Ready-made apps: Amazon Quick for business users (chat agents, research, BI, automation), Kiro for developers (spec-driven agentic IDE), AWS Transform for migration and modernisation.'
+  - 'Why AWS: your prompts and data are not used to train Bedrock base models, encryption and private networking, compliance programs, shared responsibility, Guardrails for safety, speed to market.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 11" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="A map of the AWS generative AI stack" minutes={17}>
+
+### Think of it as a building with floors
+
+AWS offers a lot of GenAI services with similar-sounding names, and the exam loves to ask "which service should the company use?". The easiest way to keep them apart is to picture a building with three floors, plus the agent tooling that runs between them:
+
+- **Ground floor — infrastructure and model building.** Compute (GPU instances, and AWS-designed AI chips such as Trainium for training and Inferentia for inference) and **Amazon SageMaker AI**, where data scientists build, train, tune and host their own models. **SageMaker JumpStart** lives here too: a catalogue of pre-trained models you deploy into your own account.
+- **Middle floor — foundation models as a service.** **Amazon Bedrock** gives you ready-to-use foundation models (including Amazon's own **Amazon Nova** family) through one API, with no servers to manage, plus building blocks such as Knowledge Bases, Guardrails and Agents.
+- **Agent tooling.** **Strands Agents** is an open-source SDK for *writing* agents in code; **Amazon Bedrock AgentCore** provides the services to *run and operate* agents securely at scale.
+- **Top floor — ready-made applications.** You use them rather than build them: **Amazon Quick** for business users, **Kiro** for software developers and **AWS Transform** for migrating and modernising applications.
+
+The higher the floor, the less you build and manage yourself — and the less low-level control you have. Exam questions usually contain a clue about *who* the user is (business analyst, developer, data scientist) and *how much control* is needed (none, some, full).
+
+### Amazon Bedrock: foundation models as a service
+
+**Amazon Bedrock** is a fully managed, serverless service that gives you access to high-performing foundation models from Amazon and leading AI companies through a single API. You do not provision servers or GPUs: you call the model, send a prompt and pay for what you use (Day 13 covers the pricing options).
+
+The **model catalogue** includes models from Amazon (Nova, and Titan embedding models), Anthropic, Meta, Mistral AI, Cohere, AI21 Labs, Stability AI, DeepSeek and others, including open-weight models. Because models sit behind one consistent API (the *Converse* API gives a common request format for chat), switching from one model to another is a configuration change rather than a rewrite. You can compare models side by side in the **playgrounds**.
+
+Bedrock also includes the building blocks you need around a model — each one is covered in depth later in the course:
+
+| Bedrock capability | What it does | Course day |
+|---|---|---|
+| **Knowledge Bases** | Managed RAG: ingest documents, create embeddings, store them in a vector store, retrieve relevant passages at question time | Day 18 |
+| **Agents** | Fully managed agents that plan multi-step tasks and call your APIs (action groups) and knowledge bases | Day 10 |
+| **Guardrails** | Content filters, denied topics, word filters, sensitive-information (PII) redaction, contextual grounding checks | Days 17, 23 |
+| **Model customisation** | Fine-tuning, continued pre-training and distillation to create a private custom model | Day 19 |
+| **Model evaluation** | Automatic, human and LLM-as-a-judge evaluation of models and RAG applications | Day 20 |
+| **Prompt management and flows** | Save, version and test prompts; chain prompts, models and tools into workflows | Day 16 |
+| **Custom Model Import and Marketplace** | Bring supported open-weight models you have customised elsewhere; discover and deploy additional specialised models | Day 15 |
+
+A key exam fact: **Bedrock does not use your prompts and outputs to train the base models, and does not share them with model providers.** Your data is encrypted in transit and at rest, you can reach Bedrock privately from your VPC through AWS PrivateLink, and access is controlled with IAM. When you customise a model, Bedrock makes a *private copy* that only your account can use.
+
+### Amazon Nova: Amazon's own foundation models
+
+**Amazon Nova** is Amazon's family of foundation models, available in Amazon Bedrock. Learn the family by job rather than by version number:
+
+- **Understanding models** (text, and for most of them images, documents and video as input; text output). They range from **Nova Micro** — text only, the fastest and lowest cost — through **Nova Lite** (low-cost multimodal) and **Nova Pro** (a balance of accuracy, speed and cost) to **Nova Premier**, the most capable, which also serves as a *teacher* model for distillation. A newer *Nova 2* generation continues the same idea of small-to-large choices.
+- **Creative content generation** — **Nova Canvas** generates and edits images; **Nova Reel** generates short videos from text and images. Both add an invisible watermark to support responsible use.
+- **Speech** — **Nova Sonic** is a speech-to-speech model for natural, real-time voice conversations.
+- **Agents that use a browser** — **Nova Act** is aimed at building agents that perform actions in a web browser, such as filling forms.
+- **Embeddings** — multimodal embedding models turn text, images and other content into vectors for search and RAG.
+
+Exam angle: Nova models are positioned as **cost-effective and fast**, with a choice of sizes. "Lowest-cost, lowest-latency text model for simple tasks" points to a small Nova model such as Micro; "generate marketing images" points to Nova Canvas; "real-time voice conversation" points to Nova Sonic.
+
+### Amazon SageMaker AI and SageMaker JumpStart
+
+**Amazon SageMaker AI** is the fully managed service for the whole ML lifecycle: prepare data, build, train, tune, deploy and monitor *your own* models. You choose algorithms, frameworks and instance types; you get maximum control and you take on more responsibility. Related capabilities you have met or will meet: SageMaker Canvas (no-code ML), Clarify (bias and explainability), Model Monitor (drift), Pipelines (MLOps) and **SageMaker HyperPod**, which provides resilient clusters for training and fine-tuning very large models over weeks.
+
+**Amazon SageMaker JumpStart** is the model hub inside SageMaker AI. It offers hundreds of pre-trained models — popular open foundation models for text and images as well as classic computer-vision and NLP models — plus solution templates for common use cases. With a few clicks (or a few lines of the SageMaker Python SDK) you can:
+
+1. **Deploy** a model to a SageMaker AI endpoint *in your own account*, choosing the instance type and network settings (for example inside your VPC).
+2. **Fine-tune** it with your own data.
+3. **Evaluate** it before putting it into production.
+
+**Bedrock or JumpStart?** Both give you pre-trained foundation models, so the exam often contrasts them:
+
+| | Amazon Bedrock | SageMaker JumpStart |
+|---|---|---|
+| Infrastructure | Serverless — no instances to manage | Endpoints on instances you choose and pay for while running |
+| Pricing (typical) | Per token, or reserved throughput | Per instance-hour |
+| Control | Less — AWS operates the model | More — choose hardware, scaling, networking, deep customisation |
+| Best for | Fastest way to build GenAI apps via API | Teams with ML skills that want control or a model not offered serverless |
+
+### Strands Agents: building agents in code
+
+Day 10 introduced agents: a model that reasons, plans, calls tools and repeats until a goal is reached. **Strands Agents** is an **open-source SDK from AWS** for building such agents with only a few lines of code. It follows a *model-driven* approach: instead of hard-coding every step of a workflow, you give the agent three things — a **model**, a set of **tools** (Python functions, APIs or MCP servers) and a **prompt** describing its job — and the model itself decides which tools to call and in what order. Strands works with models in Amazon Bedrock and with other model providers, supports the Model Context Protocol (MCP) for tools, and supports multi-agent patterns such as agents calling other agents as tools.
+
+Strands is a *framework*: it helps you write the agent. You still need somewhere secure and scalable to run it — which is where AgentCore comes in. (Strands agents can also run on AWS Lambda, containers on Amazon ECS or EKS, or Amazon EC2.)
+
+### Amazon Bedrock AgentCore: running agents in production
+
+A prototype agent on a laptop is easy. Running thousands of agent sessions safely in production is hard: each session needs isolation, memory, secure access to tools and user data, logging and limits. **Amazon Bedrock AgentCore** is a set of managed services that solve those problems. It works with **any agent framework** (Strands Agents, LangGraph, CrewAI and others) and **any model**, inside or outside Bedrock. Its main components:
+
+- **AgentCore Runtime** — serverless, secure hosting for agents, with each user session isolated from the others and support for long-running tasks.
+- **AgentCore Memory** — managed short-term memory (the current conversation) and long-term memory (facts and preferences remembered across sessions).
+- **AgentCore Gateway** — turns existing APIs and AWS Lambda functions into tools agents can discover and call, using MCP.
+- **AgentCore Identity** — gives agents their own identity and manages how they access AWS resources and third-party services (for example via OAuth) on behalf of users.
+- **Policy in AgentCore** — defines rules about which tools an agent may use and under what conditions, enforced outside the agent's own reasoning (Day 25 covers the security angle).
+- **Built-in tools** — a managed **Browser** and a **Code Interpreter** sandbox so agents can browse websites and run code safely.
+- **AgentCore Observability** — traces and metrics for every step an agent takes, viewable in Amazon CloudWatch.
+- **AgentCore Evaluations** — continuous quality checks on agent behaviour.
+
+**Bedrock Agents vs AgentCore.** Bedrock Agents is a configuration-driven, fully managed agent: you describe instructions, action groups and knowledge bases in the console. AgentCore is for teams who write agents in code with any framework and need enterprise-grade hosting and controls. Both are part of Bedrock.
+
+### Ready-made applications: Amazon Quick, Kiro and AWS Transform
+
+**Amazon Quick** is an agentic AI workspace for **business users**. Employees chat with AI agents that can answer questions using company data, documents and connected business applications; build their own custom agents without code; run in-depth research that produces cited reports; build business-intelligence dashboards and ask questions of data in plain language (the BI capability formerly known as Amazon QuickSight); and automate routine tasks and multi-step business processes with natural-language workflows. Clue words: *business users, no code, dashboards, insights across company data, automate tasks*.
+
+**Kiro** is an **agentic IDE (and command-line tool) for software developers**. Its signature feature is **spec-driven development**: from a natural-language prompt, Kiro produces *requirements* (user stories with acceptance criteria), a *technical design* and a *task list*, then helps implement the tasks with AI agents. It also supports **agent hooks** (automations triggered by events such as saving a file — for example "update the tests"), **steering** files that give the agent project rules and context, and MCP tools. Clue words: *developers, write and test code, specs, prototype to production*.
+
+**AWS Transform** is an **agentic AI service for migration and modernisation**. Specialised agents help analyse, plan and carry out large transformation projects — for example modernising mainframe applications, porting .NET Framework applications to cross-platform .NET, migrating VMware workloads to Amazon EC2 and upgrading code such as Java versions — work that once took months of manual effort. Clue words: *legacy, modernise, migrate, mainframe, upgrade at scale*.
+
+<Callout type="remember" title="Older materials mention Amazon Q">
+Many courses written before guide v1.2 feature **Amazon Q** (Q Business and Q Developer). Version 1.2 of the exam guide does **not** list Amazon Q. It lists **Amazon Quick** (business users), **Kiro** (developers) and **AWS Transform** (modernisation) for those kinds of jobs. If an answer option offers Amazon Q, treat it with suspicion.
+</Callout>
+
+### Why build GenAI on AWS?
+
+Task statement 2.3 also asks for the **advantages of AWS GenAI services** and the **benefits of AWS infrastructure**. Group them like this:
+
+- **Accessibility and a lower barrier to entry** — pre-trained models through an API; no ML PhD or GPU cluster needed. No-code tools (Amazon Quick, SageMaker Canvas) open AI to business users.
+- **Speed to market** — managed building blocks (Knowledge Bases, Guardrails, AgentCore) remove months of undifferentiated work.
+- **Choice and flexibility** — many models from many providers, from fully managed (Bedrock) to full control (SageMaker AI); switch models as better ones appear.
+- **Cost-effectiveness and efficiency** — pay-as-you-go, serverless scaling, smaller models and purpose-built chips; no idle hardware (Day 13).
+- **Security** — encryption at rest and in transit with AWS KMS keys, private connectivity with VPC and PrivateLink, fine-grained IAM permissions, logging with CloudTrail, and the Bedrock data-privacy commitments above.
+- **Compliance** — AWS services, including Bedrock, are in scope for widely used compliance programs (for example ISO and SOC, and HIPAA eligibility), with audit reports available in AWS Artifact; regional choice supports data-residency requirements.
+- **Shared responsibility** — AWS secures the infrastructure and the managed service; you remain responsible for your data, who can access it, your prompts and application, and how outputs are used. The higher up the stack, the more AWS manages.
+- **Safety and responsible AI** — Bedrock Guardrails, watermarking on generated images and video, and AWS AI Service Cards that document intended use and limitations.
+- **Integration and scale** — GenAI services connect to your data already in Amazon S3, databases and analytics services, and run on global infrastructure with many Regions.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="The AWS GenAI stack: the higher the layer, the less you build and manage — and the less low-level control you have"
+  code={`flowchart TB
+  subgraph APPS["Applications: use them"]
+    Q["Amazon Quick: business users"]
+    K["Kiro: developers"]
+    T["AWS Transform: modernisation"]
+  end
+  subgraph AGENTS["Agent tooling"]
+    S["Strands Agents SDK: build agents in code"]
+    AC["Bedrock AgentCore: Runtime, Memory, Gateway, Identity, Policy, Observability"]
+  end
+  subgraph FMAAS["Foundation models as a service"]
+    B["Amazon Bedrock: Nova and partner models, Knowledge Bases, Guardrails, Agents"]
+  end
+  subgraph BUILD["Build, train and host your own"]
+    SM["Amazon SageMaker AI and JumpStart"]
+    INF["GPU instances, Trainium, Inferentia"]
+  end
+  APPS --> AGENTS --> FMAAS --> BUILD`}
+/>
+
+<Diagram
+  caption="Which service? Start from who the user is and how much control is needed"
+  code={`flowchart TD
+  U{"Who needs GenAI and for what?"} -->|Business users want answers, dashboards, automation without code| Q["Amazon Quick"]
+  U -->|Developers want help writing and testing code| K["Kiro"]
+  U -->|Modernise legacy apps or migrate at scale| T["AWS Transform"]
+  U -->|Build a GenAI app through an API| B["Amazon Bedrock with Nova or partner models"]
+  B --> A{"Need a custom agent in code?"}
+  A -->|Yes| S["Strands Agents, hosted on Bedrock AgentCore"]
+  U -->|Data scientists need full control of training and hosting| SM["SageMaker AI and JumpStart"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Scenario | Best fit | Why |
+|---|---|---|
+| Start-up wants a chatbot over an API with no infrastructure | Amazon Bedrock | Serverless access to FMs, pay per use |
+| Lowest-cost, fastest text model for simple classification | Amazon Nova Micro | Smallest, text-only Nova model |
+| Marketing team wants to generate campaign images | Amazon Nova Canvas | Image generation model in Bedrock |
+| Data scientists need to deploy an open model on chosen GPU instances in their VPC | SageMaker JumpStart | Deploy and fine-tune pre-trained models in your account |
+| Train a new large model for weeks on a resilient cluster | SageMaker HyperPod (SageMaker AI) | Large-scale distributed training |
+| Python developers want to build a tool-using agent quickly | Strands Agents | Open-source, model-driven agent SDK |
+| Run thousands of isolated agent sessions with memory and audit traces | Bedrock AgentCore | Runtime, Memory, Observability |
+| Expose existing internal APIs to agents as MCP tools | AgentCore Gateway | Converts APIs and Lambda functions into tools |
+| Sales managers want dashboards and AI answers over company data, no code | Amazon Quick | Agentic workspace and BI for business users |
+| Developers want requirements, design and tasks generated before coding | Kiro | Spec-driven agentic IDE |
+| Modernise a COBOL mainframe application | AWS Transform | Agentic migration and modernisation |
+
+**Worked example — reading the clues.** *"A financial company wants to let analysts ask questions about sales data in plain English and receive visual dashboards. The analysts do not write code."* Business users + dashboards + no code → **Amazon Quick**. If the question had said "developers want to embed a summarisation feature in their mobile app", the answer would move down a floor to **Amazon Bedrock**.
+
+**Worked example — control vs convenience.** *"A healthcare research team must fine-tune an open-source model, run it on a specific GPU instance type inside a private VPC, and control auto scaling."* The requirement for hardware and scaling control points to **SageMaker JumpStart / SageMaker AI**. If instead they "want the least operational overhead", Bedrock is the better answer.
+
+**Worked example — framework vs platform.** *"A team built an agent with an open-source framework. They now need session isolation, long-term memory and identity management in production."* Strands Agents (or another framework) is how the agent is written; **Amazon Bedrock AgentCore** is where it runs. A question asking how to *operate* agents securely at scale is about AgentCore.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={3}>
+
+<Callout type="realWorld" title="A retailer uses every floor of the stack">
+A national retailer's **marketing team** uses **Amazon Quick** to ask "which regions underperformed last quarter and why?" and receives a dashboard plus a cited research summary that combines sales data with internal reports. Its **developers** use **Kiro** to turn a feature request into a spec and tasks for a new returns portal. The returns portal calls **Amazon Bedrock**: a small **Nova** model classifies return reasons and a Knowledge Base answers policy questions. A customer-service **agent built with Strands Agents** checks order status and creates return labels through internal APIs exposed by **AgentCore Gateway**, runs on **AgentCore Runtime** and remembers customer preferences in **AgentCore Memory**. The **data science team** fine-tunes an open model from **SageMaker JumpStart** for product-image tagging on GPU instances they control. Meanwhile the IT department uses **AWS Transform** to modernise a decades-old inventory system.
+</Callout>
+
+What made the programme succeed was not one service but **choosing the right floor for each job**. Early on, the team tried to build its own BI chatbot on Bedrock — weeks of work — before discovering that Amazon Quick already provided it for business users. Conversely, it first tried to run its customer-service agent as a simple Lambda function and hit problems with session isolation, memory and auditing; moving to AgentCore solved these without rewriting the agent, because AgentCore works with the framework it already used.
+
+Security and compliance were settled early. The retailer's security team confirmed that Bedrock does not use prompts to train base models, enabled PrivateLink so traffic stayed off the public internet, used IAM roles for each application, encrypted data with KMS keys and turned on CloudTrail logging. Guardrails blocked off-topic requests and redacted card numbers from chat transcripts. Under the **shared responsibility model**, AWS operated the models and infrastructure; the retailer remained responsible for its data, permissions and how the assistant's answers were used.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: tour the stack in the console" minutes={8}>
+
+<HandsOnLab
+  goal="Find where each part of the AWS GenAI stack lives in the console: the Bedrock model catalogue and Nova models, a SageMaker JumpStart model, and the AgentCore services."
+  asOf="November 2026"
+  steps={[
+    { text: 'Open Amazon Bedrock and choose Model catalog. Filter by provider "Amazon" and modality to see the Nova family and their input and output types.', screen: { service: 'Amazon Bedrock', path: ['Discover', 'Model catalog'], menu: ['Overview', 'Model catalog', 'Playgrounds', 'Agents', 'Knowledge Bases', 'Guardrails'], active: 'Model catalog', fields: [{ label: 'Provider filter', value: 'Amazon' }, { label: 'Results', value: 'Nova Micro · Nova Lite · Nova Pro · Nova Premier · Nova Canvas · Nova Reel · Nova Sonic' }], highlight: 'Nova Micro' } },
+    { text: 'Open the Nova Micro model card. Note the modalities (text in, text out), context window, supported Regions and the pricing link — the facts you use when selecting a model.', screen: { service: 'Amazon Bedrock', path: ['Model catalog', 'Amazon Nova Micro'], fields: [{ label: 'Input', value: 'Text' }, { label: 'Output', value: 'Text' }, { label: 'Use cases', value: 'Summarisation, classification, chat' }], highlight: 'Open in playground' } },
+    { text: 'Switch to SageMaker AI Studio and open JumpStart. Pick an open text-generation model and see the Deploy, Fine-tune and Evaluate buttons — deployment creates an endpoint on an instance type you choose.', screen: { service: 'Amazon SageMaker AI Studio', path: ['JumpStart', 'Models', 'Open text-generation model'], menu: ['Home', 'JumpStart', 'Models', 'Endpoints'], active: 'JumpStart', fields: [{ label: 'Instance type', value: 'ml.g5.2xlarge' }, { label: 'Deploy into', value: 'Your account and VPC' }], highlight: 'Deploy' } },
+    { text: 'Finally open Amazon Bedrock AgentCore. The left menu lists the managed services for production agents: Runtime, Memory, Gateway, Identity, Policy, built-in tools and Observability.', screen: { service: 'Amazon Bedrock AgentCore', path: ['AgentCore', 'Overview'], menu: ['Runtime', 'Memory', 'Gateway', 'Identity', 'Policy', 'Built-in tools', 'Observability'], active: 'Runtime', fields: [{ label: 'Framework', value: 'Strands Agents (any framework supported)' }, { label: 'Model', value: 'Any model' }], note: 'Write the agent anywhere; run it here' } },
+  ]}
+  expectedOutcome="You can point to where Bedrock models, Nova model cards, JumpStart deployment and the AgentCore services live, and explain how serverless model access differs from deploying a model on your own endpoint."
+  checks={[
+    { q: 'Which option needs you to choose an instance type: invoking Nova Micro in Bedrock, or deploying a JumpStart model?', a: 'Deploying a JumpStart model — it creates a SageMaker AI endpoint on instances you choose. Bedrock on-demand invocation is serverless.' },
+    { q: 'Which AgentCore component turns existing APIs into tools an agent can call?', a: 'AgentCore Gateway.' },
+    { q: 'Where do you check a model’s modalities and context window before choosing it?', a: 'The model card in the Bedrock model catalogue.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="Bedrock vs SageMaker AI">
+"Least operational overhead", "serverless", "access FMs through an API" → **Amazon Bedrock**. "Full control over training, instance types or hosting", "build a custom model from scratch" → **Amazon SageMaker AI**. "Deploy or fine-tune a pre-trained open model in your own account" → **SageMaker JumpStart**.
+</Callout>
+
+- Business users, dashboards, insights, no-code agents and automation → **Amazon Quick**.
+- Developers, spec-driven development, IDE, agent hooks → **Kiro**.
+- Mainframe, .NET, VMware or Java modernisation and migration → **AWS Transform**.
+- Open-source SDK to write agents → **Strands Agents**; run agents in production with isolation, memory, identity, policy, observability → **Bedrock AgentCore**.
+- Amazon's own models in Bedrock → **Amazon Nova** (Micro = smallest text-only; Canvas = images; Reel = video; Sonic = speech).
+- Bedrock does **not** use your data to train base models or share it with model providers.
+- Shared responsibility: AWS secures the service; you secure your data, access and use of outputs.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+The AWS GenAI stack has layers. At the bottom, Amazon SageMaker AI (with JumpStart and HyperPod) lets you build, train, fine-tune and host models with full control. In the middle, Amazon Bedrock offers foundation models — including the Amazon Nova family — through one serverless API, with Knowledge Bases, Guardrails, Agents, evaluation and customisation. For agents, Strands Agents helps you write them and Amazon Bedrock AgentCore runs them securely at scale. At the top, ready-made applications serve specific users: Amazon Quick for business users, Kiro for developers and AWS Transform for modernisation. AWS adds security, compliance, shared responsibility, safety tools and speed to market. Tomorrow: how to keep all of this affordable.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={12} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Bedrock vs SageMaker AI vs Quick" minutes={15} optional>
+
+An insurance company asks its architect a single question: *"Should we use Bedrock, SageMaker AI or Amazon Quick for generative AI?"* The honest answer is "all three, for different jobs". Here is how the architect explains the decision.
+
+**Amazon Quick — when the user is a business person and the product already exists.** Claims managers want to ask questions across policies, claims data and internal reports, see dashboards and automate routine follow-ups. Building that from scratch would take months; Quick provides it with connectors to company data, governed access and no code. Trade-off: least effort and fastest value, but limited ability to change how the underlying models or retrieval work.
+
+**Amazon Bedrock — when developers are building a GenAI feature into the company's own applications.** The customer app needs a policy-question assistant and a claim-summary generator. Developers call Nova or partner models through the Bedrock API, ground answers with a Knowledge Base, protect them with Guardrails and, for multi-step tasks, use an agent hosted on AgentCore. Trade-off: much more flexibility than Quick, with no infrastructure to manage, but the team owns the application, prompts and evaluations.
+
+**Amazon SageMaker AI — when data scientists need full control or a model that does not exist yet.** The fraud team trains a traditional ML model on claims data, and the imaging team fine-tunes an open vision model from JumpStart on damage photos, hosting it on GPU instances in the company VPC. Trade-off: maximum control over data, algorithms, hardware and cost optimisation, but the most skills and operational work.
+
+<Diagram
+  caption="Reference architecture: Amazon Quick for business users, Amazon Bedrock with AgentCore for application features, SageMaker AI for custom models — all on shared data in Amazon S3"
+  code={`flowchart LR
+  users["Claims managers"] --> quick["Amazon Quick: agents, research, dashboards"]
+  cust["Customer app"] --> api["Application backend"]
+  api --> agent["Agent on AgentCore Runtime"]
+  agent --> br["Amazon Bedrock: Nova model plus Guardrails"]
+  br --> kb["Bedrock Knowledge Base"]
+  agent --> sme["SageMaker AI endpoint: fine-tuned damage-photo model"]
+  ds["Data scientists"] --> sm["SageMaker AI and JumpStart: train and fine-tune"] --> sme
+  s3[("Amazon S3 data lake: policies, claims, photos")] --> quick
+  s3 --> kb
+  s3 --> sm`}
+/>
+
+**Decision checklist the architect leaves behind.**
+
+1. *Is there an AWS application that already does this for this user?* If yes, start with Quick (business users), Kiro (developers) or AWS Transform (modernisation).
+2. *Is a foundation model, prompted or grounded with our data, good enough?* If yes, use Bedrock — and add AgentCore if the feature is an agent.
+3. *Do we need a model Bedrock does not offer serverless, specific hardware, or full training control?* Then use SageMaker AI and JumpStart.
+4. *Whatever the choice*, apply the same controls: IAM least privilege, encryption, private networking, Guardrails or equivalent safety checks, logging and evaluation.
+
+**Costs and responsibility shift with the choice.** Quick is priced per user and capability, Bedrock mostly per token (or reserved throughput), SageMaker AI per instance-hour. Under the shared responsibility model, the further down the stack you go, the more you manage — patching containers, scaling endpoints, securing training data pipelines — and the more control you gain.
+
+</Section>

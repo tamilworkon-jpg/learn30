@@ -1,0 +1,330 @@
+- id: q-day-26-001
+  set: day-26
+  type: single
+  stem: "Analysts query a sales table in an Amazon S3 data lake. They must be able to see purchase data but must never see the customer email column. Which AWS service provides this control?"
+  options:
+    - { id: a, text: "AWS Lake Formation with column-level permissions", explanation: "Correct. Lake Formation provides fine-grained access control on data lake tables, including specific columns, rows and cells." }
+    - { id: b, text: "An AWS Glue crawler", explanation: "Incorrect. A crawler discovers schemas and registers tables in the Data Catalog; it does not restrict access to columns." }
+    - { id: c, text: "Amazon Macie", explanation: "Incorrect. Macie discovers sensitive data in S3 but does not grant or restrict column access for queries." }
+    - { id: d, text: "Amazon SageMaker Model Cards", explanation: "Incorrect. Model Cards document models; they do not control data access." }
+  answer: [a]
+  explanation: "AWS Lake Formation centralises data lake permissions with fine-grained control at database, table, column, row and cell level, and tag-based access control for scale. Query services such as Amazon Redshift, Amazon EMR and AWS Glue respect these permissions."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#examples
+  difficulty: easy
+
+- id: q-day-26-002
+  set: day-26
+  type: single
+  stem: "Data teams at a company cannot tell which datasets exist in Amazon S3 or what their schemas are. Which service provides a central metadata inventory that can be populated automatically by scanning the data?"
+  options:
+    - { id: a, text: "Amazon SageMaker Model Registry", explanation: "Incorrect. The Model Registry stores model versions and approval status, not an inventory of datasets." }
+    - { id: b, text: "AWS Glue Data Catalog with Glue crawlers", explanation: "Correct. Crawlers scan sources, infer schemas and register tables in the Glue Data Catalog, the central metadata store." }
+    - { id: c, text: "AWS CloudTrail", explanation: "Incorrect. CloudTrail records API calls, not dataset schemas." }
+    - { id: d, text: "Amazon Bedrock Knowledge Bases", explanation: "Incorrect. Knowledge Bases index documents for retrieval by a model; they are not a data catalog for the organisation." }
+  answer: [b]
+  explanation: "Cataloguing answers 'what data do we have and what is in it?'. The AWS Glue Data Catalog is the central metadata store on AWS, and Lake Formation uses the same catalog to attach permissions and tags."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#explanation
+  difficulty: easy
+
+- id: q-day-26-003
+  set: day-26
+  type: single
+  stem: "A regulator asks a bank which dataset version and training job produced the credit model currently deployed on a SageMaker AI endpoint. Which capability helps the bank answer quickly?"
+  options:
+    - { id: a, text: "AWS Glue Data Catalog", explanation: "Incorrect. The catalog lists datasets and schemas but does not record which training job used which dataset to produce a model." }
+    - { id: b, text: "AWS Lake Formation permissions", explanation: "Incorrect. Lake Formation controls who can access data, not how data flowed into models." }
+    - { id: c, text: "SageMaker AI lineage tracking together with the Model Registry", explanation: "Correct. Lineage tracking records datasets, jobs, model artifacts and endpoints and the links between them; the Model Registry records the deployed version." }
+    - { id: d, text: "Amazon Bedrock Guardrails", explanation: "Incorrect. Guardrails filter prompts and responses; they do not trace model origins." }
+  answer: [c]
+  explanation: "Lineage answers 'where did this come from and what depends on it?'. SageMaker AI lineage tracking links data, processing and training jobs, models and endpoints, and the Model Registry keeps versions with metadata and approval status."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#examples
+  difficulty: medium
+
+- id: q-day-26-004
+  set: day-26
+  type: single
+  stem: "Auditors want a single document for a model that states its intended use, risk rating, training details and evaluation results. Which AWS feature is designed for this?"
+  options:
+    - { id: a, text: "AWS CloudTrail event history", explanation: "Incorrect. CloudTrail records API calls, not a model's intended use or evaluation." }
+    - { id: b, text: "AWS Glue Data Catalog", explanation: "Incorrect. The catalog describes datasets and schemas, not models." }
+    - { id: c, text: "Amazon Macie findings", explanation: "Incorrect. Macie reports sensitive data in S3 buckets." }
+    - { id: d, text: "Amazon SageMaker Model Cards", explanation: "Correct. Model Cards document intended use, risk rating, training data and job details, evaluation results and caveats, and can be exported for auditors." }
+  answer: [d]
+  explanation: "SageMaker Model Cards act as source citation for the model itself: they record its origin, what it was trained on and how it performed, so reviewers can judge whether it is appropriate for a use."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#explanation
+  difficulty: easy
+
+- id: q-day-26-005
+  set: day-26
+  type: single
+  stem: "A RAG assistant retrieves a leave policy that states 16 weeks of parental leave, but its response says 26 weeks. Which Amazon Bedrock Guardrails capability is designed to catch this, and why?"
+  options:
+    - { id: a, text: "The contextual grounding check, because the response would receive a low grounding score against the source", explanation: "Correct. The grounding score measures whether the response is supported by the source passages; an unsupported claim scores low and can be blocked." }
+    - { id: b, text: "The contextual grounding check, because the response would receive a low relevance score", explanation: "Incorrect. The response does address the question asked, so relevance would be high; the problem is that it is not supported by the source." }
+    - { id: c, text: "A denied topic for leave policies", explanation: "Incorrect. A denied topic would block all leave questions instead of checking whether answers match the source." }
+    - { id: d, text: "A word filter for the phrase 26 weeks", explanation: "Incorrect. A word filter blocks fixed phrases and cannot judge whether a claim is supported by the retrieved context." }
+  answer: [a]
+  explanation: "The contextual grounding check produces a grounding score (is the answer supported by the source?) and a relevance score (does it answer the question?). Responses below the thresholds are blocked or flagged, which helps detect hallucinations in RAG and summarisation."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#examples
+  difficulty: medium
+
+- id: q-day-26-006
+  set: day-26
+  type: single
+  stem: "A user asks an HR assistant about parental leave and receives an accurate summary of the sick leave policy instead. Which contextual grounding score would be low?"
+  options:
+    - { id: a, text: "The grounding score", explanation: "Incorrect. The summary is supported by the retrieved sick leave policy, so it is grounded in the source." }
+    - { id: b, text: "The relevance score", explanation: "Correct. The answer is grounded but does not answer the question the user asked, so relevance is low." }
+    - { id: c, text: "The prompt attack score", explanation: "Incorrect. There is no attack here; the user asked a normal question." }
+    - { id: d, text: "The sensitive information score", explanation: "Incorrect. The issue is an off-topic answer, not leaked personal data." }
+  answer: [b]
+  explanation: "Grounding asks whether the answer is supported by the source; relevance asks whether it answers the question. An accurate but off-topic response is grounded yet irrelevant, so the relevance threshold catches it."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#examples
+  difficulty: medium
+
+- id: q-day-26-007
+  set: day-26
+  type: single
+  stem: "A lender wants to verify that its assistant's answers about loan eligibility are consistent with a precise rulebook, using mathematical logic that explains why an answer violates the rules. Which capability fits BEST?"
+  options:
+    - { id: a, text: "Content filters in Amazon Bedrock Guardrails", explanation: "Incorrect. Content filters detect harmful content such as hate or violence, not consistency with business rules." }
+    - { id: b, text: "AWS Glue Data Quality rules", explanation: "Incorrect. Glue Data Quality checks datasets in pipelines, not model answers." }
+    - { id: c, text: "Automated Reasoning checks in Amazon Bedrock Guardrails", explanation: "Correct. Automated Reasoning checks turn policies into formal logical rules and verify whether responses are consistent with them, explaining violations." }
+    - { id: d, text: "Amazon Macie", explanation: "Incorrect. Macie finds sensitive data in S3 and does not evaluate model answers." }
+  answer: [c]
+  explanation: "Automated Reasoning checks suit domains where answers must follow precise rules, such as HR or lending policies. The contextual grounding check compares answers with retrieved passages, while Automated Reasoning verifies them against a formal policy."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#explanation
+  difficulty: medium
+
+- id: q-day-26-008
+  set: day-26
+  type: single
+  stem: "Employees do not trust an internal policy assistant because they cannot check where its answers come from. Which feature directly addresses this?"
+  options:
+    - { id: a, text: "Raising the temperature inference parameter", explanation: "Incorrect. Higher temperature makes output more varied and does nothing to show sources." }
+    - { id: b, text: "Publishing a SageMaker Model Card for the foundation model", explanation: "Incorrect. A model card documents the model, not the specific documents behind each answer." }
+    - { id: c, text: "A CloudWatch dashboard of invocation counts", explanation: "Incorrect. Usage metrics do not show users the sources of answers." }
+    - { id: d, text: "Citations returned by Amazon Bedrock Knowledge Bases with each answer", explanation: "Correct. Citations point to the source chunks and documents so users can click through and verify the answer." }
+  answer: [d]
+  explanation: "Source citation turns 'trust me' into 'check me'. Bedrock Knowledge Bases returns citations with generated answers, including the source location such as the S3 document, so users and reviewers can verify claims."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#explanation
+  difficulty: easy
+
+- id: q-day-26-009
+  set: day-26
+  type: single
+  stem: "An insurer extracts claim amounts from forms with Amazon Textract. Errors are costly, but reviewing every form manually is too slow. What is the BEST design?"
+  options:
+    - { id: a, text: "Accept fields above a confidence threshold automatically and route lower-confidence fields to human reviewers", explanation: "Correct. A threshold on Textract's confidence scores balances automation with human review where the model is uncertain." }
+    - { id: b, text: "Ask a large language model to state how confident it is in each Textract field", explanation: "Incorrect. A model's self-reported confidence is just generated text and is not a reliable measure." }
+    - { id: c, text: "Accept every extracted field because Textract is a managed service", explanation: "Incorrect. Managed services still make mistakes; confidence scores exist so you can handle uncertain results." }
+    - { id: d, text: "Discard the confidence scores and review a random 1% of forms each month", explanation: "Incorrect. Ignoring per-field confidence misses the uncertain fields that most need review." }
+  answer: [a]
+  explanation: "Many AWS AI services return confidence scores. Above the threshold, accept automatically; below it, route to a human reviewer. Choose the threshold by risk and adjust it using real review data."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#examples
+  difficulty: medium
+
+- id: q-day-26-010
+  set: day-26
+  type: single
+  stem: "A hospital wants to train a readmission model. It must remove names and patient IDs from the training data, yet still link each patient's records across three source systems. Which privacy-enhancing technique fits BEST?"
+  options:
+    - { id: a, text: "Aggregation into regional statistics", explanation: "Incorrect. Aggregation removes individual records, so patient-level linking and modelling would no longer be possible." }
+    - { id: b, text: "Pseudonymisation with a consistent token stored separately from the mapping", explanation: "Correct. A consistent token replaces the patient ID so records can still be joined, while the mapping is protected separately." }
+    - { id: c, text: "Differential privacy noise added to every record", explanation: "Incorrect. Differential privacy protects statistical results about groups; it is not a way to link records across systems." }
+    - { id: d, text: "Deleting every identifier column from all three systems", explanation: "Incorrect. Without any identifier or token, the records from the three systems could not be linked." }
+  answer: [b]
+  explanation: "Pseudonymisation (or tokenisation) keeps data linkable without exposing direct identifiers, but the mapping must be strictly protected. Anonymisation and aggregation remove linkability; synthetic data avoids real records entirely."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#examples
+  difficulty: hard
+
+- id: q-day-26-011
+  set: day-26
+  type: single
+  stem: "A bank wants an external start-up to prototype a model on data that looks like its customer data, without sharing any real customer records. Which approach meets this requirement?"
+  options:
+    - { id: a, text: "Mask only the name column and share the rest", explanation: "Incorrect. The remaining columns are still real customer records and may allow re-identification." }
+    - { id: b, text: "Pseudonymise customer IDs and share the dataset", explanation: "Incorrect. Pseudonymised data is still real personal data that can be linked back with the mapping or other attributes." }
+    - { id: c, text: "Generate synthetic data that keeps the statistical patterns of the real data", explanation: "Correct. Synthetic records preserve useful patterns without describing real people." }
+    - { id: d, text: "Encrypt the real dataset with KMS before sharing it", explanation: "Incorrect. The start-up would need to decrypt the data to use it, so real records would still be shared." }
+  answer: [c]
+  explanation: "Synthetic data is artificial data generated to mimic the statistical properties of real data. It is useful for testing, prototyping and some training when real personal data must not leave the organisation."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#examples
+  difficulty: medium
+
+- id: q-day-26-012
+  set: day-26
+  type: single
+  stem: "A retailer's assistant suddenly tells shoppers that returns are accepted for 365 days; the real policy is 30 days. CloudTrail shows that a contractor's role uploaded a draft document to the knowledge base bucket last week. Which action BEST prevents this from happening again?"
+  options:
+    - { id: a, text: "Switch to a larger foundation model", explanation: "Incorrect. The model faithfully repeated the uploaded document; a larger model would do the same." }
+    - { id: b, text: "Lower the temperature inference parameter", explanation: "Incorrect. Lower temperature reduces randomness but the answer came from a document in the knowledge base, not from creative drift." }
+    - { id: c, text: "Add a content filter for violence to the guardrail", explanation: "Incorrect. The answer is not harmful content; content filters would not detect it." }
+    - { id: d, text: "Allow only the publishing pipeline role to write to the bucket, require owner approval before ingestion, and keep S3 Versioning on", explanation: "Correct. Restricting write access, approving sources and versioning protect the integrity of the knowledge base against poisoning and allow rollback." }
+  answer: [d]
+  explanation: "Planting false documents in a knowledge base is a form of data poisoning. Integrity controls include least-privilege write access, vetting sources before ingestion, S3 Versioning for rollback and CloudTrail for tracing changes."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#examples
+  difficulty: hard
+
+- id: q-day-26-013
+  set: day-26
+  type: single
+  stem: "A data pipeline must stop automatically if a dataset contains empty customer IDs or duplicate claim numbers before the data reaches model training. Which AWS capability is designed to evaluate rules like these in the pipeline?"
+  options:
+    - { id: a, text: "AWS Glue Data Quality", explanation: "Correct. Glue Data Quality evaluates data quality rules inside pipelines so bad data can be stopped before training or ingestion." }
+    - { id: b, text: "Amazon Inspector", explanation: "Incorrect. Inspector scans software for vulnerabilities, not data for quality issues." }
+    - { id: c, text: "Amazon Macie", explanation: "Incorrect. Macie finds sensitive data; it does not check completeness or duplicates." }
+    - { id: d, text: "AWS Lake Formation", explanation: "Incorrect. Lake Formation governs access to data, not its quality." }
+  answer: [a]
+  explanation: "Data quality is the first pillar of secure data engineering. Teams profile data and run automated rules; AWS Glue Data Quality evaluates such rules, and AWS Glue DataBrew offers visual profiling and cleaning."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#explanation
+  difficulty: easy
+
+- id: q-day-26-014
+  set: day-26
+  type: single
+  stem: "A team wants a signal of how much to trust each answer from its RAG assistant before showing it to customers. Which signal is MOST reliable?"
+  options:
+    - { id: a, text: "The model's own statement of how confident it is, such as 'I am 95% sure'", explanation: "Incorrect. Self-reported confidence is just more generated text and is not a reliable measure." }
+    - { id: b, text: "The guardrail grounding score combined with the retrieval relevance scores", explanation: "Correct. These scores measure whether relevant evidence was found and whether the answer is supported by it." }
+    - { id: c, text: "The length of the generated answer", explanation: "Incorrect. Long answers are not more likely to be correct; length is not a confidence signal." }
+    - { id: d, text: "The temperature value used for the request", explanation: "Incorrect. Temperature is a setting you choose, not a measurement of a particular answer's correctness." }
+  answer: [b]
+  explanation: "For generative answers, useful confidence signals include knowledge base retrieval relevance scores, the contextual grounding check scores and evaluator scores. Combine them with thresholds that route low-confidence answers to 'I'm not sure' or a human."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#explanation
+  difficulty: hard
+
+- id: q-day-26-015
+  set: day-26
+  type: multi
+  stem: "A company's RAG chatbot sometimes invents answers that are not in its documents. Which actions will MOST likely reduce these hallucinations? (Select TWO.)"
+  options:
+    - { id: a, text: "Instruct the model to answer only from the retrieved context and to say it does not know otherwise", explanation: "Correct. Explicit grounding instructions and permission to say 'I don't know' reduce made-up answers." }
+    - { id: b, text: "Keep the knowledge base curated and current, removing superseded documents", explanation: "Correct. Outdated or conflicting documents produce outdated or conflicting answers." }
+    - { id: c, text: "Increase the temperature to make answers more diverse", explanation: "Incorrect. Higher temperature increases creative drift, which can increase hallucinations in factual tasks." }
+    - { id: d, text: "Remove citations so answers are shorter", explanation: "Incorrect. Citations help users verify answers; removing them hides problems rather than reducing them." }
+    - { id: e, text: "Load every version of every document from the shared drive", explanation: "Incorrect. Ingesting superseded versions creates conflicting evidence and mixed answers." }
+  answer: [a, b]
+  explanation: "RAG grounding works best with curated, current sources, metadata filtering, low temperature for factual tasks, explicit instructions to answer only from context, permission to say 'I don't know', and citations so users can verify."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#explanation
+  difficulty: medium
+
+- id: q-day-26-016
+  set: day-26
+  type: multi
+  stem: "A company wants to protect the integrity of the S3 bucket that holds its approved training datasets against accidental changes and data poisoning. Which measures should it take? (Select THREE.)"
+  options:
+    - { id: a, text: "Turn on S3 Versioning so changes can be detected and rolled back", explanation: "Correct. Versioning keeps every object version, allowing rollback after an unwanted change." }
+    - { id: b, text: "Restrict write access to the pipeline roles that need it", explanation: "Correct. Least-privilege write access reduces who can insert or alter training data." }
+    - { id: c, text: "Record checksums of approved datasets to prove the training data matches the reviewed version", explanation: "Correct. Hashes let you show that the data used for training is exactly the version that was approved." }
+    - { id: d, text: "Make the bucket publicly readable for transparency", explanation: "Incorrect. Public access exposes the data and does nothing to prevent tampering." }
+    - { id: e, text: "Disable CloudTrail logging to reduce costs", explanation: "Incorrect. CloudTrail is needed to trace who changed data; disabling it removes evidence." }
+    - { id: f, text: "Allow any team to upload examples so the dataset grows faster", explanation: "Incorrect. Open write access is exactly how poisoned examples get in." }
+  answer: [a, b, c]
+  explanation: "Data integrity defences include restricting write access, S3 Versioning, S3 Object Lock where records must not change, checksums or hashes of approved datasets, vetting sources and logging changes with CloudTrail."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#explanation
+  difficulty: medium
+
+- id: q-day-26-017
+  set: day-26
+  type: multi
+  stem: "Which of the following are privacy-enhancing techniques for data used in AI systems? (Select TWO.)"
+  options:
+    - { id: a, text: "Data minimisation", explanation: "Correct. Keeping only the data the use case needs reduces privacy risk." }
+    - { id: b, text: "Differential privacy", explanation: "Correct. Calibrated statistical noise keeps group results useful while protecting individuals." }
+    - { id: c, text: "Increasing the number of training epochs", explanation: "Incorrect. Epochs control how long a model trains; they have nothing to do with privacy." }
+    - { id: d, text: "Denormalising tables into one wide table", explanation: "Incorrect. Denormalisation is a data modelling choice and can even put more personal data in one place." }
+    - { id: e, text: "Keeping raw PII in application logs for debugging", explanation: "Incorrect. Storing raw PII in logs increases privacy risk." }
+  answer: [a, b]
+  explanation: "Privacy-enhancing techniques include data minimisation, masking and redaction, pseudonymisation and tokenisation, anonymisation and aggregation, differential privacy, synthetic data and encryption."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#explanation
+  difficulty: easy
+
+- id: q-day-26-018
+  set: day-26
+  type: multi
+  stem: "A company must delete its 2024 complaints dataset, identify every model that was trained on it, and tell the auditor what each affected model is intended for. Which capabilities directly support these tasks? (Select TWO.)"
+  options:
+    - { id: a, text: "SageMaker AI lineage tracking", explanation: "Correct. Lineage links datasets to the jobs and model versions built from them, so affected models can be found." }
+    - { id: b, text: "Amazon SageMaker Model Cards", explanation: "Correct. Model Cards state each model's intended use, training details and evaluation for the auditor." }
+    - { id: c, text: "AWS Glue Data Catalog", explanation: "Incorrect. The catalog shows that the dataset exists and its schema, but not which models were trained on it." }
+    - { id: d, text: "AWS Lake Formation permissions", explanation: "Incorrect. Permissions control who can access the dataset; they do not record which models used it." }
+    - { id: e, text: "Amazon Macie", explanation: "Incorrect. Macie finds sensitive data in S3; it does not trace models or describe their purpose." }
+  answer: [a, b]
+  explanation: "Match the verb: find what data exists (Glue Data Catalog), restrict who sees it (Lake Formation), trace which models used it (lineage), document what a model is for (Model Card)."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#examples
+  difficulty: hard
+
+- id: q-day-26-019
+  set: day-26
+  type: ordering
+  stem: "Arrange the stages of a secure data pipeline in order, from raw data landing in Amazon S3 to the data being used by a model or knowledge base."
+  options:
+    - { id: a, text: "Apply masking, pseudonymisation and minimisation to sensitive fields", explanation: "Third: once the data has passed quality checks, privacy treatment is applied before it is shared more widely." }
+    - { id: b, text: "Scan the raw data with Amazon Macie to find sensitive data", explanation: "First: you need to know what sensitive data exists before deciding how to treat it." }
+    - { id: c, text: "Use the data for SageMaker AI training or a Bedrock knowledge base", explanation: "Last: only curated, governed data reaches models." }
+    - { id: d, text: "Run Glue Data Quality rules and stop the pipeline on failure", explanation: "Second: bad data is stopped before further processing." }
+    - { id: e, text: "Register the curated data in the Glue Data Catalog with Lake Formation permissions", explanation: "Fourth: the curated data is catalogued and governed so that only the right roles can use it." }
+  answer: [b, d, a, e, c]
+  explanation: "A secure pipeline discovers sensitive data, enforces quality rules, applies privacy-enhancing techniques, catalogues and governs the curated result, and only then feeds training or retrieval, with lineage recorded along the way."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#diagram
+  difficulty: medium
+
+- id: q-day-26-020
+  set: day-26
+  type: matching
+  stem: "A data protection officer asks four questions. Match each question to the AWS capability that answers it."
+  options:
+    - { id: a, text: "What customer datasets do we hold, and what are their schemas?", explanation: "The AWS Glue Data Catalog is the central inventory of datasets and schemas." }
+    - { id: b, text: "Who can see the salary column in the HR table?", explanation: "AWS Lake Formation manages fine-grained permissions on data lake columns." }
+    - { id: c, text: "Which models were trained on the dataset we must delete?", explanation: "SageMaker AI lineage tracking links datasets to the models built from them." }
+    - { id: d, text: "What is the credit model for, and how was it evaluated?", explanation: "A SageMaker Model Card documents intended use and evaluation results." }
+  matchTargets:
+    - { id: t1, text: "SageMaker AI lineage tracking" }
+    - { id: t2, text: "Amazon SageMaker Model Cards" }
+    - { id: t3, text: "AWS Glue Data Catalog" }
+    - { id: t4, text: "AWS Lake Formation" }
+  answer: { a: t3, b: t4, c: t1, d: t2 }
+  explanation: "The catalog says what data exists, Lake Formation says who may access it, lineage says how data flowed into which models, and Model Cards say what a model is for and how it was trained and evaluated."
+  domain: D5
+  taskStatement: "5.1"
+  lessonRef: day-26#examples
+  difficulty: medium

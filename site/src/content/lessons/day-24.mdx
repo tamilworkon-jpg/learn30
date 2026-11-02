@@ -1,0 +1,285 @@
+---
+day: 24
+kind: lesson
+title: 'Transparency & explainability'
+summary: 'Understand why transparent and explainable models matter, how transparent (white-box) models differ from opaque (black-box) ones, and which tools help: Amazon SageMaker Model Cards, AWS AI Service Cards, Amazon Bedrock Model Evaluations, SageMaker Clarify explanations, and open-source models with their licences. Weigh the trade-offs between interpretability and performance and between safety and transparency, and apply human-centred design to explainable AI.'
+domains: [D4]
+taskStatements: ['4.2']
+sources:
+  - { provider: udemy, title: 'Responsible AI; Interpretability and Explainability; SageMaker Model Cards; Bedrock Model Evaluation' }
+  - { provider: skillbuilder, title: 'Responsible Artificial Intelligence Practices' }
+  - { provider: aws-docs, title: 'Amazon SageMaker AI Developer Guide — Amazon SageMaker Model Cards', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/model-cards.html' }
+  - { provider: aws-docs, title: 'Amazon Bedrock User Guide — Evaluate the performance of Amazon Bedrock resources', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/evaluation.html' }
+objectives:
+  - Distinguish transparent (interpretable) models from opaque (black-box) models and interpretability from explainability
+  - Describe explanation techniques such as feature attributions, partial dependence and counterfactual explanations
+  - Use SageMaker Model Cards and AWS AI Service Cards to document and understand models
+  - Explain how Amazon Bedrock Model Evaluations compares models with automatic, human and LLM-as-a-judge evaluation
+  - Assess open-source and open-weight models and their licences for transparency and permitted use
+  - Weigh interpretability against performance and safety against transparency, and apply human-centred design for explainable AI
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'Transparent models (linear regression, decision trees) are interpretable by design; opaque models (deep neural networks, LLMs) need post-hoc explanation such as SHAP.'
+  - 'SageMaker Model Cards document a model’s intended uses, risk rating, training details and evaluation results; AWS AI Service Cards document AWS’s own AI services.'
+  - 'Amazon Bedrock Model Evaluations: automatic metrics (accuracy, robustness, toxicity), human evaluation by your work team, and LLM-as-a-judge — including evaluation of knowledge bases (RAG).'
+  - 'Open-weight models increase transparency, but licences differ: check commercial use, acceptable-use restrictions and attribution.'
+  - 'Trade-offs: more interpretable usually means less flexible; full transparency can help attackers or expose data. Human-centred XAI explains in terms the audience can act on.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 23" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="Seeing inside the model" minutes={15}>
+
+### Why transparency and explainability matter
+
+Imagine your mortgage application is declined and the bank says only "the computer said no". You cannot fix the problem, you cannot challenge a mistake, and you have no reason to trust the bank next time. Now imagine the letter says: "declined mainly because your existing debt is 48% of your income; below 40% would usually qualify". That explanation lets you act, lets the bank check the model is behaving sensibly, and lets a regulator confirm the decision was lawful.
+
+Task statement 4.2 asks you to recognise why this matters. Transparent and explainable models help to:
+
+- **build trust** with customers and employees, who are more willing to rely on decisions they understand;
+- **meet regulations** — many laws on credit, insurance, employment and data protection require meaningful reasons for automated decisions;
+- **debug and improve models** — explanations reveal when a model relies on a wrong or unfair feature (a proxy for gender, a watermark on training images);
+- **support accountability** — when something goes wrong, documentation shows who built the model, with what data, for what purpose.
+
+### Two related ideas: transparency and explainability
+
+- **Transparency** is about *openness*: being clear that AI is used, what the model is for, how it was built, what data it was trained on, its limitations and who is responsible. Documentation such as model cards is a transparency tool.
+- **Explainability** is about *reasons*: being able to say why a model produced a particular output, in terms a person can understand.
+
+Inside explainability, practitioners distinguish two levels:
+
+- **Interpretability** — a human can follow the model's *internal mechanics* directly. You can read a decision tree's rules or a linear model's weights and see exactly how inputs become outputs.
+- **Explainability (post-hoc)** — the model itself is too complex to read, so we use a separate technique to *approximate* why it gave an answer.
+
+### Transparent vs opaque models
+
+| | Transparent (white-box, interpretable) | Opaque (black-box, non-transparent) |
+|---|---|---|
+| **Examples** | Linear and logistic regression, small decision trees, rule-based systems | Deep neural networks, large ensembles of trees, foundation models and LLMs |
+| **How you understand it** | Read the coefficients or rules directly | Use post-hoc techniques; observe inputs and outputs |
+| **Strength** | Easy to explain, audit and debug | Learns complex patterns in images, language and huge datasets; usually higher accuracy on hard tasks |
+| **Weakness** | May underfit complex patterns | Hard to explain; may hide unfair or spurious reasoning |
+| **Good fit** | Regulated decisions with tabular data and a need for clear reasons | Perception, language, generation and very complex prediction |
+
+A linear model for house prices might say: *price = 50,000 + 3,000 × square metres − 2,000 × age in years*. Anyone can see that each extra square metre adds 3,000. A deep neural network with millions of weights offers no such reading. Foundation models with billions of parameters are the most opaque of all: even their builders cannot trace exactly why a specific word was generated.
+
+### Explanation techniques for opaque models
+
+- **Feature attributions (SHAP)** — assign each input feature a share of the credit for a prediction. *Local* explanations explain one prediction ("debt ratio contributed most to this decline"); *global* explanations summarise which features matter most across all predictions. SageMaker Clarify uses SHAP (Day 23).
+- **LIME** — fits a simple, interpretable model around one prediction to approximate the complex model locally. Same goal as SHAP, different method.
+- **Partial dependence plots** — show how the average prediction changes as one feature changes while others are held constant ("risk rises steeply when debt ratio passes 40%").
+- **Counterfactual explanations** — the smallest change to the input that would change the outcome ("if your debt ratio were below 40%, the application would likely be approved"). These are very actionable for end users.
+- **For generative AI** — full explanations are not yet possible, so teams increase transparency with **citations** from retrieval-augmented generation (showing which documents an answer came from), **agent traces** that show the steps and tools an agent used, and asking the model to show its reasoning. Be careful: a model's self-described reasoning is not guaranteed to reflect how it actually produced the answer.
+
+### Tools for transparency on AWS
+
+**Amazon SageMaker Model Cards** are structured documents for your *own* models, created in SageMaker AI and stored with versions. A model card records: model overview and owner; **intended uses** and out-of-scope uses; a **risk rating** (unknown, low, medium or high); training details (algorithm, data, hyperparameters); **evaluation results**, which can include Clarify bias and explainability reports; and additional information such as ethical considerations and caveats. Model cards can be linked to models in the **SageMaker Model Registry**, exported as PDF for auditors and shared with other stakeholders. Think of a model card as the nutrition label and instruction leaflet for a model. SageMaker Model Cards sit alongside the **SageMaker Model Dashboard**, which gives one view of deployed models and their monitoring status.
+
+**AWS AI Service Cards** are AWS's own transparency documents for its AI services and models (for example Amazon Rekognition face matching, Amazon Textract, Amazon Transcribe and Amazon Nova models). Each describes intended use cases, limitations, the responsible AI design choices AWS made, and best practices for deploying responsibly. Use them when your solution *consumes* an AWS AI service and you need to understand and document its behaviour. Exam shorthand: **Model Cards = your models; AI Service Cards = AWS's services**.
+
+**Amazon Bedrock Model Evaluations** helps you compare and select foundation models — and evaluate your knowledge bases — using evidence instead of opinion. Evaluation types:
+
+- **Automatic (programmatic) evaluation** — choose a task type (such as general text generation, summarisation, question answering or classification) and metrics such as **accuracy**, **robustness** and **toxicity**, using built-in curated datasets or your own prompt dataset in Amazon S3.
+- **Human evaluation** — your own work team rates or compares responses on criteria you define, such as relevance, style, brand voice or helpfulness. Use this for subjective qualities that metrics cannot capture.
+- **LLM-as-a-judge** — a separate evaluator model scores responses for qualities such as correctness, completeness, helpfulness and harmfulness, with written reasons; faster and cheaper than human review at scale.
+- **Knowledge base (RAG) evaluation** — measures retrieval quality (are the right passages found?) and generation quality (is the answer correct and faithful to them?).
+
+Results, including scores and example responses, are saved to Amazon S3 and shown in a report card, so you can document *why* a model was chosen — evidence that can go straight into a model card.
+
+### Transparency for generative AI applications
+
+Generative AI raises its own transparency questions, because users often cannot tell whether text, an image or a voice was produced by a person or a model. Practical measures include:
+
+- **Disclosure** — tell users when they are talking to an AI assistant and when content is AI-generated, and offer a route to a human.
+- **Provenance and watermarking** — AWS image-generation models such as Amazon Nova Canvas add an invisible watermark to generated images, and industry content-credential standards attach metadata describing how media was created. These help others detect synthetic content.
+- **Source attribution** — show the documents behind a RAG answer so users can verify it themselves; this improves both transparency and veracity.
+- **Documented limitations** — state what the assistant should not be used for (for example legal or medical advice) and where it is known to be weak.
+- **Data lineage** — record which datasets, documents and model versions produced a system, so you can answer "where did this answer come from?" during an audit (Day 26 returns to lineage and cataloguing).
+
+### Who needs which explanation?
+
+Different stakeholders ask different questions, and a good explainability plan answers each one:
+
+| Stakeholder | Typical question | Useful artifact |
+|---|---|---|
+| Data scientist | Is the model relying on sensible features? | Global SHAP, partial dependence, error analysis |
+| Business owner | Can we trust it for this purpose? | Evaluation results, model card, limitations |
+| Regulator or auditor | Was it built and approved properly? Is it fair? | Model card, bias reports, approval records |
+| Affected customer | Why this decision, and what can I do? | Plain-language reasons, counterfactual, appeal route |
+| Front-line employee | Should I accept or override this output? | Key factors, confidence score, override option |
+
+### Open-source models and licensing
+
+**Open-source** and **open-weight** models — for example Meta Llama, Mistral and many models on Hugging Face, available through Amazon Bedrock and SageMaker JumpStart — publish their weights and often their architecture and training approach. That increases transparency: researchers can inspect, test and audit the model, and you can run it in your own environment. But "open" covers a range. Some releases include training code and data; many release only weights. Licences also differ:
+
+- **Permissive licences** (for example Apache 2.0 or MIT) generally allow commercial use, modification and redistribution with attribution.
+- **Custom or community licences** may restrict use cases through an acceptable use policy, limit very large commercial deployments, or require specific attribution.
+- **Non-commercial licences** forbid commercial use entirely.
+
+Before using any model — or any dataset — check the licence for commercial use, modification and fine-tuning rights, redistribution, attribution and prohibited uses. Licensing connects directly to the IP legal risk from Day 22, and open-source datasets have licences too.
+
+### Trade-offs you must recognise
+
+- **Interpretability vs performance.** Simple models are easy to explain but may be less accurate on complex tasks; complex models are often more accurate but opaque. Choose by use case: for a regulated credit decision on tabular data, a slightly less accurate but interpretable model (or a complex model with strong explanations) may be the right choice; for image recognition, deep learning is necessary and explanations are approximate.
+- **Safety and security vs transparency.** Publishing everything is not always responsible. Revealing a fraud model's exact rules teaches fraudsters how to evade it; publishing a chatbot's full system prompt and guardrail settings helps jailbreakers; detailed explanations can leak private training data. Transparency is therefore tailored: regulators and auditors get full documentation, users get meaningful reasons, attackers get nothing useful.
+- **Privacy vs transparency.** Sharing training data openly improves transparency but may expose personal information.
+
+### Human-centred design for explainable AI
+
+Explanations are only useful if people can understand and act on them. **Human-centred design** puts the people who use and are affected by the system at the centre. AWS training highlights three principles for explainable AI:
+
+- **Design for amplified decision-making** — AI should support people making high-stakes decisions, especially under pressure, with clear and simple explanations, confidence levels and the ability to override.
+- **Design for unbiased decision-making** — design the system and process to identify and reduce bias, for example by showing reviewers the key factors rather than just a score, and auditing outcomes per group.
+- **Design for human and AI learning** — humans and AI improve each other: people learn from the model's insights, the model learns from people's corrections (cognitive apprenticeship), and the experience is personalised and user-centred.
+
+In practice: tailor explanations to the audience (a data scientist wants SHAP values; a customer wants two plain-language reasons and what to do next), disclose when content is AI-generated, show uncertainty honestly, and give people a way to contest a decision and reach a human.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={4}>
+
+<Diagram
+  caption="The interpretability vs performance spectrum: as models become more flexible they become harder to explain"
+  code={`flowchart LR
+  A["Rules and linear regression: fully interpretable"] --> B["Decision trees"]
+  B --> C["Tree ensembles such as XGBoost"]
+  C --> D["Deep neural networks"]
+  D --> E["Foundation models and LLMs: most opaque"]
+  A -.-> X["Read the model directly"]
+  C -.-> Y["Explain with SHAP and partial dependence"]
+  E -.-> Z["Citations, traces, evaluations and documentation"]`}
+/>
+
+<Diagram
+  caption="Which AWS transparency tool answers which question"
+  code={`flowchart TD
+  Q["What do you need?"] --> M["Document our own model: purpose, risk, data, results"]
+  Q --> S["Understand an AWS AI service we use"]
+  Q --> E["Compare foundation models with evidence"]
+  Q --> W["Explain why an ML model made a prediction"]
+  M --> MC["SageMaker Model Cards"]
+  S --> SC["AWS AI Service Cards"]
+  E --> BE["Amazon Bedrock Model Evaluations"]
+  W --> CL["SageMaker Clarify SHAP explanations"]`}
+/>
+
+<Diagram
+  caption="Human-centred explanation: the same decision explained differently for each audience"
+  code={`flowchart LR
+  D["Model decision: loan declined"] --> DS["Data scientist: SHAP values and partial dependence"]
+  D --> RG["Regulator and auditor: model card, evaluation and bias reports"]
+  D --> CU["Customer: two plain reasons, what to change, how to appeal"]
+  D --> UW["Underwriter: key factors, confidence, override option"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={4}>
+
+| Scenario | Best answer |
+|---|---|
+| A regulator asks for a document describing a credit model's intended use, risk rating, training data and evaluation results | **SageMaker Model Cards** |
+| A team uses Amazon Rekognition and needs AWS's documented limitations and intended uses | **AWS AI Service Cards** |
+| Choose between three foundation models for summarising support tickets, using accuracy and toxicity scores | **Amazon Bedrock Model Evaluations** — automatic evaluation |
+| Judge whether chatbot replies match the brand's friendly tone | **Bedrock Model Evaluations** — human evaluation (or LLM-as-a-judge with a custom rubric) |
+| Tell each declined applicant the top factors behind the decision | **SageMaker Clarify** local SHAP explanations |
+| A bank must be able to read exactly how every decision was made | A **transparent model** such as logistic regression or a small decision tree |
+| A startup wants to fine-tune and resell a model commercially | Check the **licence** for commercial use and derivative rights |
+| A fraud team is asked to publish its detection rules | Decline — **safety vs transparency**; share full details with auditors only |
+
+**Worked example — choosing a model for a regulated decision.** *An insurer compares a logistic regression (84% accurate) with a gradient-boosted ensemble (87% accurate) for approving claims, and must give reasons for every denial.* Options: use the logistic regression for its built-in interpretability, or use the ensemble with Clarify SHAP explanations, validated to be stable and sensible, plus a model card documenting the choice. Both can be responsible; what is *not* acceptable is deploying the ensemble with no explanations. The exam rewards answers that keep explainability when decisions affect people.
+
+**Worked example — evidence-based model selection.** *A retailer must pick a foundation model for product-description generation.* The team runs an automatic Bedrock evaluation on 500 of its own prompts for accuracy and toxicity, then an LLM-as-a-judge evaluation for helpfulness, then a human evaluation with five copywriters on brand voice for the top two models. The smaller model scores within 2% of the largest and costs much less, so it is selected. The evaluation report is attached to the solution's documentation. This combines today's transparency with Day 23's sustainability.
+
+**Worked example — the licence check.** *A developer finds a high-scoring open model and plans to build a paid product on it.* The licence turns out to be non-commercial. Using it would create IP and contractual risk. The developer switches to a model whose licence permits commercial use and records the licence in the model card.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={2}>
+
+<Callout type="realWorld" title="A hospital explains AI triage to clinicians, patients and auditors">
+A hospital uses a deep learning model to prioritise chest X-rays for radiologist review. Because the model is opaque, the team designed explanations for each audience. **Radiologists** see a heat map highlighting the image region that drove the score, the confidence level and similar past cases — and they always make the final diagnosis (amplified decision-making). **Patients** are told that AI helps order the reading queue and that a doctor reviews every image. **Auditors and the ethics committee** receive a **SageMaker Model Card** with intended use (prioritisation, not diagnosis), a high risk rating, training data sources, and evaluation results broken down by age, sex and scanner type. When radiologists disagree with the model, their decisions are fed back for retraining (human and AI learning).
+</Callout>
+
+The story shows that explainability is not one feature but a design discipline: different people need different explanations, documentation supports accountability, and humans stay in control where stakes are high. It also shows the safety-transparency balance — the hospital publishes how AI is used, but not details that could let someone manipulate the model.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: run a model evaluation in Amazon Bedrock" minutes={8}>
+
+<HandsOnLab
+  goal="Walk through creating an automatic model evaluation job in Amazon Bedrock, reading the report card, and recording the result for transparency."
+  asOf="November 2026"
+  steps={[
+    { text: 'In the Amazon Bedrock console open Evaluations and choose Create. Select an automatic (programmatic) evaluation.', screen: { service: 'Amazon Bedrock', path: ['Evaluations', 'Create', 'Automatic: programmatic'], menu: ['Overview', 'Model catalog', 'Playgrounds', 'Guardrails', 'Knowledge Bases', 'Evaluations'], active: 'Evaluations', fields: [{ label: 'Evaluation type', value: 'Automatic: programmatic · LLM-as-a-judge · Human: bring your own work team' }], highlight: 'Automatic: programmatic' } },
+    { text: 'Choose the model to evaluate, the task type and metrics, and the dataset — a built-in dataset or your own prompts in S3.', screen: { service: 'Amazon Bedrock', path: ['Evaluations', 'Create', 'Configuration'], fields: [{ label: 'Model', value: 'Amazon Nova Lite' }, { label: 'Task type', value: 'Text summarization' }, { label: 'Metrics', value: 'Accuracy · Robustness · Toxicity' }, { label: 'Dataset', value: 's3://retail-eval/prompts.jsonl' }], note: 'Results go to an S3 location you choose' } },
+    { text: 'When the job completes, open the report card to compare metric scores and inspect example prompts and responses.', screen: { service: 'Amazon Bedrock', path: ['Evaluations', 'summaries-nova-lite', 'Report card'], fields: [{ label: 'Accuracy (BERTScore)', value: '0.82' }, { label: 'Robustness (change under perturbation)', value: '4%' }, { label: 'Toxicity', value: '0.01' }], highlight: 'View examples' } },
+    { text: 'Record the result: in SageMaker AI create or update a model card for the solution, set a risk rating and add the evaluation summary and intended uses.', screen: { service: 'Amazon SageMaker AI', path: ['Governance', 'Model cards', 'Create model card'], menu: ['Model registry', 'Model cards', 'Model dashboard'], active: 'Model cards', fields: [{ label: 'Intended uses', value: 'Summarise support tickets for agents' }, { label: 'Risk rating', value: 'Low' }, { label: 'Evaluation', value: 'Bedrock evaluation report (S3 link)' }], highlight: 'Save' } },
+  ]}
+  expectedOutcome="You can explain the three Bedrock evaluation approaches, read a report card, and show how evaluation evidence feeds transparency documentation such as a model card."
+  checks={[
+    { q: 'You need to judge whether responses match your brand voice. Which evaluation approach fits best?', a: 'Human evaluation with your own work team (or LLM-as-a-judge with a custom rubric) — brand voice is subjective.' },
+    { q: 'Where are Bedrock evaluation results stored?', a: 'In an Amazon S3 location you specify, plus a report card in the console.' },
+    { q: 'Which document records your model’s intended uses and risk rating for auditors?', a: 'A SageMaker Model Card.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="Model Cards vs AI Service Cards vs Clarify">
+**SageMaker Model Cards** document *your* models (intended use, risk rating, training, evaluation). **AWS AI Service Cards** are AWS's documentation of *its* AI services. **Clarify** *computes* bias metrics and SHAP explanations — its reports can be added to a model card, but Clarify is not the documentation tool.
+</Callout>
+
+- "Need to read exactly how the model decides" → **transparent model** (linear/logistic regression, decision tree).
+- "Highest accuracy on images or language" → **opaque model** plus post-hoc explanation.
+- Compare foundation models on accuracy, robustness and toxicity → **Bedrock Model Evaluations (automatic)**; subjective qualities → **human evaluation**; scale with a model as grader → **LLM-as-a-judge**.
+- Open-weight ≠ open training data; always check **licence** terms (commercial use, attribution, restrictions).
+- "Should we publish all model details?" → consider **safety vs transparency**; tailor disclosure.
+- Human-centred XAI: **amplified decision-making, unbiased decision-making, human and AI learning**; tailor explanations to the audience.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+Transparency is openness about how and why AI is used; explainability is the ability to give reasons for outputs. Transparent models such as linear regression and decision trees can be read directly, while opaque models such as deep networks and LLMs need post-hoc techniques like SHAP, partial dependence and counterfactuals, plus citations and traces for generative AI. SageMaker Model Cards document your models, AWS AI Service Cards document AWS's services, and Amazon Bedrock Model Evaluations provide evidence through automatic, human and LLM-as-a-judge evaluation. Open models increase transparency but carry licence obligations. Balance interpretability with performance and transparency with safety, and design explanations around the people who use them. Tomorrow begins Domain 5: securing AI systems.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={24} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="A transparency and documentation pipeline on AWS" minutes={15} optional>
+
+Transparency works best when documentation is produced automatically as a side effect of building the model, not written from memory afterwards. A typical pipeline registers each model version, attaches evaluation and bias evidence, and generates or updates the model card before approval.
+
+<Diagram
+  caption="Architecture: evaluation and explanation evidence flows into model cards and the registry before approval"
+  code={`flowchart LR
+  TR["Training job"] --> REG["SageMaker Model Registry: new version"]
+  TR --> CL["Clarify: bias and SHAP reports"]
+  FM["Foundation model candidates"] --> BE["Bedrock Model Evaluations"]
+  CL --> S3[("Evidence in Amazon S3")]
+  BE --> S3
+  S3 --> MC["SageMaker Model Card: uses, risk rating, results"]
+  REG --> MC
+  MC --> AP{"Approver review"}
+  AP -->|Approved| DEP["Deploy and monitor"]
+  AP -->|Rejected| TR
+  DEP --> DB["SageMaker Model Dashboard"]
+  SC["AWS AI Service Cards for consumed services"] --> MC`}
+/>
+
+**Design notes.** Store evaluation datasets and results with versions so any score can be reproduced later. Keep model cards current: a card that describes version 1 while version 4 is in production is worse than no card, because it misleads. Record the reasons for trade-offs — why an opaque model was accepted, what explanations compensate, which licence applies to each open model and dataset — because auditors ask "why" as often as "what". Finally, decide in advance what is published externally (for example a public summary of intended use and limitations) and what stays internal (detailed thresholds and guardrail settings), applying the safety-versus-transparency balance from today's lesson.
+
+</Section>

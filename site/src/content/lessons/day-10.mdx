@@ -1,0 +1,311 @@
+---
+day: 10
+kind: lesson
+title: 'Agentic AI & MCP'
+summary: 'Meet AI agents: foundation models that plan, call tools, remember and loop until a goal is reached. Learn tool use, short- and long-term memory, orchestration, multi-agent patterns and the Model Context Protocol (MCP), and see how Amazon Bedrock Agents, Strands Agents and Amazon Bedrock AgentCore build and run agents on AWS.'
+domains: [D2, D3]
+taskStatements: ['2.1', '3.1']
+sources:
+  - { provider: udemy, title: 'Amazon Bedrock Agents; Agentic AI; Model Context Protocol' }
+  - { provider: skillbuilder, title: 'Developing Generative AI Solutions; Optimizing Foundation Models (agents)' }
+  - { provider: aws-docs, title: 'Amazon Bedrock User Guide — Automate tasks in your application using AI agents', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html' }
+  - { provider: aws-docs, title: 'Amazon Bedrock AgentCore Developer Guide', url: 'https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html' }
+objectives:
+  - Explain what an AI agent is and how the reason–act–observe loop differs from a single model call
+  - Describe tool use, short-term and long-term memory, and orchestration in agentic systems
+  - Compare multi-agent patterns such as supervisor, sequential, parallel and peer handoff
+  - Explain the Model Context Protocol (MCP) and its hosts, clients and servers
+  - Identify AWS options for agents — Bedrock Agents, Strands Agents and Bedrock AgentCore — and the controls that keep agents safe
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'An agent is an FM in a loop: it reasons about a goal, calls tools, observes the results and repeats until the task is done.'
+  - 'Tool use: the model chooses a tool and its arguments; your application (or agent runtime) actually runs the tool and returns the result.'
+  - 'Short-term memory holds the current session; long-term memory persists facts and preferences across sessions.'
+  - 'Multi-agent patterns: supervisor with specialist workers, sequential pipeline, parallel fan-out and peer handoff (swarm).'
+  - 'MCP is an open protocol that standardises how AI applications connect to tools and data: hosts run MCP clients that talk to MCP servers exposing tools, resources and prompts.'
+  - 'On AWS: Bedrock Agents (managed agents), Strands Agents (open-source SDK) and Bedrock AgentCore (Runtime, Gateway, Memory, Identity, Policy, Observability) to run agents securely at scale.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 9" minutes={4}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="From answering to acting" minutes={17}>
+
+So far every model you have met *answers*: you send a prompt, it returns text or an image, and the job is done. An **AI agent** goes further — it **acts**. Ask a chatbot "Can I change my flight to Friday?" and it can explain the airline's rules. Ask an agent, and it can look up your booking, check Friday's availability, calculate the fare difference, ask you to confirm and make the change. Agentic AI is named explicitly in task statements 1.1, 2.1 and 3.1 of exam guide v1.2, so expect several questions on it.
+
+### What makes something an agent?
+
+An **agent** is a system in which a foundation model **decides what steps to take to reach a goal**, uses **tools** to take those steps, keeps track of what it has learned in **memory**, and **loops** until the goal is achieved or it needs help. Four ingredients:
+
+1. **A model that reasons** — usually an LLM, which interprets the goal, plans and decides the next action.
+2. **Tools** — functions, APIs, databases, search, code execution: the agent's hands.
+3. **Memory** — what has happened so far in this task, plus durable knowledge from earlier sessions.
+4. **Orchestration** — the loop and rules that tie it together: when to call the model, when to run a tool, when to stop.
+
+It helps to picture a spectrum of autonomy:
+
+| Level | Who decides the steps? | Example |
+|---|---|---|
+| Single model call | Nobody — one prompt, one answer | Summarise this email |
+| Workflow | Developer's code, fixed sequence | Extract invoice fields, then validate, then store |
+| Agent | The model, step by step | Resolve this customer's billing problem |
+| Multi-agent system | Several agents coordinating | A supervisor delegating to billing, shipping and returns specialists |
+
+More autonomy is not automatically better. If a process always follows the same steps — and especially if it must be predictable and auditable — a **workflow** whose order is defined in code is simpler, cheaper and easier to test. Choose an agent when the path to the goal varies from case to case and the model's judgement adds value.
+
+### The agent loop: reason, act, observe
+
+Most agents run a loop often described as **ReAct** (reason + act):
+
+1. **Reason** — the model reads the goal, the conversation, its memory and the list of available tools, and decides what to do next. It might plan several steps ahead.
+2. **Act** — it requests a tool call, such as `get_booking(booking_id="X7K2")`.
+3. **Observe** — the tool's result is added to the context.
+4. **Repeat** — the model reasons again with the new information: call another tool, ask the user a clarifying question, or give the final answer.
+
+A worked trace for "Can I change my flight to Friday?": the agent *reasons* that it needs the booking, *acts* by calling `get_booking`, *observes* a Tuesday economy ticket; *reasons* that it needs availability, calls `search_flights` for Friday, observes two options; calls `get_fare_difference`, observes £45; then *answers*, asking the customer to confirm before it calls `change_booking`. Each turn of the loop is a model call, which is why agents use more tokens and take longer than a single prompt — the context engineering from Day 9 matters even more here.
+
+Good orchestration adds **guard rails on the loop**: a maximum number of iterations, timeouts, error handling when a tool fails, and **human-in-the-loop** checkpoints before high-impact actions such as payments, deletions or sending messages to customers.
+
+### Tools: how a model takes action
+
+A language model cannot click buttons or call APIs by itself — it only produces text. **Tool use** (also called *function calling*) bridges that gap:
+
+1. The developer describes each tool to the model: a **name**, a plain-language **description** of what it does, and an **input schema** (for example, JSON Schema listing the parameters).
+2. When the model decides a tool is needed, it responds with a structured **tool-use request**: the tool name and the arguments.
+3. **The application — not the model — executes the tool**: it calls the API, runs the Lambda function or queries the database.
+4. The result is sent back to the model, which continues reasoning or writes the final answer.
+
+The description matters: the model picks tools by reading it, so vague or overlapping descriptions cause wrong choices. On Amazon Bedrock, the **Converse API** supports tool use across many models, and **Amazon Bedrock Agents** lets you define *action groups* — sets of tools described by an API schema and backed by AWS Lambda functions (or returned to your application to execute). Common tool types include business APIs, knowledge-base retrieval (RAG is itself a tool), web search, a **code interpreter** that runs code in a sandbox, and a **browser** tool that navigates web pages.
+
+### Memory: what the agent remembers
+
+Models are **stateless**: each call knows only what is in its context window. Agent memory is the machinery that decides what to carry forward.
+
+- **Short-term memory** (session or working memory) — the current conversation, the steps taken so far, intermediate results. It lives in the context window, so it is bounded by the token budget and is typically summarised as it grows.
+- **Long-term memory** — information that persists **across sessions**: user preferences ("prefers aisle seats"), facts learned ("account is on the business plan"), summaries of past interactions. It is stored outside the model and *retrieved* into the context when relevant, much like RAG.
+
+Long-term memory makes agents feel personal and saves users repeating themselves, but it raises privacy questions: what is stored, for how long, and who can see it. **Amazon Bedrock AgentCore Memory** provides managed short-term and long-term memory, and Bedrock Agents can retain session summaries across sessions.
+
+### Orchestration and planning
+
+**Orchestration** is the control logic of an agentic system: which model or agent runs next, with what context, and what happens with the result. It may be:
+
+- **Model-driven** — the LLM decides the next step at each iteration (the classic agent loop). Flexible, but less predictable.
+- **Code-driven** — the developer defines the sequence or graph of steps, and the model fills in individual steps. Predictable and testable, but less flexible.
+
+Many production systems mix the two: a fixed workflow for the regulated parts, with agentic steps where judgement is needed. **Planning** is the model breaking a goal into sub-tasks ("first find the booking, then check availability, then price the change"); some agents write an explicit plan and revise it as results arrive.
+
+### Multi-agent patterns
+
+As tasks grow, one agent with 50 tools and a huge context becomes confused and expensive. **Multi-agent systems** split the work among specialised agents, each with its own instructions, tools and focused context. Common patterns:
+
+- **Supervisor (orchestrator–workers, hierarchical)** — a supervisor agent breaks down the request, delegates sub-tasks to specialist agents and combines their results. Amazon Bedrock Agents supports this as *multi-agent collaboration*, with a supervisor agent and collaborator agents. A popular variant is **agents as tools**: the supervisor calls each specialist as if it were a tool.
+- **Sequential pipeline** — agents run in a fixed order, each passing its output to the next (research → draft → review).
+- **Parallel fan-out / fan-in** — several agents work on independent parts at the same time and a final step merges the results (check five suppliers' prices simultaneously).
+- **Peer handoff (swarm)** — agents pass control directly to whichever peer is best placed to continue, without a central boss.
+- **Graph** — a defined network of agents and conditions, combining the above.
+
+**Benefits:** specialisation, smaller and cleaner contexts per agent, parallelism and reuse of agents across applications. **Costs:** more model calls and tokens, more latency, and harder debugging — which is why observability and evaluation (Day 20) matter. The open-source **Strands Agents** SDK from AWS supports these patterns in a few lines of code.
+
+### The Model Context Protocol (MCP)
+
+Every agent needs tools, and every tool needs an integration. Without a standard, connecting *M* AI applications to *N* tools means building up to M × N custom connectors. The **Model Context Protocol (MCP)** — an open standard introduced by Anthropic in 2024 and now widely adopted, including by AWS — solves this the way USB-C did for devices: build a tool integration once as an **MCP server**, and any MCP-compatible application can use it. M × N becomes M + N.
+
+MCP roles:
+
+- **Host** — the AI application the user works with: an agent, a chat app or an IDE such as Kiro.
+- **MCP client** — a component inside the host that keeps a connection to one MCP server.
+- **MCP server** — a program that exposes capabilities in a standard way. Servers offer **tools** (actions the model can invoke), **resources** (data such as files or records the application can read into context) and **prompts** (reusable templates).
+
+Servers can run **locally** (communicating over standard input/output) or **remotely** over HTTP. At start-up, the client asks each server what it offers, so the agent *discovers* tools dynamically instead of having them hard-coded.
+
+Keep MCP distinct from two neighbours. MCP connects an agent to **tools and data**; **agent-to-agent (A2A)** protocols connect agents to **other agents**. And MCP does not replace tool use — it standardises how tools are *described and reached*; the model still emits tool-use requests that the host executes through the MCP client. Because an MCP server can take real actions, treat it like any other integration: authenticate it, give it least-privilege permissions and only install servers you trust.
+
+### Building and running agents on AWS
+
+Task statement 3.1 asks you to describe the role and applications of agents. AWS offers options at different levels of control:
+
+- **Amazon Bedrock Agents** — a fully managed way to configure an agent in the console or API: choose a model, write instructions, attach action groups (tools), knowledge bases and guardrails, and enable memory and multi-agent collaboration. Little code; AWS runs the orchestration.
+- **Strands Agents** — an open-source SDK from AWS for building agents in code with a *model-driven* approach: define a model, a prompt and tools, and the model plans the loop. It works with Bedrock models and others and supports MCP tools and multi-agent patterns.
+- **Amazon Bedrock AgentCore** — services for **running agents securely at scale**, built with any framework (Strands, LangGraph, CrewAI and others) and any model. Its components include **Runtime** (serverless hosting with session isolation), **Gateway** (turns APIs, Lambda functions and existing services into MCP-compatible tools), **Memory**, **Identity** (manages who can call the agent and the credentials the agent uses to reach other services), **Policy** (rules about which tools an agent may use and under what conditions, enforced outside the agent's own reasoning), **Observability** (traces and metrics in Amazon CloudWatch) and built-in **Code Interpreter** and **Browser** tools.
+- **Kiro** — an agentic IDE for software development that can use MCP servers as tools.
+
+Typical applications: customer-service agents that resolve requests end to end, IT operations agents that diagnose and fix incidents, research agents that gather and summarise sources, coding agents, claims-processing and travel-booking assistants. In each case the value comes from **taking actions across systems**, not just answering.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={4}>
+
+<Diagram
+  caption="The agent loop: the model reasons, requests a tool, the application runs it, and the observation feeds the next round until the goal is met"
+  code={`flowchart LR
+  G["User goal"] --> R{"Model reasons with goal, memory and tool list"}
+  R -->|needs data or action| T["Tool-use request: name and arguments"]
+  T --> X["Application runs the tool: API, Lambda, database"]
+  X --> O["Observation added to context"]
+  O --> R
+  R -->|high-impact action| H["Human approval"]
+  H --> T
+  R -->|goal met| A["Final answer"]`}
+/>
+
+<Diagram
+  caption="Multi-agent supervisor pattern: a supervisor delegates to specialist agents, each with its own tools and focused context"
+  code={`flowchart TD
+  U["Customer request"] --> S["Supervisor agent: plan and delegate"]
+  S --> B["Billing agent"]
+  S --> SH["Shipping agent"]
+  S --> RT["Returns agent"]
+  B --> BT["Tools: invoices, refunds"]
+  SH --> ST["Tools: tracking API"]
+  RT --> RTT["Tools: returns policy knowledge base"]
+  B --> S
+  SH --> S
+  RT --> S
+  S --> F["Combined answer to customer"]`}
+/>
+
+<Diagram
+  caption="Model Context Protocol: a host runs one MCP client per server; servers expose tools, resources and prompts in a standard way"
+  code={`flowchart LR
+  subgraph Host["Host: agent, chat app or IDE"]
+    LLM["Foundation model"]
+    C1["MCP client 1"]
+    C2["MCP client 2"]
+  end
+  C1 <-->|MCP| S1["MCP server: ticketing system tools"]
+  C2 <-->|MCP| S2["MCP server: company documents as resources"]
+  S1 --> API["Ticketing API"]
+  S2 --> DOCS[("Document store")]
+  LLM --- C1
+  LLM --- C2`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Scenario | Best fit | Why |
+|---|---|---|
+| Invoices always go: extract fields, validate totals, post to ERP | Workflow (code-driven) | Fixed, auditable sequence; no judgement about the order |
+| "Sort out my billing problem" with varied causes | Single agent with tools | Path differs per case; model chooses the steps |
+| Customer service across billing, shipping and returns | Supervisor multi-agent | Specialists with their own tools and context |
+| Compare quotes from five suppliers at once | Parallel fan-out / fan-in | Independent sub-tasks run simultaneously |
+| Remember a traveller prefers aisle seats next month | Long-term memory | Persists across sessions |
+| Same ticketing tools used by an IDE, a chatbot and an agent | MCP server | Build once, reuse from any MCP host |
+| Expose 30 internal REST APIs to agents as tools | AgentCore Gateway | Converts APIs and Lambda functions into MCP tools |
+
+**Worked example — agent or workflow?** A bank's mortgage team wants AI to process applications: check documents are present, extract income, run an affordability calculation and produce a decision letter. The steps and their order are fixed and regulated, and the affordability calculation must be exact. The right design is a **workflow** with GenAI used for extraction and drafting, the calculation in ordinary code, and a human underwriter approving the decision. An autonomous agent would add unpredictability without adding value.
+
+**Worked example — tool descriptions.** An agent has two tools, `get_order` ("gets order") and `get_order_status` ("gets status"). It keeps calling the wrong one. Because the model chooses tools by reading their descriptions, the fix is clearer descriptions: "Returns full order details including items and prices for an order ID" and "Returns only the current delivery status and estimated arrival for an order ID" — or merging the two into one tool.
+
+**Worked example — MCP reuse.** A company built separate connectors from its chatbot, its coding assistant and its operations agent to the same ticketing system — three integrations to maintain. Rebuilding the integration as one **MCP server** lets all three hosts use it, and any future agent gets the ticketing tools for free.
+
+**Worked example — runaway loop.** A research agent keeps searching the web because each result suggests another query; one request cost 40 model calls. Orchestration controls fix this: a **maximum iteration limit**, a token budget per task and an instruction to stop and summarise when enough evidence is found.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={3}>
+
+<Callout type="realWorld" title="An e-commerce company moves from chatbot to agents">
+An online retailer's first assistant only answered FAQ questions from a knowledge base, and most chats still ended with "please contact support". The second version is a **supervisor agent** with three specialists: an **order agent** (tracking and delivery APIs), a **returns agent** (returns policy knowledge base and a label-printing tool) and a **billing agent** (invoice lookup and a refund tool). Tools are exposed through **MCP**, so the same order tools also power the warehouse team's internal assistant. **Long-term memory** stores customer preferences such as preferred delivery slots. Refunds over £50 require **human approval**. Resolution without a human rose from about a fifth of chats to more than half.
+</Callout>
+
+The retailer's lessons mirror the exam's themes. **Least privilege**: each specialist agent can call only its own tools, so the shipping agent cannot issue refunds even if a prompt-injection attack tells it to. **Human in the loop**: high-impact actions need approval, and every tool call is logged for audit. **Observability**: traces show each reasoning step and tool call, which made it possible to discover that the returns agent was looping when the label tool timed out — fixed with a retry limit and a graceful "I will email your label" fallback. **Cost**: the supervisor pattern used more tokens per chat than the old FAQ bot, but each resolved chat cost a fraction of a human-handled one.
+
+A second example comes from IT operations. An operations team built an agent that receives an alarm, queries logs and metrics through tools, checks recent deployments and proposes a fix. Early versions could restart services automatically; after one restart made an outage worse, the team changed the design so the agent **diagnoses and recommends**, and an engineer **approves** any change. The agent still cuts investigation time dramatically, and engineers trust it more because it shows its reasoning and evidence. On the exam, options that give agents unrestricted permissions or remove human oversight for high-impact actions are almost always wrong.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: configure an agent in Amazon Bedrock" minutes={8}>
+
+<HandsOnLab
+  goal="Walk through creating an agent in Amazon Bedrock — instructions, a tool (action group), memory and multi-agent collaboration — then read a trace of the reason–act–observe loop and see how AgentCore Gateway exposes APIs as MCP tools."
+  asOf="November 2026"
+  steps={[
+    { text: 'Open Amazon Bedrock, choose Agents and create an agent. Pick a foundation model and write instructions that define its role, scope and when to ask a human.', screen: { service: 'Amazon Bedrock', path: ['Build', 'Agents', 'Create agent'], menu: ['Overview', 'Model catalog', 'Agents', 'Knowledge Bases', 'Guardrails'], active: 'Agents', fields: [{ label: 'Model', value: 'Amazon Nova Pro' }, { label: 'Instructions', value: 'You help customers with orders. Never issue refunds over £50 without approval.' }], highlight: 'Save' } },
+    { text: 'Add an action group: describe each tool with an API schema and connect it to a Lambda function. Clear tool descriptions help the model choose correctly.', screen: { service: 'Amazon Bedrock', path: ['Agents', 'order-agent', 'Action groups', 'Add'], fields: [{ label: 'Tool', value: 'get_order_status(order_id)' }, { label: 'Description', value: 'Returns delivery status and estimated arrival' }, { label: 'Executor', value: 'AWS Lambda: order-tools' }], highlight: 'Create action group', note: 'The model requests; Lambda executes' } },
+    { text: 'Enable memory so session summaries persist across conversations, and turn on multi-agent collaboration to make this a supervisor with collaborator agents.', screen: { service: 'Amazon Bedrock', path: ['Agents', 'support-supervisor', 'Edit'], fields: [{ label: 'Memory', value: 'Enabled — retain session summaries for 30 days' }, { label: 'Multi-agent collaboration', value: 'Supervisor · collaborators: order-agent, returns-agent, billing-agent' }], highlight: 'Multi-agent collaboration' } },
+    { text: 'Test the agent and open the trace. Each step shows the model reasoning, the tool it chose with arguments, the observation returned and the final answer.', screen: { service: 'Amazon Bedrock', path: ['Agents', 'support-supervisor', 'Test', 'Trace'], fields: [{ label: 'Step 1', value: 'Reason: need order status → delegate to order-agent' }, { label: 'Step 2', value: 'Tool: get_order_status(order_id=88213) → In transit, arrives Thu' }, { label: 'Step 3', value: 'Final answer to customer' }], highlight: 'Show trace' } },
+    { text: 'In the Amazon Bedrock AgentCore console, create a gateway and add a target such as a Lambda function or REST API. The gateway exposes it as MCP tools that any MCP-compatible agent can discover.', screen: { service: 'Amazon Bedrock AgentCore', path: ['Gateways', 'Create gateway', 'Add target'], menu: ['Runtime', 'Gateways', 'Memory', 'Identity', 'Observability'], active: 'Gateways', fields: [{ label: 'Target type', value: 'Lambda function · OpenAPI · existing MCP server' }, { label: 'Endpoint', value: 'MCP-compatible gateway URL' }], highlight: 'Add target', note: 'Build once, reuse from any MCP host' } },
+  ]}
+  expectedOutcome="You can name the parts of an agent (model, instructions, tools, memory), explain that tools are executed by Lambda or the application rather than the model, read a trace of the agent loop, and say where MCP fits on AWS."
+  checks={[
+    { q: 'In the trace, who actually ran get_order_status?', a: 'The Lambda function behind the action group. The model only chose the tool and its arguments.' },
+    { q: 'Which setting lets the agent remember a customer between conversations?', a: 'Memory — retaining session summaries across sessions (long-term memory).' },
+    { q: 'You want the same order tools available to agents built with different frameworks. Which AWS capability helps?', a: 'Amazon Bedrock AgentCore Gateway, which exposes APIs and Lambda functions as MCP tools.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="The model does not run the tool">
+In tool use, the model returns *which* tool to call and *with what arguments*. The application, Lambda function or agent runtime executes it and sends the result back. Options claiming the LLM "directly executes the API" are wrong.
+</Callout>
+
+- "Plans, uses tools and takes multi-step actions toward a goal" → **agent / agentic AI**.
+- "Fixed, predictable sequence of steps" → **workflow**, not an autonomous agent.
+- "Remember preferences across sessions" → **long-term memory**; "current conversation" → **short-term memory**.
+- "One agent delegates to specialist agents" → **supervisor / multi-agent collaboration**.
+- "Open standard to connect AI applications to tools and data" → **MCP**; MCP **servers** expose tools, resources and prompts; **hosts** contain MCP **clients**.
+- "Managed agent configured with action groups and knowledge bases" → **Amazon Bedrock Agents**.
+- "Open-source SDK from AWS to build agents in code" → **Strands Agents**.
+- "Run agents from any framework securely at scale; memory, identity, gateway, observability" → **Amazon Bedrock AgentCore**.
+- "Turn existing APIs or Lambda functions into MCP tools" → **AgentCore Gateway**.
+- Safe agents: **least-privilege tools**, **human approval** for high-impact actions, **iteration limits**, **guardrails** and **logging**.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+An AI agent is a foundation model in a loop: it reasons about a goal, requests tools, observes results and repeats until done. Tool use lets the model choose actions while the application executes them. Short-term memory holds the current session; long-term memory persists facts across sessions. Orchestration can be model-driven or code-driven, and fixed processes are often better as workflows. Multi-agent systems use supervisor, sequential, parallel, peer-handoff or graph patterns to split work among specialists. MCP standardises how hosts connect to servers that expose tools, resources and prompts, turning M × N integrations into M + N. On AWS, Bedrock Agents offers managed agents, Strands Agents is an open-source SDK, and Bedrock AgentCore runs agents securely at scale. Tomorrow: the advantages, limitations and business value of generative AI.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={10} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Multi-agent system with MCP on AgentCore" minutes={15} optional>
+
+Here is how an architect might run the retailer's customer-service system in production on Amazon Bedrock AgentCore. The **supervisor agent** and three **specialist agents** are built with Strands Agents and deployed to **AgentCore Runtime**, which hosts each agent serverlessly and isolates every user session. The supervisor calls the specialists as tools (agents as tools). Specialists reach business systems through **AgentCore Gateway**, which presents the order API, the refund Lambda function and an existing third-party MCP server as one MCP endpoint, so tools are discovered rather than hard-coded. **AgentCore Memory** keeps short-term session state and long-term customer preferences. **AgentCore Identity** verifies who is calling the agent and supplies scoped credentials when the agent calls downstream services on the user's behalf. **Policy** in AgentCore enforces rules such as "the returns agent may not call the refund tool" or "refunds above £50 are blocked unless approved" at the gateway, outside the model's reasoning. **AgentCore Observability** sends traces and metrics to Amazon CloudWatch. Models run on Amazon Bedrock with **Bedrock Guardrails** filtering harmful content and sensitive data.
+
+<Diagram
+  caption="Production architecture: Strands agents on AgentCore Runtime reach tools through an MCP gateway, with memory, identity, policy and observability around them"
+  code={`flowchart LR
+  user["Customer app"] --> id["AgentCore Identity: verify caller"]
+  id --> sup["Supervisor agent on AgentCore Runtime"]
+  sup --> oa["Order agent"]
+  sup --> ra["Returns agent"]
+  sup --> ba["Billing agent"]
+  oa --> gw["AgentCore Gateway: MCP endpoint"]
+  ra --> gw
+  ba --> gw
+  gw --> pol{"Policy checks tool and parameters"}
+  pol --> api["Order REST API"]
+  pol --> lam["Refund Lambda function"]
+  pol --> ext["Third-party MCP server"]
+  sup --> mem[("AgentCore Memory")]
+  sup --> fm["Amazon Bedrock models with Guardrails"]
+  sup --> obs["AgentCore Observability to CloudWatch"]`}
+/>
+
+**Why this shape?**
+
+- **Separation of concerns.** Each specialist has a short prompt, a handful of tools and a focused context, which improves tool choice and lowers tokens per call. The supervisor's context holds only summaries from specialists, not their full tool outputs — the *isolate* technique from Day 9.
+- **One integration layer.** The gateway turns each backend into MCP tools once. A new agent, or a developer using Kiro, can reuse them immediately.
+- **Security outside the prompt.** Prompt instructions alone cannot guarantee behaviour, because prompts can be manipulated. Identity, Policy and least-privilege credentials enforce limits even if an agent is tricked.
+- **Operability.** Traces show each reasoning step, tool call, latency and token count, so teams can debug loops, attribute cost and build evaluation sets from real conversations.
+
+**Trade-offs.** A multi-agent design adds model calls and latency compared with one agent; for simple use cases, a single agent with a few tools is often enough. Peer handoff (swarm) can be more flexible than a supervisor but is harder to reason about and audit. Managed Bedrock Agents is faster to set up, while Strands on AgentCore gives more control over orchestration, frameworks and models. Start simple, measure with traces and evaluations, and add agents only where specialisation clearly pays off.
+
+</Section>

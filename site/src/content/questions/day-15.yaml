@@ -1,0 +1,330 @@
+- id: q-day-15-001
+  set: day-15
+  type: single
+  stem: "A company uses an Amazon Bedrock model to extract invoice totals into JSON. The same invoice sometimes produces slightly different output on different runs. Which inference parameter change will MOST directly make the output consistent?"
+  options:
+    - { id: a, text: "Lower the temperature to 0 or close to 0", explanation: "Correct. Low temperature makes the most likely token win almost every time, so the same input produces the same, focused output." }
+    - { id: b, text: "Increase the maximum tokens setting", explanation: "Incorrect. Maximum tokens only caps the length of the response; it does not reduce randomness in word choice." }
+    - { id: c, text: "Raise the top-p value to 1.0", explanation: "Incorrect. Raising top-p widens the pool of candidate tokens, which increases variety rather than consistency." }
+    - { id: d, text: "Switch to a model with a larger context window", explanation: "Incorrect. A larger context window lets the request hold more text but does not make sampling more deterministic." }
+  answer: [a]
+  explanation: "Temperature controls randomness. Low temperature sharpens the probability distribution so the output is focused and repeatable, which suits extraction, classification and factual tasks. High temperature produces more varied, creative output."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: easy
+
+- id: q-day-15-002
+  set: day-15
+  type: single
+  stem: "Users of a summarisation app report that many summaries stop in the middle of a sentence. The summaries are otherwise accurate. What should the developer change FIRST?"
+  options:
+    - { id: a, text: "Lower the temperature", explanation: "Incorrect. Temperature affects randomness, not where the output ends." }
+    - { id: b, text: "Increase the maximum tokens (response length) setting", explanation: "Correct. Output that stops mid-sentence has hit the maximum token cap; raising it lets the model finish." }
+    - { id: c, text: "Fine-tune the model on complete summaries", explanation: "Incorrect. Fine-tuning is expensive and unnecessary; the truncation is caused by a length setting." }
+    - { id: d, text: "Add more stop sequences", explanation: "Incorrect. Stop sequences end output earlier, which would make truncation more likely, not less." }
+  answer: [b]
+  explanation: "Maximum tokens caps how many tokens the model may generate. If it is set too low, responses are cut off. It controls length and cost but does not make the model write a shorter, complete summary — it simply stops."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: easy
+
+- id: q-day-15-003
+  set: day-15
+  type: single
+  stem: "A developer asks a model to return one product description wrapped in <answer></answer> tags. The model keeps writing extra commentary after the closing tag. Which inference setting stops generation as soon as the closing tag is produced?"
+  options:
+    - { id: a, text: "Top-k", explanation: "Incorrect. Top-k limits how many candidate tokens are considered at each step; it does not end the response." }
+    - { id: b, text: "Temperature", explanation: "Incorrect. Temperature changes how random each word choice is, not where the response stops." }
+    - { id: c, text: "A stop sequence set to </answer>", explanation: "Correct. A stop sequence tells the model to stop generating the moment it outputs that string, keeping the output in the expected shape." }
+    - { id: d, text: "Prompt caching", explanation: "Incorrect. Prompt caching reuses a repeated prompt prefix to save cost and latency; it does not control the end of the output." }
+  answer: [c]
+  explanation: "Stop sequences are strings that end generation when the model produces them. They are useful for fixed formats, for stopping after one item, and for preventing trailing commentary."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: medium
+
+- id: q-day-15-004
+  set: day-15
+  type: single
+  stem: "A legal assistant app sends the same 30-page contract to an Amazon Bedrock model with every follow-up question a lawyer asks during a review session. The company wants to reduce cost and time-to-first-token without changing the answers' quality. Which feature should it use?"
+  options:
+    - { id: a, text: "Fine-tune the model on the contract", explanation: "Incorrect. Fine-tuning is slow and expensive for a single document and is not designed to memorise one contract for a session." }
+    - { id: b, text: "Raise the temperature so responses are generated faster", explanation: "Incorrect. Temperature changes randomness, not speed or the cost of reading the prompt." }
+    - { id: c, text: "Lower the maximum tokens to 50", explanation: "Incorrect. This would cut answers short; the main cost here is re-processing the long repeated input." }
+    - { id: d, text: "Prompt caching with a cache checkpoint after the contract text", explanation: "Correct. Prompt caching stores the repeated prefix so later requests reuse it at a lower price and with lower latency, while each answer is still generated fresh." }
+  answer: [d]
+  explanation: "Prompt caching lets later requests that start with an identical prefix read it from a cache instead of reprocessing it. It suits long, repeated instructions or documents in bursts of related requests and is a selection criterion because only some models support it."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: medium
+
+- id: q-day-15-005
+  set: day-15
+  type: single
+  stem: "A developer sets top-p to 0.9 for a text-generation model. What does this setting do?"
+  options:
+    - { id: a, text: "The model samples only from the smallest set of tokens whose probabilities add up to 90%", explanation: "Correct. Top-p (nucleus sampling) keeps the most likely tokens until their cumulative probability reaches p and ignores the unlikely tail." }
+    - { id: b, text: "The model considers only the 90 most likely tokens", explanation: "Incorrect. A fixed count of candidate tokens describes top-k, not top-p." }
+    - { id: c, text: "The model stops once 90% of the maximum tokens have been used", explanation: "Incorrect. Response length is controlled by maximum tokens; top-p does not stop generation." }
+    - { id: d, text: "The model reuses 90% of the previous prompt from a cache", explanation: "Incorrect. Reusing a prompt prefix is prompt caching, which is unrelated to sampling." }
+  answer: [a]
+  explanation: "Top-p is a cumulative probability cut-off: lower values narrow the choice to the most probable tokens for safer, more focused output; higher values allow more variety. Top-k instead keeps a fixed number of tokens."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: medium
+
+- id: q-day-15-006
+  set: day-15
+  type: single
+  stem: "A marketing team finds that a foundation model's product descriptions are too long and too formal. They want better results as quickly and cheaply as possible. Which approach should they try FIRST?"
+  options:
+    - { id: a, text: "Continued pre-training on marketing books", explanation: "Incorrect. Continued pre-training needs a large corpus and training jobs; it is far more effort than the problem requires." }
+    - { id: b, text: "Prompt engineering with clear instructions and examples of the desired style", explanation: "Correct. In-context learning changes only the prompt, needs no training and shows results in minutes, so it is the cheapest first step." }
+    - { id: c, text: "Pre-train a new model on company documents", explanation: "Incorrect. Pre-training from scratch takes months and very high cost and is almost never right for a business use case." }
+    - { id: d, text: "Distil a larger model into a smaller one", explanation: "Incorrect. Distillation reduces cost and latency of an already good model; it does not fix length and tone instructions." }
+  answer: [b]
+  explanation: "Start at the bottom of the customisation ladder. Prompt engineering (in-context learning) changes no weights, needs no data preparation and is usually the lowest-cost, fastest way to improve style, length and format."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: easy
+
+- id: q-day-15-007
+  set: day-15
+  type: single
+  stem: "A retailer's assistant must answer questions about a product catalogue that changes every day. The answers must reflect the latest catalogue. Which customisation approach is MOST cost-effective?"
+  options:
+    - { id: a, text: "Fine-tune the model every night on the full catalogue", explanation: "Incorrect. Nightly fine-tuning is expensive, slow and requires hosting a new custom model each time." }
+    - { id: b, text: "Increase the model temperature so it explores more answers", explanation: "Incorrect. Temperature does not add knowledge; the model still would not know today's catalogue." }
+    - { id: c, text: "Retrieval-augmented generation (RAG) with Amazon Bedrock Knowledge Bases", explanation: "Correct. RAG retrieves current documents at question time without changing weights, so updating the catalogue keeps answers current." }
+    - { id: d, text: "Pre-train a retail foundation model from scratch", explanation: "Incorrect. Pre-training is the most expensive option and would also go out of date immediately." }
+  answer: [c]
+  explanation: "When the problem is missing or frequently changing knowledge, RAG is the usual answer: you update documents, not the model. Fine-tuning bakes knowledge in at training time and must be repeated whenever the data changes."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#examples
+  difficulty: medium
+
+- id: q-day-15-008
+  set: day-15
+  type: single
+  stem: "A company is satisfied with the answer quality of a large model for its customer-support task, but at millions of requests per day the cost and latency are too high. Which approach keeps similar task quality while reducing cost and latency?"
+  options:
+    - { id: a, text: "Continued pre-training of the large model", explanation: "Incorrect. Continued pre-training adds domain knowledge but leaves the model just as large, slow and costly to run." }
+    - { id: b, text: "Increase the context window used in each request", explanation: "Incorrect. Longer requests cost more, not less." }
+    - { id: c, text: "Switch to a higher temperature", explanation: "Incorrect. Temperature changes randomness; it does not affect model size, cost or latency." }
+    - { id: d, text: "Model distillation, using the large model as teacher to train a smaller student model", explanation: "Correct. Distillation transfers a large model's task behaviour into a smaller, faster, cheaper student model; Amazon Bedrock Model Distillation automates this." }
+  answer: [d]
+  explanation: "In distillation, a large teacher model generates responses that train a smaller student model. The student approaches the teacher's quality on the specific task while being faster and cheaper to run."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: medium
+
+- id: q-day-15-009
+  set: day-15
+  type: single
+  stem: "A pharmaceutical company has millions of unlabelled research papers. A general model misunderstands specialist chemical and medical terminology. The company wants the model to absorb this domain language. Which approach fits BEST?"
+  options:
+    - { id: a, text: "Fine-tuning with a few hundred labelled prompt-response pairs", explanation: "Incorrect. Fine-tuning uses labelled pairs to teach a task, style or format; it is not designed to absorb broad domain vocabulary from unlabelled papers." }
+    - { id: b, text: "Continued pre-training on the unlabelled research papers", explanation: "Correct. Continued pre-training keeps training the model on large amounts of unlabelled domain text so it learns the domain's vocabulary and knowledge." }
+    - { id: c, text: "Few-shot prompting with three example papers", explanation: "Incorrect. A few examples in the prompt cannot teach an entire specialist vocabulary and are limited by the context window." }
+    - { id: d, text: "Lower the top-k value", explanation: "Incorrect. Top-k narrows word choice; it cannot teach the model terminology it does not understand." }
+  answer: [b]
+  explanation: "Unlabelled domain corpus + need to understand domain language points to continued pre-training. Labelled prompt-response pairs + need for a specific task or style points to fine-tuning. Both change model weights."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: hard
+
+- id: q-day-15-010
+  set: day-15
+  type: single
+  stem: "A travel company needs a text chatbot that answers common booking questions in English, Spanish and German, responds within one second and handles two million chats a month. Complex reasoning is not required. Which model selection approach is MOST appropriate?"
+  options:
+    - { id: a, text: "Choose the model with the most parameters to guarantee the best answers", explanation: "Incorrect. The largest model is slower and more expensive, and simple booking questions do not need its extra reasoning ability." }
+    - { id: b, text: "Choose an image-generation model because it supports multiple modalities", explanation: "Incorrect. The task is text in and text out; an image-generation model does not fit the modality." }
+    - { id: c, text: "Shortlist small, fast models that support the three languages and compare them with a model evaluation on real chats", explanation: "Correct. Latency, volume, language support and modality all point to small text models, and testing on your own data picks the best accuracy per cost." }
+    - { id: d, text: "Choose whichever model ranks first on a public leaderboard", explanation: "Incorrect. Public benchmarks measure general skills; you should evaluate candidates on your own task and data." }
+  answer: [c]
+  explanation: "Match selection criteria to the job: modality (text), languages, latency, volume and cost favour a small, fast model for a simple task. Then evaluate shortlisted models with your own prompts, for example with an Amazon Bedrock model evaluation."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#examples
+  difficulty: medium
+
+- id: q-day-15-011
+  set: day-15
+  type: single
+  stem: "A team compares the cost of RAG with fine-tuning a model in Amazon Bedrock. The fine-tuning job itself is affordable. Which additional ongoing cost of the fine-tuned option should the team include?"
+  options:
+    - { id: a, text: "Hosting the custom model, typically with Provisioned Throughput", explanation: "Correct. A customised model in Bedrock generally needs Provisioned Throughput (or custom-model on-demand inference where supported), which is an ongoing cost beyond the training job." }
+    - { id: b, text: "Creating a vector store for every fine-tuning example", explanation: "Incorrect. A vector store is a component of RAG, not a requirement of fine-tuning." }
+    - { id: c, text: "Paying the model provider to delete the base model", explanation: "Incorrect. There is no such cost; the base model is unaffected by your fine-tuning." }
+    - { id: d, text: "Re-running prompt caching for every training epoch", explanation: "Incorrect. Prompt caching is an inference feature and has nothing to do with training epochs." }
+  answer: [a]
+  explanation: "Customisation cost is more than the training job. Fine-tuned, distilled and continued-pre-trained models in Amazon Bedrock usually need Provisioned Throughput or a dedicated deployment, and must be retrained to update knowledge. RAG has ingestion, vector store and longer-prompt costs instead."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: hard
+
+- id: q-day-15-012
+  set: day-15
+  type: single
+  stem: "A company's email-writing assistant sometimes invents discounts that the company is not offering. The developer proposes lowering the temperature. What is the BEST response to this proposal?"
+  options:
+    - { id: a, text: "Lowering temperature will add the real offers to the model's knowledge", explanation: "Incorrect. Inference parameters never add knowledge; the model still does not know the actual offers." }
+    - { id: b, text: "Raise the temperature instead so the model explores more accurate options", explanation: "Incorrect. Higher temperature increases randomness and the risk of invented details." }
+    - { id: c, text: "Increase maximum tokens so the model has room to check its facts", explanation: "Incorrect. More length does not provide facts the model lacks." }
+    - { id: d, text: "Lower temperature may help a little, but the fix is to supply the actual offers in the prompt or through RAG and instruct the model to use only them", explanation: "Correct. Parameters shape randomness and style; correct facts must come from context such as the prompt or retrieved documents." }
+  answer: [d]
+  explanation: "Temperature, top-p and top-k control randomness, and maximum tokens and stop sequences control length — none of them adds knowledge. Wrong or invented facts are solved with better context (prompting or RAG) and clear instructions."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#examples
+  difficulty: medium
+
+- id: q-day-15-013
+  set: day-15
+  type: single
+  stem: "A law firm wants a model to summarise entire 300-page contracts in one request without splitting them. Which model selection criterion is MOST important for this requirement?"
+  options:
+    - { id: a, text: "Support for image generation", explanation: "Incorrect. The task is text summarisation; image generation is irrelevant." }
+    - { id: b, text: "A context window large enough to hold the whole contract and the instructions", explanation: "Correct. The context window is how much text one request can hold, so a very long document needs a large one." }
+    - { id: c, text: "Support for a high temperature setting", explanation: "Incorrect. All text models support temperature; creativity is not what a contract summary needs." }
+    - { id: d, text: "Availability of stop sequences", explanation: "Incorrect. Stop sequences control where output ends, not how much input the model can read." }
+  answer: [b]
+  explanation: "The context window limits the combined size of the prompt, documents and conversation history in one request. Long-document tasks need a model with a large context window, or a design such as RAG or chunking."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: easy
+
+- id: q-day-15-014
+  set: day-15
+  type: single
+  stem: "A developer enabled prompt caching but sees almost no cache hits. Each request begins with the current timestamp and the user's name, followed by a 5,000-word set of instructions that never changes, and then the user's question. What change will MOST improve cache hits?"
+  options:
+    - { id: a, text: "Increase the temperature so the cache is used more often", explanation: "Incorrect. Temperature affects sampling of the output, not whether the prompt prefix matches the cache." }
+    - { id: b, text: "Shorten the instructions to fewer than 100 words", explanation: "Incorrect. Short prefixes gain little from caching; the problem is that the prefix changes on every request." }
+    - { id: c, text: "Put the unchanging instructions first, set the cache checkpoint after them, and move the timestamp, name and question to the end", explanation: "Correct. Only an identical prefix can be reused, so stable content must come first and changing content last." }
+    - { id: d, text: "Cache the model's previous answers and return them instead", explanation: "Incorrect. That is response caching, a different technique; prompt caching still generates a fresh answer and needs a stable prefix." }
+  answer: [c]
+  explanation: "Prompt caching reuses an identical prompt prefix up to a cache checkpoint. Dynamic content placed before the checkpoint changes the prefix on every request and prevents cache hits. Place stable instructions and documents first, variable content last."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: hard
+
+- id: q-day-15-015
+  set: day-15
+  type: multi
+  stem: "A data team wants a model's answers to be more focused and less random when classifying support tickets. Which TWO inference parameter changes will achieve this? (Select TWO.)"
+  options:
+    - { id: a, text: "Increase the maximum tokens", explanation: "Incorrect. Maximum tokens controls response length, not randomness." }
+    - { id: b, text: "Lower the temperature", explanation: "Correct. Lower temperature sharpens the probability distribution so the most likely label is chosen consistently." }
+    - { id: c, text: "Lower the top-p value", explanation: "Correct. A lower top-p keeps only the most probable tokens, narrowing the choice and reducing randomness." }
+    - { id: d, text: "Raise the top-k value", explanation: "Incorrect. A higher top-k lets the model consider more candidate tokens, which increases variety." }
+    - { id: e, text: "Add a stop sequence", explanation: "Incorrect. A stop sequence ends output at a marker; it does not change how the label is chosen." }
+  answer: [b, c]
+  explanation: "Temperature, top-p and top-k all control randomness: lowering any of them makes output more focused and repeatable. Maximum tokens and stop sequences control where output ends."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: medium
+
+- id: q-day-15-016
+  set: day-15
+  type: multi
+  stem: "Which TWO customisation approaches improve a foundation model's responses WITHOUT changing the model's weights? (Select TWO.)"
+  options:
+    - { id: a, text: "In-context learning with instructions and examples in the prompt", explanation: "Correct. Prompting only changes the input; the model itself is unchanged." }
+    - { id: b, text: "Fine-tuning on labelled prompt-response pairs", explanation: "Incorrect. Fine-tuning continues training and updates the model's weights, creating a custom model." }
+    - { id: c, text: "Retrieval-augmented generation (RAG)", explanation: "Correct. RAG adds retrieved passages to the prompt at question time; the model's weights are not modified." }
+    - { id: d, text: "Continued pre-training on domain text", explanation: "Incorrect. Continued pre-training updates the weights using unlabelled domain data." }
+    - { id: e, text: "Model distillation", explanation: "Incorrect. Distillation trains a student model, which changes that model's weights." }
+  answer: [a, c]
+  explanation: "The two lowest rungs of the customisation ladder — in-context learning and RAG — leave the model untouched. Fine-tuning, distillation, continued pre-training and pre-training all train weights and produce a custom or new model."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: easy
+
+- id: q-day-15-017
+  set: day-15
+  type: multi
+  stem: "A bank is selecting a foundation model for a live voice assistant that speaks with customers in Spanish and French and must reply without noticeable delay. Which THREE selection criteria are MOST important? (Select THREE.)"
+  options:
+    - { id: a, text: "Low latency", explanation: "Correct. A live voice conversation needs fast responses, so latency is critical." }
+    - { id: b, text: "Support for Spanish and French", explanation: "Correct. The model must understand and respond in the customers' languages." }
+    - { id: c, text: "Modality support for speech input and output (or a speech-capable model in the pipeline)", explanation: "Correct. A voice assistant needs speech in and out, so modality is a key criterion." }
+    - { id: d, text: "The largest possible parameter count", explanation: "Incorrect. Bigger models are usually slower and more expensive; size alone does not meet the requirements." }
+    - { id: e, text: "Ability to be pre-trained from scratch by the bank", explanation: "Incorrect. Pre-training from scratch is not a selection criterion for this use case and would be extremely costly." }
+    - { id: f, text: "A high default temperature", explanation: "Incorrect. Temperature is an adjustable inference parameter, not a model selection criterion, and a bank assistant needs consistent answers." }
+  answer: [a, b, c]
+  explanation: "Selection starts with the requirement: real-time conversation → latency; multilingual customers → language support; voice → speech modality. Other criteria (cost, context window, customisation, licence, responsible AI) are weighed too, but the largest model is not automatically best."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: hard
+
+- id: q-day-15-018
+  set: day-15
+  type: multi
+  stem: "Which TWO statements about prompt caching in Amazon Bedrock are correct? (Select TWO.)"
+  options:
+    - { id: a, text: "It reduces the cost of processing a repeated prompt prefix", explanation: "Correct. Cached prefix tokens are read from the cache and billed at a lower rate than processing them again." }
+    - { id: b, text: "It returns a stored answer instead of generating a new one", explanation: "Incorrect. Prompt caching caches the input prefix; the model still generates a fresh response to each request." }
+    - { id: c, text: "It reduces the time to the first token for requests that share the cached prefix", explanation: "Correct. Skipping reprocessing of the long prefix makes the response start sooner." }
+    - { id: d, text: "It permanently updates the model with the cached content", explanation: "Incorrect. Caching does not change model weights, and cache entries expire a few minutes after last use." }
+    - { id: e, text: "It works best when the beginning of every prompt is different", explanation: "Incorrect. Only an identical prefix can be reused, so the stable content must come first." }
+  answer: [a, c]
+  explanation: "Prompt caching stores a prompt prefix up to a cache checkpoint so later requests with the same prefix are cheaper and faster. It suits long, repeated instructions or documents and is supported on selected models."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: medium
+
+- id: q-day-15-019
+  set: day-15
+  type: ordering
+  stem: "Arrange these foundation model customisation approaches from LOWEST to HIGHEST typical cost and effort."
+  options:
+    - { id: a, text: "Fine-tuning on labelled examples", explanation: "Third: requires a labelled dataset, a training job and hosting for the custom model." }
+    - { id: b, text: "In-context learning (prompt engineering)", explanation: "First: no training and no data preparation — only the prompt changes." }
+    - { id: c, text: "Pre-training a new foundation model from scratch", explanation: "Fifth: massive data and compute over months; the most expensive option." }
+    - { id: d, text: "Retrieval-augmented generation (RAG)", explanation: "Second: needs document ingestion and a vector store but no change to model weights." }
+    - { id: e, text: "Continued pre-training on a large unlabelled domain corpus", explanation: "Fourth: trains on large volumes of domain text, more compute than fine-tuning but far less than pre-training from scratch." }
+  answer: [b, d, a, e, c]
+  explanation: "Climb the customisation ladder only as far as needed: prompting → RAG → fine-tuning → continued pre-training → pre-training from scratch. Distillation sits around fine-tuning in effort and is used to make a smaller, cheaper model."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#diagram
+  difficulty: easy
+
+- id: q-day-15-020
+  set: day-15
+  type: matching
+  stem: "Match each inference parameter to the effect it has on model output."
+  options:
+    - { id: a, text: "Temperature", explanation: "Temperature reshapes the probabilities: low values give focused, repeatable output and high values give more varied output." }
+    - { id: b, text: "Top-k", explanation: "Top-k keeps only a fixed number of the most likely tokens as candidates for the next word." }
+    - { id: c, text: "Maximum tokens", explanation: "Maximum tokens caps how long the response can be, which also limits output cost." }
+    - { id: d, text: "Stop sequence", explanation: "A stop sequence ends generation as soon as the model produces a specified string." }
+  matchTargets:
+    - { id: t1, text: "Ends the response when a specific string appears" }
+    - { id: t2, text: "Controls how random or creative word choices are" }
+    - { id: t3, text: "Limits the candidate tokens to a fixed number of the most likely" }
+    - { id: t4, text: "Caps the length of the response" }
+  answer: { a: t2, b: t3, c: t4, d: t1 }
+  explanation: "Temperature (and top-p) control randomness; top-k limits candidates to the k most likely tokens; maximum tokens caps length; stop sequences end output at a marker. None of these parameters adds knowledge to the model."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-15#explanation
+  difficulty: medium

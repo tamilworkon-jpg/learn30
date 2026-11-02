@@ -1,0 +1,287 @@
+---
+day: 8
+kind: lesson
+title: 'GenAI building blocks'
+summary: 'Open the box of generative AI: how text becomes tokens, how documents are chunked, how embeddings turn meaning into vectors you can search by similarity, and how transformer LLMs, foundation models, multimodal models and diffusion models generate new content.'
+domains: [D2]
+taskStatements: ['2.1']
+sources:
+  - { provider: udemy, title: 'Generative AI Concepts; Generative Models; Embeddings and Vector Databases' }
+  - { provider: skillbuilder, title: 'Fundamentals of Generative AI' }
+  - { provider: aws-docs, title: 'Amazon Bedrock User Guide — Supported foundation models', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html' }
+  - { provider: aws-docs, title: 'Amazon Bedrock — How content chunking works for knowledge bases', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/kb-chunking.html' }
+objectives:
+  - Explain tokens and why context windows and prices are measured in tokens
+  - Describe chunking and choose a chunking strategy for a document set
+  - Explain embeddings and vectors and how similarity search finds related meaning
+  - Describe how transformer-based LLMs generate text and what makes a model a foundation model
+  - Distinguish multimodal models and diffusion models and name AWS examples of each
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'A token is a chunk of text (often part of a word); in English one token is roughly three-quarters of a word. Context windows and prices are counted in tokens.'
+  - 'Chunking splits long documents into smaller passages before embedding, so retrieval returns focused, relevant text; overlap keeps ideas from being cut in half.'
+  - 'An embedding is a vector (a list of numbers) that captures meaning; similar meanings sit close together and are found with similarity search such as cosine similarity.'
+  - 'Transformer LLMs use self-attention to weigh every token against every other token and generate text one token at a time by predicting the next token.'
+  - 'Foundation models are large models pre-trained on broad data that adapt to many tasks; multimodal models handle more than one data type (text, image, audio, video).'
+  - 'Diffusion models generate images by starting from random noise and removing it step by step, guided by a text prompt.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 7" minutes={4}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="How generative AI works, piece by piece" minutes={16}>
+
+Week 1 was about models that *predict* — a price, a category, a cluster. This week is about models that *generate*: they write paragraphs, answer questions, draft code and create images. Generative AI can feel like magic, but it is built from a handful of ideas you can learn in an hour. Today you meet each one in the order data flows through a real application: text becomes **tokens**, documents become **chunks**, chunks become **embeddings** stored as **vectors**, and **transformer** models — the engine inside **foundation models** — turn tokens into new content. We finish with **multimodal** and **diffusion** models, which work with images, audio and video.
+
+### Tokens: the unit a model reads and writes
+
+A language model does not see letters or whole words. It sees **tokens** — small chunks of text produced by a *tokenizer*. A common word such as "cat" is usually one token; a longer or rarer word is split into several pieces, so "unbelievable" might become "un", "believ" and "able". Punctuation and spaces count too. Each token is mapped to a number (its *token ID*) from the model's fixed *vocabulary*, and those numbers are what the model actually processes.
+
+A useful rule of thumb for English: **one token is about four characters, or roughly three-quarters of a word**, so 1,000 tokens is around 750 words. Other languages, source code and unusual text often use more tokens per word. Every model family has its own tokenizer, so the same sentence can be a different number of tokens on different models.
+
+Why does this matter to you? Three reasons that appear on the exam:
+
+- **Context window.** Every model has a maximum number of tokens it can consider at once — the prompt *plus* the response. This limit is the *context window*. If your instructions, a long document and the conversation history together exceed it, something must be cut.
+- **Pricing.** Amazon Bedrock and most other providers charge on-demand usage **per token**, with input tokens and output tokens priced separately. More tokens means more cost (Day 9 goes deeper).
+- **Speed.** Models generate output one token at a time, so long answers take longer. Setting a maximum output length limits both cost and latency.
+
+### Chunking: breaking documents into useful pieces
+
+Suppose you want an assistant to answer questions from a 300-page HR handbook. You cannot paste the whole handbook into every prompt — it would blow the context window and the budget. Instead you split it into smaller passages, called **chunks**, store them, and later retrieve only the few chunks relevant to each question. This is the heart of *retrieval-augmented generation* (RAG), which you will build on Day 18.
+
+**Chunking** is the act of splitting a document into those passages. Chunk size is a balancing act:
+
+- **Too large** — a chunk mixes several topics, its meaning is blurred, and retrieving it wastes context-window tokens on irrelevant text.
+- **Too small** — a chunk loses context. "It must be approved within five days" is useless if the chunk does not say *what* must be approved.
+
+Common strategies:
+
+| Strategy | How it works | Good for |
+|---|---|---|
+| Fixed-size | Split every N tokens, usually with an **overlap** of some tokens between neighbouring chunks | Simple, uniform documents |
+| Hierarchical | Small child chunks for precise matching, linked to larger parent chunks returned for context | Long, structured documents such as manuals |
+| Semantic | Split where the meaning changes, using embeddings to detect topic boundaries | Documents where topics vary in length |
+| No chunking | Treat each file as one chunk | Short documents such as FAQs, one per file |
+
+**Overlap** repeats a little text at the end of one chunk and the start of the next, so a sentence or idea that crosses a boundary is not lost. Amazon Bedrock Knowledge Bases offers default, fixed-size, hierarchical, semantic and no-chunking options, and you can also supply your own chunking logic in a Lambda function.
+
+### Embeddings and vectors: turning meaning into numbers
+
+Computers are good at maths, not meaning. An **embedding** bridges the gap: it is a list of numbers that represents the *meaning* of a piece of text (or an image, or audio). That list is a **vector**, and the number of values in it is its number of **dimensions**. Amazon Titan Text Embeddings V2, for example, can output vectors of 256, 512 or 1,024 dimensions.
+
+The key property: **content with similar meaning gets vectors that are close together**. "How do I reset my password?" and "I forgot my login credentials" share almost no words, yet their embeddings sit near each other. "Password" and "pasta" look similar as strings but land far apart. A map analogy helps: imagine every sentence placed as a dot on a huge map where distance means difference in meaning. Real embeddings have hundreds or thousands of dimensions instead of two, but the idea is the same.
+
+An **embedding model** produces these vectors. It is a different model from the chat model that writes answers — its only job is to turn input into a vector. On Amazon Bedrock you can choose embedding models such as Amazon Titan Text Embeddings, Amazon Nova multimodal embeddings and Cohere Embed. Important rule: **use the same embedding model for your documents and your queries**. Vectors from different models live on different "maps" and cannot be compared.
+
+**Similarity search.** To find the chunks that answer a question, you embed the question and look for stored vectors closest to it. Closeness is measured with a *similarity* or *distance* metric:
+
+- **Cosine similarity** — compares the *direction* of two vectors; 1 means pointing the same way (very similar), 0 means unrelated. The most common choice for text.
+- **Dot product** and **Euclidean distance** — other ways to measure closeness.
+
+Finding the closest *k* vectors is called **k-nearest-neighbour (k-NN)** search. Comparing a query against millions of vectors one by one would be slow, so **vector databases** (also called vector stores) build special indexes for fast *approximate* nearest-neighbour search. On AWS, options include Amazon OpenSearch Service (including OpenSearch Serverless), Amazon Aurora PostgreSQL and Amazon RDS for PostgreSQL with the pgvector extension, and Amazon Neptune Analytics. You will compare them on Day 18.
+
+Embeddings power much more than RAG: **semantic search** (search by meaning, not keywords), **recommendations** (items whose vectors are near what a user liked), **clustering** similar support tickets, **duplicate detection** and **classification**.
+
+### Transformer LLMs: the engine of modern generative AI
+
+A **large language model (LLM)** is a very large neural network trained on huge amounts of text to understand and generate language. Almost every modern LLM is built on the **transformer** architecture, introduced by Google researchers in 2017 in the paper "Attention Is All You Need". You met transformers briefly on Day 4; now let us see why they matter.
+
+Older sequence models (RNNs) read text one word at a time, left to right, and struggled to remember the start of a long passage. The transformer's breakthrough is **self-attention**: for every token, the model looks at *all* the other tokens in the context and learns how much each one matters. In "The trophy did not fit in the suitcase because **it** was too big", attention helps the model link "it" to "trophy". Because attention handles all tokens in parallel, transformers train efficiently on GPUs at enormous scale.
+
+How does an LLM produce an answer? It is, at heart, a **next-token predictor**:
+
+1. Your prompt is tokenized into token IDs.
+2. Each token is turned into an embedding, plus information about its *position* in the sequence.
+3. Stacked transformer layers apply self-attention and produce a probability for every token in the vocabulary being the next one.
+4. One token is chosen (the most likely, or a sampled one — inference parameters such as *temperature* control this; Day 15).
+5. The new token is appended and the whole process repeats, token by token, until the model emits a stop token or hits the maximum length.
+
+This explains two behaviours you must know. First, an LLM produces **plausible** text, not verified facts — if a fluent but wrong continuation is likely, it may produce it (a *hallucination*). Second, outputs can vary between runs when sampling is used (*nondeterminism*). Day 11 explores both.
+
+You may also see three transformer shapes: **encoder-only** models (such as BERT) that understand text and are used for classification and embeddings; **decoder-only** models (the GPT style) that generate text; and **encoder–decoder** models used for tasks such as translation and summarisation. Most chat LLMs today are decoder-only.
+
+### Foundation models: one model, many tasks
+
+A **foundation model (FM)** is a large model **pre-trained on a broad, massive dataset** — often by *self-supervised learning*, such as predicting the next word across trillions of tokens — so that it can be **adapted to many different tasks**. LLMs are one kind of FM; image and multimodal models are others.
+
+The shift is important. In traditional ML you train one model per task: a sentiment model, a translation model, a summarisation model. A single FM can do all three — and write emails, extract fields from contracts and answer questions — guided only by the prompt. You can adapt it further with prompt engineering, retrieval (RAG) or fine-tuning (Days 15–19). Building an FM from scratch costs millions of dollars, so most organisations *consume* FMs rather than train them.
+
+On Amazon Bedrock you access FMs from Amazon and other providers through one API — for example **Amazon Nova** models, Anthropic Claude, Meta Llama, Mistral AI and Cohere. On Amazon SageMaker JumpStart you can deploy many open-weight FMs onto your own SageMaker AI endpoints.
+
+### Multimodal models: more than text
+
+A *modality* is a type of data: text, image, audio, video. A **multimodal model** can take in and/or produce more than one modality. Examples:
+
+- Describe what is in a photo, or answer questions about a chart image (image + text in, text out).
+- Summarise a video or find the moment something happens in it (video in, text out).
+- Generate an image or a short video from a text description (text in, image or video out).
+- Hold a spoken conversation (speech in, speech out).
+
+The Amazon Nova family illustrates the range: Nova understanding models such as Nova Lite and Nova Pro accept text, images and video and reply in text; **Amazon Nova Canvas** generates images; **Amazon Nova Reel** generates short videos; and **Amazon Nova Sonic** is a speech-to-speech model for voice conversations. **Multimodal embedding models** place text and images on the same vector map, so a text query such as "red running shoes" can retrieve matching product photos.
+
+### Diffusion models: creating images from noise
+
+How does a model create a brand-new image? Most modern image generators are **diffusion models**. The idea is surprisingly simple:
+
+- **Training (forward process):** take millions of real images, add random noise in many small steps until each becomes pure static, and train the model to predict and remove the noise at each step.
+- **Generation (reverse process):** start from pure random noise and let the model remove noise step by step. A **text prompt**, converted to an embedding, steers each step so the picture that emerges matches the description.
+
+Think of a sculptor who starts with a rough block of marble and removes a little at a time until a statue appears — except the "block" is static and the "chisel" is a learned denoiser guided by your words. Stability AI's Stable Diffusion models, available on Amazon Bedrock, are well-known diffusion models. Diffusion is also used for video and audio generation.
+
+Two older generative families you may see named: **GANs** (generative adversarial networks), in which a generator and a discriminator compete, and **VAEs** (variational autoencoders), which learn a compressed representation and decode new samples from it. For the exam, the key association is: **text generation → transformer LLMs; image generation from noise → diffusion models.**
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="From text to answer: tokens feed a transformer that predicts one next token at a time until the response is complete"
+  code={`flowchart LR
+  P["Prompt text"] --> T["Tokenizer: text to token IDs"]
+  T --> E["Token embeddings plus position"]
+  E --> A["Transformer layers with self-attention"]
+  A --> N["Probabilities for the next token"]
+  N --> S["Pick one token"]
+  S -->|append and repeat| E
+  S --> O["Detokenize: response text"]`}
+/>
+
+<Diagram
+  caption="Embeddings place similar meanings close together; a query vector retrieves its nearest neighbours by cosine similarity"
+  code={`flowchart TD
+  D["Document chunks"] --> M["Embedding model"]
+  Q["User question"] --> M
+  M --> V[("Vector store")]
+  M --> QV["Query vector"]
+  QV --> K{"k-nearest-neighbour search"}
+  V --> K
+  K --> R1["Closest chunk: high cosine similarity"]
+  K --> R2["Unrelated chunk: low similarity, not returned"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={4}>
+
+| Scenario | Building block | Why |
+|---|---|---|
+| A prompt plus history is rejected for being too long | Tokens and context window | Input plus output exceeded the model's token limit |
+| Search "laptop will not turn on" finds an article titled "Device fails to power up" | Embeddings and semantic search | Similar meaning, different words |
+| A 300-page manual must be searchable by an assistant | Chunking, then embeddings | Retrieve only the relevant passages |
+| One model drafts emails, summarises calls and extracts invoice fields | Foundation model | Pre-trained on broad data, adapts by prompt |
+| Generate product photos from a text description | Diffusion model | Denoises random noise guided by the prompt |
+| Answer a question about a photo of a damaged car | Multimodal model | Image and text in, text out |
+| Recommend articles similar to the one a reader just finished | Embeddings and vector similarity | Nearby vectors mean related content |
+
+**Worked example — counting tokens.** A support assistant sends a 600-word system prompt, a 1,500-word policy excerpt and a 100-word customer question, and the answer is about 300 words. Using the rule of thumb (1 token ≈ 0.75 words), input is about (600 + 1,500 + 100) ÷ 0.75 ≈ 2,900 tokens and output about 400 tokens. If the model's context window were 4,000 tokens, this request would just fit; doubling the policy excerpt would not. That is why you retrieve focused chunks instead of whole documents.
+
+**Worked example — choosing chunk size.** An insurer chunks policy PDFs into 2,000-token pieces. Answers are vague, and the retrieved text is mostly unrelated paragraphs. The chunks are too large: each one blends many topics, so its embedding is a blurry average and retrieval drags in noise. Smaller chunks (a few hundred tokens) with some overlap, or hierarchical chunking, give sharper matches.
+
+**Worked example — mixing embedding models.** A team embedded its documents with one embedding model, then switched the query side to a newer model to save cost. Search quality collapsed overnight. Vectors from different models are not comparable; the fix is to re-embed all the documents with the new model (or keep using the old one for queries).
+
+**Worked example — which model type?** A marketing team wants (1) social-media captions, (2) banner images and (3) to find past campaigns similar to a new brief. The captions need a **transformer LLM** such as an Amazon Nova text model; the banners need an **image-generation (diffusion) model** such as Stable Diffusion or Amazon Nova Canvas; and finding similar campaigns needs **embeddings** in a vector store plus similarity search.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={3}>
+
+<Callout type="realWorld" title="An online retailer uses every building block">
+A fashion retailer embeds its 2 million product descriptions and photos with a **multimodal embedding model** and stores the vectors in Amazon OpenSearch Service. Shoppers can type "flowy summer dress for a beach wedding" or upload a photo, and **similarity search** returns matching items even when no keywords overlap. Product copy is drafted by a **transformer LLM** on Amazon Bedrock from a few bullet points, and seasonal banner images are generated with an **image-generation model**, then checked by the brand team. The help centre's assistant answers returns questions from **chunked** policy documents.
+</Callout>
+
+The retailer learned three practical lessons. First, **token counts drive cost**: product descriptions were being generated with a long, repeated set of style instructions, and trimming that system prompt by half cut the monthly bill noticeably without hurting quality. Second, **chunking matters more than model choice** for the help centre: early answers mixed rules for different countries because each chunk covered several regions; re-chunking by country section, with a small overlap and the country stored as metadata, fixed most wrong answers. Third, **embeddings must be refreshed** when the catalogue changes — new products need to be embedded on arrival, and if the embedding model is upgraded, the whole catalogue must be re-embedded so all vectors share one "map".
+
+A second story comes from a legal-services firm. Lawyers wanted to search 20 years of contracts for clauses "similar to this indemnity clause". Keyword search failed because wording varied so much. The firm chunked contracts by clause, embedded each clause and stored the vectors with metadata (client, year, contract type). Similarity search now surfaces comparable clauses in seconds, and a filter on metadata keeps results within the right client's documents — an early taste of the access-control questions you will meet in Domain 5.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: tokens, modalities and chunking in Amazon Bedrock" minutes={8}>
+
+<HandsOnLab
+  goal="Explore the Amazon Bedrock console to see foundation models grouped by modality, watch token counts in a playground and find where chunking and embedding models are chosen for a knowledge base."
+  asOf="November 2026"
+  steps={[
+    { text: 'Open Amazon Bedrock and browse the model catalog. Filter by modality to see text, image, video, speech and embedding models from Amazon and other providers.', screen: { service: 'Amazon Bedrock', path: ['Discover', 'Model catalog'], menu: ['Overview', 'Model catalog', 'Playgrounds', 'Knowledge Bases', 'Agents'], active: 'Model catalog', fields: [{ label: 'Filter: modality', value: 'Text · Image · Video · Speech · Embedding' }, { label: 'Example', value: 'Amazon Nova Lite — text, image, video in; text out' }], highlight: 'Modality filter' } },
+    { text: 'Open the chat playground, pick a Nova text model and ask it to summarise a paragraph. After the reply, read the model metrics: input tokens, output tokens and latency.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Chat / Text'], fields: [{ label: 'Model', value: 'Amazon Nova Lite' }, { label: 'Input tokens', value: '412' }, { label: 'Output tokens', value: '96' }, { label: 'Latency', value: '0.9 s' }], highlight: 'Model metrics', note: 'Tokens drive cost and speed' } },
+    { text: 'Switch to the image playground, choose an image-generation model and enter a prompt. Each generation starts from random noise, so the same prompt can give different images unless you fix the seed.', screen: { service: 'Amazon Bedrock', path: ['Playgrounds', 'Image / Video'], fields: [{ label: 'Model', value: 'Amazon Nova Canvas' }, { label: 'Prompt', value: 'Flat-lay photo of a linen summer dress' }, { label: 'Seed', value: '42' }], highlight: 'Generate' } },
+    { text: 'Start creating a knowledge base. On the data source step, choose the chunking strategy; on the next step, choose the embedding model and its vector dimensions.', screen: { service: 'Amazon Bedrock', path: ['Knowledge Bases', 'Create', 'Data source'], fields: [{ label: 'Chunking strategy', value: 'Default · Fixed-size · Hierarchical · Semantic · No chunking' }, { label: 'Embedding model', value: 'Titan Text Embeddings V2 — 1,024 dimensions' }], highlight: 'Chunking strategy', note: 'Same embedding model for documents and queries' } },
+  ]}
+  expectedOutcome="You can point to where token usage is reported, recognise models by modality, and explain that a knowledge base needs a chunking strategy and an embedding model before documents can be searched by meaning."
+  checks={[
+    { q: 'The playground shows 412 input tokens for a 300-word prompt. Is that surprising?', a: 'No. With roughly 0.75 words per token, 300 words is about 400 tokens; instructions and formatting add a few more.' },
+    { q: 'Why does the knowledge base ask for an embedding model as well as a chat model?', a: 'The embedding model turns chunks and queries into vectors for similarity search; the chat model writes the answer from the retrieved chunks.' },
+    { q: 'Your documents are short FAQs, one question per file. Which chunking option fits?', a: 'No chunking — each file is already a small, self-contained passage.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="Embeddings are not the answer — they find the answer">
+An embedding model outputs vectors, not text. In a RAG design, the embedding model and vector store *find* relevant chunks; a separate text-generation FM *writes* the answer. If an option says "use an embedding model to generate a summary", it is wrong.
+</Callout>
+
+- "Unit of text a model processes and that pricing is based on" → **token**.
+- "Maximum amount of text the model can consider at once, prompt plus response" → **context window**, measured in tokens.
+- "Split documents into smaller passages before embedding" → **chunking**; "keep ideas from being cut at boundaries" → **overlap**.
+- "Numerical representation of meaning", "semantic similarity", "search by meaning" → **embeddings / vectors**.
+- "Measure how similar two embeddings are" → **cosine similarity** (or k-NN search in a vector store).
+- "Architecture behind modern LLMs", "self-attention", "processes tokens in parallel" → **transformer**.
+- "Large model pre-trained on broad data, adaptable to many tasks" → **foundation model**.
+- "Accepts or produces more than one data type" → **multimodal**.
+- "Generates images by iteratively removing noise" → **diffusion model**.
+- Same embedding model for documents and queries — always.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+Generative AI starts with tokens: text is split into sub-word pieces, and context windows, prices and speed are all measured in tokens. Long documents are chunked into focused passages, often with overlap. An embedding model turns each chunk into a vector whose position captures meaning, so similarity search (cosine similarity, k-NN in a vector store) finds related content even without shared keywords. Transformer LLMs use self-attention to generate text one token at a time; foundation models are large, broadly pre-trained models that adapt to many tasks; multimodal models work across text, images, audio and video; and diffusion models create images by removing noise step by step under the guidance of a prompt. Tomorrow: the lifecycle of a foundation model, what generative AI is used for, how token pricing works and how to engineer the context you send.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={8} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Embedding pipeline" minutes={15} optional>
+
+An architect building semantic search or RAG on AWS designs two pipelines that share one embedding model and one vector store. The **ingestion pipeline** runs whenever documents change: source files land in Amazon S3; a parser extracts text (and, for scanned files, Amazon Textract or an FM-based parser can read the layout); the text is chunked; each chunk is sent to an embedding model on Amazon Bedrock; and the vector is written to a vector store together with **metadata** — source file, page, department, access level — and the original chunk text. The **query pipeline** runs on every request: the user's question is embedded with the *same* model, the vector store returns the top-k nearest chunks (filtered by metadata, for example by the user's department), and the chunks are passed to a text model to write a grounded answer.
+
+<Diagram
+  caption="Embedding pipeline architecture: an ingestion path chunks and embeds documents into a vector store, and a query path embeds the question and retrieves the nearest chunks"
+  code={`flowchart LR
+  subgraph Ingest["Ingestion pipeline"]
+    S3[("Amazon S3 documents")] --> PR["Parse text and layout"]
+    PR --> CH["Chunk with overlap"]
+    CH --> EM1["Embedding model on Amazon Bedrock"]
+  end
+  EM1 --> VS[("Vector store: OpenSearch Serverless or Aurora pgvector")]
+  subgraph Query["Query pipeline"]
+    U["User question"] --> EM2["Same embedding model"]
+    EM2 --> KNN["Top-k search with metadata filter"]
+    KNN --> LLM["Text FM writes grounded answer"]
+  end
+  VS --> KNN`}
+/>
+
+**Managed versus build-your-own.** Amazon Bedrock Knowledge Bases runs this whole pipeline for you: point it at an S3 bucket (or other connectors), pick a chunking strategy and an embedding model, and choose or let it create a vector store; it syncs documents, stores vectors and exposes retrieve and retrieve-and-generate APIs. Building it yourself with AWS Lambda or AWS Glue jobs gives full control over parsing and chunking but adds code to maintain.
+
+**Design decisions and trade-offs.**
+
+- **Dimensions.** More dimensions can capture finer meaning but cost more storage and slightly slower search; Titan Text Embeddings V2 lets you pick 256, 512 or 1,024. Many teams find smaller vectors good enough and much cheaper at scale.
+- **Chunk size and overlap.** Test with real questions. Start with a few hundred tokens and modest overlap, then measure retrieval quality before tuning further.
+- **Metadata.** Store fields you will filter on (tenant, language, date, permission level). Filtering stops users seeing chunks they should not — a security control, not just a relevance trick.
+- **Freshness.** Re-embed changed documents incrementally; schedule a full re-embed if you change the embedding model.
+- **Cost.** Embedding is charged per input token, once per chunk at ingestion and once per query; vector storage and search capacity are separate costs. Batch embedding at ingestion time is usually far cheaper than the text generation that follows.
+- **Evaluation.** Track whether the right chunk appears in the top-k results for a set of test questions; poor retrieval cannot be fixed by a better text model.
+
+</Section>

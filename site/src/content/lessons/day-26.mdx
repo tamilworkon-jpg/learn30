@@ -1,0 +1,271 @@
+---
+day: 26
+kind: lesson
+title: 'Secure data & grounding'
+summary: 'Secure the data that feeds AI systems — data quality, privacy-enhancing techniques, access control and integrity — and track where it came from with lineage and cataloguing (AWS Glue Data Catalog, AWS Lake Formation, SageMaker AI lineage tracking and Model Cards). Then keep generative answers trustworthy: source citation, RAG grounding, hallucination detection with Bedrock Guardrails and evaluations, and confidence scoring with human review.'
+domains: [D5]
+taskStatements: ['5.1']
+sources:
+  - { provider: udemy, title: 'Security, Compliance and Governance for AI Solutions; Data governance; AWS Glue; AWS Lake Formation' }
+  - { provider: skillbuilder, title: 'Security, Compliance, and Governance for AI Solutions' }
+  - { provider: aws-docs, title: 'Amazon Bedrock Guardrails — Contextual grounding check', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-contextual-grounding-check.html' }
+  - { provider: aws-docs, title: 'AWS Lake Formation — Fine-grained access control', url: 'https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html' }
+objectives:
+  - Describe secure data engineering practices — data quality, privacy-enhancing techniques, access control and data integrity
+  - Explain data lineage and cataloguing and the AWS services that support them, including SageMaker Model Cards for model origins
+  - Explain how RAG grounding and source citation make generative answers verifiable
+  - Describe ways to detect hallucinations, including Bedrock Guardrails contextual grounding and Automated Reasoning checks
+  - Use confidence scores and thresholds to route uncertain AI outputs to human review
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'Secure data engineering = data quality, privacy-enhancing techniques (masking, pseudonymisation, anonymisation, synthetic data), least-privilege access and integrity protection.'
+  - 'AWS Glue Data Catalog records what data exists and its schema; AWS Lake Formation adds fine-grained table, column, row and cell permissions.'
+  - 'Lineage traces data to model to endpoint (SageMaker AI lineage tracking, Model Registry); SageMaker Model Cards document model origin, intended use and evaluation.'
+  - 'RAG grounds answers in retrieved, trusted documents; Bedrock Knowledge Bases return citations so users can verify sources.'
+  - 'Guardrails contextual grounding check scores grounding and relevance; Automated Reasoning checks verify answers against formal policy rules.'
+  - 'Confidence scores plus thresholds decide when to auto-accept and when to send output to a human reviewer.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 25" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="Trustworthy data in, trustworthy answers out" minutes={16}>
+
+### Garbage in, leaked out
+
+Yesterday you protected the *system* around an AI model — identities, keys, networks and logs. Today you protect what flows *through* it. An AI model is only as trustworthy as its data. If the training data is wrong, the model is wrong. If the knowledge base contains personal data, the chatbot can leak it. If someone can quietly change the data, they can change the model's behaviour. And if no one can say where an answer came from, no one can check it.
+
+Task statement 5.1 groups these concerns together: **secure data engineering**, **source citation and data origins** (lineage, cataloguing, Model Cards), and **hallucination detection and grounding**. Think of a restaurant kitchen. Secure data engineering is the hygiene: fresh ingredients, the right people in the kitchen, nothing tampered with. Lineage is the label on every ingredient saying which farm it came from. Grounding is the chef cooking only from the ingredients on the counter, not from imagination. Confidence scoring is the head chef tasting the dishes that look doubtful before they leave the kitchen.
+
+### Secure data engineering: four pillars
+
+**1. Data quality.** Data should be accurate, complete, consistent, current and representative. Poor-quality data produces poor models and can hide bias (Day 22). In practice teams *profile* data (look at distributions, missing values, duplicates) and write *data quality rules* that run automatically — "customer_id is never empty", "age is between 18 and 120", "no duplicate claim numbers". **AWS Glue Data Quality** evaluates rules like these inside data pipelines, and **AWS Glue DataBrew** lets analysts profile and clean data visually without code. A pipeline that fails a quality rule should stop before bad data reaches training or a knowledge base.
+
+**2. Privacy-enhancing techniques.** The safest personal data is the data you never collect. After that, reduce how identifiable the data is:
+
+- **Data minimisation** — keep only the columns the use case needs. A churn model rarely needs customers' names.
+- **Masking and redaction** — replace sensitive values with symbols ("card ending 1234", "[NAME]").
+- **Pseudonymisation and tokenisation** — replace an identifier with a consistent token so records can still be joined, while the mapping is stored separately and protected.
+- **Anonymisation and aggregation** — remove or generalise identifiers (exact age becomes an age band, postcode becomes region) so people cannot reasonably be re-identified.
+- **Differential privacy** — add carefully calibrated statistical noise so results about a group are useful but no single person's data can be inferred.
+- **Synthetic data** — generate artificial records that keep the statistical patterns of real data without describing real people; useful for testing and some training.
+- **Encryption** — at rest and in transit, as on Day 25.
+
+AWS tools help find and treat sensitive data: **Amazon Macie** discovers it in S3 buckets, **Amazon Comprehend** detects and can redact PII entities in text, Glue DataBrew offers PII detection and masking transformations, and **Bedrock Guardrails** masks PII in prompts and responses at run time.
+
+**3. Access control.** Apply least privilege to *data*, not just to services. Data scientists may need customer behaviour but not names; the fraud team may need card numbers but only for its region. **AWS Lake Formation** builds a governed data lake on Amazon S3 and centralises permissions with **fine-grained access control** — grant access to a database, a table, specific **columns**, specific **rows** (for example only `region = 'EU'`), or individual cells. Tag-based access control lets you label data (for example `sensitivity = confidential`) and grant permissions by tag, which scales better than listing tables one by one. Services that query the lake, such as Amazon Redshift, Amazon EMR and AWS Glue, respect these permissions.
+
+**4. Data integrity.** Make sure data has not been changed by accident or on purpose. A special worry for AI is **data poisoning** — an attacker inserts misleading examples into training data or plants false documents in a knowledge base so the model learns or repeats them. Defences:
+
+- Restrict **write** access to training and knowledge base buckets to the pipeline roles that need it.
+- Turn on **S3 Versioning** so every change is kept and can be rolled back, and use **S3 Object Lock** where records must be unchangeable for a period (write once, read many).
+- Record **checksums or hashes** of approved datasets so you can prove the training data is exactly the version that was reviewed.
+- Accept knowledge base content only from vetted sources, review new documents, and log every change with CloudTrail.
+
+### Lineage and cataloguing: where did this come from?
+
+If a regulator asks *"which data trained the model that rejected this loan?"*, you need answers in minutes, not months. Two related ideas help.
+
+**Cataloguing** means keeping an inventory of your data: what datasets exist, where they live, what their schema is, who owns them and how sensitive they are. The **AWS Glue Data Catalog** is the central metadata store on AWS. *Glue crawlers* scan sources such as S3 and databases, infer the schema and register tables, so analytics and ML services can find and query the data. Lake Formation uses the same catalog to attach permissions and tags. A catalog answers *"what data do we have and what is in it?"*
+
+**Lineage** records how data moved and changed: raw source → cleaning job → feature set → training job → model version → endpoint. It answers *"where did this come from and what depends on it?"* Lineage is how you trace a bad prediction back to a bad dataset, or find every model affected when you learn that a dataset contained data you were not allowed to use. On AWS:
+
+- **SageMaker AI lineage tracking** automatically records the entities in an ML workflow — datasets, processing and training jobs, model artifacts, endpoints — and the links between them.
+- **SageMaker Model Registry** keeps model versions with their metadata, metrics and approval status, so you know exactly which version is in production and how it was produced.
+- **SageMaker Pipelines** runs repeatable workflows whose every step is recorded.
+
+### Model Cards: the label on the model
+
+**Amazon SageMaker Model Cards** are structured documents that travel with a model. They record its **intended use** and out-of-scope uses, a **risk rating**, details of the **training data and training job**, **evaluation results**, ethical considerations and caveats. For security and governance, a model card is a form of **source citation for the model itself**: it states the model's origin and what it was trained on, so reviewers and auditors can judge whether it is appropriate. Model cards can be exported (for example as PDF) to share with auditors, and they link naturally to the Model Registry entry for the same version.
+
+For foundation models you did not build, look for the provider's equivalent documentation. AWS publishes **AI Service Cards** for its own AI services and models (such as Amazon Nova), describing intended use cases, limitations and responsible-AI design choices. You met transparency documents on Day 24; today the point is that they are part of knowing your **data and model origins**.
+
+### Grounding: answer from evidence, not from memory
+
+A foundation model learned from a huge snapshot of public data. Ask it about your company's refund policy and it may produce a fluent, confident and **made-up** answer — a **hallucination**. The cure is **grounding**: making the model answer from trusted, current evidence that you supply.
+
+**Retrieval-augmented generation (RAG)**, which you studied on Day 15, is the main grounding technique. The application retrieves the most relevant chunks from your documents and places them in the prompt with an instruction such as *"Answer only from the context below. If the answer is not there, say you do not know."* Good grounding practice:
+
+- Keep the knowledge base **current and curated** — outdated or conflicting documents produce outdated or conflicting answers.
+- Use **metadata filtering** so a UK employee retrieves the UK policy, not the US one.
+- Use a low **temperature** for factual tasks to reduce creative drift.
+- Allow and encourage **"I don't know"** instead of guessing.
+- **Cite sources**. Amazon Bedrock Knowledge Bases returns **citations** with each generated answer — the source chunks and their location, such as the S3 document — so users and reviewers can click through and verify. Source citation turns *"trust me"* into *"check me"*.
+
+Grounding also supports security: if the retrieval step respects each user's permissions (for example via metadata filters on department), the model can only cite documents that user is allowed to see.
+
+### Detecting hallucinations
+
+Grounding reduces hallucinations; detection catches the ones that slip through. Several methods, from simple to sophisticated:
+
+- **Contextual grounding check in Bedrock Guardrails.** For RAG and summarisation, the guardrail compares the model's response with the source passages and the user's question and produces two scores: a **grounding score** (is the answer supported by the source?) and a **relevance score** (does it actually answer the question?). You set a threshold for each; responses scoring below it are blocked or flagged.
+- **Automated Reasoning checks in Bedrock Guardrails.** You turn a policy document — for example HR leave rules or loan eligibility rules — into a formal policy of logical rules. The check then uses mathematical logic to verify whether a model's answer is consistent with those rules, and explains why when it is not. This suits domains where answers must follow precise rules.
+- **Evaluation with an LLM as a judge.** Amazon Bedrock Evaluations can evaluate a RAG application, scoring responses with metrics such as **faithfulness** (does the answer stick to the retrieved context?), correctness and completeness. Run these evaluations before launch and on a regular schedule.
+- **Self-consistency.** Ask the same question several times or to two models; disagreement suggests low confidence.
+- **Human review** of samples and of flagged answers, with feedback buttons ("Was this answer correct?") feeding improvements.
+
+### Confidence scoring and thresholds
+
+Many AWS AI services return a **confidence score** with every prediction: Amazon Textract for each extracted field, Amazon Rekognition for each label or face match, Amazon Comprehend for each entity or sentiment, Amazon Transcribe for each word. A confidence score is the model's estimate of how likely its answer is right — it is *not* a guarantee.
+
+The design pattern is a **threshold**:
+
+- Above the threshold → accept automatically.
+- Below the threshold → route to a **human reviewer**, ask the user to confirm, or answer *"I'm not sure"*.
+
+Choose the threshold by risk. Tagging holiday photos can accept 80% confidence; matching a face for identity verification or reading the amount on a cheque needs a much higher bar plus human review. For generative answers, useful signals include the knowledge base **retrieval relevance scores**, the guardrail **grounding score**, and evaluator scores. A model's own statement *"I am 95% sure"* is not a reliable confidence measure — it is just more generated text.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="Secure data engineering pipeline: quality checks, privacy treatment, governed access and recorded lineage before data reaches a model or knowledge base"
+  code={`flowchart LR
+  RAW[("Raw data in S3")] --> MAC["Macie: find sensitive data"]
+  MAC --> DQ["Glue Data Quality: rules pass?"]
+  DQ -->|fail| STOP["Stop pipeline and alert owner"]
+  DQ -->|pass| PET["Mask, pseudonymise, minimise"]
+  PET --> CAT["Glue Data Catalog plus Lake Formation permissions"]
+  CAT --> TRAIN["SageMaker AI training job"]
+  CAT --> KB["Bedrock Knowledge Base"]
+  TRAIN --> REG["Model Registry and Model Card"]
+  LIN["Lineage tracking: dataset to job to model to endpoint"] -.-> REG`}
+/>
+
+<Diagram
+  caption="Grounded answer flow: retrieve evidence, generate with citations, check grounding and relevance, and route low-confidence answers to a person"
+  code={`flowchart TD
+  Q["User question"] --> RET["Retrieve chunks from knowledge base with relevance scores"]
+  RET --> GEN["Model answers only from context and cites sources"]
+  GEN --> CHK{"Guardrail grounding and relevance above thresholds?"}
+  CHK -->|yes| ANS["Answer with citations"]
+  CHK -->|no| LOW["Say not sure, or send to human reviewer"]
+  ANS --> FB["User feedback and periodic evaluation"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Situation | Best practice or service | Why |
+|---|---|---|
+| Analysts must query sales data but must not see customer email columns | AWS Lake Formation column-level permissions | Fine-grained access control on the data lake |
+| A regulator asks which dataset trained model version 7 | SageMaker AI lineage tracking and Model Registry | Trace data to job to model version |
+| Auditors want the intended use, risk rating and evaluation results of a model | SageMaker Model Cards | Documents model origin and characteristics |
+| Teams cannot find which datasets exist or what their schema is | AWS Glue Data Catalog with crawlers | Central metadata inventory |
+| Developers need realistic test data without real customers | Synthetic data or anonymised data | Privacy-enhancing technique |
+| Someone may tamper with documents in the knowledge base bucket | Restrict write access, S3 Versioning, CloudTrail | Integrity and poisoning defence |
+| Chatbot answers must link to the policy page they came from | Bedrock Knowledge Bases citations | Source citation |
+| Block RAG answers that are not supported by the retrieved passages | Guardrails contextual grounding check | Grounding score threshold |
+| Verify that answers about leave entitlement follow the HR rulebook exactly | Guardrails Automated Reasoning checks | Logical verification against formal rules |
+| Extracted invoice totals below 90% confidence | Route to a human reviewer | Confidence threshold |
+
+**Worked example — choosing a privacy technique.** *A hospital wants to train a readmission model and also link each patient's records across three systems.* Full anonymisation would break the linking, so use **pseudonymisation**: replace the patient ID with a token that is consistent across systems, store the mapping separately under strict access, and remove names and addresses. If the hospital only needed regional statistics, **aggregation** would be enough. If it wanted to share data with an outside start-up for prototyping, **synthetic data** would avoid sharing real records at all.
+
+**Worked example — two scores, two problems.** A user asks *"How many days of parental leave do I get?"* The assistant retrieves the leave policy and answers *"You get 26 weeks of paid leave."* The policy says 16 weeks. The grounding score is low because the answer is not supported by the source — a hallucination. Another user asks the same question and receives an accurate summary of the *sick leave* policy. The answer is grounded in the source, but the **relevance** score is low because it does not answer the question. The contextual grounding check measures both.
+
+**Worked example — setting a threshold.** An insurer uses Amazon Textract to read claim forms. Fields extracted with confidence of at least 95% go straight into the claims system; anything lower goes to a review queue. After a month, the team finds reviewers change only 1% of fields scored between 90% and 95%, so they lower the threshold to 90% for low-value claims while keeping 95% for claims above a set amount. Thresholds are a business decision about risk, reviewed with real data.
+
+**Worked example — a poisoned knowledge base.** *A retailer's customer assistant suddenly starts telling shoppers that all returns are accepted for 365 days. The real policy is 30 days.* The model has not changed, so look at the data. CloudTrail shows that a contractor's role, which had broad write access to the knowledge base bucket, uploaded a "draft promotion" document last week. Because **S3 Versioning** was on, the team restores the previous state, re-syncs the knowledge base and removes the document. Then they fix the root cause: only the publishing pipeline role may write to the bucket, new documents need an owner's approval before ingestion, and a CloudWatch alarm fires on unexpected uploads. Citations helped too — users who clicked through saw the source was a "draft", which is how the problem was reported in the first place. The lesson: integrity controls and lineage turn a mysterious model failure into a traceable data incident.
+
+**Worked example — which question does each tool answer?** A new data protection officer asks four questions in one meeting. *"What customer datasets do we hold?"* → the Glue Data Catalog. *"Who can see the salary column?"* → Lake Formation permissions. *"Which models were trained on the 2024 complaints dataset we must delete?"* → lineage tracking. *"What is the credit model for, and how well does it perform for each customer group?"* → the Model Card. Keeping these four straight is worth several exam marks.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={3}>
+
+<Callout type="realWorld" title="A bank grounds its policy assistant">
+A bank built an internal assistant that answers staff questions about lending policy. The source documents live in an S3 data lake governed by **Lake Formation**; the knowledge base's role can read only documents tagged `audience = staff`. Before ingestion, **Macie** scans for customer data and a **Glue Data Quality** rule rejects documents without an owner and review date. Each answer includes **citations** to the exact policy section. A **contextual grounding check** blocks answers whose grounding score is below the threshold, and **Automated Reasoning checks** verify answers about loan-to-value limits against the formal lending rules. Low-confidence answers say *"I could not confirm this — please contact the policy team"*, with a link to raise a query.
+</Callout>
+
+The bank's first pilot skipped most of this and taught the team why it matters. The pilot loaded every document from a shared drive, including three superseded versions of the mortgage policy. Staff received confident answers that mixed old and new limits. Because there were no citations, nobody could tell which version an answer came from, and because there was no lineage, it took a week to work out which files had been ingested. The fix was secure data engineering — curate sources, record owners and versions, catalogue everything — followed by grounding and detection.
+
+A second benefit appeared during an internal audit. Auditors asked how the bank's credit-risk model had been built. The team exported the **SageMaker Model Card**, showing intended use, training data description, evaluation results and approval, and used **lineage tracking** to show the exact dataset version and training job. What would once have taken weeks of emails took an afternoon.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: add grounding checks to a knowledge base assistant" minutes={8}>
+
+<HandsOnLab
+  goal="Walk through adding source citations and a contextual grounding check to a Bedrock Knowledge Base assistant, and see how fine-grained data permissions protect the source data."
+  asOf="November 2026"
+  steps={[
+    { text: 'In AWS Lake Formation, grant the knowledge base role access to the policy documents table, limited to rows where audience is staff and excluding the author email column.', screen: { service: 'AWS Lake Formation', path: ['Data permissions', 'Grant'], menu: ['Databases', 'Tables', 'Data permissions', 'LF-Tags'], active: 'Data permissions', fields: [{ label: 'Principal', value: 'kb-policy-role' }, { label: 'Columns', value: 'All except author_email' }, { label: 'Row filter', value: "audience = 'staff'" }], highlight: 'Grant' } },
+    { text: 'In Amazon Bedrock, test the knowledge base. Each answer shows citations that link to the source chunk and S3 document.', screen: { service: 'Amazon Bedrock', path: ['Knowledge Bases', 'lending-policy-kb', 'Test'], menu: ['Model catalog', 'Guardrails', 'Knowledge Bases', 'Evaluations'], active: 'Knowledge Bases', fields: [{ label: 'Question', value: 'Maximum loan-to-value for first-time buyers?' }, { label: 'Citation', value: 's3://policies/mortgage-v4.pdf · section 3.2' }], note: 'Click a citation to verify the source' } },
+    { text: 'Edit the guardrail and enable the contextual grounding check with thresholds for grounding and relevance.', screen: { service: 'Amazon Bedrock', path: ['Guardrails', 'lending-guardrail', 'Contextual grounding check'], menu: ['Model catalog', 'Guardrails', 'Knowledge Bases'], active: 'Guardrails', fields: [{ label: 'Grounding threshold', value: '0.85' }, { label: 'Relevance threshold', value: '0.75' }, { label: 'Action', value: 'Block' }], highlight: 'Save' } },
+    { text: 'Run a test where the source says 16 weeks but the response claims 26 weeks. The guardrail reports a low grounding score and blocks the answer.', screen: { service: 'Amazon Bedrock', path: ['Guardrails', 'lending-guardrail', 'Test'], fields: [{ label: 'Grounding score', value: '0.12 (below 0.85)' }, { label: 'Relevance score', value: '0.91' }, { label: 'Result', value: 'Blocked' }], note: 'Unsupported claim caught' } },
+  ]}
+  expectedOutcome="You can explain how fine-grained permissions protect source data, how citations let users verify answers, and how grounding and relevance thresholds catch hallucinated or off-topic responses."
+  checks={[
+    { q: 'An answer is accurate about sick leave, but the user asked about parental leave. Which score will be low?', a: 'The relevance score — the answer is grounded in the source but does not answer the question.' },
+    { q: 'Analysts must not see one column in a data lake table. Which service?', a: 'AWS Lake Formation, using column-level (fine-grained) permissions.' },
+    { q: 'How can a user check where a knowledge base answer came from?', a: 'Through the citations returned with the answer, which point to the source chunks and documents.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
+
+<Callout type="examTrap" title="Catalog, lineage and Model Card are different things">
+The **Glue Data Catalog** says *what data exists and its schema*. **Lineage** says *how data flowed into which model and endpoint*. A **Model Card** says *what a model is for, how it was trained and evaluated*. **Lake Formation** says *who may access which data*. Questions often offer all four — match the verb in the question (find, trace, document, restrict).
+</Callout>
+
+- "Fine-grained", "column-level", "row-level" access to a data lake → **AWS Lake Formation**.
+- "Discover and register schemas", "central metadata" → **AWS Glue Data Catalog** (crawlers).
+- "Trace which data trained a model" → **lineage** (SageMaker AI lineage tracking, Model Registry).
+- "Document intended use, risk rating, evaluation" → **SageMaker Model Cards**.
+- "Reduce hallucinations using company documents" → **RAG / Bedrock Knowledge Bases** with citations.
+- "Block responses not supported by the source" → **contextual grounding check**. "Verify against formal rules" → **Automated Reasoning checks**.
+- "Low confidence → send to a person" → confidence **threshold** with **human review**.
+- "Use data without identifying people" → **anonymisation, pseudonymisation, masking, synthetic data**. Pseudonymised data can still be linked; anonymised data should not be re-identifiable.
+- "Attacker inserts bad training examples" → **data poisoning**; defend with write restrictions, versioning, source validation.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+Trustworthy AI starts with trustworthy data. Secure data engineering rests on four pillars: quality (profiling and automated rules), privacy-enhancing techniques (minimisation, masking, pseudonymisation, anonymisation, differential privacy, synthetic data), access control (Lake Formation fine-grained permissions) and integrity (write restrictions, versioning, hashes, defence against poisoning). The Glue Data Catalog inventories data; lineage tracking traces data to models and endpoints; Model Cards document a model's origin, intended use and evaluation. On the output side, RAG grounds answers in current, curated documents with citations; the contextual grounding check and Automated Reasoning checks detect unsupported or rule-breaking answers; evaluations measure faithfulness; and confidence thresholds send uncertain outputs to humans. Tomorrow: governance and compliance services and processes.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={26} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="A governed data-to-answer platform" minutes={15} optional>
+
+An architect at a large company is asked for one platform that serves both traditional ML models and generative assistants, with provable data origins. The design has three zones. In the **landing zone**, raw data arrives in S3 buckets that only ingestion roles can write to, with versioning on. A Macie job scans new objects; a Glue job runs Glue Data Quality rules and privacy transformations, then writes curated data to the **curated zone**, registered in the Glue Data Catalog and governed by Lake Formation tags such as `sensitivity` and `domain`. In the **consumption zone**, SageMaker AI training jobs read curated features and produce model versions recorded in the Model Registry with Model Cards and lineage; a Bedrock Knowledge Base reads curated documents and serves a grounded assistant protected by a guardrail with contextual grounding checks.
+
+<Diagram
+  caption="Reference architecture: landing, curated and consumption zones with quality gates, Lake Formation governance, lineage, Model Cards and a grounded assistant"
+  code={`flowchart LR
+  src["Source systems"] --> land[("Landing zone S3, versioned")]
+  land --> mac["Macie scan"]
+  land --> glue["Glue job: Data Quality and masking"]
+  glue --> cur[("Curated zone S3")]
+  cur --> cat["Glue Data Catalog"]
+  cat --> lf["Lake Formation tag-based permissions"]
+  lf --> sm["SageMaker AI training"]
+  sm --> reg["Model Registry, Model Card, lineage"]
+  lf --> kb["Bedrock Knowledge Base"]
+  kb --> asst["Assistant with guardrail grounding check"]
+  asst --> rev["Low score: human review queue"]
+  ct["CloudTrail logs every data and permission change"] -.-> lf`}
+/>
+
+**Why tags beat lists.** With hundreds of tables, granting permissions table by table becomes unmanageable and error-prone. Tag-based access control lets the platform team say "the fraud role may read anything tagged `domain = payments` and `sensitivity` up to confidential", and new tables inherit the right access as soon as they are tagged.
+
+**Measuring grounding over time.** The team runs a weekly Bedrock evaluation job on a fixed set of questions with known answers, tracking faithfulness and correctness, and a monthly review of answers that users marked as wrong. A drop in faithfulness after a document migration revealed that a chunking change had split tables across chunks; fixing the chunking restored the scores.
+
+**Trade-offs.** Stricter grounding thresholds reduce hallucinations but block more acceptable answers; start strict for high-risk domains and tune with real traffic. Heavy anonymisation protects privacy but can remove signals a model needs; pseudonymisation keeps linkability at the cost of protecting the mapping. Rich lineage and Model Cards take discipline to maintain, which is why automating them inside pipelines is better than writing them by hand afterwards.
+
+</Section>

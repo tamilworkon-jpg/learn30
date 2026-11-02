@@ -1,0 +1,308 @@
+---
+day: 5
+kind: lesson
+title: 'Use cases & AWS managed AI services'
+summary: 'Learn where AI and ML add real business value — and when they do not. Choose between regression, classification and clustering for a use case, decide between traditional ML and foundation models, and match everyday tasks to the AWS managed AI services: Amazon Comprehend, Transcribe, Translate, Lex, Polly, Rekognition, Textract and Personalize, with SageMaker AI for custom models.'
+domains: [D1]
+taskStatements: ['1.2']
+sources:
+  - { provider: udemy, title: 'AWS Managed AI Services: Comprehend, Translate, Transcribe, Polly, Rekognition, Lex, Personalize, Textract' }
+  - { provider: skillbuilder, title: 'Exploring Artificial Intelligence Use Cases and Applications' }
+  - { provider: aws-docs, title: 'AWS AI services overview', url: 'https://aws.amazon.com/ai/services/' }
+  - { provider: aws-docs, title: 'Amazon Transcribe Call Analytics', url: 'https://docs.aws.amazon.com/transcribe/latest/dg/call-analytics.html' }
+objectives:
+  - Recognise where AI and ML add value — decision support, scalability, automation and personalisation
+  - Identify when AI or ML is not appropriate, such as when a deterministic answer is required or costs outweigh benefits
+  - Select regression, classification or clustering for a business use case
+  - Choose between traditional ML and a foundation model based on regulation, explainability and operational constraints
+  - Explain the capabilities of Comprehend, Transcribe, Translate, Lex, Polly, Rekognition, Textract and Personalize
+  - Pick the right managed AI service, or SageMaker AI, for a scenario
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+examTraps: ['Amazon Forecast', 'Amazon Fraud Detector', 'Amazon Kendra']
+keyPoints:
+  - 'AI adds value through automation, scale, faster decision support and personalisation — but needs enough good data and a benefit that outweighs the cost.'
+  - 'Do NOT use AI when the answer must be exact and rule-based (tax, interest, fixed eligibility rules), errors are unacceptable without review, or a simple rule is cheaper.'
+  - 'Regression = number, classification = category, clustering = groups without labels.'
+  - 'Traditional ML suits structured data, tight explainability or regulation, low latency and low cost; foundation models suit unstructured data, content generation and many tasks with few labels.'
+  - 'Comprehend = text insights (sentiment, entities, PII); Transcribe = speech to text; Translate = language translation; Polly = text to speech; Lex = chatbots (intents, slots).'
+  - 'Rekognition = image and video analysis; Textract = text, forms and tables from documents; Personalize = recommendations; SageMaker AI = build your own model.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 4" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="Where AI fits — and which AWS service to use" minutes={14}>
+
+### Where AI and ML add value
+
+Task statement 1.2 starts with a business question, not a technical one: *should we use AI here at all?* AI and ML earn their place when they deliver one or more of these benefits:
+
+- **Automation** — take over repetitive work that needs judgement: reading invoices, routing support tickets, moderating images. People are freed for higher-value tasks.
+- **Scalability** — handle volumes no team could: scoring every card payment in milliseconds, transcribing millions of calls, checking every product photo uploaded to a marketplace.
+- **Decision support** — give people better information faster: a fraud score for an investigator, a demand forecast for a planner, a risk flag for a doctor. The human still decides, but with evidence.
+- **Personalisation** — tailor experiences for each person: product recommendations, ranked search results, individual offers.
+- **Consistency and availability** — the same criteria applied every time, 24 hours a day, in many languages.
+
+The exam guide lists typical **real-world applications**: computer vision, NLP, speech recognition, recommendation systems, fraud detection, forecasting, knowledge bases and agentic AI. Keep this list in mind — scenario questions are usually one of these in disguise.
+
+### When AI is NOT the right answer
+
+Knowing when *not* to use AI is just as important, and the exam tests it directly.
+
+- **A deterministic, exact answer is required.** ML predictions are probabilistic — they are right *most* of the time. Calculating tax, loan interest, payroll or whether an order qualifies for free shipping under fixed rules needs a precise, repeatable result. Write the rules in ordinary code.
+- **The cost outweighs the benefit.** Collecting and labelling data, training, hosting and monitoring a model all cost money. If a simple rule ("flag orders over 10,000 dollars") catches almost everything, a model may not be worth it. Always do a **cost–benefit analysis**.
+- **There is not enough good data.** No historical examples, or data that is biased, unrepresentative or of poor quality, means the model cannot learn the right pattern.
+- **Every decision must be fully explained and an error is unacceptable.** Some regulated decisions demand a clear, auditable reason. A black-box model can be the wrong tool unless a transparent model or a human review step is added.
+- **The problem is rare or tiny.** Automating a task done twice a year rarely pays back.
+
+**Analogy.** AI is like hiring a talented but occasionally wrong expert. Great for judging thousands of insurance photos; a poor choice for adding up a bill, where a calculator is cheaper and always right.
+
+### Choosing the ML technique: regression, classification or clustering
+
+Once AI is justified, pick the technique from the shape of the answer (you met these on Day 3):
+
+| Question the business asks | Technique | Example output |
+|---|---|---|
+| "How much?" or "How many?" | **Regression** | 312 units next week; claim cost 4,250 dollars |
+| "Which category?" or "Yes or no?" | **Classification** | Fraud / not fraud; ticket type "billing" |
+| "What natural groups exist?" (no labels) | **Clustering** | Five customer segments |
+
+Fraud detection is usually classification (or anomaly detection when labels are scarce). Forecasting is regression on time-series data. Recommendations use specialised techniques such as collaborative filtering, which a managed service can hide from you.
+
+A useful habit: rewrite the business request as a question about the *output*. "Which customers are likely to leave?" becomes "for each customer, leave or stay?" — classification. "How much stock should each store order?" becomes "a number per store per week" — regression. "We don't know what types of customers we have" has no target at all — clustering. The vocabulary of the request ("likely", "how much", "groups") is your strongest clue.
+
+### Real-world applications in the exam guide
+
+Each application family in the guide maps to a technique and to AWS tools you should recognise:
+
+| Application | What it does | Typical technique | AWS option |
+|---|---|---|---|
+| **Computer vision** | Understand images and video | Deep learning (CNN, vision transformer) | Amazon Rekognition, Amazon Textract, SageMaker AI |
+| **Natural language processing** | Understand text | Classification, entity extraction | Amazon Comprehend, Amazon Translate, Bedrock |
+| **Speech recognition and synthesis** | Speech to text and back | Deep learning sequence models | Amazon Transcribe, Amazon Polly |
+| **Recommendation systems** | Suggest items per user | Collaborative filtering | Amazon Personalize |
+| **Fraud detection** | Score transactions for risk | Classification or anomaly detection | SageMaker AI (XGBoost, Random Cut Forest) |
+| **Forecasting** | Predict future values | Regression on time-series | SageMaker AI, SageMaker Canvas |
+| **Knowledge bases** | Answer questions from company documents | Retrieval-augmented generation (RAG) | Amazon Bedrock Knowledge Bases |
+| **Agentic AI** | Plan and take multi-step actions with tools | Foundation model plus tools | Amazon Bedrock Agents, Bedrock AgentCore |
+
+You do not need to know how each one is implemented today — Week 2 and Week 3 cover knowledge bases and agents in depth. What matters now is recognising the family from a one-line scenario. "Answer employee questions from the HR handbook" is a knowledge base; "book the meeting room, email the attendees and update the calendar" is agentic AI; "flag suspicious insurance claims" is fraud detection.
+
+### Measuring whether AI delivered value
+
+A use case is only successful if it moves a business number. Before building, agree how you will measure value: hours of manual work saved, cost per processed document, faster response times, higher conversion from recommendations, fewer fraud losses, or customer satisfaction scores. Compare the expected gain with the full cost — data preparation, labelling, development, hosting, monitoring and the people who review the model's mistakes. If the numbers do not add up, a simpler solution is the better business decision, even if the AI would work technically. Day 6 connects these business metrics with model metrics such as accuracy and recall.
+
+### Traditional ML or a foundation model?
+
+Task statement 1.2 now asks you to choose between **traditional ML** (a model trained for one task, such as XGBoost on a table) and a **foundation model (FM)** — a large pre-trained model such as those on Amazon Bedrock that can handle many tasks through prompts. Weigh these factors:
+
+| Factor | Points to traditional ML | Points to a foundation model |
+|---|---|---|
+| Data | Structured, tabular, plenty of labels | Unstructured text, images, documents; few labels |
+| Task | One narrow prediction (score, category, number) | Generate, summarise, converse, extract from free text, many tasks |
+| **Regulation and explainability** | Decision must be explained to a regulator (credit, insurance pricing) | Explanations are less critical, or human review is in the loop |
+| **Operational constraints** | Millisecond latency, very high volume, low cost per prediction, small devices | Latency of seconds is acceptable; cost per request is justified |
+| Consistency | Same input must always give the same output | Some variation in wording is acceptable |
+| Time to value | You have time and data to train | You need results quickly without training |
+
+**Worked comparison.** A bank wants to approve or decline credit-card applications from 30 columns of applicant data, and regulators require a reason for every decline. Traditional ML (for example a gradient-boosted tree with explanations) wins: structured data, a single decision, strict explainability, and a cost of a fraction of a cent per prediction. The same bank wants to summarise long complaint letters for its agents — an FM on Amazon Bedrock wins: unstructured text, generation, no labelled training data needed.
+
+### Buy, configure or build
+
+AWS gives three levels of effort:
+
+1. **Managed AI services** — pre-trained models behind a simple API: no ML expertise, no training, pay per use. Fastest and least operational overhead.
+2. **Amazon Bedrock** — foundation models through an API for generative and agentic tasks, customisable with prompts, retrieval and fine-tuning (Weeks 2 and 3).
+3. **Amazon SageMaker AI** — build, train, tune, deploy and monitor your *own* models when no service fits or you need full control; SageMaker Canvas offers a no-code path for analysts.
+
+When a question says "least operational overhead" or "no ML expertise", the answer is usually a managed AI service.
+
+### The managed AI services, one by one
+
+**Amazon Comprehend — insights from text (NLP).** Detects **sentiment** (positive, negative, neutral, mixed), **entities** (people, places, organisations, dates), **key phrases**, the **dominant language**, **PII** (names, addresses, card numbers) and syntax. It can group documents by **topic modelling** and be trained with your own labels for **custom classification** and **custom entity recognition** — for example routing emails into your company's categories. Analyses can run in real time or as batch jobs on documents in S3.
+
+**Amazon Transcribe — speech to text.** Converts audio and video speech into text, in batch or real-time streaming. Useful features: **speaker diarization** (who spoke when), **custom vocabularies** for product names and jargon, automatic language identification, **PII redaction** in transcripts, and subtitles. **Transcribe Call Analytics** adds call-centre insights such as sentiment per speaker, talk time and interruptions, and call summaries.
+
+**Amazon Translate — language translation.** Neural machine translation between dozens of languages, in real time or batch. **Custom terminology** keeps brand and technical terms translated consistently. Typical uses: translating product catalogues, support chats and user reviews.
+
+**Amazon Polly — text to speech.** Turns text into lifelike speech in many voices and languages. **SSML** tags control pronunciation, pauses and emphasis; **lexicons** define how specific words are pronounced. Uses: reading articles aloud, phone-system prompts, accessibility, e-learning narration. Remember the direction: *Polly speaks, Transcribe listens.*
+
+**Amazon Lex — conversational interfaces (chatbots).** Builds voice and text bots using the same conversational technology as Alexa. You define **intents** (what the user wants, such as *BookHotel*), sample **utterances** (ways they might say it) and **slots** (the details to collect, such as city and dates). Lex handles speech recognition and language understanding and can call an AWS Lambda function to fulfil the request. It integrates with Amazon Connect for contact-centre bots.
+
+**Amazon Rekognition — image and video analysis (CV).** Detects **objects and scenes** (labels), **faces** and facial attributes, compares and searches faces, recognises celebrities, reads **text in images**, detects **unsafe content** for moderation and checks **personal protective equipment** — in images and stored or streaming video. No ML skills needed.
+
+**Amazon Textract — documents to data.** Goes beyond plain OCR: it extracts printed and handwritten text **plus structure** — **forms** (key–value pairs such as "Name: Maria"), **tables**, signatures, and answers to **queries** you ask about a document. Specialised APIs handle invoices and receipts and identity documents. Use it for loan applications, claims forms and invoices.
+
+**Amazon Personalize — recommendations.** Builds real-time personalised recommendations using technology that grew out of Amazon.com. You provide interaction data (who viewed, clicked or bought what) and optionally item and user data; Personalize trains and hosts the model. Use cases: "recommended for you", "customers who viewed this also viewed", personalised ranking of search results and user segmentation for marketing.
+
+**Amazon SageMaker AI — the build option.** When the task is specific to your business — predicting machine failure from your sensors, scoring your loan applications — and no managed service covers it, SageMaker AI provides the full workbench: data preparation, training with built-in algorithms or your own code, tuning, deployment and monitoring (Day 6).
+
+### Services that are not on the v1.2 exam
+
+Older courses also teach **Amazon Forecast** (time-series forecasting), **Amazon Fraud Detector** (fraud scores) and **Amazon Kendra** (enterprise search). None is listed in exam guide v1.2. For forecasting and fraud, think *SageMaker AI or SageMaker Canvas*; for searching company knowledge with generative answers, think *Amazon Bedrock Knowledge Bases* (Day 18).
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="Should we use AI at all? A quick decision path before choosing any technique or service"
+  code={`flowchart TD
+  S["Business problem"] --> D{"Is an exact, rule-based answer required?"}
+  D -->|Yes| R["Use rules or ordinary code, not ML"]
+  D -->|No| DATA{"Enough good, representative data?"}
+  DATA -->|No| G["Collect or label data first, or use a pre-trained service"]
+  DATA -->|Yes| CB{"Benefit greater than cost to build and run?"}
+  CB -->|No| R2["Simple rule or manual process"]
+  CB -->|Yes| AI["Use AI or ML: pick technique and service"]`}
+/>
+
+<Diagram
+  caption="Service decision map: match the input and the task to an AWS managed AI service, Bedrock or SageMaker AI"
+  code={`flowchart LR
+  IN{"What is the input?"} -->|Text| T{"Task?"}
+  T -->|Sentiment, entities, PII| CMP["Amazon Comprehend"]
+  T -->|Another language| TRN["Amazon Translate"]
+  T -->|Read aloud| POL["Amazon Polly"]
+  T -->|Generate or summarise| BR["Amazon Bedrock"]
+  IN -->|Audio speech| TSC["Amazon Transcribe"]
+  IN -->|Conversation with users| LEX["Amazon Lex"]
+  IN -->|Images or video| REK["Amazon Rekognition"]
+  IN -->|Scanned forms, invoices| TXT["Amazon Textract"]
+  IN -->|Clicks and purchases| PER["Amazon Personalize"]
+  IN -->|Your own tabular data, custom prediction| SM["Amazon SageMaker AI"]`}
+/>
+
+<Diagram
+  caption="Traditional ML versus a foundation model: the deciding factors"
+  code={`flowchart TD
+  Q{"Structured data and one narrow prediction?"} -->|Yes| E{"Strict explainability, low latency or low cost per prediction?"}
+  E -->|Yes| ML["Traditional ML on SageMaker AI"]
+  E -->|No| EITHER["Either: compare accuracy and cost"]
+  Q -->|No: text, images, generation, many tasks| FM["Foundation model on Amazon Bedrock"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Scenario | Best fit | Why |
+|---|---|---|
+| Find which product reviews are negative and which features customers mention | Amazon Comprehend | Sentiment and entity/key-phrase detection on text |
+| Create subtitles for recorded webinars | Amazon Transcribe | Speech to text with timestamps |
+| Offer a help-centre in 12 languages from English articles | Amazon Translate | Machine translation with custom terminology |
+| Read news articles aloud in an app | Amazon Polly | Text to speech |
+| A bot that lets customers check order status by voice or chat | Amazon Lex | Intents, slots and fulfilment |
+| Block unsafe images uploaded by users | Amazon Rekognition | Content moderation |
+| Pull fields and tables out of scanned loan applications | Amazon Textract | Forms and tables, not just raw text |
+| "Recommended for you" on a streaming site | Amazon Personalize | Real-time recommendations from interaction data |
+| Predict equipment failure from your own sensor data | SageMaker AI (or Canvas) | Custom prediction, no ready-made service |
+| Calculate VAT on each invoice line | No ML — ordinary code | Deterministic rule-based answer |
+
+**Worked example — combine services.** *A hotel chain wants guests to phone a hotline in any language and get answers about bookings.* Amazon Lex understands the request (intents and slots) and handles the conversation; Lambda looks up the booking; Amazon Polly speaks the reply. For a guest speaking Spanish to an English-only back office, Amazon Transcribe converts speech to text and Amazon Translate translates it. Each service does one job well; chaining them builds the solution.
+
+**Worked example — when not to use AI.** *An e-commerce company wants "AI" to decide whether an order gets free delivery: orders over 50 euros within the country.* This is a fixed rule with an exact answer. A model could only approximate it and would sometimes be wrong. Use a simple condition in code — cheaper, explainable and 100% correct.
+
+**Spot the clue — quick drill.**
+
+- "Detect the language and sentiment of tweets" → Comprehend.
+- "Speaker labels in a recorded meeting" → Transcribe (speaker diarization).
+- "Lifelike voice for an IVR prompt" → Polly.
+- "Key–value pairs from a form" → Textract.
+- "Detect PPE on construction-site photos" → Rekognition.
+- "Users who bought this also bought" → Personalize.
+- "Regulator needs the reason for every loan decline" → traditional, explainable ML.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={2}>
+
+<Callout type="realWorld" title="An insurer automates claims with five services">
+A car insurer receives 20,000 claims a week. Customers upload accident photos and a scanned claim form, and many phone the contact centre. **Amazon Textract** pulls the policy number, dates and damage description out of each form. **Amazon Rekognition** labels the photos (vehicle, damage, location type) and flags unsuitable images. Call recordings go through **Amazon Transcribe**, and **Amazon Comprehend** detects frustrated customers and PII so it can be redacted. A custom **SageMaker AI** model trained on years of past claims estimates repair cost (regression) and a second one scores fraud risk (classification). Adjusters review the riskiest 5% instead of reading every file.
+</Callout>
+
+Notice the design choices. Reading forms, labelling photos and transcribing calls are generic tasks, so the insurer *bought* them as managed services — no training data, no ML team needed. Repair cost and fraud risk depend on the insurer's own history, so those models were *built* on SageMaker AI. The final payment decision stays with a human adjuster, because a wrong automatic denial is costly and regulators expect a clear reason. And the premium calculation itself stayed as ordinary code: tariffs are fixed rules with exact answers, exactly where AI does not belong.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: analyse text with Amazon Comprehend" minutes={8}>
+
+<HandsOnLab
+  goal="Use the Amazon Comprehend real-time analysis console to extract sentiment, entities, key phrases and PII from a customer message — no model training, no code."
+  asOf="November 2026"
+  steps={[
+    { text: 'Open Amazon Comprehend and choose Real-time analysis. Select the built-in (pre-trained) analysis type.', screen: { service: 'Amazon Comprehend', path: ['Real-time analysis'], menu: ['Real-time analysis', 'Analysis jobs', 'Custom classification', 'Custom entity recognition', 'Flywheels'], active: 'Real-time analysis', fields: [{ label: 'Analysis type', value: 'Built-in' }], note: 'Pre-trained: no data or training needed' } },
+    { text: 'Paste a customer email such as: “Hi, I am Maria Lopez. My order 4471 arrived broken in Madrid and nobody answered my calls. Very disappointed.” Choose Analyze.', screen: { service: 'Amazon Comprehend', path: ['Real-time analysis', 'Input text'], fields: [{ label: 'Language', value: 'English' }, { label: 'Characters', value: '128' }], highlight: 'Analyze' } },
+    { text: 'Review the Insights tabs. Entities finds the person, order number and city; Sentiment reports the overall tone; Key phrases lists the main topics.', screen: { service: 'Amazon Comprehend', path: ['Real-time analysis', 'Insights'], fields: [{ label: 'Entities', value: 'Maria Lopez (PERSON) · order 4471 (OTHER) · Madrid (LOCATION)' }, { label: 'Sentiment', value: 'NEGATIVE 0.97' }, { label: 'Key phrases', value: 'my order · nobody · my calls' }] } },
+    { text: 'Open the PII tab. Comprehend flags the name as personal information, so a pipeline can redact it before storing the message or sending it to analytics.', screen: { service: 'Amazon Comprehend', path: ['Real-time analysis', 'Insights', 'PII'], fields: [{ label: 'PII entities', value: 'NAME: Maria Lopez' }, { label: 'Use', value: 'Redact before storage' }], note: 'Privacy by design' } },
+  ]}
+  expectedOutcome="You can explain what Comprehend returns (sentiment, entities, key phrases, language, PII) and why a managed, pre-trained NLP service gives the least operational overhead for common text tasks."
+  checks={[
+    { q: 'You need to route emails into 8 categories that are specific to your company. Which Comprehend feature helps?', a: 'Custom classification — train Comprehend with your own labelled examples.' },
+    { q: 'The same messages arrive as voice calls. Which service must run before Comprehend?', a: 'Amazon Transcribe, to convert speech to text.' },
+    { q: 'Do you need an ML team or training data to get sentiment from Comprehend’s built-in analysis?', a: 'No — the built-in models are pre-trained and called through the console or an API.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={1}>
+
+<Callout type="examTrap" title="Similar-sounding services">
+**Transcribe** = speech → text; **Polly** = text → speech; **Translate** = language → language; **Comprehend** = understand text; **Textract** = extract text *and structure* from documents (plain OCR in a photo of a street sign is Rekognition's text detection). **Amazon Forecast**, **Amazon Fraud Detector** and **Amazon Kendra** are not in guide v1.2 — prefer SageMaker AI or Bedrock Knowledge Bases.
+</Callout>
+
+- "Exact, deterministic, rule-based" → **no ML**. "Costs more than it saves" → **no ML**.
+- Number → **regression**; category → **classification**; groups without labels → **clustering**.
+- Regulation + explainability + structured data → **traditional ML**; generate or summarise unstructured content → **foundation model**.
+- "Least operational overhead", "no ML expertise" → **managed AI service**.
+- Chatbot → **Lex**; recommendations → **Personalize**; image and video moderation → **Rekognition**.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+AI adds value through automation, scalability, decision support and personalisation, but it is the wrong tool when an exact rule-based answer is required, when data is missing or poor, or when the cost outweighs the benefit. Choose regression for numbers, classification for categories and clustering for unlabelled groups. Prefer traditional ML for structured data with strict explainability, latency or cost needs, and a foundation model for unstructured data and generation. AWS managed AI services give pre-trained capabilities through an API: Comprehend for text insights, Transcribe for speech to text, Translate for languages, Polly for speech, Lex for chatbots, Rekognition for images and video, Textract for documents and Personalize for recommendations. SageMaker AI is for building your own model. Tomorrow you will follow the whole ML lifecycle, from data to monitoring.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={5} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Call-centre analytics pipeline" minutes={15} optional>
+
+A classic architecture combines several managed AI services into a **post-call analytics pipeline**. The goal: understand every customer call — not the 2% a supervisor has time to sample — while protecting personal data.
+
+1. **Capture.** Calls are recorded by the contact centre (for example Amazon Connect) and the audio files land in an Amazon S3 bucket.
+2. **Transcribe.** An S3 event triggers an AWS Lambda function that starts an **Amazon Transcribe Call Analytics** job. It separates agent and customer, produces the transcript, redacts PII, and adds call characteristics such as talk time, interruptions and sentiment per speaker.
+3. **Translate.** Calls in other languages are passed through **Amazon Translate** so that one team can review them.
+4. **Understand.** **Amazon Comprehend** extracts entities (products, competitors), key phrases and sentiment; a **custom classifier** tags the call reason (billing, cancellation, technical fault).
+5. **Summarise.** A foundation model on **Amazon Bedrock** writes a short summary and suggested follow-up action for each call.
+6. **Store and analyse.** Results are written as JSON to S3, catalogued with AWS Glue, and explored with Amazon Quick dashboards — for example, "cancellation calls with negative sentiment by region this week".
+
+<Diagram
+  caption="Architecture: post-call analytics with Transcribe, Translate, Comprehend and Bedrock, results in S3 and dashboards"
+  code={`flowchart LR
+  CC["Contact centre recordings"] --> S3A[("S3: raw audio")]
+  S3A -->|event| L["AWS Lambda orchestrator"]
+  L --> TR["Amazon Transcribe Call Analytics: transcript, speakers, PII redaction"]
+  TR --> TL["Amazon Translate: non-English calls"]
+  TR --> CP["Amazon Comprehend: sentiment, entities, custom call reason"]
+  TL --> CP
+  CP --> BR["Amazon Bedrock: call summary"]
+  BR --> S3B[("S3: enriched JSON")]
+  S3B --> GL["AWS Glue Data Catalog"]
+  GL --> QK["Amazon Quick dashboards"]`}
+/>
+
+**Design considerations.** *Privacy*: redact PII as early as possible, encrypt buckets with AWS KMS and restrict access with IAM. *Cost*: batch transcription is cheaper than real-time streaming when results are not needed during the call; summarise only calls that need it. *Accuracy*: add a custom vocabulary of product names to Transcribe and train the custom classifier on a few hundred labelled calls. *Real-time variant*: for live agent assistance, stream audio to Transcribe and show sentiment and suggested answers while the call is happening. *Responsible AI*: treat sentiment scores as decision support for coaching, not as automatic grounds for judging agents.
+
+</Section>

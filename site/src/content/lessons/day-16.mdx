@@ -1,0 +1,325 @@
+---
+day: 16
+kind: lesson
+title: 'Prompt engineering essentials'
+summary: 'Write prompts that work: the anatomy of a prompt (instruction, context, input data, output indicator), negative prompts, zero-shot, single-shot and few-shot prompting, chain-of-thought reasoning, reusable prompt templates and the best practices AWS recommends. Then manage, version and reuse prompts with Amazon Bedrock Prompt Management.'
+domains: [D3]
+taskStatements: ['3.2']
+sources:
+  - { provider: udemy, title: 'Prompt Engineering; Prompt Performance Optimization; Prompt Templates' }
+  - { provider: skillbuilder, title: 'Essentials of Prompt Engineering' }
+  - { provider: aws-docs, title: 'Prompt engineering concepts', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-engineering-guidelines.html' }
+  - { provider: aws-docs, title: 'Construct and store reusable prompts with Prompt management in Amazon Bedrock', url: 'https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-management.html' }
+objectives:
+  - Identify the parts of a prompt — instruction, context, input data and output indicator — and the role of a system prompt
+  - Use negative prompts to tell a model what to avoid
+  - Choose between zero-shot, single-shot and few-shot prompting
+  - Apply chain-of-thought prompting to multi-step reasoning tasks
+  - Build reusable prompt templates and apply prompt engineering best practices
+  - Create, version and reuse prompts with Amazon Bedrock Prompt Management
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'A prompt has four parts: instruction (the task), context (background, role), input data (what to work on) and output indicator (format and length).'
+  - 'Negative prompts say what to avoid — for text ("do not mention competitors") and image generation (a negative prompt field such as "blurry, text").'
+  - 'Zero-shot = no examples; single-shot = one example; few-shot = several examples that show the pattern, format or labels you want.'
+  - 'Chain-of-thought asks the model to reason step by step before answering — better on maths, logic and multi-step problems.'
+  - 'Prompt templates add {{variables}}; Amazon Bedrock Prompt Management stores them with model and inference settings and creates immutable versions.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 15" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="How to talk to a foundation model" minutes={15}>
+
+### Why prompt engineering is the first tool you reach for
+
+Yesterday's customisation ladder started with **in-context learning** — improving results by changing only the prompt. It needs no training data, no training job and no new model, and you see the effect in seconds. That is why the exam's "least effort" or "lowest cost" answer is so often *prompt engineering*.
+
+**Prompt engineering** is the practice of designing and refining the input to a foundation model so that it produces the output you want. A good analogy is briefing a very capable new colleague who has read the whole internet but knows nothing about your company, your customer or what "good" looks like for this task. Vague briefs get vague work; clear briefs with examples get excellent work.
+
+### The anatomy of a prompt
+
+AWS training describes four building blocks. Not every prompt needs all four, but knowing them helps you diagnose a weak prompt.
+
+| Part | What it does | Example |
+|---|---|---|
+| **Instruction** | The task you want done | "Summarise the customer review below." |
+| **Context** | Background that shapes the answer — audience, role, rules, reference facts | "You are a support analyst for an outdoor-gear retailer. The summary is for the product team." |
+| **Input data** | The content to work on | The text of the review |
+| **Output indicator** | The format, length, tone or structure of the answer | "Reply in two bullet points: one for praise, one for complaints. Maximum 30 words." |
+
+Put together:
+
+> You are a support analyst for an outdoor-gear retailer. Summarise the customer review below for the product team.
+> Review: """The tent was easy to pitch but leaked at the seams in heavy rain."""
+> Reply in two bullet points — praise and complaints — in under 30 words.
+
+Many models also accept a **system prompt**: instructions placed outside the conversation that apply to every turn, such as the assistant's role, tone and rules. User messages then carry the specific request. In Amazon Bedrock's Converse API, the system prompt is a separate field from the user messages.
+
+### Negative prompts: saying what to avoid
+
+A **negative prompt** tells the model what *not* to do or include. In text prompts this is an instruction such as *"Do not mention competitor brands"*, *"Do not give medical advice"* or *"Avoid technical jargon."* In **image generation**, models such as Amazon Nova Canvas provide a dedicated negative prompt field: you describe the image you want in the main prompt and list unwanted elements — *"blurry, extra fingers, text, watermark"* — in the negative prompt.
+
+Two cautions. First, models generally follow positive instructions more reliably than negative ones, so where possible say what to do (*"Use plain English a 12-year-old can understand"*) as well as what to avoid. Second, with image models put unwanted items in the negative prompt field rather than writing "no cars" in the main prompt — mentioning "cars" in the main prompt can actually make cars appear.
+
+### Zero-shot, single-shot and few-shot prompting
+
+These terms describe **how many examples** you include in the prompt.
+
+- **Zero-shot** — the task with no examples. *"Classify the sentiment of this review as positive, negative or neutral."* Large modern models handle many common tasks zero-shot.
+- **Single-shot (one-shot)** — exactly one example of input and desired output, then the new input. Useful to show a format.
+- **Few-shot** — several examples (typically two to ten). The model infers the pattern, labels, tone and format from them. Few-shot is the go-to technique when zero-shot answers are inconsistent or the task uses your own labels.
+
+A few-shot example for ticket routing:
+
+> Ticket: "I was charged twice this month." → Category: Billing
+> Ticket: "The app crashes when I upload a photo." → Category: Technical
+> Ticket: "How do I change my delivery address?" → Category: Account
+> Ticket: "My refund has not arrived after ten days." → Category:
+
+The model completes *Billing*. Good examples are **representative** (cover each category), **consistent** (identical format) and **balanced** (not nine billing examples and one technical example, which would bias the model).
+
+Note the word *shot* refers to examples **in the prompt**. It is not training: the model's weights do not change, and the examples must be sent again with every request (another place where prompt caching helps).
+
+### Chain-of-thought prompting
+
+Some problems need several reasoning steps: arithmetic, logic puzzles, policy checks with multiple conditions, planning. If the model jumps straight to the answer it often gets these wrong. **Chain-of-thought (CoT) prompting** asks the model to reason **step by step** before giving the final answer.
+
+- **Zero-shot CoT** simply adds a phrase such as *"Think step by step"* or *"Explain your reasoning before answering."*
+- **Few-shot CoT** includes worked examples that show the reasoning steps, not just the answers.
+
+Example: *"A customer bought 3 jackets at $80 each with a 15% discount on the total and $12 shipping. What did they pay? Think step by step."* The model writes 3 × 80 = 240; 15% of 240 = 36; 240 − 36 = 204; 204 + 12 = 216 — and is far more likely to reach $216 than if it guessed in one go. CoT increases output length (and therefore cost and latency), so use it where reasoning matters, not for simple lookups. Many newer models also offer a built-in *extended thinking* or reasoning mode that does this internally.
+
+### Prompt templates
+
+Once a prompt works, you do not want every developer retyping it. A **prompt template** is a reusable prompt with placeholders that are filled in at run time:
+
+```text
+You are a support assistant for {{company}}. Answer the question using only
+the policy below. If the answer is not in the policy, say "I don't know".
+Policy: {{policy_text}}
+Question: {{user_question}}
+Answer in at most {{max_sentences}} sentences.
+```
+
+Templates give **consistency** (every request is phrased the same way), **quality control** (the prompt can be reviewed and tested once), **separation** of fixed instructions from changing user input, and **easier maintenance** (fix the template, every app improves). They also support safety, because user text is inserted into a clearly marked slot rather than mixed with instructions (Day 17).
+
+### Best practices
+
+AWS guidance and the Skill Builder course boil down to these habits:
+
+1. **Be clear and specific.** State the task, audience, length and format. "Write about our product" is vague; "Write a 50-word product description for busy parents, highlighting the 10-minute setup" is specific.
+2. **Give context and a role.** "You are a financial analyst" changes vocabulary and depth.
+3. **Specify the output format.** Ask for JSON with named fields, a table, bullet points or a word limit.
+4. **Use delimiters** such as triple quotes or XML-style tags to separate instructions from input data.
+5. **Provide examples** (few-shot) when format or labels matter.
+6. **Break complex tasks into steps** or chain several prompts, each doing one job (*prompt chaining*).
+7. **Ask for reasoning** (chain-of-thought) on multi-step problems.
+8. **Allow "I don't know".** Telling the model it may say it lacks the information reduces hallucinations.
+9. **Iterate and test.** Treat prompts like code: try variants, compare results on a test set, keep what works.
+10. **Combine with inference parameters** — low temperature for factual tasks, higher for creative ones (Day 15).
+
+### More techniques you may meet
+
+The exam focuses on the techniques above, but course materials and AWS documentation mention a few more. Recognise them by name:
+
+- **Role (persona) prompting** — assigning the model an identity such as *"You are an experienced tax adviser"*. It changes vocabulary, depth and tone. It is a form of context, not a security control: a role does not stop a determined user from asking for something else.
+- **Prompt chaining** — splitting a big job into a sequence of prompts where each output feeds the next: extract the facts → check them against policy → draft the reply → shorten it. Each step is easier to test, and you can use a cheaper model for simple steps.
+- **Self-consistency** — asking the same chain-of-thought question several times (with some temperature) and taking the most common answer. It improves reliability on reasoning tasks at the price of several calls.
+- **ReAct (reason + act)** — the model alternates between reasoning about what to do next and taking an action, such as calling a search tool or an API, then reads the result and reasons again. This pattern underlies AI agents, including Amazon Bedrock Agents and agents built with Amazon Bedrock AgentCore.
+- **Prompt tuning** is *not* prompt engineering: it is a training technique that learns special numeric "soft prompt" vectors. If a question says "without any training", it means writing better prompts.
+
+### Prompt length, context and cost
+
+Every word you add to a prompt is tokens you pay for, on every request, and it uses part of the model's **context window**. Few-shot examples, long system prompts and pasted documents all add up. Good practice is to include what the model needs and nothing more: three well-chosen examples often beat fifteen mediocre ones. Place the most important instructions clearly — many models pay most attention to the beginning and end of a long prompt, so key rules buried in the middle of a long document can be overlooked. When the same long prefix is sent repeatedly, **prompt caching** (Day 15) reduces the cost; when the reference material is large or changes often, **RAG** retrieves only the relevant passages instead of pasting everything.
+
+### Different models, different prompting styles
+
+Prompts are not perfectly portable. Each model family has its own preferred conventions: some respond best to XML-style tags around sections, some have special formatting for system and user turns, and some reasoning models need fewer step-by-step hints because they already reason internally. Model providers publish prompting guides, and Amazon Bedrock's prompt optimisation feature can rewrite a prompt for a chosen model. The practical lesson for the exam: when you switch models, re-test your prompts.
+
+### How do you know a prompt is better?
+
+"It looks better to me" is not evidence. Build a small **test set** of realistic inputs with expected outputs or quality criteria, run each prompt variant against it, and compare. For classification you can count correct labels; for summaries you might use human ratings or an LLM-as-a-judge evaluation (Day 20). Record which version of the prompt produced which score — exactly what versioning in Prompt Management makes easy. Track cost and latency too: a chain-of-thought prompt that is 2% more accurate but three times longer may not be worth it for a simple task.
+
+### A worked anatomy: the same task, three prompts
+
+Task: summarise a 2-page incident report for executives.
+
+1. **Weak:** *"Summarise this."* The model chooses its own length, audience and focus — often a long, technical paragraph.
+2. **Better:** *"Summarise the incident report below for executives in 5 bullet points."* Instruction and output indicator are now clear.
+3. **Strong:** *"You are a reliability engineer writing for non-technical executives. Summarise the incident report between the tags below in exactly 5 bullet points covering: what happened, customer impact, root cause, fix applied, and next steps. Do not include server names or internal ticket numbers. If any item is not in the report, write 'Not stated'."* This adds context (role, audience), structure, a negative instruction and permission to say information is missing.
+
+Each step costs only a few seconds to write and makes the result more useful, more consistent and safer.
+
+### Benefits of prompt engineering
+
+Prompt engineering improves accuracy and relevance, reduces hallucinations, enforces a consistent format, steers tone and safety, and does all of this without training cost. Its limits are equally important: prompts cannot add knowledge the model never saw (use RAG), cannot permanently change style across millions of calls as reliably as fine-tuning, and long prompts increase per-request cost.
+
+### Amazon Bedrock Prompt Management
+
+When prompts become business assets, they need the same care as code. **Amazon Bedrock Prompt Management** lets you:
+
+- **Create and store prompts** in one place, with the instructions, system prompt and **variables** written as `{{variable}}`.
+- **Attach a model and inference parameters** (temperature, top-p, maximum tokens) to the prompt so it behaves the same wherever it is used.
+- **Test and compare variants** side by side in the console — for example two wordings or two models — before choosing one.
+- **Create versions.** Each version is an immutable snapshot; your application calls a specific version, so you can keep improving the draft without breaking production, and roll back if a change performs worse.
+- **Reuse prompts** in applications through the Bedrock APIs and as nodes in **Amazon Bedrock Flows**, which chain prompts, knowledge bases and other steps into a workflow.
+- **Optimise prompts** — Bedrock can suggest a rewritten version of a prompt tuned for the chosen model, which you can then compare with the original.
+
+Exam phrasing to watch for: *"version and reuse prompts across teams"*, *"track changes to prompts"*, *"roll back to a previous prompt"* → **Amazon Bedrock Prompt Management**.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="Anatomy of a prompt: instruction, context, input data and output indicator combine into one request"
+  code={`flowchart LR
+  SYS["System prompt: role and rules"] --> P["Final prompt sent to the model"]
+  I["Instruction: what to do"] --> P
+  C["Context: audience, facts, examples"] --> P
+  D["Input data: text to work on"] --> P
+  O["Output indicator: format and length"] --> P
+  N["Negative prompt: what to avoid"] --> P
+  P --> M["Foundation model"]
+  M --> R["Response"]`}
+/>
+
+<Diagram
+  caption="Choosing a prompting technique: start simple and add examples or reasoning only when needed"
+  code={`flowchart TD
+  S["New task"] --> Z["Try zero-shot with clear instruction and format"]
+  Z --> Q1{"Output correct and consistent?"}
+  Q1 -->|Yes| T["Save as template in Prompt Management"]
+  Q1 -->|Wrong format or labels| F["Add one example, then few-shot examples"]
+  Q1 -->|Wrong multi-step reasoning| CT["Add chain-of-thought: think step by step"]
+  F --> Q2{"Good enough?"}
+  CT --> Q2
+  Q2 -->|Yes| T
+  Q2 -->|Missing knowledge| RAG["Add context with RAG"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={4}>
+
+| Requirement | Technique | Why |
+|---|---|---|
+| Translate a sentence into French | Zero-shot | Common task; no examples needed |
+| Extract fields into your company's exact JSON layout | Single-shot or few-shot | An example shows the format precisely |
+| Classify tickets into your own 6 internal categories | Few-shot | Examples teach your labels |
+| Check whether an expense claim breaks any of five policy rules | Chain-of-thought | Multiple conditions need step-by-step reasoning |
+| Generate a product image without text or watermarks | Negative prompt | Lists unwanted elements |
+| 40 developers need the same approved support prompt | Prompt template in Bedrock Prompt Management | Consistency, versioning and reuse |
+
+**Worked example — fixing a weak prompt.** A marketing team writes: *"Write something about our new running shoe."* The result is a generic 400-word essay. Applying the anatomy:
+
+- *Instruction:* "Write a product description."
+- *Context:* "You are a copywriter for a sports brand. The audience is beginners training for their first 5 km race. Key features: cushioned sole, 220 g weight, reflective strips."
+- *Output indicator:* "60–80 words, friendly tone, end with a call to action."
+- *Negative prompt:* "Do not make claims about injury prevention."
+
+The new output is short, on-brand and avoids a risky health claim — with no training at all.
+
+**Worked example — zero-shot to few-shot.** A bank asks a model to label transactions as *Groceries*, *Travel* or *Utilities*. Zero-shot, it sometimes invents new labels such as *Food & Drink*. Adding three examples, one per label, in a consistent format stops the invented labels. Lowering temperature makes the labels repeatable.
+
+**Worked example — chain-of-thought.** *"An employee worked 46 hours this week. Hours over 40 are paid at 1.5 times the $20 hourly rate. What is their gross pay?"* Without CoT a model may answer $920 (46 × 20). With *"Think step by step"* it computes 40 × 20 = 800; 6 × 30 = 180; total $980.
+
+**Spot the clue — quick drill.**
+
+- "No examples provided" → zero-shot.
+- "Include one example of the desired output" → single-shot.
+- "Provide several labelled examples in the prompt" → few-shot.
+- "Ask the model to explain its reasoning step by step" → chain-of-thought.
+- "Tell the image model what to exclude" → negative prompt.
+- "Store, version and share prompts" → Bedrock Prompt Management.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={2}>
+
+<Callout type="realWorld" title="A retailer turns ad-hoc prompts into managed assets">
+A retailer had dozens of teams writing their own prompts for product descriptions, each with different tone and quality — and one team's prompt once promised "free returns forever". The AI platform team rebuilt the best prompt as a **template** with variables for product name, features and audience, added a **negative prompt** banning unapproved claims, and included three **few-shot** examples of approved descriptions. They stored it in **Amazon Bedrock Prompt Management** with low temperature settings, tested two variants in the console, and published version 1. Applications now call that version; when the brand team changed the tone guidelines, version 2 was tested and rolled out without touching application code.
+</Callout>
+
+The pattern is common: prompts start as experiments in a playground, then become shared, reviewed and versioned assets. Teams that manage prompts like code — templates, tests, versions, rollback — get consistent quality and can respond to new models or policies quickly.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: build and version a prompt template in Bedrock Prompt Management" minutes={8}>
+
+<HandsOnLab
+  goal="Create a reusable prompt with variables in Amazon Bedrock Prompt Management, test it with few-shot examples, and save an immutable version for applications to use."
+  asOf="November 2026"
+  steps={[
+    { text: 'Open the Amazon Bedrock console and choose Prompt management, then Create prompt. Name it ticket-router and add a short description.', screen: { service: 'Amazon Bedrock', path: ['Prompt management', 'Create prompt'], menu: ['Model catalog', 'Playgrounds', 'Prompt management', 'Flows', 'Guardrails'], active: 'Prompt management', fields: [{ label: 'Name', value: 'ticket-router' }, { label: 'Description', value: 'Routes support tickets to a category' }] } },
+    { text: 'In the prompt builder write the instructions, three few-shot examples and a variable for the ticket text. Bedrock detects {{ticket}} as a variable automatically.', screen: { service: 'Amazon Bedrock', path: ['Prompt management', 'ticket-router', 'Edit in prompt builder'], fields: [{ label: 'Prompt', value: 'Classify the ticket as Billing, Technical or Account. Examples: ... Ticket: {{ticket}} Category:' }, { label: 'Variables', value: 'ticket' }], note: 'Variables use double curly braces' } },
+    { text: 'Choose a model and set inference parameters: temperature 0 and maximum length 10. Enter a test value for the variable and run the prompt.', screen: { service: 'Amazon Bedrock', path: ['Prompt management', 'ticket-router', 'Configurations'], fields: [{ label: 'Model', value: 'Amazon Nova (small text model)' }, { label: 'Temperature', value: '0' }, { label: 'Test value: ticket', value: 'My refund has not arrived.' }, { label: 'Output', value: 'Billing' }], highlight: 'Run' } },
+    { text: 'Use Compare variants to try a version without examples, then choose Create version on the better draft. Applications reference the version ARN.', screen: { service: 'Amazon Bedrock', path: ['Prompt management', 'ticket-router', 'Versions'], fields: [{ label: 'Version 1', value: 'few-shot, temperature 0 (immutable)' }, { label: 'Draft', value: 'still editable' }], highlight: 'Create version', note: 'Versions are snapshots you can roll back to' } },
+  ]}
+  expectedOutcome="You can explain how a template separates fixed instructions from variable input, how few-shot examples and low temperature make labels consistent, and why applications should call a fixed prompt version."
+  checks={[
+    { q: 'How are variables written in a Bedrock Prompt Management prompt?', a: 'With double curly braces, for example {{ticket}}.' },
+    { q: 'Why should a production app call a prompt version rather than the draft?', a: 'A version is an immutable snapshot, so later edits to the draft cannot change production behaviour, and you can roll back.' },
+    { q: 'The model invents categories that are not in your list. Which prompting technique helps most?', a: 'Few-shot prompting with consistent examples of each allowed category (plus a clear instruction listing the allowed labels).' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={1}>
+
+<Callout type="examTrap" title="Few-shot is not fine-tuning">
+Examples placed in the prompt (few-shot) do not change model weights and are sent with every request. Fine-tuning trains the model on a labelled dataset and creates a custom model. If the scenario says "without training" or "least effort", few-shot prompting fits; if it says "permanently adapt the model with thousands of examples", fine-tuning fits.
+</Callout>
+
+- Four prompt parts: **instruction, context, input data, output indicator**.
+- "Exclude unwanted elements" → **negative prompt**.
+- Zero / single / few = **0 / 1 / several examples** in the prompt.
+- "Step by step", "show reasoning", maths or logic → **chain-of-thought**.
+- "Reusable prompt with placeholders" → **prompt template**.
+- "Version, compare, share and reuse prompts" → **Amazon Bedrock Prompt Management**.
+- Prompt engineering is usually the **lowest-cost, fastest** first step before RAG or fine-tuning.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+A strong prompt combines an instruction, context, input data and an output indicator, often with a system prompt for role and rules. Negative prompts say what to avoid, especially in image generation. Zero-shot, single-shot and few-shot prompting differ in how many examples you include; chain-of-thought asks for step-by-step reasoning on complex problems. Templates with variables make good prompts reusable and safer, and Amazon Bedrock Prompt Management stores, tests and versions them alongside their model and inference settings. Tomorrow you will see how attackers abuse prompts — and how to defend against them.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={16} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Prompt operations: templates, versions and flows in production" minutes={15} optional>
+
+Large organisations treat prompts as a managed lifecycle, sometimes called *PromptOps*. A prompt engineer drafts a template in Amazon Bedrock Prompt Management, attaches the model and inference settings, and runs it against a test set of real inputs — often with a Bedrock model evaluation job that scores responses automatically or with an LLM-as-a-judge. When it passes, they create a version. Applications either call the prompt version directly through the Bedrock runtime APIs or use it as a node in an **Amazon Bedrock Flow** that chains steps, for example: classify the request → retrieve policy passages from a knowledge base → generate the answer with a second prompt → apply a guardrail.
+
+<Diagram
+  caption="Prompt lifecycle architecture: draft, evaluate, version and deploy prompts through Bedrock Prompt Management and Flows"
+  code={`flowchart LR
+  DEV["Prompt engineer"] --> DR["Draft template with variables"]
+  DR --> PM["Bedrock Prompt Management"]
+  PM --> EV["Evaluation job on S3 test prompts"]
+  EV -->|passes| V["Create immutable version"]
+  EV -->|fails| DR
+  V --> FL["Bedrock Flow: classify, retrieve, generate"]
+  FL --> KB["Knowledge base"]
+  FL --> FM["Foundation model"]
+  APP["Application"] -->|invoke version or flow| FL
+  FL --> LOG["CloudWatch logs and metrics"]
+  LOG -.->|feedback| DR`}
+/>
+
+**Trade-offs.** Versioning adds a release step, but it makes rollbacks instant and lets you prove which prompt produced which answer — valuable for audits. Prompt chaining in a flow improves quality by giving each step one job, but every extra model call adds latency and cost. Few-shot examples improve consistency but lengthen every request; prompt caching or moving to fine-tuning becomes attractive when the examples are long and volume is high. Finally, a prompt tuned for one model may perform differently on another, so re-run evaluations whenever you switch models.
+
+</Section>

@@ -1,0 +1,343 @@
+---
+day: 6
+kind: lesson
+title: 'ML lifecycle, MLOps & metrics'
+summary: 'Follow an ML project from business goal to monitoring: the pipeline stages, the AWS data services (S3, Glue, Glue DataBrew, EMR, Lake Formation, Redshift, Data Exchange) and the Amazon SageMaker AI features used at each stage. Compare sources of models and managed-API versus self-hosted deployment, see where Amazon Quick and Kiro fit, learn the MLOps practices that keep models healthy, and read model metrics (accuracy, precision, recall, F1, AUC, RMSE) alongside business metrics.'
+domains: [D1]
+taskStatements: ['1.3']
+sources:
+  - { provider: udemy, title: 'Amazon SageMaker AI; ML Project Phases; Model Evaluation Metrics; MLOps' }
+  - { provider: skillbuilder, title: 'Fundamentals of Machine Learning and Artificial Intelligence — ML development lifecycle' }
+  - { provider: aws-docs, title: 'Machine Learning Lens — AWS Well-Architected Framework: ML lifecycle phases', url: 'https://docs.aws.amazon.com/wellarchitected/latest/machine-learning-lens/machine-learning-lens.html' }
+  - { provider: aws-docs, title: 'Amazon SageMaker AI features', url: 'https://docs.aws.amazon.com/sagemaker/latest/dg/whatis-features-alpha.html' }
+objectives:
+  - Describe the stages of an ML pipeline from business goal to monitoring and retraining
+  - Identify the AWS data services and Amazon SageMaker AI features used at each pipeline stage
+  - Describe sources of models and compare a managed API with a self-hosted model in production
+  - Place Amazon Bedrock, Amazon Quick and Kiro in the AI development lifecycle
+  - Explain MLOps goals — experimentation, repeatability, scale, technical debt, production readiness, monitoring and retraining
+  - Choose and interpret model metrics (accuracy, precision, recall, F1, AUC, RMSE, MAE) and business metrics (cost per user, ROI, feedback)
+estimatedMinutes: 55
+deepDiveMinutes: 15
+lastVerified: '2026-11-02'
+keyPoints:
+  - 'ML pipeline: business goal → data collection → preparation and feature engineering → training and tuning → evaluation → deployment → monitoring → retraining.'
+  - 'Data services: S3 stores, Glue catalogs and runs ETL, DataBrew = no-code prep, EMR = big-data Spark, Lake Formation = data-lake permissions, Redshift = warehouse, Data Exchange = third-party data.'
+  - 'SageMaker AI: Data Wrangler (prep), Feature Store (reusable features), Ground Truth (labels), JumpStart (pre-trained models), Pipelines (automation), Model Registry (versions and approval), Model Monitor (drift).'
+  - 'Managed API (Amazon Bedrock) = no servers, pay per use; self-hosted (SageMaker AI endpoint, EC2, EKS) = more control, you run the infrastructure.'
+  - 'MLOps = repeatable, automated, versioned pipelines with monitoring and retraining — less technical debt, production-ready models.'
+  - 'Precision = how many alerts are right (avoid false positives); recall = how many real cases are caught (avoid false negatives); F1 balances both; RMSE/MAE for regression.'
+  - 'Business metrics (cost per user, ROI, customer feedback) decide whether a model is worth running.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 5" minutes={3}>
+<Recap day={frontmatter.day} />
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="From business goal to a model in production" minutes={15}>
+
+### The ML pipeline: a loop, not a line
+
+Building a model is a small part of an ML project. Most of the effort goes into the steps around it, and the work never really ends: once a model is live, the world changes and the model must be watched and refreshed. The stages, in order:
+
+1. **Identify the business goal.** What decision or process should improve, and how will success be measured? ("Reduce churn by 5%", "cut invoice-processing time in half".) Decide whether ML is needed at all (Day 5).
+2. **Frame the ML problem.** Translate the goal into an ML task: what is the target, is it classification, regression or clustering, what data is needed, and what accuracy is good enough?
+3. **Collect data.** Gather data from databases, applications, logs, sensors and third parties, and store it centrally — usually in Amazon S3.
+4. **Pre-process the data.** Explore it (**exploratory data analysis**, EDA), clean it, fix missing values and errors, label it if needed, and split it into training, validation and test sets.
+5. **Feature engineering.** Select, transform and create the input features that help the model most — for example "days since last purchase" from a list of order dates.
+6. **Train and tune.** Train candidate models and use **hyperparameter tuning** to find the best settings.
+7. **Evaluate.** Measure performance on held-out data with the right metrics and check bias and explainability. Does the model meet the business target?
+8. **Deploy.** Put the model into production for real-time, serverless, asynchronous or batch inference (Day 2).
+9. **Monitor.** Watch prediction quality, data drift, bias and infrastructure health.
+10. **Retrain.** When performance decays or new data arrives, feed it back to stage 3 and repeat.
+
+**Analogy.** It is like running a restaurant rather than cooking one meal. Sourcing ingredients (data), preparing them (pre-processing), developing the recipe (training), tasting (evaluation), serving (deployment) and listening to diners (monitoring) happen again and again, and the recipe changes with the seasons.
+
+### AWS data services for collecting and preparing data
+
+The exam guide lists several data services. Know one sentence about each:
+
+| Service | What it does | Pipeline stage |
+|---|---|---|
+| **Amazon S3** | Durable, low-cost object storage — the usual home for training data, model artifacts and data lakes | Collect, store |
+| **AWS Glue** | Serverless data integration: **crawlers** discover data, the **Glue Data Catalog** records schemas, and ETL jobs transform data | Collect, prepare |
+| **AWS Glue DataBrew** | Visual, **no-code** data preparation with hundreds of built-in transformations and data-quality profiles | Prepare |
+| **Amazon EMR** | Managed big-data clusters running Apache Spark, Hadoop and similar frameworks for very large processing jobs | Prepare (at scale) |
+| **AWS Lake Formation** | Builds and secures a **data lake** on S3 with central, fine-grained permissions (database, table, column, row) | Govern |
+| **Amazon Redshift** | Cloud **data warehouse** for SQL analytics on large structured datasets; Redshift ML can train models from SQL | Collect, analyse |
+| **AWS Data Exchange** | Find, subscribe to and use **third-party datasets** (weather, financial, demographic) | Collect |
+
+A typical flow: application data is exported to S3, a Glue crawler catalogs it, a Glue or EMR job cleans and joins it, analysts explore it in Redshift, and Lake Formation controls who may see which columns. When the team needs weather data to improve a demand forecast, they subscribe to it through AWS Data Exchange.
+
+### Amazon SageMaker AI across the lifecycle
+
+**Amazon SageMaker AI** is AWS's fully managed service for building, training and deploying ML models. Learn its features by the stage they serve:
+
+| Stage | SageMaker AI feature | What it does |
+|---|---|---|
+| Work environment | **SageMaker AI Studio** | Web IDE with notebooks and access to every tool below |
+| No-code ML | **SageMaker Canvas** | Business analysts build models and predictions with a visual interface |
+| Labelling | **SageMaker Ground Truth** | Human (and assisted) data labelling workflows |
+| Data preparation | **SageMaker Data Wrangler** | Import, explore, clean and transform data with visual tools and quality reports |
+| Features | **SageMaker Feature Store** | Central repository to store, share and reuse features for training and inference, so teams do not rebuild them |
+| Pre-trained models | **SageMaker JumpStart** | Hub of pre-trained and foundation models to deploy or fine-tune |
+| Training and tuning | **Training jobs**, **Automatic Model Tuning** | Managed training on CPU/GPU instances; automatic hyperparameter search |
+| Experiments | **Managed MLflow** | Track runs, parameters and metrics to compare experiments |
+| Bias and explainability | **SageMaker Clarify** | Detect bias before and after training; explain which features drove predictions |
+| Automation | **SageMaker Pipelines** | Define the steps (process, train, evaluate, register) as a repeatable workflow |
+| Versioning and approval | **SageMaker Model Registry** | Catalogue model versions with metrics and an approval status before deployment |
+| Deployment | **Endpoints** and **batch transform** | Real-time, serverless, asynchronous or batch inference |
+| Monitoring | **SageMaker Model Monitor** | Detect data drift, model-quality decay and bias drift in production |
+
+Do not worry about memorising every console screen. The exam asks "which feature solves this problem": *reuse features across teams* → Feature Store; *automate retraining steps* → Pipelines; *track approved model versions* → Model Registry; *alert when production data drifts* → Model Monitor.
+
+### Sources of models
+
+Not every project trains from scratch. The guide names these sources:
+
+- **Open-source pre-trained models** — publicly released models (for example on Hugging Face or in SageMaker JumpStart) that you can download, deploy and fine-tune. Check the **licence**, which may restrict commercial use.
+- **Proprietary foundation models via API** — models from providers such as Amazon (Nova), Anthropic and others, accessed through **Amazon Bedrock** without seeing or managing the weights.
+- **Custom models** — trained on your own data with SageMaker AI, either from scratch or by fine-tuning a pre-trained model.
+
+The trend is clear: start from a pre-trained model where possible and customise it, because training from scratch costs far more data, time and money.
+
+### Using a model in production: managed API or self-hosted
+
+| | **Managed API** | **Self-hosted API** |
+|---|---|---|
+| Example | Amazon Bedrock; managed AI services such as Comprehend | Model on a SageMaker AI endpoint, or on Amazon EC2, Amazon EKS or Amazon ECS |
+| Infrastructure | AWS runs everything; nothing to patch or scale | You choose instances, scaling and updates |
+| Pricing | Pay per request or per token | Pay for the instances while they run, busy or idle |
+| Control | Limited to the provider's models and settings | Full control of model, version, hardware, networking |
+| Best when | Fast start, variable traffic, small team | Custom or open-source model, strict control needs, steady high volume |
+
+A managed API trades control for simplicity. Self-hosting gives control but adds operational work — capacity planning, patching, scaling and monitoring.
+
+### Amazon Quick and Kiro in the lifecycle
+
+The guide also names two newer tools when it asks you to identify AWS services per lifecycle stage:
+
+- **Kiro** is AWS's agentic integrated development environment (IDE) for developers. It turns natural-language requirements into specifications, designs and tasks and then helps write, test and update the code — the *build* stage of an AI application.
+- **Amazon Quick** is an agentic workspace for business users that brings together business intelligence dashboards, research, chat agents and workflow automation over company data — the *use and insight* stage, where people consume AI results and make decisions.
+
+Together with **Amazon Bedrock** (foundation models and agents) and **SageMaker AI** (custom ML), they cover the lifecycle from writing code to delivering insights. Day 12 explores them further.
+
+### MLOps: DevOps for machine learning
+
+**MLOps** applies software-engineering discipline to ML so that models can be built, deployed and maintained reliably. The guide lists its key ideas:
+
+- **Experimentation** — track every run's data, code, parameters and metrics so results can be compared and reproduced.
+- **Repeatable processes** — automate the pipeline (SageMaker Pipelines) and version data, code and models so anyone can rebuild the same model.
+- **Scalable systems** — managed training and inference that scale with data and traffic.
+- **Managing technical debt** — avoid fragile one-off notebooks and hand-run steps that nobody can maintain.
+- **Production readiness** — tests, approvals (Model Registry), security and rollback plans before a model goes live.
+- **Model monitoring** — detect **data drift** (inputs change), **concept drift** (the relationship between inputs and outcome changes) and bias drift.
+- **Model re-training** — retrain on a schedule or automatically when monitoring shows decay.
+
+**Analogy.** Without MLOps, a model is like a hand-built prototype car: impressive, but nobody else can repair or rebuild it. MLOps is the factory line that builds the same car every time, with quality checks and service schedules.
+
+### Model metrics: reading a confusion matrix
+
+For classification, start with the **confusion matrix**. Take a fraud model:
+
+- **True positive (TP)** — predicted fraud, really fraud.
+- **False positive (FP)** — predicted fraud, actually legitimate (a false alarm).
+- **True negative (TN)** — predicted legitimate, really legitimate.
+- **False negative (FN)** — predicted legitimate, actually fraud (a miss).
+
+From these come the metrics the guide names:
+
+- **Accuracy** = correct predictions ÷ all predictions. Simple, but misleading with imbalanced classes (Day 3).
+- **Precision** = TP ÷ (TP + FP). *Of everything I flagged, how much was right?* Prioritise when false positives are costly — for example blocking a genuine customer's card or flagging a legitimate email as spam.
+- **Recall** (sensitivity) = TP ÷ (TP + FN). *Of all real cases, how many did I catch?* Prioritise when false negatives are costly — missing a cancer on a scan or missing a fraud.
+- **F1 score** = the harmonic mean of precision and recall. Use it when you need a balance, especially with imbalanced data.
+- **AUC** (area under the ROC curve) — how well the model separates the classes across all thresholds; 0.5 is random guessing, 1.0 is perfect.
+
+For regression, measure how far predictions are from the true numbers: **MAE** (mean absolute error, the average size of the error), **RMSE** (root mean squared error, which punishes large errors more) and **R²** (how much of the variation the model explains).
+
+### Which metric when?
+
+| Scenario clue | Metric to prioritise | Why |
+|---|---|---|
+| "Missing a positive case is dangerous or expensive" (disease, fraud, safety defect) | **Recall** | Minimise false negatives |
+| "False alarms annoy customers or waste staff time" (spam filter, card blocks) | **Precision** | Minimise false positives |
+| "Classes are imbalanced and both errors matter" | **F1 score** | Balances precision and recall |
+| "Compare classifiers independent of the threshold" | **AUC** | Measures separation across all thresholds |
+| "Classes are balanced and errors cost the same" | **Accuracy** | Simple and meaningful in this case |
+| "Predict a number; big misses are especially bad" | **RMSE** | Squares errors, so large ones dominate |
+| "Predict a number; report the typical error in plain units" | **MAE** | Average absolute error, easy to explain |
+
+Most classifiers output a probability, and a **threshold** turns it into a decision. Lowering the threshold flags more cases — recall goes up, precision goes down. Raising it does the opposite. There is no free lunch: the right threshold depends on the business cost of each kind of mistake.
+
+### Evaluation is more than one number
+
+Before a model is approved, a good team also checks: **performance per subgroup** (does it work equally well for every region, age group or accent? — SageMaker Clarify helps), **explainability** (which features drive predictions, and would a regulator accept that?), **latency and cost** of inference at expected traffic, and **robustness** to unusual inputs. A model that scores well overall but fails a subgroup, is too slow for the app or costs more to run than it saves is not production-ready. These checks are part of the evaluation stage, not an afterthought.
+
+### Business metrics: is the model worth it?
+
+A model with excellent F1 can still fail the business. Track **business metrics** too: **cost per user** or per prediction, **development and running costs**, **return on investment (ROI)**, revenue or conversion uplift, time saved, and **customer feedback** and satisfaction. For example, a recommendation model is a success if it increases average order value by more than it costs to build and host — not merely because its offline accuracy is high. Agree these metrics at stage 1 and check them after deployment.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={3}>
+
+<Diagram
+  caption="The ML lifecycle as a loop, with the main AWS services for each stage"
+  code={`flowchart LR
+  G["1 Business goal and ML framing"] --> C["2 Collect data: S3, Redshift, Data Exchange"]
+  C --> P["3 Prepare: Glue, DataBrew, EMR, Data Wrangler, Ground Truth"]
+  P --> F["4 Features: Feature Store"]
+  F --> T["5 Train and tune: training jobs, JumpStart, Automatic Model Tuning"]
+  T --> E["6 Evaluate: metrics, Clarify"]
+  E --> D["7 Deploy: Model Registry, endpoints, batch transform"]
+  D --> M["8 Monitor: Model Monitor, CloudWatch"]
+  M -->|drift or new data: retrain| C`}
+/>
+
+<Diagram
+  caption="Confusion matrix for a fraud model: precision focuses on the flagged column, recall on the actual-fraud row"
+  code={`flowchart TD
+  subgraph AF["Actually fraud"]
+    TP["True positive: flagged, is fraud"]
+    FN["False negative: missed fraud"]
+  end
+  subgraph AL["Actually legitimate"]
+    FP["False positive: false alarm"]
+    TN["True negative: correctly passed"]
+  end
+  TP --> PR["Precision = TP divided by TP plus FP"]
+  FP --> PR
+  TP --> RC["Recall = TP divided by TP plus FN"]
+  FN --> RC`}
+/>
+
+<Diagram
+  caption="Managed API versus self-hosted model in production"
+  code={`flowchart LR
+  APP["Application"] --> Q{"How is the model served?"}
+  Q -->|Managed API| BR["Amazon Bedrock or AI service: AWS runs it, pay per request or token"]
+  Q -->|Self-hosted| SH["SageMaker AI endpoint, EC2, EKS or ECS: you choose instances and scaling, pay while running"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={3}>
+
+| Need | Service or feature |
+|---|---|
+| Analysts must clean a spreadsheet-like dataset without writing code | AWS Glue DataBrew (or SageMaker Data Wrangler / Canvas) |
+| Process 50 TB of clickstream logs with Spark | Amazon EMR |
+| Give the data science team access to some columns of a data lake but hide salary | AWS Lake Formation |
+| Buy a third-party weather dataset to improve a forecast | AWS Data Exchange |
+| Two teams keep recomputing the same "customer lifetime spend" feature | SageMaker Feature Store |
+| Rebuild and redeploy the model the same way every month | SageMaker Pipelines |
+| Only approved model versions may reach production | SageMaker Model Registry |
+| Alert when input data in production no longer looks like training data | SageMaker Model Monitor |
+| Generate text without managing any servers | Amazon Bedrock (managed API) |
+
+**Worked example — calculate the metrics.** *A fraud model reviews 10,000 transactions; 100 are really fraud. It flags 120: 80 are fraud (TP) and 40 are legitimate (FP). It misses 20 frauds (FN). The other 9,860 are correctly passed (TN).*
+
+- Accuracy = (80 + 9,860) ÷ 10,000 = **99.4%** — looks great, but a model that flagged nothing would score 99.0%.
+- Precision = 80 ÷ (80 + 40) = **67%** — two out of three alerts are real.
+- Recall = 80 ÷ (80 + 20) = **80%** — it catches four frauds in five.
+- F1 = 2 × 0.67 × 0.80 ÷ (0.67 + 0.80) ≈ **0.73**.
+
+If missing a fraud costs 2,000 dollars and a false alarm costs a 5-dollar phone call, the bank should lower the threshold to raise recall, accepting lower precision. Business costs decide which metric matters.
+
+**Worked example — regression.** *A delivery-time model has MAE of 4 minutes and RMSE of 9 minutes.* The average miss is 4 minutes, but RMSE being much larger than MAE reveals some very large errors — perhaps on rainy days — that are worth investigating.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={2}>
+
+<Callout type="realWorld" title="A subscription company productionises its churn model">
+A video-streaming company's first churn model lived in one data scientist's notebook. Retraining took a week of manual steps, and when she went on holiday nobody could update it. The team rebuilt it the MLOps way: viewing data flows into **Amazon S3** and is catalogued by **AWS Glue**; features such as "hours watched last 30 days" live in **SageMaker Feature Store**; a **SageMaker Pipelines** workflow processes data, trains, evaluates and registers each new model in the **Model Registry**, where a manager approves it; **Model Monitor** watches for drift. Retraining now runs automatically every month, or sooner if drift is detected.
+</Callout>
+
+The business metrics told the real story. The model's recall for likely churners was 78%, but what mattered was that targeted retention offers cut monthly churn from 3.1% to 2.6%, worth far more than the cost of the pipeline and endpoints. A customer-feedback survey also showed that subscribers disliked receiving too many offers, so the team raised the decision threshold — improving precision — to contact fewer, better-chosen customers. Model metrics guided tuning; business metrics decided success.
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: follow a model through SageMaker Pipelines, Model Registry and Model Monitor" minutes={8}>
+
+<HandsOnLab
+  goal="Walk through an automated ML pipeline in Amazon SageMaker AI Studio: see its steps, read the evaluation metrics, approve the model version and set up monitoring."
+  asOf="November 2026"
+  steps={[
+    { text: 'In SageMaker AI Studio, open Pipelines and select the churn pipeline. The graph shows each step: process data, train, evaluate, check the metric condition and register the model.', screen: { service: 'Amazon SageMaker AI Studio', path: ['Pipelines', 'churn-pipeline', 'Execution 14'], menu: ['Home', 'Data', 'Jobs', 'Pipelines', 'Models', 'Deployments'], active: 'Pipelines', fields: [{ label: 'Steps', value: 'Process → Train → Evaluate → Condition (F1 ≥ 0.70) → Register' }, { label: 'Status', value: 'Succeeded' }], note: 'Repeatable, automated workflow' } },
+    { text: 'Open the Evaluate step output. It reports the confusion-matrix metrics on the test set.', screen: { service: 'Amazon SageMaker AI Studio', path: ['Pipelines', 'churn-pipeline', 'Evaluate', 'Output'], fields: [{ label: 'Accuracy', value: '0.91' }, { label: 'Precision', value: '0.74' }, { label: 'Recall', value: '0.78' }, { label: 'F1', value: '0.76' }, { label: 'AUC', value: '0.89' }] } },
+    { text: 'Go to the Model Registry. The new version is waiting with status Pending. Review the metrics and change its status to Approved — this can trigger deployment.', screen: { service: 'Amazon SageMaker AI Studio', path: ['Models', 'Registered models', 'churn-model', 'Version 7'], fields: [{ label: 'Approval status', value: 'PendingManualApproval' }, { label: 'Source pipeline', value: 'churn-pipeline · execution 14' }], highlight: 'Update status: Approved' } },
+    { text: 'On the deployed endpoint, enable Model Monitor with a baseline from the training data and a daily schedule. Violations raise Amazon CloudWatch alarms that can start the pipeline again.', screen: { service: 'Amazon SageMaker AI Studio', path: ['Deployments', 'Endpoints', 'churn-prod', 'Monitoring'], fields: [{ label: 'Monitor type', value: 'Data quality · Model quality' }, { label: 'Schedule', value: 'Daily' }, { label: 'Last result', value: 'No violations' }], highlight: 'Create schedule' } },
+  ]}
+  expectedOutcome="You can name the SageMaker AI feature for automation (Pipelines), versioning and approval (Model Registry) and drift detection (Model Monitor), and read precision, recall and F1 from an evaluation report."
+  checks={[
+    { q: 'Which feature stores each model version with its metrics and an approval status?', a: 'SageMaker Model Registry.' },
+    { q: 'The pipeline only registers models with F1 of at least 0.70. Why use F1 rather than accuracy for churn?', a: 'Churners are a minority class, so accuracy can look high even if most churners are missed; F1 balances precision and recall.' },
+    { q: 'Three months later the age profile of new customers shifts. What should detect this?', a: 'SageMaker Model Monitor (data drift against the training baseline), which can trigger retraining.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={1}>
+
+<Callout type="examTrap" title="Accuracy on imbalanced data">
+When the positive class is rare (fraud, disease, churn), high accuracy can hide a useless model. If the scenario says "missing a case is very costly", choose **recall**; if "false alarms are very costly", choose **precision**; if both matter, **F1**.
+</Callout>
+
+- No-code data prep → **Glue DataBrew** / Data Wrangler; big Spark jobs → **EMR**; data-lake permissions → **Lake Formation**; warehouse SQL → **Redshift**; third-party data → **Data Exchange**.
+- Reuse features → **Feature Store**; automate steps → **Pipelines**; version and approve → **Model Registry**; drift → **Model Monitor**; labels → **Ground Truth**.
+- No servers to manage, pay per token → **managed API (Bedrock)**; full control, custom weights → **self-hosted** endpoint.
+- Developer IDE with specs → **Kiro**; business users' insights and agents → **Amazon Quick**.
+- Regression error → **MAE / RMSE**; classifier separation across thresholds → **AUC**.
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+An ML project is a loop: business goal, problem framing, data collection, preparation and feature engineering, training and tuning, evaluation, deployment, monitoring and retraining. AWS data services collect and prepare the data — S3, Glue, Glue DataBrew, EMR, Lake Formation, Redshift and Data Exchange — and SageMaker AI supplies a feature for every stage, from Ground Truth and Data Wrangler to Pipelines, Model Registry and Model Monitor. Models can come from open-source hubs, proprietary APIs or custom training, and can be served through a managed API such as Bedrock or self-hosted. Kiro helps developers build AI applications and Amazon Quick puts AI insights in business users' hands. MLOps makes the whole process repeatable, scalable and monitored. Finally, judge models with the right metric — precision, recall, F1, AUC, MAE or RMSE — and judge projects with business metrics such as cost per user and ROI. Tomorrow you will review all of Domain 1.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={20}>
+<QuizSlot day={6} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="End-to-end MLOps on SageMaker AI" minutes={15} optional>
+
+A production-grade MLOps setup separates **build**, **deploy** and **operate** and automates the hand-offs between them.
+
+**Build.** Data scientists experiment in SageMaker AI Studio and log runs to managed MLflow. When a candidate is promising, the code is committed to a Git repository. A commit triggers a **SageMaker Pipelines** execution: a processing step reads raw data from S3 (catalogued by Glue and governed by Lake Formation) and writes features to **Feature Store**; a training step trains the model; an evaluation step computes metrics and a **Clarify** bias report; a condition step registers the model in the **Model Registry** only if it beats the quality bar.
+
+**Deploy.** Approving a model version in the registry triggers a deployment workflow that first deploys to a **staging endpoint**, runs automated tests, and then promotes it to the **production endpoint** — often gradually, shifting a small share of traffic first so it can be rolled back quickly. Separate AWS accounts for development, staging and production limit the blast radius of mistakes.
+
+**Operate.** **Model Monitor** compares live inputs and predictions with the training baseline; **Amazon CloudWatch** tracks latency, errors and monitoring violations; **AWS CloudTrail** records who changed what. A drift alarm, or a monthly schedule, starts the pipeline again with fresh data, closing the loop.
+
+<Diagram
+  caption="Architecture: end-to-end MLOps on SageMaker AI — build pipeline, approval gate, staged deployment and monitoring-driven retraining"
+  code={`flowchart LR
+  subgraph Build
+    GIT["Git commit"] --> PIPE["SageMaker Pipelines"]
+    S3[("S3 data lake: Glue catalog, Lake Formation")] --> PIPE
+    PIPE --> PROC["Process: features to Feature Store"]
+    PROC --> TRN["Train"]
+    TRN --> EVAL["Evaluate: metrics and Clarify bias report"]
+    EVAL --> COND{"Quality bar met?"}
+  end
+  COND -->|Yes| REG["Model Registry: pending approval"]
+  REG -->|Approved| STG["Staging endpoint and tests"]
+  STG --> PRD["Production endpoint"]
+  subgraph Operate
+    PRD --> MON["Model Monitor: data and model quality"]
+    MON --> CW["CloudWatch alarms"]
+  end
+  CW -->|drift: retrain| PIPE`}
+/>
+
+**Trade-offs.** Full automation needs up-front engineering investment and is overkill for a one-off analysis; it pays off when models are retrained regularly, several teams share features, or regulators expect evidence of how each model was built and approved. Human approval gates slow releases but add accountability. Retraining on a schedule is simple but may waste compute; drift-triggered retraining is efficient but depends on good monitoring baselines. For foundation-model applications on Bedrock, the same ideas apply as **LLMOps** — versioned prompts, evaluation datasets and monitoring of quality and cost.
+
+</Section>

@@ -1,0 +1,329 @@
+- id: q-day-10-001
+  set: day-10
+  type: single
+  stem: "A company already has a chatbot that answers questions about its flight-change policy. It now wants a system that can look up a customer's booking, check availability, price the change and rebook after the customer confirms. Which capability MOST distinguishes the new system?"
+  options:
+    - { id: a, text: "It uses a larger context window to hold more policy text", explanation: "Incorrect. A larger context window lets the model read more, but it still only answers; it does not take actions." }
+    - { id: b, text: "It generates images of the new itinerary", explanation: "Incorrect. Image generation is unrelated to taking multi-step actions in booking systems." }
+    - { id: c, text: "It answers faster because it uses batch inference", explanation: "Incorrect. Batch inference is for offline jobs and would make an interactive system slower, not more capable." }
+    - { id: d, text: "It is an agent that plans steps, calls tools and loops until the goal is reached", explanation: "Correct. Agents decide which steps to take, use tools to act on systems, observe results and repeat until done." }
+  answer: [d]
+  explanation: "A chatbot answers; an agent acts. An AI agent combines a reasoning model, tools, memory and orchestration in a loop so it can carry out multi-step tasks such as looking up and changing a booking."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: easy
+
+- id: q-day-10-002
+  set: day-10
+  type: single
+  stem: "In a tool-use (function-calling) interaction, the model decides that it needs to call a get_order_status tool. Which component actually executes the tool?"
+  options:
+    - { id: a, text: "The foundation model calls the API directly from inside the model", explanation: "Incorrect. A model only produces output; it cannot call APIs by itself." }
+    - { id: b, text: "The application or agent runtime, for example a Lambda function behind an action group", explanation: "Correct. The model returns a tool-use request with arguments; the application or runtime runs the tool and returns the result." }
+    - { id: c, text: "The tokenizer, which converts the tool name into token IDs", explanation: "Incorrect. The tokenizer only converts text to tokens; it does not run tools." }
+    - { id: d, text: "The vector store, which retrieves the tool from its index", explanation: "Incorrect. A vector store holds embeddings for similarity search; it does not execute tools." }
+  answer: [b]
+  explanation: "Tool use works in four steps: the developer describes tools, the model returns a structured tool-use request, the application executes the tool, and the result is sent back to the model to continue reasoning."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: easy
+
+- id: q-day-10-003
+  set: day-10
+  type: single
+  stem: "A travel agent assistant should remember that a customer prefers aisle seats and vegetarian meals the next time the customer returns, weeks later. Which agent capability provides this?"
+  options:
+    - { id: a, text: "Long-term memory that persists facts across sessions", explanation: "Correct. Long-term memory stores preferences and facts outside the model and retrieves them in later sessions." }
+    - { id: b, text: "Short-term memory held in the current context window", explanation: "Incorrect. Short-term memory covers only the current session and is gone when the session ends." }
+    - { id: c, text: "A higher maximum output tokens setting", explanation: "Incorrect. Output length has nothing to do with remembering information between sessions." }
+    - { id: d, text: "A parallel fan-out multi-agent pattern", explanation: "Incorrect. Fan-out runs sub-tasks in parallel; it does not persist user preferences." }
+  answer: [a]
+  explanation: "Models are stateless. Short-term memory holds the current conversation and steps; long-term memory persists information such as preferences across sessions and retrieves it when relevant. Amazon Bedrock AgentCore Memory provides both."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: medium
+
+- id: q-day-10-004
+  set: day-10
+  type: single
+  stem: "What is the Model Context Protocol (MCP)?"
+  options:
+    - { id: a, text: "An AWS pricing model for reserving foundation model capacity", explanation: "Incorrect. Reserved capacity is provisioned throughput; MCP is a protocol, not a pricing model." }
+    - { id: b, text: "A technique for compressing conversation history in the context window", explanation: "Incorrect. Compressing history is a context engineering technique, not MCP." }
+    - { id: c, text: "An open standard that defines how AI applications connect to external tools and data sources", explanation: "Correct. MCP standardises how hosts discover and use tools, resources and prompts exposed by MCP servers." }
+    - { id: d, text: "A metric for evaluating the accuracy of agent responses", explanation: "Incorrect. MCP is a connection protocol, not an evaluation metric." }
+  answer: [c]
+  explanation: "MCP is an open protocol, introduced by Anthropic in 2024 and widely adopted including by AWS, that lets any MCP-compatible application use tools and data exposed by MCP servers — build an integration once, reuse it everywhere."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: easy
+
+- id: q-day-10-005
+  set: day-10
+  type: single
+  stem: "A team wraps its ticketing system so that any MCP-compatible agent or IDE can create and search tickets. In MCP terms, what has the team built?"
+  options:
+    - { id: a, text: "An MCP host", explanation: "Incorrect. The host is the AI application the user works with, such as an agent or IDE, which consumes tools." }
+    - { id: b, text: "An MCP server", explanation: "Correct. An MCP server exposes tools, resources and prompts in a standard way for any MCP client to use." }
+    - { id: c, text: "An MCP client", explanation: "Incorrect. The client lives inside the host and connects to a server; it does not expose the ticketing tools." }
+    - { id: d, text: "A foundation model", explanation: "Incorrect. The model reasons and requests tools; the ticketing wrapper is an integration, not a model." }
+  answer: [b]
+  explanation: "In MCP, a host (agent, chat app or IDE) contains MCP clients, each connected to an MCP server. Servers expose tools (actions), resources (data) and prompts (templates). Wrapping the ticketing system creates an MCP server."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: medium
+
+- id: q-day-10-006
+  set: day-10
+  type: single
+  stem: "A customer-service system has one agent that receives each request, breaks it into sub-tasks, sends them to separate billing, shipping and returns agents, and combines their results into one reply. Which multi-agent pattern is this?"
+  options:
+    - { id: a, text: "Sequential pipeline", explanation: "Incorrect. In a pipeline, agents run in a fixed order, each passing output to the next, with no central coordinator delegating." }
+    - { id: b, text: "Peer handoff (swarm)", explanation: "Incorrect. In a swarm, agents hand control directly to peers without a central coordinator." }
+    - { id: c, text: "Single agent with tools", explanation: "Incorrect. Several agents are involved, coordinated by one of them." }
+    - { id: d, text: "Supervisor (orchestrator–workers)", explanation: "Correct. A supervisor agent plans, delegates to specialist agents and combines their results." }
+  answer: [d]
+  explanation: "In the supervisor pattern, a coordinating agent delegates sub-tasks to specialist agents, each with its own instructions, tools and context, and merges the results. Amazon Bedrock Agents supports this as multi-agent collaboration."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: medium
+
+- id: q-day-10-007
+  set: day-10
+  type: single
+  stem: "A bank processes mortgage applications in a fixed, regulated order: check documents, extract income, run an exact affordability calculation and draft a decision letter for an underwriter. Which design is MOST appropriate?"
+  options:
+    - { id: a, text: "A code-defined workflow that uses GenAI for extraction and drafting, ordinary code for the calculation and human approval of the decision", explanation: "Correct. Fixed, auditable sequences suit workflows; GenAI adds value in specific steps, and exact calculations belong in code." }
+    - { id: b, text: "A fully autonomous agent that decides the order of steps and approves applications itself", explanation: "Incorrect. Autonomy adds unpredictability to a fixed regulated process and removes needed human oversight." }
+    - { id: c, text: "A peer-handoff swarm of agents that pass applications between them freely", explanation: "Incorrect. A swarm is flexible but hard to audit, which is the opposite of what a regulated fixed process needs." }
+    - { id: d, text: "A single LLM prompt that performs the affordability calculation and issues the decision", explanation: "Incorrect. LLMs are not reliable for exact calculations, and the decision needs human review." }
+  answer: [a]
+  explanation: "More autonomy is not automatically better. When steps and order are fixed and must be predictable and auditable, a code-driven workflow is simpler, cheaper and easier to test. Use agents when the path to the goal varies case by case."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#examples
+  difficulty: hard
+
+- id: q-day-10-008
+  set: day-10
+  type: single
+  stem: "An agent following the reason–act–observe (ReAct) loop has just received the result of a search_flights tool call. What does the agent do NEXT?"
+  options:
+    - { id: a, text: "It ends the session immediately because a tool has been used", explanation: "Incorrect. Using one tool does not mean the goal is met; the agent continues the loop." }
+    - { id: b, text: "It retrains the foundation model on the tool result", explanation: "Incorrect. Agents do not retrain the model during a task; results are added to the context." }
+    - { id: c, text: "It adds the observation to its context and reasons about the next step — another tool call, a question or the final answer", explanation: "Correct. The observation feeds the next reasoning step, and the loop repeats until the goal is reached." }
+    - { id: d, text: "It discards the result and repeats the same tool call", explanation: "Incorrect. The point of observing is to use the result; repeating blindly would waste calls." }
+  answer: [c]
+  explanation: "The agent loop is reason → act (request a tool) → observe (add the result to context) → repeat. Each iteration is a model call, so orchestration adds limits such as maximum iterations and human checkpoints."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: medium
+
+- id: q-day-10-009
+  set: day-10
+  type: single
+  stem: "A company has 30 internal REST APIs and several AWS Lambda functions. It wants agents built with different frameworks to discover and use them as MCP tools without writing a separate integration for each agent. Which AWS capability BEST meets this need?"
+  options:
+    - { id: a, text: "Amazon Bedrock AgentCore Gateway", explanation: "Correct. AgentCore Gateway turns APIs, Lambda functions and existing services into MCP-compatible tools that agents can discover." }
+    - { id: b, text: "Amazon Bedrock batch inference", explanation: "Incorrect. Batch inference processes large offline prompt files; it does not expose APIs as tools." }
+    - { id: c, text: "Amazon Bedrock Knowledge Bases", explanation: "Incorrect. Knowledge Bases provide managed RAG over documents, not MCP access to REST APIs and Lambda functions." }
+    - { id: d, text: "Amazon Polly", explanation: "Incorrect. Polly converts text to speech; it has no role in exposing tools to agents." }
+  answer: [a]
+  explanation: "Amazon Bedrock AgentCore includes Runtime, Gateway, Memory, Identity, Policy and Observability. Gateway converts existing APIs and Lambda functions into MCP tools, so any MCP-compatible agent can use them."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-10#explanation
+  difficulty: medium
+
+- id: q-day-10-010
+  set: day-10
+  type: single
+  stem: "A small team with little coding experience wants a managed agent that it can configure in the console with instructions, tools backed by Lambda functions, a knowledge base and guardrails. Which AWS option fits BEST?"
+  options:
+    - { id: a, text: "Train a custom foundation model on Amazon SageMaker AI", explanation: "Incorrect. Training a model from scratch is costly and unnecessary; the team needs an agent built on an existing model." }
+    - { id: b, text: "Amazon Bedrock batch inference jobs", explanation: "Incorrect. Batch inference runs offline prompts; it does not provide an interactive agent with tools." }
+    - { id: c, text: "Build an orchestration loop from scratch on Amazon EC2", explanation: "Incorrect. This requires substantial coding and operations, which the team wants to avoid." }
+    - { id: d, text: "Amazon Bedrock Agents", explanation: "Correct. Bedrock Agents is a fully managed way to configure agents with a model, instructions, action groups, knowledge bases and guardrails." }
+  answer: [d]
+  explanation: "Amazon Bedrock Agents lets you build an agent with little code: choose a model, write instructions, attach action groups (tools backed by Lambda), knowledge bases and guardrails, and enable memory or multi-agent collaboration. AWS runs the orchestration."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-10#explanation
+  difficulty: medium
+
+- id: q-day-10-011
+  set: day-10
+  type: single
+  stem: "A retailer's support agent can issue refunds through a tool. The company worries that a manipulated prompt could make the agent issue large refunds. Which design BEST reduces this risk?"
+  options:
+    - { id: a, text: "Add a sentence to the agent's instructions asking it never to issue large refunds, and grant it full access to all tools", explanation: "Incorrect. Prompt instructions alone can be manipulated, and full access to all tools violates least privilege." }
+    - { id: b, text: "Increase the model's temperature so it is less predictable to attackers", explanation: "Incorrect. Higher temperature makes behaviour more random, not more secure." }
+    - { id: c, text: "Give the agent only the tools it needs and require human approval for refunds above a threshold, enforced outside the model", explanation: "Correct. Least-privilege tools and human-in-the-loop checks enforced outside the prompt limit damage even if the agent is tricked." }
+    - { id: d, text: "Turn off logging of tool calls to reduce cost", explanation: "Incorrect. Logging is needed for audit and investigation; removing it increases risk." }
+  answer: [c]
+  explanation: "Safe agents rely on least-privilege tool access, human approval for high-impact actions, iteration limits, guardrails and logging. Controls enforced outside the model, such as Policy in AgentCore, hold even if prompts are manipulated."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-10#real-world
+  difficulty: hard
+
+- id: q-day-10-012
+  set: day-10
+  type: single
+  stem: "A developer wants an open-source SDK from AWS to build agents in Python with a model-driven approach — define a model, a prompt and tools, and let the model plan the steps. Which option should the developer choose?"
+  options:
+    - { id: a, text: "Amazon Bedrock Knowledge Bases", explanation: "Incorrect. Knowledge Bases provide managed retrieval over documents, not an agent-building SDK." }
+    - { id: b, text: "Strands Agents", explanation: "Correct. Strands Agents is an open-source SDK from AWS for building model-driven agents in code, with support for MCP tools and multi-agent patterns." }
+    - { id: c, text: "Amazon Comprehend", explanation: "Incorrect. Comprehend is a managed NLP service for tasks such as sentiment and entity detection." }
+    - { id: d, text: "AWS Glue", explanation: "Incorrect. Glue is a data-integration (ETL) service, not an agent SDK." }
+  answer: [b]
+  explanation: "Strands Agents is AWS's open-source SDK for building agents in code. The model drives the loop using the tools you provide, and the SDK supports MCP and multi-agent patterns. Agents built with it can be deployed on Amazon Bedrock AgentCore Runtime."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-10#explanation
+  difficulty: easy
+
+- id: q-day-10-013
+  set: day-10
+  type: single
+  stem: "A company has built separate connectors from its chatbot, coding assistant and operations agent to the same ticketing system, and plans five more AI applications. What is the MAIN benefit of rebuilding the integration as an MCP server?"
+  options:
+    - { id: a, text: "The integration is built once and reused by every MCP-compatible application, turning many custom connectors into one", explanation: "Correct. MCP changes the integration problem from M × N custom connectors to M + N standard ones." }
+    - { id: b, text: "MCP removes the need for any authentication on the ticketing system", explanation: "Incorrect. MCP servers can take real actions and must still be authenticated and given least-privilege permissions." }
+    - { id: c, text: "MCP makes the model execute ticketing API calls itself without a host", explanation: "Incorrect. The host executes tool calls through its MCP client; the model still only requests them." }
+    - { id: d, text: "MCP guarantees the agents will never hallucinate", explanation: "Incorrect. MCP standardises access to tools and data; it does not eliminate hallucinations." }
+  answer: [a]
+  explanation: "Without a standard, connecting M applications to N tools needs up to M × N connectors. With MCP, each tool is wrapped once as an MCP server and each application implements MCP once, so any host can discover and use any server."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#examples
+  difficulty: hard
+
+- id: q-day-10-014
+  set: day-10
+  type: single
+  stem: "Which business scenario is the BEST fit for an AI agent rather than a single model call?"
+  options:
+    - { id: a, text: "Translating a product description from English to German", explanation: "Incorrect. Translation is a single text-in, text-out task that one model call handles well." }
+    - { id: b, text: "Summarising one meeting transcript", explanation: "Incorrect. Summarisation needs no tools or multi-step decisions; one model call is enough." }
+    - { id: c, text: "Resolving IT incidents by querying logs and metrics, checking recent deployments and proposing a fix for an engineer to approve", explanation: "Correct. The steps vary per incident and require several tools across systems, which is what agents are for." }
+    - { id: d, text: "Classifying the sentiment of a customer review", explanation: "Incorrect. Sentiment classification is a single-step task without tools." }
+  answer: [c]
+  explanation: "Agents add value when reaching a goal takes several steps across systems and the path varies from case to case — customer-service resolution, IT operations, research and booking. Single-step tasks are better served by a single model call."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-10#real-world
+  difficulty: medium
+
+- id: q-day-10-015
+  set: day-10
+  type: multi
+  stem: "A team is replacing one large agent that has 50 tools with a multi-agent design. Which are genuine benefits of the multi-agent approach? (Select TWO.)"
+  options:
+    - { id: a, text: "Each specialist agent has its own focused instructions, tools and context, which improves tool choice", explanation: "Correct. Specialisation and smaller contexts reduce confusion between tools and lower tokens per call." }
+    - { id: b, text: "Independent sub-tasks can run in parallel and specialist agents can be reused across applications", explanation: "Correct. Parallel fan-out and reuse of specialists are key benefits of multi-agent systems." }
+    - { id: c, text: "Multi-agent systems always use fewer model calls and tokens than a single agent", explanation: "Incorrect. Coordination usually adds model calls, tokens and latency." }
+    - { id: d, text: "Multi-agent systems eliminate the need for evaluation and observability", explanation: "Incorrect. More moving parts make debugging harder, so observability and evaluation matter more." }
+    - { id: e, text: "Multi-agent systems guarantee that agents cannot be manipulated by prompts", explanation: "Incorrect. Each agent can still be targeted; controls such as least privilege and policy are still needed." }
+  answer: [a, b]
+  explanation: "Multi-agent systems trade extra calls, latency and debugging effort for specialisation, cleaner per-agent contexts, parallelism and reuse. Start simple and add agents only where specialisation clearly pays off."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: medium
+
+- id: q-day-10-016
+  set: day-10
+  type: multi
+  stem: "A company plans to run its agents in production on Amazon Bedrock AgentCore. Which capabilities does AgentCore provide? (Select TWO.)"
+  options:
+    - { id: a, text: "Managed short-term and long-term memory for agents", explanation: "Correct. AgentCore Memory provides session memory and memory that persists across sessions." }
+    - { id: b, text: "Identity management for who can call the agent and the credentials the agent uses to reach other services", explanation: "Correct. AgentCore Identity handles inbound access and the scoped credentials agents use for downstream calls." }
+    - { id: c, text: "Pre-training new foundation models from scratch on company data", explanation: "Incorrect. AgentCore runs and secures agents; it does not pre-train foundation models." }
+    - { id: d, text: "Generating images from text prompts with diffusion", explanation: "Incorrect. Image generation is done by image models, not by AgentCore." }
+    - { id: e, text: "Storing model weights for provisioned throughput", explanation: "Incorrect. Provisioned throughput is a Bedrock inference option, not an AgentCore capability." }
+  answer: [a, b]
+  explanation: "Amazon Bedrock AgentCore runs agents built with any framework and model securely at scale. Its components include Runtime, Gateway, Memory, Identity, Policy, Observability, and built-in Code Interpreter and Browser tools."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-10#explanation
+  difficulty: medium
+
+- id: q-day-10-017
+  set: day-10
+  type: multi
+  stem: "Which are core components of an AI agent? (Select THREE.)"
+  options:
+    - { id: a, text: "A foundation model that reasons and decides the next step", explanation: "Correct. The model interprets the goal, plans and chooses actions." }
+    - { id: b, text: "Tools such as APIs, functions or databases that the agent can call", explanation: "Correct. Tools are how the agent takes action and gathers information." }
+    - { id: c, text: "Memory of the current task and, optionally, of earlier sessions", explanation: "Correct. Memory carries context forward within a task and across sessions." }
+    - { id: d, text: "A diffusion model that generates every response", explanation: "Incorrect. Diffusion models generate images; they are not a required part of an agent." }
+    - { id: e, text: "A large labelled dataset collected for each request", explanation: "Incorrect. Agents use pre-trained models at inference time; they do not need a labelled dataset per request." }
+  answer: [a, b, c]
+  explanation: "An agent combines a reasoning model, tools, memory and orchestration — the loop and rules that decide when to call the model, run a tool or stop."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: easy
+
+- id: q-day-10-018
+  set: day-10
+  type: multi
+  stem: "An operations team is deploying an agent that can restart services and change configuration. Which controls should the team put in place to reduce the risk of harmful actions? (Select TWO.)"
+  options:
+    - { id: a, text: "Grant the agent only the permissions and tools each task requires", explanation: "Correct. Least privilege limits what the agent can do, even if it reasons badly or is manipulated." }
+    - { id: b, text: "Require an engineer to approve high-impact changes and set a maximum number of loop iterations", explanation: "Correct. Human approval and iteration limits stop runaway or harmful actions." }
+    - { id: c, text: "Give the agent administrator access so it never fails for lack of permissions", explanation: "Incorrect. Broad permissions maximise the damage a mistaken or manipulated agent can cause." }
+    - { id: d, text: "Disable tracing so the agent runs faster", explanation: "Incorrect. Traces are needed to audit and debug the agent's reasoning and actions." }
+    - { id: e, text: "Allow the agent to install any MCP server it finds without review", explanation: "Incorrect. MCP servers can take real actions; only trusted, authenticated servers should be used." }
+  answer: [a, b]
+  explanation: "Safe agent design uses least-privilege tools, human-in-the-loop approval for high-impact actions, iteration limits, guardrails and full logging and observability. Options that remove oversight or broaden permissions are almost always wrong."
+  domain: D3
+  taskStatement: "3.1"
+  lessonRef: day-10#exam-tips
+  difficulty: hard
+
+- id: q-day-10-019
+  set: day-10
+  type: ordering
+  stem: "Place the steps of a tool-use interaction between an application and a foundation model in the correct order, from first to last."
+  options:
+    - { id: a, text: "The application executes the tool, for example by calling an API or Lambda function", explanation: "This is the third step: the application, not the model, runs the tool." }
+    - { id: b, text: "The application sends the user's request together with the tool names, descriptions and input schemas", explanation: "This is the first step: the model must know which tools exist and how to call them." }
+    - { id: c, text: "The model writes the final answer using the tool result", explanation: "This is the last step: the model uses the observation to respond." }
+    - { id: d, text: "The model returns a tool-use request naming the tool and its arguments", explanation: "This is the second step: the model decides a tool is needed and specifies how to call it." }
+    - { id: e, text: "The application sends the tool's result back to the model", explanation: "This is the fourth step: the observation is added to the model's context." }
+  answer: [b, d, a, e, c]
+  explanation: "Tool use: describe the tools, the model requests a tool with arguments, the application executes it, the result goes back to the model, and the model continues — possibly calling more tools — before giving the final answer."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: medium
+
+- id: q-day-10-020
+  set: day-10
+  type: matching
+  stem: "Match each requirement of a travel-booking assistant to the agentic AI concept that addresses it."
+  options:
+    - { id: a, text: "Remember next month that the traveller prefers aisle seats", explanation: "Long-term memory persists preferences across sessions." }
+    - { id: b, text: "Call a flight-search API to find available flights", explanation: "A tool lets the agent take action or fetch data from another system." }
+    - { id: c, text: "Decide whether to search again, ask the traveller a question or confirm the booking", explanation: "Orchestration and planning decide the next step in the agent loop." }
+    - { id: d, text: "Let any compatible AI application reuse the airline's booking tools through one standard interface", explanation: "MCP standardises how applications connect to tools and data through MCP servers." }
+  matchTargets:
+    - { id: t1, text: "Tool use" }
+    - { id: t2, text: "Long-term memory" }
+    - { id: t3, text: "Model Context Protocol (MCP)" }
+    - { id: t4, text: "Orchestration and planning" }
+  answer: { a: t2, b: t1, c: t4, d: t3 }
+  explanation: "Tools let agents act, long-term memory persists information across sessions, orchestration and planning decide the next step in the loop, and MCP standardises access to tools and data across applications."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-10#explanation
+  difficulty: easy

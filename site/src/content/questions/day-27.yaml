@@ -1,0 +1,336 @@
+- id: q-day-27-001
+  set: day-27
+  type: single
+  stem: "A company wants to be alerted automatically whenever any Amazon S3 bucket holding training data is not encrypted, and to see each bucket's configuration history. Which service should it use?"
+  options:
+    - { id: a, text: "AWS Config", explanation: "Correct. AWS Config records resource configurations over time and evaluates them against rules, flagging non-compliant resources." }
+    - { id: b, text: "AWS Artifact", explanation: "Incorrect. Artifact provides AWS's compliance reports and agreements; it does not assess your resources." }
+    - { id: c, text: "Amazon Inspector", explanation: "Incorrect. Inspector scans software for vulnerabilities, not bucket encryption settings." }
+    - { id: d, text: "Amazon CloudWatch", explanation: "Incorrect. CloudWatch monitors metrics, logs and alarms; it does not record resource configuration history or evaluate configuration rules." }
+  answer: [a]
+  explanation: "AWS Config continuously records resource configuration and changes, and Config rules mark resources compliant or non-compliant. Conformance packs group rules, and remediation actions can fix issues automatically."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: easy
+
+- id: q-day-27-002
+  set: day-27
+  type: single
+  stem: "A team packages its model inference code in container images for Amazon ECS. Security requires continuous scanning of these images for known software vulnerabilities (CVEs). Which service meets this requirement?"
+  options:
+    - { id: a, text: "AWS Config", explanation: "Incorrect. Config evaluates resource configuration settings, not software packages inside images." }
+    - { id: b, text: "Amazon Inspector", explanation: "Correct. Inspector continuously scans EC2 instances, container images and Lambda functions for known vulnerabilities and network exposure." }
+    - { id: c, text: "Amazon Macie", explanation: "Incorrect. Macie discovers sensitive data in S3, not software vulnerabilities." }
+    - { id: d, text: "AWS Artifact", explanation: "Incorrect. Artifact provides AWS compliance documents; it does not scan your software." }
+  answer: [b]
+  explanation: "Amazon Inspector is the automated vulnerability management service. It ranks findings by severity and matters for AI teams running model servers on EC2, inference containers or Lambda functions used as agent tools."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: easy
+
+- id: q-day-27-003
+  set: day-27
+  type: single
+  stem: "An external auditor asks a company for AWS's SOC 2 report covering the services its AI application uses. Where can the company obtain this report?"
+  options:
+    - { id: a, text: "AWS CloudTrail", explanation: "Incorrect. CloudTrail records API activity in your account; it does not hold AWS audit reports." }
+    - { id: b, text: "AWS Config", explanation: "Incorrect. Config assesses your resource configurations, not AWS's own compliance." }
+    - { id: c, text: "AWS Artifact", explanation: "Correct. Artifact is the self-service portal for AWS compliance reports such as SOC, ISO and PCI DSS, and for agreements with AWS." }
+    - { id: d, text: "AWS Trusted Advisor", explanation: "Incorrect. Trusted Advisor gives best-practice recommendations for your account, not audit reports." }
+  answer: [c]
+  explanation: "Under shared responsibility, auditors want evidence that AWS has done its part. AWS Artifact provides AWS's independent audit reports and agreements on demand, which the customer combines with evidence about its own controls."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: easy
+
+- id: q-day-27-004
+  set: day-27
+  type: single
+  stem: "Encryption was disabled on an S3 bucket containing patient data in March. The compliance officer must identify which administrator made the change. Which service provides this information?"
+  options:
+    - { id: a, text: "Amazon CloudWatch", explanation: "Incorrect. CloudWatch shows metrics and logs about system behaviour but is not the record of which identity called an API." }
+    - { id: b, text: "Amazon Inspector", explanation: "Incorrect. Inspector finds software vulnerabilities, not who changed a setting." }
+    - { id: c, text: "AWS Artifact", explanation: "Incorrect. Artifact provides AWS compliance documents, not activity in your account." }
+    - { id: d, text: "AWS CloudTrail", explanation: "Correct. CloudTrail records the API call, the identity that made it, the time and the source." }
+  answer: [d]
+  explanation: "CloudTrail is the audit trail of actions: who called which API, on which resource, and when. AWS Config shows what the configuration was over time; CloudTrail shows who changed it."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: easy
+
+- id: q-day-27-005
+  set: day-27
+  type: single
+  stem: "A company wants automated recommendations across its whole AWS account, such as idle GPU instances, S3 buckets with open access and services close to their quota limits. Which service provides these?"
+  options:
+    - { id: a, text: "AWS Trusted Advisor", explanation: "Correct. Trusted Advisor runs automated checks across the account for cost optimisation, performance, security, fault tolerance, service quotas and operational excellence." }
+    - { id: b, text: "AWS Well-Architected Tool", explanation: "Incorrect. The Well-Architected Tool is a guided review of one workload's design, not automated account-wide checks." }
+    - { id: c, text: "Amazon Inspector", explanation: "Incorrect. Inspector scans for software vulnerabilities; it does not check costs or quotas." }
+    - { id: d, text: "AWS Artifact", explanation: "Incorrect. Artifact provides compliance reports and agreements." }
+  answer: [a]
+  explanation: "Trusted Advisor inspects your account against best practices and recommends improvements. A core set of checks is available to everyone, with the full set on Business-level support plans and above."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: medium
+
+- id: q-day-27-006
+  set: day-27
+  type: single
+  stem: "Before launch, an architecture team wants a guided review of a new generative AI chatbot's design against AWS best practices, including questions specific to generative AI, and an improvement plan. What should they use?"
+  options:
+    - { id: a, text: "AWS Trusted Advisor checks", explanation: "Incorrect. Trusted Advisor runs automated account-wide checks; it does not guide a design review of a specific workload." }
+    - { id: b, text: "The AWS Well-Architected Tool with the Generative AI Lens", explanation: "Correct. The tool reviews a workload pillar by pillar, and the Generative AI Lens adds questions for generative AI workloads, producing an improvement plan." }
+    - { id: c, text: "AWS Artifact reports", explanation: "Incorrect. Artifact provides AWS's compliance evidence, not a review of your design." }
+    - { id: d, text: "An AWS Config conformance pack", explanation: "Incorrect. Conformance packs evaluate resource configurations against rules, not the overall workload design." }
+  answer: [b]
+  explanation: "The Well-Architected Framework has six pillars. The Well-Architected Tool lets teams review a workload, highlights risks and produces an improvement plan; lenses such as the Machine Learning Lens and Generative AI Lens add workload-specific questions."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: medium
+
+- id: q-day-27-007
+  set: day-27
+  type: single
+  stem: "An operations team wants to be notified when the latency or error rate of its Amazon Bedrock application rises above a set level. Which service should it use?"
+  options:
+    - { id: a, text: "AWS CloudTrail", explanation: "Incorrect. CloudTrail records API calls for auditing; it is not the service for performance metrics and alarms." }
+    - { id: b, text: "AWS Config", explanation: "Incorrect. Config tracks configuration compliance, not latency or errors." }
+    - { id: c, text: "Amazon CloudWatch", explanation: "Correct. CloudWatch collects metrics such as invocations, latency and errors and raises alarms when thresholds are crossed." }
+    - { id: d, text: "AWS Artifact", explanation: "Incorrect. Artifact provides compliance reports, not monitoring." }
+  answer: [c]
+  explanation: "CloudTrail is the audit of actions; CloudWatch is operational monitoring with metrics, logs, alarms and dashboards. Bedrock publishes metrics such as invocations, latency, token counts and errors."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: easy
+
+- id: q-day-27-008
+  set: day-27
+  type: single
+  stem: "A marketing team builds a product-description generator that calls Amazon Nova on Amazon Bedrock and includes catalogue data in each prompt. The model is not customised. In the Generative AI Security Scoping Matrix, which scope is this?"
+  options:
+    - { id: a, text: "Scope 1: Consumer app", explanation: "Incorrect. Scope 1 is using a public consumer generative AI service, not building your own application." }
+    - { id: b, text: "Scope 2: Enterprise app", explanation: "Incorrect. Scope 2 is a third-party enterprise product with generative AI features, not an application you build." }
+    - { id: c, text: "Scope 4: Fine-tuned models", explanation: "Incorrect. The model is used as is; no fine-tuning has taken place." }
+    - { id: d, text: "Scope 3: Pre-trained models", explanation: "Correct. Building your own application on an existing foundation model through an API is scope 3." }
+  answer: [d]
+  explanation: "The matrix has five scopes: 1 consumer app, 2 enterprise app, 3 pre-trained models, 4 fine-tuned models, 5 self-trained models. Scopes 1 and 2 are buying; 3 to 5 are building, with more control and more responsibility."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#examples
+  difficulty: medium
+
+- id: q-day-27-009
+  set: day-27
+  type: single
+  stem: "Employees have started using a free public generative AI chatbot for work tasks. Which controls are MOST appropriate for this use case?"
+  options:
+    - { id: a, text: "An AI acceptable use policy and staff training on what data must not be entered", explanation: "Correct. In scope 1 the company controls little beyond what data goes in, so policy and training are the main controls." }
+    - { id: b, text: "Governance of the fine-tuning dataset", explanation: "Incorrect. There is no fine-tuning in this use case; that applies to scope 4." }
+    - { id: c, text: "KMS customer managed keys for the model weights", explanation: "Incorrect. The company does not own or host the model, so it cannot encrypt its weights." }
+    - { id: d, text: "Amazon Inspector scans of the model-serving containers", explanation: "Incorrect. The company does not run the chatbot's containers, so it cannot scan them." }
+  answer: [a]
+  explanation: "A public consumer chatbot is scope 1 in the Generative AI Security Scoping Matrix. The company's main levers are an acceptable use policy and training, for example never pasting customer or confidential data into public tools."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: medium
+
+- id: q-day-27-010
+  set: day-27
+  type: single
+  stem: "A European company must keep customer data processing within the EU. Its Bedrock application needs more capacity, and the team plans to use cross-Region inference. Which approach meets the residency requirement?"
+  options:
+    - { id: a, text: "Use a global cross-Region inference profile to get the most capacity", explanation: "Incorrect. Global profiles can route requests to Regions worldwide, which may break the EU residency requirement." }
+    - { id: b, text: "Use EU Regions with an EU geographic cross-Region inference profile", explanation: "Correct. Geographic profiles keep processing within one geography, such as the EU, while still adding capacity." }
+    - { id: c, text: "Use any Region as long as traffic goes through AWS PrivateLink", explanation: "Incorrect. PrivateLink keeps traffic off the internet but does not control which Region processes the data." }
+    - { id: d, text: "Enable S3 Object Lock on the application's buckets", explanation: "Incorrect. Object Lock controls retention and deletion, not where data is processed." }
+  answer: [b]
+  explanation: "Residency is controlled by choosing the Regions where data is stored and processed. Features that route across Regions, such as Bedrock cross-Region inference, need deliberate choices: geographic profiles keep processing within a geography; global profiles do not."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: hard
+
+- id: q-day-27-011
+  set: day-27
+  type: single
+  stem: "Chat transcripts stored in Amazon S3 must be deleted automatically 90 days after they are created. Which feature meets this requirement with the LEAST operational effort?"
+  options:
+    - { id: a, text: "S3 Object Lock in compliance mode", explanation: "Incorrect. Object Lock prevents deletion during a retention period; it does not delete objects." }
+    - { id: b, text: "S3 Versioning", explanation: "Incorrect. Versioning keeps old versions of objects, which retains more data rather than deleting it." }
+    - { id: c, text: "An S3 Lifecycle rule that expires objects after 90 days", explanation: "Correct. Lifecycle expiration deletes objects automatically when they reach the configured age." }
+    - { id: d, text: "CloudTrail log file integrity validation", explanation: "Incorrect. Integrity validation proves CloudTrail logs were not altered; it does not delete transcripts." }
+  answer: [c]
+  explanation: "S3 Lifecycle rules transition objects to cheaper storage classes such as S3 Glacier and expire them when they are no longer needed. Keeping data longer than its purpose is both a cost and a privacy risk."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: medium
+
+- id: q-day-27-012
+  set: day-27
+  type: single
+  stem: "A regulator requires a bank to keep conversation records from its AI assistant for five years and to guarantee that nobody, including administrators, can alter or delete them during that period. Which control meets this requirement?"
+  options:
+    - { id: a, text: "An S3 Lifecycle rule that expires the records after five years", explanation: "Incorrect. Expiration deletes data at the end of the period but does not prevent deletion or changes before then." }
+    - { id: b, text: "Transitioning the records to an S3 Glacier storage class", explanation: "Incorrect. Glacier reduces storage cost but on its own does not prevent deletion or modification." }
+    - { id: c, text: "Relying on the default CloudWatch Logs retention", explanation: "Incorrect. Default retention keeps logs indefinitely but does not stop someone with permissions from deleting them." }
+    - { id: d, text: "S3 Object Lock with a five-year retention period", explanation: "Correct. Object Lock (write once, read many) prevents objects from being changed or deleted during the retention period." }
+  answer: [d]
+  explanation: "Retention means keeping data as long as required, and no longer. S3 Object Lock enforces that records cannot be altered or deleted for a period; a Lifecycle rule can then move them to Glacier and expire them after five years."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#examples
+  difficulty: hard
+
+- id: q-day-27-013
+  set: day-27
+  type: single
+  stem: "A company is writing its AI governance process. Which approach to review cadence reflects good practice?"
+  options:
+    - { id: a, text: "Set regular reviews by risk, such as quarterly for high-risk models and yearly for policies, plus extra reviews after incidents or major model changes", explanation: "Correct. Governance is continuous: reviews are scheduled by risk and triggered by events." }
+    - { id: b, text: "Review each model once at launch and never again unless it fails", explanation: "Incorrect. Models, data and regulations change over time; a one-off launch review misses drift and new risks." }
+    - { id: c, text: "Review models only when a regulator asks for evidence", explanation: "Incorrect. Waiting for a regulator means problems are found late and evidence of ongoing control is missing." }
+    - { id: d, text: "Let each developer decide privately when to review their own models", explanation: "Incorrect. Governance needs named owners, a cross-functional board and a documented schedule, not ad hoc individual choices." }
+  answer: [a]
+  explanation: "Governance processes include written policies, named owners, an AI governance board, a documented review cadence proportionate to risk, event-triggered reviews and staff training."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: medium
+
+- id: q-day-27-014
+  set: day-27
+  type: single
+  stem: "A company fine-tunes a foundation model on its own support transcripts and serves it in a customer application. Compared with calling the unmodified model, how does its position in the Generative AI Security Scoping Matrix change?"
+  options:
+    - { id: a, text: "It stays in scope 3, and no additional responsibilities apply", explanation: "Incorrect. Customising the model with your own data moves the use case to scope 4." }
+    - { id: b, text: "It moves to scope 4, adding responsibility for the fine-tuning data and the custom model", explanation: "Correct. Scope 4 includes everything in scope 3 plus governance of the fine-tuning dataset and protection and evaluation of the custom model." }
+    - { id: c, text: "It moves to scope 5, because the company now owns the entire model", explanation: "Incorrect. Scope 5 is training a model from scratch; fine-tuning an existing model is scope 4." }
+    - { id: d, text: "It moves to scope 2, because the base model comes from a vendor", explanation: "Incorrect. Scope 2 is using a third-party enterprise application, not building your own application." }
+  answer: [b]
+  explanation: "Moving from scope 3 to scope 4 adds governance of the fine-tuning data, encryption and access control for the custom model, and evaluation before release, on top of the application, prompt and guardrail responsibilities of scope 3."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#examples
+  difficulty: hard
+
+- id: q-day-27-015
+  set: day-27
+  type: multi
+  stem: "Which statements about AWS Artifact are correct? (Select TWO.)"
+  options:
+    - { id: a, text: "It provides on-demand access to AWS compliance reports such as SOC and ISO", explanation: "Correct. Artifact is the portal for AWS's independent audit reports and certifications." }
+    - { id: b, text: "It lets customers review and accept agreements with AWS, such as a Business Associate Addendum", explanation: "Correct. Artifact also manages agreements with AWS." }
+    - { id: c, text: "It scans your resources for misconfigurations", explanation: "Incorrect. Configuration compliance is AWS Config's job." }
+    - { id: d, text: "It records the API calls made in your account", explanation: "Incorrect. API activity is recorded by AWS CloudTrail." }
+    - { id: e, text: "It makes your workload compliant automatically", explanation: "Incorrect. Artifact provides AWS's evidence; your own controls and evidence remain your responsibility." }
+  answer: [a, b]
+  explanation: "AWS Artifact supplies AWS's compliance evidence, reports and agreements. It does not assess your resources; you combine its documents with your own evidence from tools such as Config and CloudTrail."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: medium
+
+- id: q-day-27-016
+  set: day-27
+  type: multi
+  stem: "Which categories of checks does AWS Trusted Advisor provide? (Select TWO.)"
+  options:
+    - { id: a, text: "Cost optimisation", explanation: "Correct. Trusted Advisor finds idle or under-used resources that waste money." }
+    - { id: b, text: "Service quotas", explanation: "Correct. Trusted Advisor warns when usage approaches service quotas." }
+    - { id: c, text: "Model bias detection", explanation: "Incorrect. Bias detection is done with tools such as SageMaker Clarify, not Trusted Advisor." }
+    - { id: d, text: "Prompt injection filtering", explanation: "Incorrect. Prompt attacks are filtered by Amazon Bedrock Guardrails." }
+    - { id: e, text: "Discovery of PII in S3 objects", explanation: "Incorrect. Discovering sensitive data in S3 is Amazon Macie's job." }
+  answer: [a, b]
+  explanation: "Trusted Advisor checks cover cost optimisation, performance, security, fault tolerance, service quotas and operational excellence across the account."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: easy
+
+- id: q-day-27-017
+  set: day-27
+  type: multi
+  stem: "A compliance officer must show (1) that buckets with patient data have been encrypted throughout the past year, (2) which administrator disabled encryption on one bucket in March, and (3) AWS's own HIPAA-related documentation and agreement. Which services provide this evidence? (Select THREE.)"
+  options:
+    - { id: a, text: "AWS Config", explanation: "Correct. Config shows configuration history and rule compliance over time for need (1)." }
+    - { id: b, text: "Amazon Inspector", explanation: "Incorrect. Inspector reports software vulnerabilities, which none of the three needs asks for." }
+    - { id: c, text: "AWS CloudTrail", explanation: "Correct. CloudTrail identifies the administrator who made the API call for need (2)." }
+    - { id: d, text: "AWS Trusted Advisor", explanation: "Incorrect. Trusted Advisor gives current best-practice recommendations, not a year of configuration history or AWS's agreements." }
+    - { id: e, text: "AWS Artifact", explanation: "Correct. Artifact provides AWS's compliance documents and agreements such as a BAA for need (3)." }
+    - { id: f, text: "Amazon CloudWatch", explanation: "Incorrect. CloudWatch monitors performance metrics and alarms, not configuration compliance or AWS's agreements." }
+  answer: [a, c, e]
+  explanation: "Config answers what the configuration was over time, CloudTrail answers who changed it, and Artifact supplies AWS's compliance evidence. One scenario often needs several governance services."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#examples
+  difficulty: hard
+
+- id: q-day-27-018
+  set: day-27
+  type: multi
+  stem: "A company enables Amazon Bedrock model invocation logging. The logs contain customer names and account details from prompts. Which data governance measures should it apply to these logs? (Select TWO.)"
+  options:
+    - { id: a, text: "Encrypt the logs with a KMS key and restrict who can read them", explanation: "Correct. Logs that contain prompts are sensitive data and need encryption and access control." }
+    - { id: b, text: "Set a retention period and a lifecycle rule for the logs", explanation: "Correct. Retention should be chosen deliberately so logs are kept as long as required and no longer." }
+    - { id: c, text: "Keep the logs forever in case they are useful later", explanation: "Incorrect. Keeping personal data indefinitely increases cost and privacy risk, and may break retention rules." }
+    - { id: d, text: "Make the logs publicly readable for transparency", explanation: "Incorrect. Public logs would expose customers' personal data." }
+    - { id: e, text: "Disable CloudTrail to avoid storing duplicate information", explanation: "Incorrect. CloudTrail records API activity, which invocation logs do not replace; disabling it removes the audit trail." }
+  answer: [a, b]
+  explanation: "Data governance covers logging, retention, lifecycle, residency and monitoring. Logs are data too: protect them with encryption and access control, and set retention periods because defaults such as CloudWatch Logs keep data indefinitely."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: medium
+
+- id: q-day-27-019
+  set: day-27
+  type: ordering
+  stem: "Arrange the scopes of the Generative AI Security Scoping Matrix in order, from the least ownership of the AI stack to the most."
+  options:
+    - { id: a, text: "Fine-tuned models", explanation: "Fourth: you customise an existing foundation model with your own data." }
+    - { id: b, text: "Consumer app", explanation: "First: you use a public generative AI service and control almost nothing except your inputs and policy." }
+    - { id: c, text: "Self-trained models", explanation: "Fifth: you train a model from scratch and own the whole stack." }
+    - { id: d, text: "Enterprise app", explanation: "Second: you use a third-party enterprise product with generative AI features under an agreement." }
+    - { id: e, text: "Pre-trained models", explanation: "Third: you build your own application on an existing foundation model through an API." }
+  answer: [b, d, e, a, c]
+  explanation: "Scope 1 consumer app, 2 enterprise app, 3 pre-trained models, 4 fine-tuned models, 5 self-trained models. Moving from 1 to 5 increases both control and responsibility."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#explanation
+  difficulty: medium
+
+- id: q-day-27-020
+  set: day-27
+  type: matching
+  stem: "Match each governance question to the AWS service that BEST answers it."
+  options:
+    - { id: a, text: "Is each resource configured according to our rules, and how has its configuration changed?", explanation: "AWS Config records configuration history and evaluates rules." }
+    - { id: b, text: "Does our inference container contain software with known vulnerabilities?", explanation: "Amazon Inspector scans for CVEs in EC2, container images and Lambda." }
+    - { id: c, text: "Where can we download AWS's ISO certifications?", explanation: "AWS Artifact provides AWS compliance reports." }
+    - { id: d, text: "Which identity called the API that deleted an endpoint?", explanation: "AWS CloudTrail records API activity." }
+    - { id: e, text: "Is model latency rising right now?", explanation: "Amazon CloudWatch provides metrics and alarms." }
+    - { id: f, text: "Which account-wide changes would cut cost and improve security?", explanation: "AWS Trusted Advisor provides best-practice checks." }
+    - { id: g, text: "Is this specific workload's design aligned with the six pillars?", explanation: "The AWS Well-Architected Tool reviews a workload against the pillars and lenses." }
+  matchTargets:
+    - { id: t1, text: "AWS CloudTrail" }
+    - { id: t2, text: "AWS Well-Architected Tool" }
+    - { id: t3, text: "AWS Config" }
+    - { id: t4, text: "Amazon CloudWatch" }
+    - { id: t5, text: "AWS Artifact" }
+    - { id: t6, text: "AWS Trusted Advisor" }
+    - { id: t7, text: "Amazon Inspector" }
+  answer: { a: t3, b: t7, c: t5, d: t1, e: t4, f: t6, g: t2 }
+  explanation: "Config checks configuration, Inspector finds vulnerabilities, Artifact provides AWS's evidence, CloudTrail records actions, CloudWatch monitors behaviour, Trusted Advisor gives account-wide best-practice checks, and the Well-Architected Tool reviews a workload's design."
+  domain: D5
+  taskStatement: "5.2"
+  lessonRef: day-27#examples
+  difficulty: medium

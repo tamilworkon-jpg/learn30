@@ -1,0 +1,329 @@
+- id: q-day-09-001
+  set: day-09
+  type: single
+  stem: "A law firm takes a pre-trained foundation model and trains it further on a smaller set of its own labelled contracts so that the model uses legal terminology correctly. Which stage of the FM lifecycle is this?"
+  options:
+    - { id: a, text: "Pre-training", explanation: "Incorrect. Pre-training builds general knowledge from enormous unlabelled datasets and is done by model providers, not on a small set of contracts." }
+    - { id: b, text: "Deployment", explanation: "Incorrect. Deployment makes a model available for inference; it does not change what the model has learned." }
+    - { id: c, text: "Fine-tuning", explanation: "Correct. Fine-tuning adapts a pre-trained model to a task or domain with a smaller, often labelled, dataset." }
+    - { id: d, text: "Data selection for pre-training", explanation: "Incorrect. Data selection gathers and curates training data; the firm is already training the model on its data." }
+  answer: [c]
+  explanation: "The FM lifecycle runs data selection, model selection, pre-training, fine-tuning, evaluation, deployment and feedback. Fine-tuning takes a pre-trained model and adapts it to a specific domain, task or style using a smaller dataset."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: easy
+
+- id: q-day-09-002
+  set: day-09
+  type: single
+  stem: "A mid-sized retailer wants to add generative AI to its customer emails but cannot spend millions of dollars or months of GPU time. Which FM lifecycle stage is the retailer MOST likely to skip?"
+  options:
+    - { id: a, text: "Pre-training", explanation: "Correct. Pre-training on huge datasets requires thousands of GPUs and millions of dollars, so most companies start from an existing FM instead." }
+    - { id: b, text: "Model selection", explanation: "Incorrect. Choosing an existing FM is exactly where a company like this starts." }
+    - { id: c, text: "Evaluation", explanation: "Incorrect. Every organisation should evaluate a model on its own use case before deployment." }
+    - { id: d, text: "Feedback", explanation: "Incorrect. Collecting feedback from real use is cheap and drives continuous improvement." }
+  answer: [a]
+  explanation: "Model providers such as Amazon, Anthropic, Meta and Mistral AI perform data selection and pre-training. A typical company consuming models starts at model selection, may fine-tune or use prompting and retrieval, then evaluates, deploys and gathers feedback."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: medium
+
+- id: q-day-09-003
+  set: day-09
+  type: single
+  stem: "After launching an assistant, a team reviews thumbs-down ratings and user corrections every week and uses them to update prompts and training data. Which stage of the FM lifecycle does this activity represent?"
+  options:
+    - { id: a, text: "Model selection", explanation: "Incorrect. Model selection is choosing which FM or architecture to use, before training or deployment." }
+    - { id: b, text: "Pre-training", explanation: "Incorrect. Pre-training is large-scale self-supervised learning on broad data, not reviewing user ratings." }
+    - { id: c, text: "Data selection for pre-training", explanation: "Incorrect. Although feedback can influence future data, the activity of collecting real-world ratings is the feedback stage." }
+    - { id: d, text: "Feedback", explanation: "Correct. The feedback stage collects signals from real use and feeds them into the next iteration of the lifecycle." }
+  answer: [d]
+  explanation: "The FM lifecycle is a loop. In the feedback stage, ratings, corrections, escalations and failure cases from production are collected and used to improve data, fine-tuning, prompts and evaluation in the next round."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: easy
+
+- id: q-day-09-004
+  set: day-09
+  type: single
+  stem: "Before releasing a fine-tuned model, a company tests it against benchmark datasets, asks domain experts to rate sample outputs and checks for harmful or biased responses. Which FM lifecycle stage is this?"
+  options:
+    - { id: a, text: "Deployment", explanation: "Incorrect. Deployment happens after the model has passed evaluation and makes it available for inference." }
+    - { id: b, text: "Evaluation", explanation: "Correct. Evaluation measures quality, safety and bias with benchmarks, human review and automatic metrics before release." }
+    - { id: c, text: "Fine-tuning", explanation: "Incorrect. Fine-tuning is the training step that has already happened; testing the result is evaluation." }
+    - { id: d, text: "Data selection", explanation: "Incorrect. Data selection gathers training data; it does not test a trained model's outputs." }
+  answer: [b]
+  explanation: "Evaluation decides whether a model is good enough for its purpose. It uses benchmark datasets, automatic metrics, human review and LLM-as-a-judge, and checks safety, bias and hallucination before deployment."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: medium
+
+- id: q-day-09-005
+  set: day-09
+  type: single
+  stem: "A developer compares on-demand prices for a text model on Amazon Bedrock. Which statement about input and output tokens is generally TRUE?"
+  options:
+    - { id: a, text: "Output tokens usually cost more per token than input tokens", explanation: "Correct. Output is generated one token at a time and needs more compute per token, so it is usually priced higher." }
+    - { id: b, text: "Input tokens are free; only output tokens are billed", explanation: "Incorrect. Everything you send — instructions, documents, history and the question — is billed as input tokens." }
+    - { id: c, text: "Input and output tokens always cost exactly the same", explanation: "Incorrect. They are priced separately, and output is usually more expensive." }
+    - { id: d, text: "Tokens are billed only when the response exceeds the context window", explanation: "Incorrect. On-demand usage is billed for every input and output token on every request." }
+  answer: [a]
+  explanation: "On-demand pricing is per token, with input and output priced separately. Output tokens usually cost several times more than input tokens, so limiting output length is an effective cost lever."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: easy
+
+- id: q-day-09-006
+  set: day-09
+  type: single
+  stem: "An assistant handles 500,000 requests per month. Each request uses about 800 input tokens and 200 output tokens. The model costs $0.50 per million input tokens and $2.00 per million output tokens. What is the approximate monthly cost?"
+  options:
+    - { id: a, text: "$200", explanation: "Incorrect. $200 is only the input cost (400 million tokens × $0.50); the output tokens are also billed." }
+    - { id: b, text: "$250", explanation: "Incorrect. This prices all 500 million tokens at the input rate and ignores the higher output price." }
+    - { id: c, text: "$400", explanation: "Correct. Input: 400 million × $0.50 = $200. Output: 100 million × $2.00 = $200. Total about $400." }
+    - { id: d, text: "$1,000", explanation: "Incorrect. This prices all 500 million tokens at the output rate; input tokens are cheaper." }
+  answer: [c]
+  explanation: "Monthly cost ≈ requests × (input tokens × input price + output tokens × output price). Here 500,000 × 800 = 400 million input tokens ($200) and 500,000 × 200 = 100 million output tokens ($200), so about $400 per month."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#examples
+  difficulty: medium
+
+- id: q-day-09-007
+  set: day-09
+  type: single
+  stem: "A model has a 32,000-token context window. An application sends a 30,000-token prompt and asks for up to 4,000 output tokens, and the request fails. What is the MOST likely reason?"
+  options:
+    - { id: a, text: "On-demand inference does not support prompts longer than 1,000 tokens", explanation: "Incorrect. There is no such general limit; the limit that applies is the model's context window." }
+    - { id: b, text: "The output must always be longer than the input", explanation: "Incorrect. There is no rule that output must be longer than input; answers are usually much shorter." }
+    - { id: c, text: "Input tokens and output tokens are counted against separate 32,000-token windows", explanation: "Incorrect. They share one context window, which is why the request is too large." }
+    - { id: d, text: "The context window must hold both the prompt and the generated response, and 34,000 tokens exceeds it", explanation: "Correct. The context window limits input plus output, so 30,000 + 4,000 tokens does not fit." }
+  answer: [d]
+  explanation: "The context window is the model's working memory for one call and covers both the input and the response. Context engineering keeps the prompt within budget and reserves room for the output."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: medium
+
+- id: q-day-09-008
+  set: day-09
+  type: single
+  stem: "A RAG assistant inserts ten retrieved chunks of 500 tokens each into every request. Costs have tripled and answers have become less accurate because most chunks are irrelevant. Which change is MOST likely to reduce cost AND improve answer quality?"
+  options:
+    - { id: a, text: "Switch to a model with a larger context window and retrieve twenty chunks", explanation: "Incorrect. Sending even more loosely related text raises cost further and can dilute the model's attention." }
+    - { id: b, text: "Retrieve only the three most relevant chunks, filtered and re-ranked for the question", explanation: "Correct. Selecting fewer, more relevant chunks cuts input tokens and removes distracting context." }
+    - { id: c, text: "Remove the system instructions to make room for the chunks", explanation: "Incorrect. Removing instructions harms answer quality and does not address the irrelevant chunks." }
+    - { id: d, text: "Increase the maximum output tokens so the model can explain each chunk", explanation: "Incorrect. Longer outputs cost more and do not make the retrieved context more relevant." }
+  answer: [b]
+  explanation: "More context is not always better. Irrelevant chunks cost money, slow responses and distract the model. The context engineering technique of selecting only relevant content — fewer, better chunks — improves both cost and quality."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#examples
+  difficulty: hard
+
+- id: q-day-09-009
+  set: day-09
+  type: single
+  stem: "Every request to a support assistant begins with the same 6,000-token block of company policies, followed by a short customer question. Which Amazon Bedrock feature MOST directly reduces the cost of resending the policy block?"
+  options:
+    - { id: a, text: "Provisioned throughput with a 6-month commitment", explanation: "Incorrect. Provisioned throughput reserves capacity by the hour; it does not discount a repeated prompt prefix." }
+    - { id: b, text: "Batch inference", explanation: "Incorrect. Batch inference suits offline jobs where nobody is waiting, not a live support assistant." }
+    - { id: c, text: "Prompt caching", explanation: "Correct. Prompt caching stores a repeated prefix so later requests read it at a discounted price and with lower latency." }
+    - { id: d, text: "A larger maximum output tokens setting", explanation: "Incorrect. Output length has no effect on the cost of the repeated input prefix." }
+  answer: [c]
+  explanation: "When many requests share the same long prefix — system prompt, policies, tool definitions — prompt caching lets Bedrock reuse it. Cached tokens are billed at a large discount and processed faster; AWS quotes up to 90% lower cost and up to 85% lower latency for supported models."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: medium
+
+- id: q-day-09-010
+  set: day-09
+  type: single
+  stem: "Which description BEST defines context engineering for generative AI applications?"
+  options:
+    - { id: a, text: "Designing and managing everything that goes into the model's context window on each call — instructions, knowledge, history, memory and tools — so it is relevant and within the token budget", explanation: "Correct. Context engineering covers the whole payload the application assembles, not just the wording of instructions." }
+    - { id: b, text: "Training a foundation model from scratch on a company's data", explanation: "Incorrect. That is pre-training, a lifecycle stage, not context engineering." }
+    - { id: c, text: "Choosing the AWS Region where a model is deployed", explanation: "Incorrect. Region choice affects latency, compliance and availability, not what goes into the context window." }
+    - { id: d, text: "Rewording a single instruction until the model's tone sounds right", explanation: "Incorrect. That is a narrow form of prompt engineering; context engineering is broader and covers all context sources." }
+  answer: [a]
+  explanation: "Context engineering decides what information goes into the context window, in what form and order, and what stays out. It includes system instructions, examples, retrieved knowledge, conversation history, memory, tool definitions and results, and the user's request."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: medium
+
+- id: q-day-09-011
+  set: day-09
+  type: single
+  stem: "A chatbot resends the full conversation history on every turn. After 40 turns, responses are slow and expensive, and the bot sometimes ignores a constraint the user gave early on. Which approach BEST addresses all three problems?"
+  options:
+    - { id: a, text: "Drop all turns except the latest question", explanation: "Incorrect. This removes the user's early constraint entirely, so the bot would ignore it every time." }
+    - { id: b, text: "Increase the temperature so the model pays more attention to early turns", explanation: "Incorrect. Temperature controls randomness, not attention to earlier content or cost." }
+    - { id: c, text: "Move the chatbot to batch inference", explanation: "Incorrect. Batch inference suits offline jobs; a live chatbot needs immediate responses." }
+    - { id: d, text: "Keep the last few turns verbatim and replace older turns with a short summary that preserves key constraints", explanation: "Correct. Compressing history caps input tokens, speeds responses and keeps important facts visible to the model." }
+  answer: [d]
+  explanation: "Conversation history grows with every turn and can push key facts into the middle of a long context. Summarising older turns (compress) or storing key facts as memory (write and persist) keeps the context small, cheap and focused."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#examples
+  difficulty: hard
+
+- id: q-day-09-012
+  set: day-09
+  type: single
+  stem: "An application places a 90,000-token block of documents into a prompt, with the key policy paragraph buried halfway through. The model often misses that paragraph. Which context engineering practice is MOST likely to help?"
+  options:
+    - { id: a, text: "Add more documents so the key paragraph is surrounded by related text", explanation: "Incorrect. More text makes the context longer and the key paragraph easier to miss." }
+    - { id: b, text: "Select fewer, more relevant passages and place the key material where the model attends to it, with clear section labels", explanation: "Correct. Models can pay less attention to information in the middle of very long contexts, so selecting, ordering and structuring content helps." }
+    - { id: c, text: "Remove the section labels so the prompt reads as one continuous document", explanation: "Incorrect. Clear structure helps the model distinguish instructions from data and find what matters." }
+    - { id: d, text: "Ask the model to produce a much longer answer", explanation: "Incorrect. Longer output does not make the model notice a buried paragraph and adds cost." }
+  answer: [b]
+  explanation: "Research on long contexts shows that information buried in the middle can be overlooked ('lost in the middle'). Good context engineering selects only relevant content, orders it deliberately and labels sections clearly."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: medium
+
+- id: q-day-09-013
+  set: day-09
+  type: single
+  stem: "Which of the following is the BEST example of a generative AI use case?"
+  options:
+    - { id: a, text: "Calculating each employee's exact payroll tax according to fixed rules", explanation: "Incorrect. Deterministic calculations that must be exact every time are better handled by rules or conventional code." }
+    - { id: b, text: "Storing customer orders in a relational database", explanation: "Incorrect. Storing records is a database task, not content generation." }
+    - { id: c, text: "Summarising long customer-call transcripts into a few key points for agents", explanation: "Correct. Summarising language is a core strength of generative AI, and an agent can review the result." }
+    - { id: d, text: "Encrypting files at rest in Amazon S3", explanation: "Incorrect. Encryption is a security function performed by storage and key services, not generative AI." }
+  answer: [c]
+  explanation: "Generative AI is strongest when the output is language, code or media and a human can review it: summarising, drafting, translating, coding, answering questions and generating images. It is a poor fit where exact, deterministic results are required."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: easy
+
+- id: q-day-09-014
+  set: day-09
+  type: single
+  stem: "An agent has access to 60 tool definitions, and all 60 are included in every model call. Token costs are high and the agent sometimes picks the wrong tool. Which change BEST applies context engineering?"
+  options:
+    - { id: a, text: "Include only the tool definitions relevant to the current step or request", explanation: "Correct. Selecting relevant tools cuts input tokens and reduces confusion between similar tools." }
+    - { id: b, text: "Lengthen each tool description so the model has more detail on all 60 tools", explanation: "Incorrect. Longer descriptions for every tool increase tokens further without narrowing the choice." }
+    - { id: c, text: "Fine-tune the model on the 60 tool descriptions before every release", explanation: "Incorrect. Fine-tuning is costly and does not remove the 60 definitions sent with every call." }
+    - { id: d, text: "Remove the system instructions to make room for more tools", explanation: "Incorrect. Removing instructions harms behaviour and does not solve the tool-selection problem." }
+  answer: [a]
+  explanation: "Tool definitions are input tokens on every call. The select technique of context engineering passes only the tools needed for the current step, lowering cost and making correct tool choice easier."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#examples
+  difficulty: hard
+
+- id: q-day-09-015
+  set: day-09
+  type: multi
+  stem: "A product team wants to cut the token cost of a live customer-service assistant without changing provider. Which actions will reduce cost? (Select TWO.)"
+  options:
+    - { id: a, text: "Set a maximum output tokens limit and instruct the model to answer concisely", explanation: "Correct. Output tokens usually cost the most, so shorter answers cut cost and latency." }
+    - { id: b, text: "Use a smaller model for simple questions that it handles well", explanation: "Correct. Smaller models cost less per token and are often good enough for easy steps." }
+    - { id: c, text: "Add ten more few-shot examples to every prompt", explanation: "Incorrect. Extra examples are input tokens on every request and increase cost." }
+    - { id: d, text: "Raise the temperature parameter", explanation: "Incorrect. Temperature controls randomness, not the number of tokens billed." }
+    - { id: e, text: "Ask the model for detailed, multi-paragraph answers", explanation: "Incorrect. Longer answers mean more output tokens, which are usually the most expensive." }
+  answer: [a, b]
+  explanation: "Cost levers include shorter prompts, fewer and more relevant retrieved chunks, a maximum output tokens limit, smaller models where they are good enough, summarised history, caching stable prefixes and moving offline work to batch."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: medium
+
+- id: q-day-09-016
+  set: day-09
+  type: multi
+  stem: "A company is shortlisting projects for generative AI. Which projects are typical generative AI use cases? (Select TWO.)"
+  options:
+    - { id: a, text: "Drafting product descriptions from a few bullet points", explanation: "Correct. Content generation from short inputs is a classic generative AI use case." }
+    - { id: b, text: "Generating code from a natural-language description of a function", explanation: "Correct. Code generation from natural language is a common generative AI use case." }
+    - { id: c, text: "Settling account balances to the exact cent each night", explanation: "Incorrect. Exact, deterministic calculations are better handled by conventional software." }
+    - { id: d, text: "Backing up databases to Amazon S3 Glacier", explanation: "Incorrect. Backups are a storage operation, not content generation." }
+    - { id: e, text: "Assigning static IP addresses to servers", explanation: "Incorrect. Network configuration is not a generative AI task." }
+  answer: [a, b]
+  explanation: "Generative AI creates language, code and media: drafting copy, summarising, translating, generating code, answering questions over documents and generating images. Tasks that require exact, repeatable results are better served by rules or traditional software."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: easy
+
+- id: q-day-09-017
+  set: day-09
+  type: multi
+  stem: "A support assistant's context regularly exceeds the model's window, and answer quality has dropped as conversations grow. Which context engineering techniques should the team apply? (Select TWO.)"
+  options:
+    - { id: a, text: "Summarise older conversation turns and keep only recent turns verbatim", explanation: "Correct. Compressing history keeps the context within budget while preserving key information." }
+    - { id: b, text: "Retrieve only the most relevant knowledge-base chunks for each question", explanation: "Correct. Selecting relevant content reduces tokens and removes distracting text." }
+    - { id: c, text: "Paste the entire knowledge base into every request so nothing is missed", explanation: "Incorrect. Sending everything blows the budget, raises cost and dilutes attention." }
+    - { id: d, text: "Choose the model with the largest context window and include all history and documents", explanation: "Incorrect. A larger window postpones the problem while increasing cost and latency; more context is not always better." }
+    - { id: e, text: "Delete the system instructions to free up tokens", explanation: "Incorrect. System instructions define behaviour; removing them lowers quality." }
+  answer: [a, b]
+  explanation: "Context engineering selects what is relevant, compresses what is kept, persists information outside the window when it is not needed every call, and isolates large tasks into focused sub-contexts. Simply sending more context is rarely the right answer."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#exam-tips
+  difficulty: hard
+
+- id: q-day-09-018
+  set: day-09
+  type: multi
+  stem: "Which statements about Amazon Bedrock pricing options are correct? (Select THREE.)"
+  options:
+    - { id: a, text: "Batch inference for supported models costs less than on-demand inference", explanation: "Correct. Batch inference is priced at a significant discount — around half of on-demand — for supported models." }
+    - { id: b, text: "Provisioned throughput reserves model units for an hourly price, optionally with a 1-month or 6-month commitment", explanation: "Correct. Provisioned throughput buys reserved capacity billed by the hour, with lower rates for longer commitments." }
+    - { id: c, text: "Embedding models are charged per input token", explanation: "Correct. Embedding models convert input text into vectors and are billed on input tokens." }
+    - { id: d, text: "On-demand inference charges a fixed monthly fee regardless of usage", explanation: "Incorrect. On-demand has no commitment and bills only for the tokens actually used." }
+    - { id: e, text: "Output tokens are free when prompt caching is enabled", explanation: "Incorrect. Prompt caching discounts a repeated input prefix; output tokens are still billed." }
+  answer: [a, b, c]
+  explanation: "On-demand is pay-per-token with no commitment. Batch inference is cheaper for offline jobs, provisioned throughput reserves capacity by the hour, prompt caching discounts repeated input prefixes, and embedding models bill per input token."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: medium
+
+- id: q-day-09-019
+  set: day-09
+  type: ordering
+  stem: "Place these foundation model lifecycle stages in the correct order, from first to last."
+  options:
+    - { id: a, text: "Evaluation", explanation: "Third of these five: the trained and fine-tuned model is measured on benchmarks, human review and safety checks." }
+    - { id: b, text: "Pre-training", explanation: "First of these five: the model learns general knowledge from huge unlabelled datasets." }
+    - { id: c, text: "Feedback", explanation: "Last: signals from real use feed the next iteration of the loop." }
+    - { id: d, text: "Fine-tuning", explanation: "Second of these five: the pre-trained model is adapted to a task or domain with a smaller dataset." }
+    - { id: e, text: "Deployment", explanation: "Fourth: the evaluated model is made available for inference." }
+  answer: [b, d, a, e, c]
+  explanation: "The full lifecycle is data selection, model selection, pre-training, fine-tuning, evaluation, deployment and feedback. Feedback then loops back into data, tuning and prompts for the next round."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#diagram
+  difficulty: easy
+
+- id: q-day-09-020
+  set: day-09
+  type: matching
+  stem: "Match each workload to the Amazon Bedrock inference or cost option that fits it BEST."
+  options:
+    - { id: a, text: "Summarise 2 million archived support tickets by next week; nobody is waiting for individual results", explanation: "Batch inference suits large offline jobs and is cheaper than on-demand for supported models." }
+    - { id: b, text: "A new pilot assistant with unpredictable, low traffic and no commitment wanted", explanation: "On-demand inference bills per token with no commitment, ideal for variable or early-stage usage." }
+    - { id: c, text: "Steady, very high traffic that needs guaranteed throughput all month", explanation: "Provisioned throughput reserves model units for a fixed hourly price, guaranteeing capacity for steady volume." }
+    - { id: d, text: "Thousands of requests a day that all start with the same long policy document", explanation: "Prompt caching discounts the repeated prefix and lowers latency." }
+  matchTargets:
+    - { id: t1, text: "On-demand inference" }
+    - { id: t2, text: "Batch inference" }
+    - { id: t3, text: "Provisioned throughput" }
+    - { id: t4, text: "Prompt caching" }
+  answer: { a: t2, b: t1, c: t3, d: t4 }
+  explanation: "On-demand is pay-per-token with no commitment; batch inference processes large offline jobs at a lower price; provisioned throughput reserves capacity by the hour for steady, high volume; prompt caching discounts repeated prompt prefixes."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-09#explanation
+  difficulty: medium
