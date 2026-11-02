@@ -11,6 +11,7 @@ import Orientation from '../components/lesson/Orientation.astro';
 import Objectives from '../components/lesson/Objectives.astro';
 import QuizSlot from '../components/quiz/QuizSlot.astro';
 import SectionNav from '../components/lesson/SectionNav.astro';
+import SlideDeck from '../components/lesson/SlideDeck.astro';
 import MarkComplete from '../components/lesson/MarkComplete';
 import { weeksFromCourse } from '../lib/badges';
 import '../styles/dashboard.css';
@@ -40,6 +41,7 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
     <button class="btn btn-ghost" type="button" id="skip-dismiss" aria-label="Dismiss notice">Dismiss</button>
   </div>
   <div class="lesson">
+    <SlideDeck>
     <article data-pagefind-body data-lesson-day={d.day}>
       <div class="flex flex-wrap items-center gap-2 mb-2">
         {d.domains.map((id) => <span class={`chip chip-${id}`}>{id} · {domainName(id)}</span>)}
@@ -60,6 +62,7 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
         {next && <a class="btn" href={`/day/${pad(next)}`}>Next: Day {next} →</a>}
       </nav>
     </article>
+    </SlideDeck>
     <aside class="lesson-aside">
       <SectionNav sections={sections} />
       <div class="card mt-4 pastel-a">
@@ -83,8 +86,7 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
     const day = Number(notice.dataset.day);
     let prevDone = day === 1;
     try {
-      const p = JSON.parse(localStorage.getItem('aip-course:v1') || '{}');
-      prevDone ||= p.days?.[String(day - 1)]?.status === 'completed';
+      prevDone ||= getStore().get().days[String(day - 1)]?.status === 'completed';
     } catch {
       /* treat as not completed */
     }

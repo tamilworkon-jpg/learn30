@@ -55,7 +55,10 @@ const { sections } = Astro.props;
     queued = false;
     const line = window.innerHeight * 0.35;
     let id = sectionEls[0]?.id ?? '';
-    for (const s of sectionEls) if (s.getBoundingClientRect().top <= line) id = s.id;
+    // T182 slide view: the pager says which section is on screen (the others are display:none).
+    const slideSection = document.documentElement.dataset.lessonView === 'slides' ? document.querySelector<HTMLElement>('[data-slide-section]')?.dataset.slideSection : undefined;
+    if (slideSection) id = slideSection;
+    else for (const s of sectionEls) if (s.getBoundingClientRect().top <= line) id = s.id;
     if (id === current) return;
     links.get(current)?.removeAttribute('aria-current');
     links.get(id)?.setAttribute('aria-current', 'true');
@@ -71,6 +74,7 @@ const { sections } = Astro.props;
   window.addEventListener('resize', schedule);
   window.addEventListener('load', schedule);
   sectionEls.forEach((s) => s.addEventListener('toggle', schedule)); // deep dive open/close
+  document.addEventListener('slidechange', schedule);
   update();
 </script>
 
