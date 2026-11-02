@@ -1,7 +1,13 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { load } from 'js-yaml';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { noHorizontalScroll, shot, trackConsole } from './helpers';
 import { done, progress, seed } from './progress-fixtures';
+
+// Lesson days whose MDX doesn't exist yet are shown as "Coming soon" (none once all content is authored).
+const course = load(readFileSync('src/data/course.yaml', 'utf8')) as { days: { day: number; kind: string }[] };
+const pendingLesson = course.days.find((d) => d.kind === 'lesson' && !existsSync(`src/content/lessons/day-${String(d.day).padStart(2, '0')}.mdx`));
 
 // T067 — R12 weeks → days → sections with status icons + domain chips; pending days "Coming soon".
 test.describe('outline (T067) @visual', () => {
@@ -26,7 +32,8 @@ test.describe('outline (T067) @visual', () => {
     await expect(d3.locator('[data-section="hands-on"]')).toHaveAttribute('data-viewed', 'false');
     await expect(d3.locator('[data-section="hands-on"] a')).toHaveAttribute('href', '/day/03#hands-on');
     await expect(root.locator('[data-day-row="4"]')).toHaveAttribute('data-status', 'not-started');
-    await expect(root.locator('[data-day-row="4"]')).toContainText('Coming soon');
+    if (pendingLesson) await expect(root.locator(`[data-day-row="${pendingLesson.day}"]`)).toContainText('Coming soon');
+    else await expect(root.getByText('Coming soon')).toHaveCount(0);
     await expect(root.locator('[data-day-row="10"] .chip-D2')).toBeVisible();
     await expect(root.locator('[data-day-row="10"] .chip-D3')).toBeVisible();
     await expect(root.locator('[data-day-row="1"]')).not.toContainText('Coming soon');

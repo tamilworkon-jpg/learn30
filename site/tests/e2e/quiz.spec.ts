@@ -17,9 +17,15 @@ async function openQuiz(page: Page) {
 
 async function goTo(page: Page, i: number) {
   const heading = quiz(page).getByText(/^Question \d+ of \d+$/);
+  let moved = false;
   for (;;) {
     const current = Number((await heading.textContent())!.match(/Question (\d+)/)![1]) - 1;
-    if (current === i) return;
+    if (current === i) {
+      // The runner moves focus to the new question in a deferred effect; wait for it so it can't steal focus later.
+      if (moved) await expect(quiz(page).locator('legend.q-stem')).toBeFocused();
+      return;
+    }
+    moved = true;
     await quiz(page)
       .getByRole('button', { name: current < i ? 'Next →' : '← Previous' })
       .click();
