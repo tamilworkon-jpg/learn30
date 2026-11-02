@@ -73,7 +73,7 @@ Useful variants:
 ```bash
 npx playwright test quiz --reporter=line          # one spec
 npx playwright test --grep-invert=T175            # everything except visual regression
-npx playwright test visual --update-snapshots     # re-baseline AFTER inspecting the new PNGs
+npx playwright test visual --update-snapshots=all # re-baseline AFTER inspecting the new PNGs (plain --update-snapshots skips changes within the 1% tolerance)
 E2E_PORT=4441 npx playwright test                 # run on another port (parallel checkouts/worktrees)
 ```
 
@@ -134,7 +134,7 @@ New work: add tasks to `tasks.md` (next free `T###`), follow the gate, tick the 
 | `Error: Cannot find module @rollup/rollup-linux-…` / esbuild platform errors | `node_modules` was installed by another OS — run npm through the same OS that installed it (see Prerequisites) or reinstall. |
 | Search page says search is unavailable | Run `npm run build && npm run preview` (the index is built by Pagefind). |
 | E2E port already in use | Stop the other preview server, or set `E2E_PORT`. |
-| Visual test fails after an intended UI change | Inspect `test-results/**/…-diff.png`, then `npx playwright test visual --update-snapshots`. |
+| Visual test fails after an intended UI change | Inspect `test-results/**/…-diff.png`, then `npx playwright test visual --update-snapshots=all`. |
 | Lesson time check fails in `validate:content` | Core reading time must be 50–70 min and within ±15 % of `estimatedMinutes` (words ÷ 130 + diagrams + 8 lab + 1/quiz question). |
 
 ---
