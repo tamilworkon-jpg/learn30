@@ -10,6 +10,8 @@
     "prepare:assets": "tsx scripts/build-validators.ts && tsx scripts/render-diagrams.ts",
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
+    "start": "npm run build && tsx server/index.ts",
+    "serve": "tsx server/index.ts",
     "lint": "eslint .",
     "typecheck": "astro check",
     "test": "vitest run",
