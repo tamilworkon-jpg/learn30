@@ -11,6 +11,8 @@ import Orientation from '../components/lesson/Orientation.astro';
 import Objectives from '../components/lesson/Objectives.astro';
 import QuizSlot from '../components/quiz/QuizSlot.astro';
 import SectionNav from '../components/lesson/SectionNav.astro';
+import MarkComplete from '../components/lesson/MarkComplete';
+import '../styles/dashboard.css';
 import { course, examGuide, pad } from '../lib/data';
 import { coreMinutes, getPrevNext } from '../lib/lesson-utils';
 import { parseLesson } from '../lib/lesson-parse';
@@ -37,7 +39,7 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
     <button class="btn btn-ghost" type="button" id="skip-dismiss" aria-label="Dismiss notice">Dismiss</button>
   </div>
   <div class="lesson">
-    <article data-pagefind-body>
+    <article data-pagefind-body data-lesson-day={d.day}>
       <div class="flex flex-wrap items-center gap-2 mb-2">
         {d.domains.map((id) => <span class={`chip chip-${id}`}>{id} · {domainName(id)}</span>)}
         <span class="pill pill-accent">⏱ {core} min core</span>
@@ -51,6 +53,7 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
         )
       }
       <Content components={{ Section, Diagram, Callout, HandsOnLab, Recap, Orientation, Objectives, QuizSlot }} />
+      <MarkComplete client:visible day={d.day} nextHref={next ? `/day/${pad(next)}` : undefined} />
       <nav class="prevnext" aria-label="Day navigation">
         {prev ? <a class="btn btn-ghost" href={`/day/${pad(prev)}`}>← Previous: Day {prev}</a> : <span />}
         {next && <a class="btn" href={`/day/${pad(next)}`}>Next: Day {next} →</a>}
@@ -67,6 +70,13 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
 </BaseLayout>
 
 <script>
+  import { getStore } from '../lib/progress/store';
+  import { trackSections } from '../lib/progress/section-tracker';
+
+  // T068 — record sections viewed + resume position.
+  const lessonEl = document.querySelector<HTMLElement>('[data-lesson-day]');
+  if (lessonEl) trackSections({ day: Number(lessonEl.dataset.lessonDay), sections: [...lessonEl.querySelectorAll('[data-section-type]')], store: getStore() });
+
   const notice = document.getElementById('skip-notice');
   if (notice) {
     const day = Number(notice.dataset.day);
@@ -83,7 +93,6 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
       sessionStorage.setItem(`skip-dismissed-${day}`, '1');
     });
   }
-
 </script>
 
 <style>

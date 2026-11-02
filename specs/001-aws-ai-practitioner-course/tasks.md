@@ -265,30 +265,40 @@ If a model is unavailable, use any available model that differs from the author 
 
 ### Tests first
 
-- [ ] T063 [P] [US3] Unit test site/tests/unit/section-tracker.test.ts
+- [x] T063 [P] [US3] Unit test site/tests/unit/section-tracker.test.ts
   - TC: R1 section ≥50% visible for 3 s → `markSectionViewed` + `setLastPosition`; R2 <3 s → nothing.
-- [ ] T064 [P] [US3] Unit test site/tests/unit/weak-domains.test.ts
+  - Done: 8 unit tests (incl. tall-section rule: section filling ≥50% of the viewport also counts; resume point = settled section filling most of the screen).
+- [x] T064 [P] [US3] Unit test site/tests/unit/weak-domains.test.ts
   - TC: R3 domain weak when < 70% with ≥5 answered over latest attempts; R4 returns linked days.
-- [ ] T065 [P] [US3] E2E site/tests/e2e/resume.spec.ts (`@visual`)
+  - Done: 6 unit tests. `weakDomains(attempts, {days}, domains)` is pure (no YAML parser in client bundles).
+- [x] T065 [P] [US3] E2E site/tests/e2e/resume.spec.ts (`@visual`)
   - TC: R5 complete Days 1–2, view Day 3 `hands-on`, reload `/` → 2/30 (7%), Day 3 in progress, Continue → `/day/03#hands-on` in 1 click; R6 in-progress quiz answers retained; R7 weak domains widget lists low domains; screenshot `dashboard-resume`.
-- [ ] T066 [P] [US3] E2E site/tests/e2e/settings.spec.ts (`@visual`)
+  - Done: 6 tests × 2 projects (+ mark-complete/undo test, dark-theme dashboard, axe serious/critical = 0). Screenshots `dashboard-resume`, `dashboard-resume-dark` inspected.
+- [x] T066 [P] [US3] E2E site/tests/e2e/settings.spec.ts (`@visual`)
   - TC: R8 export downloads schema-valid JSON; R9 import valid → summary → confirm replaces; R10 malformed / >1 MB rejected with message; R11 reset needs confirmation; screenshots `settings`, `import-confirm`.
-- [ ] T067 [P] [US3] E2E site/tests/e2e/outline.spec.ts (`@visual`)
+  - Done: 4 tests × 2 projects (export validated with Ajv against progress-schema.json; axe). Screenshots `settings`, `import-confirm`, `reset-confirm` inspected.
+- [x] T067 [P] [US3] E2E site/tests/e2e/outline.spec.ts (`@visual`)
   - TC: R12 weeks → days → sections with status icons + domain chips; pending days marked "Coming soon"; screenshot `outline`.
+  - Done: 1 test × 2 projects (axe). Screenshot `outline` inspected; mobile section rows fixed to a 3-column grid.
 
 ### Implementation
 
-- [ ] T068 [US3] Implement site/src/lib/progress/section-tracker.ts; mount in LessonLayout → T063 green
-- [ ] T069 [US3] Implement site/src/lib/weak-domains.ts → T064 green
-- [ ] T070 [P] [US3] Create site/src/components/lesson/MarkComplete.tsx
-- [ ] T071 [P] [US3] Create site/src/components/dashboard/ProgressRing.tsx
-- [ ] T072 [P] [US3] Create site/src/components/dashboard/ContinueCard.tsx (lastPosition → else next incomplete day → else Day 1)
-- [ ] T073 [P] [US3] Create site/src/components/dashboard/WeekTimeline.tsx
-- [ ] T074 [P] [US3] Create site/src/components/dashboard/WeakDomains.tsx
-- [ ] T075 [US3] Build dashboard site/src/pages/index.astro → T065 green
-- [ ] T076 [US3] Build site/src/pages/outline.astro → T067 green
-- [ ] T077 [US3] Build site/src/pages/settings.astro + site/src/components/settings/ProgressIO.tsx → T066 green
-- [ ] T078 [US3] REVIEW US3 (MVP gate): regression US1–US3; screenshots vs. Phase 0 dashboard
+- [x] T068 [US3] Implement site/src/lib/progress/section-tracker.ts; mount in LessonLayout → T063 green
+  - Done: mounted via LessonLayout `<script>` on `[data-lesson-day]` → `[data-section-type]` elements.
+- [x] T069 [US3] Implement site/src/lib/weak-domains.ts → T064 green
+- [x] T070 [P] [US3] Create site/src/components/lesson/MarkComplete.tsx
+- [x] T071 [P] [US3] Create site/src/components/dashboard/ProgressRing.tsx
+- [x] T072 [P] [US3] Create site/src/components/dashboard/ContinueCard.tsx (lastPosition → else next incomplete day → else Day 1)
+  - Done: deviation — a lastPosition on an already-completed day falls through to the next incomplete day (avoids "continuing" a finished day).
+- [x] T073 [P] [US3] Create site/src/components/dashboard/WeekTimeline.tsx
+- [x] T074 [P] [US3] Create site/src/components/dashboard/WeakDomains.tsx
+- [x] T075 [US3] Build dashboard site/src/pages/index.astro → T065 green
+  - Done: `Dashboard.tsx` island (client:load, `data-ready`) composes T071–T074; plan built at build time by `src/lib/course-plan.ts` (all 30 days from course.yaml; review/mock days treated as available because US4/US5 layouts render them).
+- [x] T076 [US3] Build site/src/pages/outline.astro → T067 green
+- [x] T077 [US3] Build site/src/pages/settings.astro + site/src/components/settings/ProgressIO.tsx → T066 green
+  - Done: import shows summary + "Replace my progress"/Cancel; reset needs "Yes, delete all progress"; >1 MB rejected before reading.
+- [x] T078 [US3] REVIEW US3 (MVP gate): regression US1–US3; screenshots vs. Phase 0 dashboard
+  - Done: lint/typecheck/validate clean; unit 173/173; e2e 66/66 (desktop+mobile). Dashboard compared with Phase 0 `design-dashboard-*`: same layout/cards/ring/tiles; week-tile titles line-clamped (3 lines) instead of the mockup short titles; streak + badges arrive with US7.
 
 **Checkpoint**: 🎯 MVP — study Days 1–3 with quiz and resume.
 
