@@ -1,5 +1,5 @@
 import { resolve } from 'node:path';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { pageJsGzipBytes } from '../../scripts/perf-check';
 
 // T176 — P1 lesson page interactive < 2 s with 4× CPU throttling; P2 search results < 1 s (warm, also

@@ -1,14 +1,12 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, getUi, settleSaves, signedInContext, test, type Page } from './fixtures';
 import { noHorizontalScroll, shotEl, trackConsole } from './helpers';
 import { readProgress } from './progress-fixtures';
-import { themeInit } from './routes';
+import { seedTheme } from './routes';
 
-// T182 — slide lessons (SL1–SL8). The other specs open lessons in the Full page view (playwright.config
-// storageState); here the browser starts clean, so lessons open in the default slide view.
-test.use({ storageState: { cookies: [], origins: [] } });
-
-const VIEW_KEY = 'aip-ui:lesson-view';
+// T182 — slide lessons (SL1–SL9). The other specs open lessons in the Full page view (the fixture saves
+// lessonView 'full' in each test account's UiState); here nothing is saved, so lessons open in the default slide view.
+test.use({ lessonView: null });
 
 /** What the learner sees: a viewport screenshot (a full-page capture would resize the viewport and re-page). */
 async function viewShot(page: Page, name: string) {
@@ -273,8 +271,10 @@ test.describe('slide lessons (T182) @visual', () => {
     await expect(page.locator('#examples')).toBeVisible();
     await expect(page.locator('#summary')).toBeVisible();
     await expect(next(page)).toBeHidden();
-    expect(await page.evaluate((k) => localStorage.getItem(k), VIEW_KEY)).toBe('full');
-    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('aip-course:v1') ?? '{}').settings?.lessonView)).toBeUndefined();
+    // a UI preference in the account's UiState (server), not a progress setting
+    await settleSaves(page);
+    expect((await getUi(page.request))?.lessonView).toBe('full');
+    expect(((await readProgress(page))?.settings as Record<string, unknown> | undefined)?.lessonView).toBeUndefined();
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-lesson-view', 'full');
     await expect(page.locator('#examples')).toBeVisible();
@@ -307,9 +307,33 @@ test.describe('slide lessons (T182) @visual', () => {
     expect((await readProgress(page))?.days['2']?.sectionsViewed).not.toContain('deep-dive');
   });
 
+  test('SL9 slide position survives a reload and a second browser of the same learner', async ({ page, browser, baseURL, account }) => {
+    await page.goto('/day/02#slide-5');
+    await expect(page.locator('html')).toHaveAttribute('data-deck-ready', 'true');
+    await page.waitForLoadState('networkidle');
+    await next(page).click();
+    expect(await slideNo(page)).toBe(6);
+    const section = await article(page).getAttribute('data-slide-section');
+    await settleSaves(page);
+    expect((await getUi(page.request))?.slides?.['2']).toMatchObject({ sectionId: section });
+
+    // reload without the #slide-n hash: the saved position is restored
+    await openDeck(page, '/day/02');
+    await expect(article(page)).toHaveAttribute('data-slide-section', section!);
+    expect(await slideNo(page)).toBe(6);
+
+    // a second browser context (own storage) signed in as the same learner, same viewport → same slide
+    const other = await signedInContext(browser, account, { baseURL: baseURL!, viewport: page.viewportSize() });
+    const op = await other.newPage();
+    await openDeck(op, '/day/02');
+    await expect(article(op)).toHaveAttribute('data-slide-section', section!);
+    expect(await slideNo(op)).toBe(6);
+    await other.close();
+  });
+
   for (const theme of ['light', 'dark'] as const) {
     test(`SL8 axe clean + visible keyboard focus (${theme})`, async ({ page }, info) => {
-      await page.addInitScript(themeInit(theme));
+      await seedTheme(page, theme);
       await openDeck(page);
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       await page.waitForLoadState('networkidle');

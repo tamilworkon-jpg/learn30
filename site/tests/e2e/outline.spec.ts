@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { load } from 'js-yaml';
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { noHorizontalScroll, shot, trackConsole } from './helpers';
 import { done, progress, seed } from './progress-fixtures';
 

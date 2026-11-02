@@ -1,10 +1,11 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, getUi, settleSaves, signedInContext, test, type Page } from './fixtures';
 import { trackConsole } from './helpers';
-import { themeInit } from './routes';
+import { seedTheme } from './routes';
 
-// T187 — collapsible primary navigation (icon rail) and "Today's sections" aside; persisted per browser.
-test.use({ storageState: { cookies: [], origins: [] } }); // default slide view
+// T187 — collapsible primary navigation (icon rail) and "Today's sections" aside; persisted in the account's
+// UiState on the server (Phase 13), so a second browser of the same learner gets the same layout.
+test.use({ lessonView: null }); // default slide view
 
 async function seriousAxe(page: Page) {
   const r = await new AxeBuilder({ page }).analyze();
@@ -25,10 +26,10 @@ test.describe('collapsible side bars (T187) @visual', () => {
   });
 
   for (const theme of ['light', 'dark'] as const) {
-    test(`collapse + expand both bars, persisted, keyboard operable, axe clean (${theme})`, async ({ page }, info) => {
+    test(`collapse + expand both bars, persisted, keyboard operable, axe clean (${theme})`, async ({ page, browser, baseURL, account }, info) => {
       test.skip(info.project.name !== 'desktop', 'desktop only');
       const problems = trackConsole(page);
-      await page.addInitScript(themeInit(theme));
+      await seedTheme(page, theme);
       await page.goto('/day/02');
       await expect(page.locator('html')).toHaveAttribute('data-deck-ready', 'true');
       await page.waitForLoadState('networkidle');
@@ -65,13 +66,21 @@ test.describe('collapsible side bars (T187) @visual', () => {
       await viewShot(page, theme === 'dark' ? 'sidebars-collapsed-dark' : 'sidebars-collapsed');
 
       // persisted across reloads and pages (applied before paint)
-      expect(await page.evaluate(() => [localStorage.getItem('aip-ui:sidebar'), localStorage.getItem('aip-ui:sections')])).toEqual(['collapsed', 'collapsed']);
+      await settleSaves(page);
+      expect(await getUi(page.request)).toMatchObject({ sidebar: 'collapsed', sections: 'collapsed' });
       await page.reload();
       await expect(page.locator('html')).toHaveAttribute('data-sidebar', 'collapsed');
       await expect(page.locator('html')).toHaveAttribute('data-sections', 'collapsed');
       await page.goto('/glossary');
       await expect(page.locator('html')).toHaveAttribute('data-sidebar', 'collapsed');
       await expect(page.getByRole('button', { name: 'Expand navigation' })).toBeVisible();
+      // a second browser signed in as the same learner
+      const other = await signedInContext(browser, account, { baseURL: baseURL!, viewport: page.viewportSize() });
+      const op = await other.newPage();
+      await op.goto('/day/02');
+      await expect(op.locator('html')).toHaveAttribute('data-sidebar', 'collapsed');
+      await expect(op.locator('html')).toHaveAttribute('data-sections', 'collapsed');
+      await other.close();
 
       // expand again
       await page.goto('/day/02');
@@ -85,7 +94,10 @@ test.describe('collapsible side bars (T187) @visual', () => {
       await expect.poll(() => slideCount(page)).toBeGreaterThan(n); // narrower slide → more slides
       await expect.poll(async () => page.locator('article[data-lesson-day]').evaluate((a) => a.scrollHeight <= a.clientHeight)).toBe(true);
       await seriousAxe(page);
-      expect(await page.evaluate(() => [localStorage.getItem('aip-ui:sidebar'), localStorage.getItem('aip-ui:sections')])).toEqual([null, null]);
+      await settleSaves(page);
+      const ui = await getUi(page.request);
+      expect(ui?.sidebar ?? 'expanded').toBe('expanded');
+      expect(ui?.sections ?? 'expanded').toBe('expanded');
       expect(problems, problems.join('\n')).toEqual([]);
     });
   }

@@ -1,5 +1,6 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { noHorizontalScroll, shot, trackConsole } from './helpers';
+import { seedTheme } from './routes';
 
 const pages = ['dashboard', 'lesson', 'quiz', 'results', 'mock', 'review'];
 
@@ -9,12 +10,7 @@ test.describe('design mockups (T002) @visual', () => {
       test(`D2–D4 ${name} ${theme}`, async ({ page }) => {
         const problems = trackConsole(page);
         if (theme === 'dark') {
-          await page.addInitScript(() =>
-            localStorage.setItem(
-              'aip-course:v1',
-              JSON.stringify({ schemaVersion: 1, examGuideVersion: '1.2', startedAt: new Date().toISOString(), lastPosition: null, days: {}, attempts: [], inProgress: {}, streak: { current: 0, longest: 0 }, badges: [], settings: { theme: 'dark' }, ratings: {} }),
-            ),
-          );
+          await seedTheme(page, 'dark');
         }
         await page.goto(`/design/${name}`);
         await expect(page.locator('html')).toHaveAttribute('data-theme', theme);

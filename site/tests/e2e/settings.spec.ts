@@ -2,11 +2,11 @@ import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 import Ajv from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { noHorizontalScroll, shot, shotEl, trackConsole } from './helpers';
 import { done, progress, readProgress, seed } from './progress-fixtures';
 
-// T066 — export / import / reset.
+// T066 — export / import / reset (server-backed since Phase 13: readProgress reads GET /api/progress).
 const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
 const validate = ajv.compile(JSON.parse(readFileSync('src/schemas/progress-schema.json', 'utf8')));
@@ -53,9 +53,8 @@ test.describe('settings (T066) @visual', () => {
     await shotEl(io(page), 'import-confirm');
     await io(page).getByRole('button', { name: 'Replace my progress' }).click();
     await expect(io(page).getByRole('status')).toContainText('Progress imported');
-    const p = (await readProgress(page))!;
-    expect(p.startedAt).toBe('2026-09-01T08:00:00.000Z');
-    expect(Object.keys(p.days)).toEqual(['1', '2', '3']);
+    await expect.poll(async () => Object.keys((await readProgress(page))!.days)).toEqual(['1', '2', '3']);
+    expect((await readProgress(page))!.startedAt).toBe('2026-09-01T08:00:00.000Z');
   });
 
   test('R10 malformed and >1 MB files are rejected with a message', async ({ page }) => {
@@ -84,7 +83,7 @@ test.describe('settings (T066) @visual', () => {
     await shotEl(io(page), 'reset-confirm');
     await io(page).getByRole('button', { name: 'Yes, delete all progress' }).click();
     await expect(io(page).getByRole('status')).toContainText('Progress reset');
-    expect((await readProgress(page))!.days).toEqual({});
+    await expect.poll(async () => (await readProgress(page))!.days).toEqual({});
     await page.goto('/');
     await expect(page.locator('[data-dashboard]')).toContainText('0 of 30 days complete');
   });

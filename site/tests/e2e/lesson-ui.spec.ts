@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { noHorizontalScroll, shot, trackConsole } from './helpers';
 
 test.describe('lesson UI (T036) @visual', () => {

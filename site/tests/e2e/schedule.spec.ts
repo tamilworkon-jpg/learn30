@@ -1,8 +1,9 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { shot, shotEl } from './helpers';
-import { done, progress, seed } from './progress-fixtures';
+import { done, progress, readProgress, seed } from './progress-fixtures';
 
 // T183 — plan dates from the browser's current date (clock frozen for determinism; en-US locale in Playwright).
+// The start date is part of the account's progress on the server (Phase 13).
 const START = new Date(2026, 10, 2).toISOString(); // Mon 2 Nov 2026, local midnight
 const TODAY = new Date(2026, 10, 6, 10, 0, 0); // Fri 6 Nov 2026 → plan Day 5
 
@@ -40,12 +41,12 @@ test.describe('schedule dates (T183) @visual', () => {
   test('SD3 changing the start date in Settings updates dashboard and outline', async ({ page }) => {
     await page.goto('/settings');
     const s = page.locator('#schedule');
-    await expect(page.locator('[data-learner-settings]')).toHaveAttribute('data-ready', 'true');
+    await expect(page.locator('[data-progress-io]')).toHaveAttribute('data-ready', 'true');
     await expect(s.locator('[data-start-input]')).toHaveValue('2026-11-02');
     await s.locator('[data-start-input]').fill('2026-11-05');
     await expect(s.locator('[data-finish-preview]')).toContainText('Dec 4, 2026');
     await s.getByRole('button', { name: 'Save start date' }).click();
-    await expect(page.locator('[data-learner-settings]').getByRole('status')).toContainText('Start date saved');
+    await expect(page.getByRole('status').filter({ hasText: 'Start date saved' })).toBeVisible();
     await shotEl(s, 'schedule-settings');
 
     await page.goto('/');
@@ -55,5 +56,7 @@ test.describe('schedule dates (T183) @visual', () => {
     await expect(card.locator('[data-sched-status]')).toHaveText('1 day ahead');
     await page.goto('/outline');
     await expect(page.locator('[data-day-row="2"] [data-plan-date]')).toHaveText(/^Today · /);
+    // Saved on the server for this account (Phase 13), not in the browser.
+    expect(new Date((await readProgress(page))!.startedAt).getDate()).toBe(5);
   });
 });

@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { parseLesson } from '../../src/lib/lesson-parse';
 import { noHorizontalScroll, shot, trackConsole } from './helpers';
 
