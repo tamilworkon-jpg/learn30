@@ -507,6 +507,20 @@ Every question task: **TC** = TC-Q for that set; **Plan** = register set (red) �
   - TC: SL1 every slide of /day/02 and /day/15 ends above the controls with no page scroll at 1280×600, 1366×650, 1536×730, 1920×900, 1280×800 (and 375×812 phone); exam-fact numbers/chips/mock-ups not marker-highlighted; reading width capped; left nav collapses to an icon rail and "Today's sections" to a strip, persisted (aip-ui:sidebar / aip-ui:sections), keyboard operable, axe clean light/dark; screenshots `sidebars-collapsed`, `slide-short-viewport`.
   - Done: deck now fits from where it starts (compact slide-view chrome: title + Planned-for docked in the deck bar, breadcrumb hidden, tighter panel/topbar), page scrolls only if the stage would be < 260px; `slide-short` mode (smaller heading/illustration) under 420px; inline sentence spans and table rows shrink via their paragraph/table; a lead-in moves to its own slide if shrinking fails; deep-dive teaser compacted; MarkComplete hydration re-pages. Highlight limited to prose `strong` (p/li/td/sentence). Content capped at 920px and centred, larger illustration ≥1500px. Collapsible bars: BaseLayout rail toggle + theme.css rail styles, LessonLayout sections toggle, src/lib/ui-prefs.ts (3 unit tests), public/scripts/ui-prefs.js before paint; slides re-page on width change (ResizeObserver). Day 02 slides: 67 @1366×650, 62 @1280×800, 40 @1280×800 with both bars collapsed. Unit 377, e2e 330 passed + 16 skipped (15 = viewport/project-specific skips + 1 pre-existing); all visual baselines refreshed with --update-snapshots=all after inspection (rail toggle on every desktop route; mobile diffs only the profile avatar). Phone short sizes (375×667, 390×844) dropped from SL1: mobile out of scope this round (learner).
 
+## Phase 13: Server, SQLite and login (learner request, 2026-11-02)
+
+**Decisions (learner)**: one login = one learner; login page + session; server required to save progress (lessons readable signed out). Contract: [contracts/server-api.md](contracts/server-api.md). Supersedes FR-024 (no login) and localStorage-only progress.
+
+- [ ] T188 [P] Server — site/server/ (node:http static + JSON API + node:sqlite schema + scrypt auth + sessions + CSRF + rate limits + page bootstrap + page access rules), `npm start` / `npm run serve`
+  - TC: SV1 unit (in-process, temp DB): sign-up/login/logout/me/patch/delete flows, generic 401, 409 duplicate, password rules; SV2 CSRF (missing header / wrong Origin → 403); SV3 rate limit → 429 + Retry-After; SV4 progress PUT validates with the Ajv schema (400 invalid, 413 > 1 MB), ui PUT shape/size; SV5 static serving: content types, directory index, no path traversal (`/..%2f`, encoded), security headers, HTML no-store; SV6 bootstrap injection + escaping (`</script>` in display name cannot break out); SV7 protected pages redirect with `next`, signed-in /login → /.
+- [ ] T189 [P] Client — store + ui-state on the API via #aip-bootstrap, AccountMenu (log out), /login + /signup pages, Settings → Account (display name, password, delete), legacy localStorage import offer, signed-out banner; slide position + UI prefs server-side; remove local profiles
+  - TC: CL1 unit: store bootstraps from #aip-bootstrap, debounced PUT, keepalive flush, signed-out = memory only; ui-state read/write; legacy import detection; CL2 components render signed-in/out states; CL3 before-paint scripts read the bootstrap.
+- [ ] T190 [P] Tests + docs — Playwright webServer on the Node server with a temp DB (no stale reuse), `fixtures.ts` (fresh user per test, `seed()` via API, `signedIn: false` opt-out), migrate all specs, `auth.spec.ts`; README (npm start, accounts, data file, backups, port forwarding)
+  - TC: whole e2e suite green on the integrated build; AU1–AU8 per contract §8.
+- [ ] T191 Integration: merge T188–T190, full regression, visual baselines refreshed after inspection
+- [ ] T192 Security review of the server/auth by a different model; fix findings
+- [ ] T193 REVIEW Phase 13; log
+
 ## Dependencies & Execution Order
 
 ```mermaid
