@@ -1,0 +1,431 @@
+# Glossary — Domain 1: Fundamentals of AI and ML (task statements 1.1–1.3).
+# Sorted alphabetically by term. `related` entries must match another glossary `term` exactly.
+
+- term: Accuracy
+  definition: "The share of all predictions a classification model gets right: (TP + TN) / all predictions. Easy to understand, but misleading when one class is much rarer than the other."
+  examCue: "On the exam: a 99%-accurate fraud model on 1%-fraud data may catch nothing — when classes are imbalanced, prefer precision, recall or F1."
+  domain: D1
+  taskStatements: ['1.3']
+  related: [Precision, Recall, Class imbalance]
+  lessonRefs: ['day-06']
+
+- term: Algorithm
+  definition: "The learning method or recipe (for example linear regression, XGBoost or k-means) that is run on data to produce a model. The algorithm defines how to learn; the model is what was learned."
+  examCue: "On the exam: 'algorithm' is the procedure, 'model' is the trained artefact — answers that swap the two are wrong."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Model, Training]
+  lessonRefs: ['day-02#explanation', 'day-03#explanation']
+
+- term: Area under the ROC curve
+  aliases: [AUC, AUC-ROC]
+  definition: "A classification metric that summarises how well a model separates positives from negatives across every decision threshold. 0.5 is no better than random guessing; 1.0 is perfect separation."
+  examCue: "On the exam: AUC is threshold-independent — pick it when the question asks to compare classifiers overall rather than at one cut-off."
+  domain: D1
+  taskStatements: ['1.3']
+  related: [Confusion matrix, Precision, Recall]
+  lessonRefs: ['day-06']
+
+- term: Artificial intelligence
+  aliases: [AI]
+  definition: "The broad field of building computer systems that perform tasks normally needing human intelligence, such as recognising images, understanding language or making decisions. Machine learning, deep learning and generative AI are all subsets of AI."
+  examCue: "On the exam: AI is the outermost circle of the family tree — AI ⊃ ML ⊃ deep learning ⊃ generative AI."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Machine learning, Deep learning, Generative AI]
+  lessonRefs: ['day-01#explanation']
+
+- term: Asynchronous inference
+  definition: "An inference option where requests are queued and processed in the background, with results written to Amazon S3 and an optional notification. In SageMaker AI it suits payloads up to 1 GB and processing up to about an hour, and can scale to zero."
+  examCue: "On the exam: 'large payload', 'long processing time' or 'near-real-time but not instant' points to asynchronous inference."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Real-time inference, Batch inference, Serverless inference]
+  lessonRefs: ['day-02#explanation']
+
+- term: Batch inference
+  aliases: [Batch transform, Offline inference]
+  definition: "Running a trained model over a large dataset in one scheduled job and storing all predictions, with no endpoint left running. In SageMaker AI this is batch transform."
+  examCue: "On the exam: 'nobody is waiting', 'overnight' or 'score the whole dataset' signals batch inference — usually the cheapest option."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Real-time inference, Asynchronous inference, Bedrock batch inference]
+  lessonRefs: ['day-02#explanation']
+
+- term: Bias (statistical)
+  definition: "Error caused by overly simple assumptions in a model, so it consistently misses the true pattern in the same direction. High bias goes with underfitting."
+  examCue: "On the exam: 'bias' has two meanings — statistical bias (underfitting) versus responsible-AI bias (unfair treatment of groups); read the context."
+  domain: D1
+  taskStatements: ['1.1', '4.1']
+  related: [Variance, Underfitting, Bias (responsible AI)]
+  lessonRefs: ['day-02#explanation']
+
+- term: Classification
+  definition: "A supervised learning task that predicts a category (label) for each input, such as spam or not spam, or which product type is in a photo."
+  examCue: "On the exam: output is a category or yes/no → classification; output is a number → regression."
+  domain: D1
+  taskStatements: ['1.2']
+  related: [Regression, Supervised learning, Confusion matrix]
+  lessonRefs: ['day-03#explanation']
+
+- term: Clustering
+  definition: "An unsupervised learning task that groups similar, unlabeled items together (for example customer segments), using algorithms such as k-means. Humans must interpret what each group means."
+  examCue: "On the exam: 'segment', 'group similar' or 'discover groups' with no labels → clustering, not classification."
+  domain: D1
+  taskStatements: ['1.2']
+  related: [Unsupervised learning, Classification]
+  lessonRefs: ['day-03#explanation']
+
+- term: Computer vision
+  aliases: [CV]
+  definition: "The area of AI that interprets images and video, for example image classification, object detection, face analysis and reading text in images. On AWS, Amazon Rekognition and Amazon Textract are managed CV services."
+  examCue: "On the exam: images, video, detecting objects or reading scanned documents signals computer vision."
+  domain: D1
+  taskStatements: ['1.1', '1.2']
+  related: [Convolutional neural network, Deep learning]
+  lessonRefs: ['day-01#explanation', 'day-04']
+
+- term: Confusion matrix
+  definition: "A table comparing a classifier's predictions with the true labels, counting true positives, false positives, true negatives and false negatives. Accuracy, precision, recall and F1 are all calculated from it."
+  examCue: "On the exam: if a question gives TP/FP/FN/TN counts, it wants you to compute or choose a metric from the confusion matrix."
+  domain: D1
+  taskStatements: ['1.3']
+  related: [Precision, Recall, Accuracy]
+  lessonRefs: ['day-06']
+
+- term: Convolutional neural network
+  aliases: [CNN]
+  definition: "A deep learning architecture that scans images with small learned filters to detect edges, shapes and then whole objects. It is the classic architecture for computer vision."
+  examCue: "On the exam: CNN pairs with images and computer vision; RNN pairs with sequences such as text or time series."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Computer vision, Neural network, Recurrent neural network]
+  lessonRefs: ['day-04']
+
+- term: Deep learning
+  aliases: [DL]
+  definition: "A subset of machine learning that uses neural networks with many layers to learn complex patterns directly from raw data such as images, audio and text. It needs lots of data and compute."
+  examCue: "On the exam: unstructured data (images, speech, free text) at scale points to deep learning; it is less interpretable than simple ML."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Neural network, Machine learning]
+  lessonRefs: ['day-01#explanation', 'day-04']
+
+- term: Drift
+  aliases: [Data drift, Concept drift, Model drift]
+  definition: "The decline in model quality after deployment because the world changes. Data drift is a change in the inputs; concept drift is a change in the relationship between inputs and the correct answer."
+  examCue: "On the exam: 'accuracy degraded over time in production' → monitor for drift (SageMaker Model Monitor) and retrain."
+  domain: D1
+  taskStatements: ['1.1', '1.3']
+  related: [MLOps, Training]
+  lessonRefs: ['day-02#explanation', 'day-06']
+
+- term: F1 score
+  aliases: [F1]
+  definition: "The harmonic mean of precision and recall, giving one number that balances false positives and false negatives. It is high only when both precision and recall are high."
+  examCue: "On the exam: 'balance precision and recall' or 'imbalanced classes, single metric' → F1 score."
+  domain: D1
+  taskStatements: ['1.3']
+  related: [Precision, Recall]
+  lessonRefs: ['day-06']
+
+- term: Epoch
+  definition: "One complete pass of the learning algorithm over the entire training dataset. Training usually runs for several epochs; the number of epochs is a hyperparameter."
+  examCue: "On the exam: too many epochs can lead to overfitting; too few can leave the model underfit."
+  domain: D1
+  taskStatements: ['1.3']
+  related: [Hyperparameter, Overfitting]
+  lessonRefs: ['day-02#explanation', 'day-06']
+
+- term: Feature
+  definition: "An input attribute the model uses to make a prediction, such as house size or customer age. In a table, features are usually the columns other than the label."
+  examCue: "On the exam: features are inputs, the label is the answer to predict — don't confuse the two."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Label, Feature engineering]
+  lessonRefs: ['day-01#explanation', 'day-02#explanation']
+
+- term: Feature engineering
+  definition: "Selecting, transforming and creating input features (for example turning coordinates into 'distance to nearest school') so a model can learn better. Tools include SageMaker Data Wrangler and SageMaker Feature Store."
+  examCue: "On the exam: recognise feature engineering as a data-preparation stage of the ML pipeline; you won't be asked to perform it."
+  domain: D1
+  taskStatements: ['1.3']
+  related: [Feature, Underfitting]
+  lessonRefs: ['day-02#explanation', 'day-06']
+
+- term: Hyperparameter
+  definition: "A setting chosen before training that controls how the model learns, such as learning rate, number of trees or number of epochs. Unlike parameters, hyperparameters are not learned from the data."
+  examCue: "On the exam: parameters are learned during training; hyperparameters are set by you (or by automatic tuning) before training."
+  domain: D1
+  taskStatements: ['1.3']
+  related: [Training, Train-validation-test split]
+  lessonRefs: ['day-02#explanation', 'day-06']
+
+- term: Inference
+  aliases: [Inferencing, Prediction]
+  definition: "Using a trained model to produce outputs (predictions or generated content) for new input data. It happens constantly in production and is usually most of a model's lifetime cost."
+  examCue: "On the exam: training = learning from data; inference = using the model — 'serve', 'predict', 'invoke' all mean inference."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Training, Real-time inference, Batch inference]
+  lessonRefs: ['day-02#explanation']
+
+- term: Label
+  aliases: [Target]
+  definition: "The known correct answer attached to a training example — the value a supervised model learns to predict, such as 'fraud' or a sale price."
+  examCue: "On the exam: 'we have historical outcomes' means labels exist, so supervised learning is possible."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Feature, Labeled data, Supervised learning]
+  lessonRefs: ['day-01#explanation', 'day-02#explanation']
+
+- term: Labeled data
+  aliases: [Labelled data]
+  definition: "Data where each example includes the correct answer (label), such as emails tagged spam or not spam. It is needed for supervised learning and is often expensive to create (SageMaker Ground Truth helps)."
+  examCue: "On the exam: labeled data → supervised learning; labeling at scale → SageMaker Ground Truth."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Unlabeled data, Label, Supervised learning]
+  lessonRefs: ['day-03#explanation']
+
+- term: Machine learning
+  aliases: [ML]
+  definition: "A subset of AI in which systems learn patterns from data to make predictions or decisions, instead of following rules hand-written by programmers."
+  examCue: "On the exam: if the rules are simple and must be exact (for example a tax formula), plain code beats ML; ML suits patterns too complex to write as rules."
+  domain: D1
+  taskStatements: ['1.1', '1.2']
+  related: [Artificial intelligence, Deep learning, Model]
+  lessonRefs: ['day-01#explanation']
+
+- term: MLOps
+  definition: "Practices and tooling that apply DevOps ideas to machine learning — experiment tracking, repeatable pipelines, versioning, automated deployment, monitoring and retraining — so models can run reliably at scale and limit technical debt."
+  examCue: "On the exam: 'repeatable', 'automate retraining', 'monitor in production' → MLOps (SageMaker Pipelines, Model Registry, Model Monitor)."
+  domain: D1
+  taskStatements: ['1.3']
+  related: [Model registry, Drift]
+  lessonRefs: ['day-06']
+
+- term: Model
+  definition: "The output of running an algorithm on training data: a function with learned parameters that maps new inputs to predictions or generated content."
+  examCue: "On the exam: you deploy and invoke a model, not an algorithm — the model is the trained artefact."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Algorithm, Training, Inference]
+  lessonRefs: ['day-02#explanation']
+
+- term: Model registry
+  definition: "A central catalogue that stores model versions with their metadata, metrics and approval status so teams can track, approve and deploy models consistently. SageMaker Model Registry is the AWS example."
+  examCue: "On the exam: 'version and approve models before deployment' or 'catalogue of model versions' → SageMaker Model Registry."
+  domain: D1
+  taskStatements: ['1.3']
+  related: [MLOps]
+  lessonRefs: ['day-06']
+
+- term: Natural language processing
+  aliases: [NLP]
+  definition: "The area of AI that works with human language — sentiment analysis, entity extraction, translation, summarisation and question answering. AWS examples include Amazon Comprehend, Translate and Lex."
+  examCue: "On the exam: text understanding tasks (sentiment, entities, key phrases) → NLP, often Amazon Comprehend."
+  domain: D1
+  taskStatements: ['1.1', '1.2']
+  related: [Large language model, Transformer]
+  lessonRefs: ['day-01#explanation', 'day-04']
+
+- term: Neural network
+  definition: "A model made of layers of connected units (neurons) whose connection weights are adjusted during training. Networks with many layers are called deep learning."
+  examCue: "On the exam: neural networks underpin deep learning, CNNs, RNNs and transformers — powerful but hard to explain."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Deep learning, Convolutional neural network, Transformer]
+  lessonRefs: ['day-01#explanation', 'day-04']
+
+- term: Overfitting
+  definition: "When a model memorises its training data, including noise, so it scores well on training data but poorly on new data. Linked to high variance."
+  examCue: "On the exam: high training score + low validation/test score = overfitting; fix with more data, regularisation, early stopping or a simpler model."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Underfitting, Variance]
+  lessonRefs: ['day-02#explanation']
+
+- term: Precision
+  definition: "Of everything the model predicted as positive, the share that really was positive: TP / (TP + FP). High precision means few false alarms."
+  examCue: "On the exam: 'false positives are costly' (for example flagging good emails as spam) → optimise precision."
+  domain: D1
+  taskStatements: ['1.3']
+  related: [Recall, F1 score, Confusion matrix]
+  lessonRefs: ['day-06']
+
+- term: Real-time inference
+  aliases: [Online inference]
+  definition: "A persistent endpoint that returns a prediction for each request within milliseconds while a user or system waits. You pay for the endpoint while it runs, even when idle."
+  examCue: "On the exam: 'low latency', 'immediate response', 'during checkout' → real-time inference."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Batch inference, Asynchronous inference, Serverless inference]
+  lessonRefs: ['day-02#explanation']
+
+- term: Recall
+  aliases: [Sensitivity, True positive rate]
+  definition: "Of all the real positives, the share the model found: TP / (TP + FN). High recall means few missed cases."
+  examCue: "On the exam: 'missing a case is costly' (fraud, disease screening) → optimise recall."
+  domain: D1
+  taskStatements: ['1.3']
+  related: [Precision, F1 score, Confusion matrix]
+  lessonRefs: ['day-06']
+
+- term: Recurrent neural network
+  aliases: [RNN]
+  definition: "A neural network architecture that processes sequences one step at a time while keeping a memory of earlier steps, used for text, speech and time series before transformers became dominant."
+  examCue: "On the exam: RNN = sequential data; transformers have largely replaced RNNs for language because attention handles long context in parallel."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Neural network, Transformer, Convolutional neural network]
+  lessonRefs: ['day-04']
+
+- term: Regression
+  definition: "A supervised learning task that predicts a continuous number, such as a house price, demand next week or delivery time."
+  examCue: "On the exam: 'predict how much / how many' → regression; evaluate with RMSE or MAE, not accuracy."
+  domain: D1
+  taskStatements: ['1.2']
+  related: [Classification, Root mean squared error, Supervised learning]
+  lessonRefs: ['day-03#explanation']
+
+- term: Reinforcement learning
+  aliases: [RL]
+  definition: "A learning approach where an agent learns by trial and error, taking actions in an environment and receiving rewards or penalties, to maximise long-term reward. Used in robotics, games and resource optimisation."
+  examCue: "On the exam: 'reward', 'trial and error', 'agent interacts with an environment' → reinforcement learning."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Supervised learning, Unsupervised learning, Reinforcement learning from human feedback]
+  lessonRefs: ['day-03#explanation']
+
+- term: Return on investment
+  aliases: [ROI]
+  definition: "A business metric comparing the value an AI solution delivers (savings or revenue) with its total cost to build and run. Other business metrics include cost per user and user feedback."
+  examCue: "On the exam: model metrics (accuracy, F1) measure the model; business metrics (ROI, cost per user) measure whether it was worth it."
+  domain: D1
+  taskStatements: ['1.3', '2.2']
+  related: [Customer lifetime value]
+  lessonRefs: ['day-06', 'day-11']
+
+- term: Root mean squared error
+  aliases: [RMSE, Mean absolute error, MAE]
+  definition: "A regression metric: the square root of the average squared difference between predictions and actual values, in the same units as the target. MAE (mean absolute error) averages absolute errors and penalises large misses less."
+  examCue: "On the exam: RMSE and MAE evaluate regression; lower is better. Accuracy, precision and recall are for classification."
+  domain: D1
+  taskStatements: ['1.3']
+  related: [Regression]
+  lessonRefs: ['day-06']
+
+- term: Self-supervised learning
+  definition: "Learning in which the model creates its own labels from the structure of unlabeled data, for example hiding the next word and learning to predict it. It is how foundation models are pre-trained on huge text collections."
+  examCue: "On the exam: LLM pre-training on unlabeled text is self-supervised — no human labeling required."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Pre-training, Unsupervised learning, Foundation model]
+  lessonRefs: ['day-03#explanation']
+
+- term: Serverless inference
+  definition: "An inference option where AWS provisions and scales compute automatically and you pay only while requests are processed. The first request after an idle period may be slower (cold start)."
+  examCue: "On the exam: 'intermittent or unpredictable traffic' and 'no infrastructure to manage' → serverless inference."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Real-time inference, Asynchronous inference]
+  lessonRefs: ['day-02#explanation']
+
+- term: Structured data
+  definition: "Data organised in a fixed schema of rows and columns, such as database tables or spreadsheets. Semi-structured data (JSON, logs) has flexible tags rather than fixed columns."
+  examCue: "On the exam: tables and CSVs are structured; images, audio and free text are unstructured."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Unstructured data, Tabular data]
+  lessonRefs: ['day-03#explanation']
+
+- term: Supervised learning
+  definition: "Machine learning that trains on labeled examples to predict the label for new inputs. Its two main tasks are classification and regression."
+  examCue: "On the exam: 'historical data with known outcomes' → supervised learning."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Labeled data, Classification, Regression]
+  lessonRefs: ['day-03#explanation']
+
+- term: Tabular data
+  definition: "Data arranged in a table where each row is an example and each column is a feature or label, such as customer records. Tree-based algorithms like XGBoost often perform best on it."
+  examCue: "On the exam: tabular data with a target column suggests traditional ML (for example SageMaker Canvas or XGBoost), not a foundation model."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Structured data, Time-series data]
+  lessonRefs: ['day-03#explanation']
+
+- term: Time-series data
+  definition: "Measurements recorded in time order, such as daily sales, stock prices or sensor readings, where order matters. Used for forecasting and anomaly detection."
+  examCue: "On the exam: 'forecast future values from past values' → time-series data; never shuffle it randomly when splitting."
+  domain: D1
+  taskStatements: ['1.1', '1.2']
+  related: [Tabular data, Regression]
+  lessonRefs: ['day-03#explanation']
+
+- term: Train-validation-test split
+  aliases: [Training set, Validation set, Test set]
+  definition: "Dividing data into a training set (to learn), a validation set (to compare models and tune hyperparameters) and a test set kept unseen until the end for an honest performance estimate."
+  examCue: "On the exam: the test set must never be used in training — doing so (data leakage) gives misleadingly high scores."
+  domain: D1
+  taskStatements: ['1.1', '1.3']
+  related: [Overfitting, Hyperparameter]
+  lessonRefs: ['day-02#explanation']
+
+- term: Training
+  definition: "The phase where an algorithm learns from data by repeatedly predicting, measuring error with a loss function and adjusting the model's parameters. It is compute-heavy and happens occasionally."
+  examCue: "On the exam: training builds or updates the model; inference uses it. Retraining is the fix for drift."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Inference, Algorithm, Model]
+  lessonRefs: ['day-02#explanation']
+
+- term: Transfer learning
+  definition: "Reusing a model trained on one task as the starting point for a related task, then training it a little on new data. It saves data, time and cost compared with training from scratch."
+  examCue: "On the exam: 'little labeled data, start from a pre-trained model' → transfer learning; fine-tuning an FM is a form of it."
+  domain: D1
+  taskStatements: ['1.1', '3.3']
+  related: [Fine-tuning, Pre-training]
+  lessonRefs: ['day-04', 'day-19']
+
+- term: Underfitting
+  definition: "When a model is too simple to capture the real pattern, so it performs poorly on both training and new data. Linked to high (statistical) bias."
+  examCue: "On the exam: low training score and low test score = underfitting; fix with more informative features, a more complex model or longer training."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Overfitting, Bias (statistical)]
+  lessonRefs: ['day-02#explanation']
+
+- term: Unlabeled data
+  aliases: [Unlabelled data]
+  definition: "Data without an attached correct answer, such as raw logs, images or documents. It is plentiful and cheap and is used by unsupervised and self-supervised learning."
+  examCue: "On the exam: no labels available → unsupervised (clustering, anomaly detection) or self-supervised pre-training."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Labeled data, Unsupervised learning]
+  lessonRefs: ['day-03#explanation']
+
+- term: Unstructured data
+  definition: "Data without a predefined row-and-column schema, such as text, images, audio and video. Most enterprise data is unstructured, and deep learning and foundation models handle it best."
+  examCue: "On the exam: documents, emails, images and recordings are unstructured — candidates for deep learning, FMs or services like Textract and Transcribe."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Structured data, Deep learning]
+  lessonRefs: ['day-03#explanation']
+
+- term: Unsupervised learning
+  definition: "Machine learning on unlabeled data that discovers structure on its own, such as clusters, anomalies or reduced dimensions (PCA)."
+  examCue: "On the exam: no labels and the goal is to find groups or oddities → unsupervised learning."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Clustering, Unlabeled data]
+  lessonRefs: ['day-03#explanation']
+
+- term: Variance
+  definition: "Error caused by a model being too sensitive to its specific training data, so it changes a lot when trained on a slightly different sample. High variance goes with overfitting."
+  examCue: "On the exam: bias–variance trade-off — more complexity lowers bias but raises variance; aim for the lowest total error."
+  domain: D1
+  taskStatements: ['1.1', '4.1']
+  related: [Bias (statistical), Overfitting]
+  lessonRefs: ['day-02#explanation']

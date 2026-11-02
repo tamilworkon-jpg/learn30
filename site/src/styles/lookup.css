@@ -1,0 +1,334 @@
+/* US6 lookup pages: search, glossary, cheat sheets, coverage (T098–T102). Uses theme.css tokens only. */
+.lookup-intro {
+  max-width: 70ch;
+}
+.lookup-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+.lookup-tabs a {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  border: 1px solid var(--border);
+}
+.lookup-tabs a[aria-current='page'] {
+  background: var(--button);
+  color: var(--button-text);
+  border-color: var(--button);
+}
+
+/* Filter bar */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 16px 0;
+}
+.filter-input {
+  flex: 1 1 220px;
+  min-width: 0;
+  font: inherit;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+}
+.filter-input::placeholder {
+  color: var(--muted);
+}
+.facet-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.facet {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+.facet[aria-pressed='true'] {
+  background: var(--brand-purple);
+  border-color: var(--brand-purple);
+  color: #fff;
+}
+[data-theme='dark'] .facet[aria-pressed='true'] {
+  background: var(--link);
+  border-color: var(--link);
+  color: #1f1a3a;
+}
+.filter-count {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* A–Z jump bar */
+.az-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+.az-bar a,
+.az-bar span {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+}
+.az-bar a {
+  background: var(--card);
+  color: var(--link);
+}
+.az-bar span {
+  color: var(--muted);
+  opacity: 0.55;
+}
+.letter-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 24px 0 10px;
+  font-size: 20px;
+}
+
+/* Glossary + service entries */
+.entry-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+}
+.entry {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 16px 18px;
+  border: 2px solid transparent;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.entry:target,
+.entry:has(:target) {
+  border-color: var(--accent);
+}
+.entry h3 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.35;
+  scroll-margin-top: 16px;
+}
+.entry p {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.entry .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 6px;
+}
+.ts-pill {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.cue {
+  border-left: 4px solid var(--accent);
+  padding-left: 10px;
+}
+.cue strong,
+.not-this strong,
+.choose-when strong {
+  font-weight: 700;
+}
+.not-this {
+  border-left: 4px solid #ef4444;
+  padding-left: 10px;
+}
+.choose-when {
+  border-left: 4px solid #14b8a6;
+  padding-left: 10px;
+}
+.entry-links {
+  font-size: 13px;
+  margin-top: 8px;
+  color: var(--muted);
+}
+.entry-links a {
+  color: var(--link);
+}
+.scope-badge {
+  display: inline-block;
+  white-space: nowrap;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.scope-in {
+  background: var(--tip-bg);
+  color: var(--tip-text);
+}
+.scope-out {
+  background: var(--trap-bg);
+  color: var(--trap-text);
+}
+.empty-state[hidden],
+.entry[hidden],
+.letter-group[hidden] {
+  display: none;
+}
+
+/* Metrics */
+.metric-formula {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 13px;
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 4px 8px;
+  display: inline-block;
+  margin-top: 6px;
+}
+.cm-table {
+  border-collapse: separate;
+  border-spacing: 4px;
+  font-size: 14px;
+  text-align: center;
+}
+.cm-table th,
+.cm-table td {
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+.cm-table th {
+  font-weight: 600;
+  color: var(--muted);
+}
+.cm-good {
+  background: var(--tip-bg);
+  color: var(--tip-text);
+}
+.cm-bad {
+  background: var(--trap-bg);
+  color: var(--trap-text);
+}
+
+/* Coverage table */
+.cov-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.cov-table th,
+.cov-table td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.cov-table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+.cov-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.day-link {
+  display: inline-block;
+  margin: 0 4px 4px 0;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.day-link.written {
+  background: var(--tip-bg);
+  color: var(--tip-text);
+  border-color: transparent;
+}
+@media (max-width: 760px) {
+  .cov-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .cov-table,
+  .cov-table tbody,
+  .cov-table tr,
+  .cov-table td {
+    display: block;
+    width: 100%;
+  }
+  .cov-table tr {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+  }
+  .cov-table td {
+    border: 0;
+    padding: 4px 0;
+  }
+  .cov-table td[data-label]::before {
+    content: attr(data-label) ': ';
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .cov-table .num {
+    text-align: left;
+  }
+}
+
+/* Pagefind UI themed with our tokens */
+.search-host {
+  --pagefind-ui-scale: 0.9;
+  --pagefind-ui-primary: var(--link);
+  --pagefind-ui-text: var(--text);
+  --pagefind-ui-background: var(--panel);
+  --pagefind-ui-border: var(--border);
+  --pagefind-ui-tag: var(--card);
+  --pagefind-ui-border-width: 2px;
+  --pagefind-ui-border-radius: 16px;
+  --pagefind-ui-font: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  margin-top: 16px;
+}
+.search-host mark {
+  background: var(--brand-orange-soft);
+  color: #1f1a3a;
+  border-radius: 3px;
+}

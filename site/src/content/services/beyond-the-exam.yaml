@@ -1,0 +1,172 @@
+- name: AWS WAF
+  category: Security & identity
+  purpose: "Web application firewall that filters HTTP requests (SQL injection, XSS, bots, rate limits) to CloudFront, ALB and API Gateway."
+  examCue: "Beyond the exam: out of scope in v1.2. A distractor for prompt-injection or harmful-content questions; pick Amazon Bedrock Guardrails instead."
+  notThis: "Not a defense against prompt injection or toxic model output; that is Bedrock Guardrails plus input/output validation."
+  inScope: false
+  lessonRefs: ['day-25']
+- name: Amazon GuardDuty
+  category: Security & identity
+  purpose: "Threat detection service that analyzes logs and activity for malicious behavior and compromised accounts."
+  examCue: "Beyond the exam: out of scope in v1.2. A distractor for data protection questions; to find PII in S3 pick Amazon Macie."
+  notThis: "Not sensitive-data discovery (Macie) or vulnerability scanning (Inspector)."
+  inScope: false
+  lessonRefs: ['day-25']
+- name: AWS Security Hub
+  category: Governance & monitoring
+  purpose: "Aggregates security findings and runs posture checks across AWS accounts and services."
+  examCue: "Beyond the exam: out of scope in v1.2. For governance questions pick the listed services: Config, Inspector, CloudTrail, Trusted Advisor."
+  notThis: "Not the answer for resource compliance (Config), audit logs (CloudTrail) or vulnerabilities (Inspector) on this exam."
+  inScope: false
+  lessonRefs: ['day-27']
+- name: AWS Shield
+  category: Networking & delivery
+  purpose: "Managed DDoS protection for applications on AWS (Standard is automatic, Advanced is paid)."
+  examCue: "Beyond the exam: out of scope in v1.2. A distractor in AI security questions; for model misuse pick Bedrock Guardrails, for network isolation pick VPC."
+  notThis: "Not AI safety or data protection; it only addresses DDoS attacks."
+  inScope: false
+  lessonRefs: ['day-25']
+- name: Amazon Cognito
+  category: Security & identity
+  purpose: "User sign-up, sign-in and identity federation for web and mobile apps."
+  examCue: "Beyond the exam: out of scope in v1.2. For access control pick IAM; for agent identity and credentials pick AgentCore Identity."
+  notThis: "Not how the exam expects you to control access to AWS resources or models (that's IAM)."
+  inScope: false
+  lessonRefs: ['day-25']
+- name: Amazon Detective
+  category: Security & identity
+  purpose: "Investigates the root cause of security findings by graphing related log activity."
+  examCue: "Beyond the exam: out of scope in v1.2. For who-did-what auditing questions pick AWS CloudTrail."
+  notThis: "Not audit logging (CloudTrail) or monitoring and alarms (CloudWatch)."
+  inScope: false
+  lessonRefs: ['day-27']
+- name: AWS Control Tower
+  category: Governance & monitoring
+  purpose: "Sets up and governs a secure multi-account AWS environment (landing zone) with guardrail controls."
+  examCue: "Beyond the exam: out of scope in v1.2. Its 'guardrails' are account controls, not Bedrock Guardrails; for compliance rules pick AWS Config."
+  notThis: "Not Amazon Bedrock Guardrails, which filter model inputs and outputs."
+  inScope: false
+  lessonRefs: ['day-27']
+- name: AWS HealthImaging
+  category: AI services
+  purpose: "HIPAA-eligible service to store, access and analyze medical images (DICOM) at scale."
+  examCue: "Beyond the exam: out of scope in v1.2. For general image analysis pick Rekognition; for custom medical models pick SageMaker AI."
+  notThis: "Not a general computer vision service (that's Rekognition)."
+  inScope: false
+  lessonRefs: ['day-05']
+- name: AWS HealthOmics
+  category: AI services
+  purpose: "Stores, queries and analyzes genomic and other omics data with managed bioinformatics workflows."
+  examCue: "Beyond the exam: out of scope in v1.2. For storing data pick S3; for custom models pick SageMaker AI."
+  notThis: "Not a general ML platform (that's SageMaker AI)."
+  inScope: false
+  lessonRefs: ['day-05']
+- name: AWS Certificate Manager
+  aka: [ACM]
+  category: Security & identity
+  purpose: "Provisions and manages SSL/TLS certificates for encryption in transit."
+  examCue: "Beyond the exam: out of scope in v1.2. For encryption questions pick KMS (keys, at rest); know TLS as the concept for in transit."
+  notThis: "Not encryption-key management for data at rest (that's KMS)."
+  inScope: false
+  lessonRefs: ['day-25']
+- name: AWS CloudHSM
+  category: Security & identity
+  purpose: "Dedicated single-tenant hardware security modules for managing your own encryption keys."
+  examCue: "Beyond the exam: out of scope in v1.2. For encryption key questions pick AWS Key Management Service."
+  notThis: "Not the exam's answer for encryption at rest (that's KMS)."
+  inScope: false
+  lessonRefs: ['day-25']
+- name: AWS Firewall Manager
+  category: Security & identity
+  purpose: "Centrally manages WAF, Shield and security group rules across accounts."
+  examCue: "Beyond the exam: out of scope in v1.2. For AI input/output safety pick Bedrock Guardrails; for network isolation pick VPC."
+  notThis: "Not a model-safety control (that's Bedrock Guardrails)."
+  inScope: false
+  lessonRefs: ['day-25']
+- name: Amazon Security Lake
+  category: Governance & monitoring
+  purpose: "Centralizes security logs from AWS and third parties into a data lake in OCSF format."
+  examCue: "Beyond the exam: out of scope in v1.2. For audit logs pick CloudTrail; for monitoring pick CloudWatch; for data lakes pick Lake Formation."
+  notThis: "Not the exam's audit-logging answer (that's CloudTrail)."
+  inScope: false
+  lessonRefs: ['day-27']
+- name: Amazon Route 53
+  category: Networking & delivery
+  purpose: "Scalable DNS and domain registration service with health checks and traffic routing."
+  examCue: "Beyond the exam: out of scope in v1.2. For low-latency delivery pick CloudFront; for private connectivity pick VPC endpoints."
+  notThis: "Not content delivery (CloudFront) or network isolation (VPC)."
+  inScope: false
+  lessonRefs: ['day-25']
+- name: AWS Direct Connect
+  category: Networking & delivery
+  purpose: "Dedicated private network connection from on-premises data centers to AWS."
+  examCue: "Beyond the exam: out of scope in v1.2. For keeping AI traffic private inside AWS pick Amazon VPC with PrivateLink endpoints."
+  notThis: "Not the exam's private-connectivity answer (that's VPC and PrivateLink)."
+  inScope: false
+  lessonRefs: ['day-25']
+- name: AWS Backup
+  category: Storage
+  purpose: "Centrally manages and automates backups across AWS services."
+  examCue: "Beyond the exam: out of scope in v1.2. For data retention and archive pick S3 lifecycle and S3 Glacier."
+  notThis: "Not the exam's data-lifecycle answer (that's S3 and S3 Glacier)."
+  inScope: false
+  lessonRefs: ['day-27']
+- name: AWS DeepLens
+  category: AI services
+  purpose: "Discontinued deep-learning-enabled video camera for learning computer vision (end of life in 2024)."
+  examCue: "Beyond the exam: discontinued and not listed in v1.2. For computer vision pick Amazon Rekognition or a custom model on SageMaker AI."
+  notThis: "Not available anymore; ignore it in older study material."
+  inScope: false
+  lessonRefs: ['day-01#exam-tips']
+- name: Amazon Kendra
+  category: AI services
+  purpose: "ML-powered enterprise search service over documents with connectors to many data sources."
+  examCue: "Beyond the exam: not listed in v1.2. For RAG questions pick Amazon Bedrock Knowledge Bases with a vector store such as OpenSearch Service."
+  notThis: "Not the exam's RAG answer (Bedrock Knowledge Bases + a vector store)."
+  inScope: false
+  lessonRefs: ['day-18']
+- name: Amazon Q
+  aka: [Amazon Q Business, Amazon Q Developer]
+  category: Generative AI & agents
+  purpose: "AWS's earlier generative AI assistant brand (Q Business for work, Q Developer for coding)."
+  examCue: "Beyond the exam: not listed in v1.2. The guide now names Amazon Quick for business users and Kiro for developers."
+  notThis: "Not in the v1.2 service list; pick Amazon Quick (business) or Kiro (coding)."
+  inScope: false
+  lessonRefs: ['day-01#exam-tips', 'day-12']
+- name: Amazon Augmented AI
+  aka: [Amazon A2I, A2I]
+  category: AI services
+  purpose: "Adds human review workflows to ML predictions, e.g. low-confidence Textract or Rekognition results."
+  examCue: "Beyond the exam: not listed in v1.2. Know 'human review / human-in-the-loop' as a concept for responsible AI and evaluation."
+  notThis: "Not data labeling for training (that's SageMaker Ground Truth); and not named in the guide."
+  inScope: false
+  lessonRefs: ['day-23']
+- name: AWS Audit Manager
+  category: Governance & monitoring
+  purpose: "Continuously collects evidence to help audit AWS usage against frameworks and regulations."
+  examCue: "Beyond the exam: not listed in v1.2. For AWS compliance reports pick AWS Artifact; for resource compliance pick AWS Config."
+  notThis: "Not the exam's compliance answer (Artifact for reports, Config for rules)."
+  inScope: false
+  lessonRefs: ['day-27']
+- name: Amazon Forecast
+  category: AI services
+  purpose: "Managed time-series forecasting service; closed to new customers since July 2024."
+  examCue: "Beyond the exam: not listed in v1.2. For forecasting pick SageMaker AI (e.g. Canvas time-series forecasting)."
+  notThis: "Not an option for new projects; use SageMaker AI."
+  inScope: false
+  lessonRefs: ['day-05']
+- name: Amazon Fraud Detector
+  category: AI services
+  purpose: "Managed fraud-detection ML service for online fraud; closed to new customers (as of Nov 2025)."
+  examCue: "Beyond the exam: not listed in v1.2. For fraud detection pick a custom model on SageMaker AI (or Bedrock for GenAI tasks)."
+  notThis: "Not an option for new projects; use SageMaker AI."
+  inScope: false
+  lessonRefs: ['day-05']
+- name: PartyRock
+  aka: [Amazon Bedrock Playground]
+  category: Generative AI & agents
+  purpose: "Free, no-code Amazon Bedrock playground for building and sharing small GenAI apps."
+  examCue: "Beyond the exam: not listed in v1.2. For building GenAI apps pick Amazon Bedrock."
+  notThis: "Not a production service; for production use Amazon Bedrock."
+  inScope: false
+  lessonRefs: ['day-12']

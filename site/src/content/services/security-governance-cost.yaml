@@ -1,0 +1,123 @@
+- name: AWS CloudTrail
+  category: Governance & monitoring
+  purpose: "Records API calls and account activity (who did what, when, from where) for auditing."
+  examCue: "Choose this when the scenario asks who invoked a model, changed a guardrail or deleted a resource: audit trails and API logging."
+  notThis: "Not performance metrics or alarms (that's CloudWatch) and not resource configuration compliance (that's Config)."
+  inScope: true
+  taskStatements: ['5.1', '5.2']
+  lessonRefs: ['day-01#deep-dive', 'day-27']
+- name: Amazon CloudWatch
+  category: Governance & monitoring
+  purpose: "Monitoring service for metrics, logs, dashboards and alarms across AWS resources and applications."
+  examCue: "Choose this when the scenario needs to monitor model invocation metrics, latency, errors or token usage, log prompts, or trigger alarms."
+  notThis: "Not an audit log of who made API calls (that's CloudTrail)."
+  inScope: true
+  taskStatements: ['5.2']
+  lessonRefs: ['day-01#deep-dive', 'day-02#deep-dive', 'day-27']
+- name: AWS Config
+  category: Governance & monitoring
+  purpose: "Tracks resource configurations over time and evaluates them against compliance rules."
+  examCue: "Choose this when the scenario needs to check whether resources stay compliant (e.g. encryption on, endpoints in VPC) and see configuration history."
+  notThis: "Not API call logging (that's CloudTrail) and not vulnerability scanning (that's Inspector)."
+  inScope: true
+  taskStatements: ['5.2']
+  lessonRefs: ['day-27']
+- name: AWS Trusted Advisor
+  category: Governance & monitoring
+  purpose: "Automated best-practice checks for cost optimization, security, fault tolerance, performance and service limits."
+  examCue: "Choose this when the scenario asks for recommendations to reduce cost, close security gaps or avoid hitting service quotas."
+  notThis: "Not a workload architecture review questionnaire (that's the Well-Architected Tool)."
+  inScope: true
+  taskStatements: ['5.2']
+  lessonRefs: ['day-27']
+- name: AWS Well-Architected Tool
+  category: Governance & monitoring
+  purpose: "Self-service reviews of workloads against the Well-Architected Framework pillars and lenses (including Generative AI and ML lenses)."
+  examCue: "Choose this when the scenario wants to review an AI workload's architecture against best practices and track improvement plans."
+  notThis: "Not real-time automated account checks (that's Trusted Advisor)."
+  inScope: true
+  taskStatements: ['5.2']
+  lessonRefs: ['day-27']
+- name: Amazon CloudFront
+  category: Networking & delivery
+  purpose: "Content delivery network (CDN) that caches and serves content and APIs from edge locations with low latency."
+  examCue: "Choose this when the scenario needs global low-latency delivery of a web front end or API for an AI application."
+  notThis: "Not private network isolation for model calls (that's VPC with PrivateLink endpoints)."
+  inScope: true
+  taskStatements: ['5.1']
+  lessonRefs: ['day-25']
+- name: Amazon VPC
+  aka: [Virtual Private Cloud, AWS PrivateLink]
+  category: Networking & delivery
+  purpose: "Logically isolated private network in AWS; VPC endpoints (PrivateLink) keep traffic to Bedrock or SageMaker AI off the public internet."
+  examCue: "Choose this when the scenario requires network isolation or private connectivity to AI services without traversing the internet."
+  notThis: "Not encryption key management (that's KMS) and not identity permissions (that's IAM)."
+  inScope: true
+  taskStatements: ['5.1']
+  lessonRefs: ['day-25']
+- name: AWS Artifact
+  category: Governance & monitoring
+  purpose: "Self-service portal for AWS compliance reports (SOC, ISO, PCI) and agreements, including third-party ISV reports."
+  examCue: "Choose this when the scenario asks for proof of AWS compliance, audit reports or agreements such as a BAA."
+  notThis: "Not continuous checking of your own resources (that's Config)."
+  inScope: true
+  taskStatements: ['5.2']
+  lessonRefs: ['day-27']
+- name: AWS Identity and Access Management
+  aka: [IAM]
+  category: Security & identity
+  purpose: "Controls who can access which AWS resources with users, roles and policies (least privilege)."
+  examCue: "Choose this when the scenario asks to restrict who can invoke a model, access training data or use a service: roles, policies, least privilege."
+  notThis: "Not encryption (that's KMS) and not storing app secrets (that's Secrets Manager)."
+  inScope: true
+  taskStatements: ['5.1']
+  lessonRefs: ['day-25']
+- name: Amazon Inspector
+  category: Security & identity
+  purpose: "Automated vulnerability management that scans EC2, container images and Lambda for software vulnerabilities and network exposure."
+  examCue: "Choose this when the scenario needs to find CVEs or vulnerabilities in the compute and containers running an AI workload."
+  notThis: "Not for finding PII in S3 (that's Macie) and not threat detection from logs (GuardDuty, not listed)."
+  inScope: true
+  taskStatements: ['5.2']
+  lessonRefs: ['day-27']
+- name: AWS Key Management Service
+  aka: [AWS KMS, KMS]
+  category: Security & identity
+  purpose: "Creates and controls encryption keys used to encrypt data at rest across AWS services."
+  examCue: "Choose this when the scenario requires encryption at rest with customer managed keys for training data, models, knowledge bases or logs."
+  notThis: "Not storing passwords or API keys (that's Secrets Manager) and not access policies (that's IAM)."
+  inScope: true
+  taskStatements: ['5.1']
+  lessonRefs: ['day-01#deep-dive', 'day-25']
+- name: Amazon Macie
+  category: Security & identity
+  purpose: "Uses ML to discover and protect sensitive data such as PII in Amazon S3."
+  examCue: "Choose this when the scenario needs to find PII or sensitive data in S3 buckets before using it to train or ground a model."
+  notThis: "Not threat detection or vulnerability scanning (that's GuardDuty or Inspector) and not PII detection in live text (Comprehend or Guardrails)."
+  inScope: true
+  taskStatements: ['5.1']
+  lessonRefs: ['day-25']
+- name: AWS Secrets Manager
+  category: Security & identity
+  purpose: "Securely stores, rotates and retrieves secrets such as database credentials and API keys."
+  examCue: "Choose this when the scenario has API keys, tokens or database passwords that an app or agent must use without hard-coding them."
+  notThis: "Not encryption key management (that's KMS) and not user permissions (that's IAM)."
+  inScope: true
+  taskStatements: ['5.1']
+  lessonRefs: ['day-25']
+- name: AWS Budgets
+  category: Cost management
+  purpose: "Set custom cost and usage budgets and get alerts (or automated actions) when spending is forecast to exceed them."
+  examCue: "Choose this when the scenario wants alerts before GenAI or training spend goes over a limit."
+  notThis: "Not for analyzing historical spend trends (that's Cost Explorer)."
+  inScope: true
+  taskStatements: ['2.3']
+  lessonRefs: ['day-13']
+- name: AWS Cost Explorer
+  category: Cost management
+  purpose: "Visualize, analyze and forecast AWS costs and usage over time, filtered by service, tag or account."
+  examCue: "Choose this when the scenario wants to see which services (e.g. Bedrock, SageMaker AI) drove cost, or forecast future spend."
+  notThis: "Not for setting alert thresholds (that's Budgets)."
+  inScope: true
+  taskStatements: ['2.3']
+  lessonRefs: ['day-13']

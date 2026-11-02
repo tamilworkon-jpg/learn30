@@ -1,0 +1,49 @@
+- name: AWS Data Exchange
+  category: Analytics & data
+  purpose: "Marketplace to find, subscribe to and use third-party data sets (files, APIs, Redshift shares) in AWS."
+  examCue: "Choose this when the scenario needs to acquire external or licensed third-party data (e.g. financial, weather, demographic) to enrich training data."
+  notThis: "Not for transforming or cleaning data (that's Glue or DataBrew) and not for data governance permissions (that's Lake Formation)."
+  inScope: true
+  taskStatements: ['1.3']
+  lessonRefs: ['day-06']
+- name: Amazon EMR
+  category: Analytics & data
+  purpose: "Managed big-data platform running Apache Spark, Hive, Presto and Hadoop for large-scale data processing."
+  examCue: "Choose this when the scenario processes petabyte-scale data with Spark or Hadoop frameworks, e.g. large feature engineering jobs."
+  notThis: "Not a serverless no-code cleaner (that's DataBrew) and not a data warehouse for SQL analytics (that's Redshift)."
+  inScope: true
+  taskStatements: ['1.3']
+  lessonRefs: ['day-03#deep-dive', 'day-06']
+- name: AWS Glue
+  category: Analytics & data
+  purpose: "Serverless data integration (ETL) service with crawlers and the Glue Data Catalog for metadata."
+  examCue: "Choose this when the scenario needs serverless ETL to prepare data, or a central data catalog to discover schemas and track data lineage."
+  notThis: "Not a visual no-code data-prep tool for analysts (that's Glue DataBrew) and not fine-grained access control (that's Lake Formation)."
+  inScope: true
+  taskStatements: ['1.3', '5.1']
+  lessonRefs: ['day-03#deep-dive', 'day-06', 'day-26']
+- name: AWS Glue DataBrew
+  aka: [DataBrew]
+  category: Analytics & data
+  purpose: "Visual, no-code data preparation tool with 250+ built-in transformations to clean and normalize data."
+  examCue: "Choose this when analysts or data scientists want to clean, profile and normalize data visually without writing code."
+  notThis: "Not code-based ETL at scale (that's AWS Glue or EMR) and not a labeling service (that's SageMaker Ground Truth)."
+  inScope: true
+  taskStatements: ['1.3']
+  lessonRefs: ['day-03#explanation', 'day-03#deep-dive', 'day-06']
+- name: AWS Lake Formation
+  category: Analytics & data
+  purpose: "Builds and governs data lakes on S3 with centralized, fine-grained (database, table, column, row) access control."
+  examCue: "Choose this when the scenario needs to secure and govern a data lake with fine-grained permissions or share data across accounts."
+  notThis: "Not an ETL engine (that's Glue) and not account-level identity management (that's IAM)."
+  inScope: true
+  taskStatements: ['1.3', '5.1', '5.2']
+  lessonRefs: ['day-06', 'day-26']
+- name: Amazon Redshift
+  category: Analytics & data
+  purpose: "Managed cloud data warehouse for fast SQL analytics on structured data at scale, with Redshift ML."
+  examCue: "Choose this when the scenario needs a data warehouse for BI and SQL analytics, or SQL users training models with Redshift ML."
+  notThis: "Not a transactional OLTP database (that's RDS or Aurora) and not a vector store for RAG (that's OpenSearch or pgvector)."
+  inScope: true
+  taskStatements: ['1.3']
+  lessonRefs: ['day-06']

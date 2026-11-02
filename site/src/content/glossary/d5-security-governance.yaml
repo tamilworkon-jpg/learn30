@@ -1,0 +1,180 @@
+# Glossary — Domain 5: Security, compliance and governance for AI solutions (task statements 5.1–5.2).
+# Sorted alphabetically by term. `related` entries must match another glossary `term` exactly.
+
+- term: AgentCore Identity
+  aliases: [Amazon Bedrock AgentCore Identity]
+  definition: "The Amazon Bedrock AgentCore service that manages identities and credentials for AI agents: it authenticates who can invoke an agent and securely obtains OAuth tokens or API keys so agents can access tools and services on a user's behalf."
+  examCue: "On the exam: 'agent must securely access third-party tools for a user without hard-coded credentials' → AgentCore Identity."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [Policy in AgentCore, Least privilege, AI agent]
+  lessonRefs: ['day-25']
+
+- term: Audit logging
+  definition: "Recording who did what, when and from where — API calls, model invocations, data access and configuration changes — so activity can be investigated and proven to auditors. AWS CloudTrail logs API activity; Bedrock model invocation logging captures prompts and responses."
+  examCue: "On the exam: 'who called the model API' → CloudTrail; 'record prompts and responses' → Bedrock model invocation logging to CloudWatch Logs or S3."
+  domain: D5
+  taskStatements: ['5.1', '5.2']
+  related: [Data retention, Compliance report]
+  lessonRefs: ['day-25', 'day-27']
+
+- term: AWS KMS key
+  aliases: [KMS key, Customer managed key]
+  definition: "A cryptographic key managed in AWS Key Management Service and used to encrypt data such as training data, model artefacts, custom models and knowledge bases. Customer managed keys let you control key policies, rotation and access."
+  examCue: "On the exam: 'customer controls the encryption keys' → AWS KMS customer managed keys."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [Encryption at rest and in transit, Least privilege]
+  lessonRefs: ['day-25']
+
+- term: Compliance report
+  definition: "Third-party audit documents (such as SOC reports, ISO certifications and PCI attestations) proving AWS's controls meet standards. Customers download them on demand from AWS Artifact."
+  examCue: "On the exam: 'auditor needs AWS's SOC or ISO reports' → AWS Artifact — not AWS Config or CloudTrail."
+  domain: D5
+  taskStatements: ['5.2']
+  related: [Shared responsibility model, Audit logging]
+  lessonRefs: ['day-27']
+
+- term: Confidence score
+  definition: "A number indicating how sure a model or check is about an output — for example a classifier's probability or a Guardrails grounding score. Low scores can trigger fallback answers or human review."
+  examCue: "On the exam: 'route uncertain predictions to a person' → set a confidence threshold and send low-confidence cases to human review."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [Hallucination detection, Human audit]
+  lessonRefs: ['day-26']
+
+- term: Data catalog
+  aliases: [Data cataloging]
+  definition: "A central inventory of datasets with metadata — schema, owner, location, sensitivity — so data can be found, understood and governed. On AWS: AWS Glue Data Catalog, with AWS Lake Formation for fine-grained access."
+  examCue: "On the exam: 'discover and document datasets and their schemas' → AWS Glue Data Catalog."
+  domain: D5
+  taskStatements: ['5.1', '5.2']
+  related: [Data lineage]
+  lessonRefs: ['day-26']
+
+- term: Data lineage
+  definition: "A record of where data came from and every transformation it went through before training or being used by a model. It supports source citation, debugging, audits and detecting poisoned data."
+  examCue: "On the exam: 'trace the origin of the data used to train the model' → data lineage (plus cataloguing and Model Cards)."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [Data catalog, Amazon SageMaker Model Cards, Prompt poisoning]
+  lessonRefs: ['day-26']
+
+- term: Data residency
+  aliases: [Data sovereignty]
+  definition: "Requirements that data be stored and processed in a specific country or region. On AWS you control this by choosing Regions, and must check that features such as cross-Region inference respect it."
+  examCue: "On the exam: 'data must not leave the EU' → choose EU Regions and restrict cross-Region processing."
+  domain: D5
+  taskStatements: ['5.2']
+  related: [Data retention, Cross-Region inference]
+  lessonRefs: ['day-27']
+
+- term: Data retention
+  definition: "Rules for how long data, logs and model outputs are kept and when they are archived or deleted, set by business and legal requirements and often automated with Amazon S3 Lifecycle policies."
+  examCue: "On the exam: 'keep logs for seven years, then delete' → a data retention policy enforced with lifecycle rules (S3 Glacier for archives)."
+  domain: D5
+  taskStatements: ['5.2']
+  related: [Data residency, Audit logging]
+  lessonRefs: ['day-27']
+
+- term: Encryption at rest and in transit
+  aliases: [Encryption at rest, Encryption in transit]
+  definition: "Protecting data by encrypting it while stored (at rest, for example S3 objects or model artefacts with AWS KMS keys) and while moving over networks (in transit, using TLS)."
+  examCue: "On the exam: 'stored data' → encryption at rest with KMS; 'data moving between client and service' → TLS in transit."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [AWS KMS key, VPC endpoint]
+  lessonRefs: ['day-25']
+
+- term: Generative AI Security Scoping Matrix
+  definition: "An AWS framework that classifies GenAI workloads into five scopes by ownership — 1 consumer app, 2 enterprise app, 3 pre-trained models, 4 fine-tuned models, 5 self-trained models — to identify which security and governance controls apply."
+  examCue: "On the exam: the higher the scope (more you build and own), the more security responsibility you carry."
+  domain: D5
+  taskStatements: ['5.2']
+  related: [Shared responsibility model, Governance review cadence]
+  lessonRefs: ['day-27']
+
+- term: Governance review cadence
+  definition: "A regular schedule for reviewing AI systems against policies — for example quarterly checks of model performance, bias, security findings, data use and documentation — plus training for the teams involved."
+  examCue: "On the exam: governance processes include written policies, a defined review cadence, review strategies and staff training."
+  domain: D5
+  taskStatements: ['5.2']
+  related: [Generative AI Security Scoping Matrix, Audit logging]
+  lessonRefs: ['day-27']
+
+- term: Grounding
+  definition: "Anchoring a model's answer in trusted source content — typically documents retrieved with RAG — so claims can be traced back and checked, reducing hallucinations."
+  examCue: "On the exam: 'answers must be based on our approved documents' → ground responses with RAG and verify with a contextual grounding check."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [Retrieval-augmented generation, Hallucination detection, Veracity]
+  lessonRefs: ['day-26']
+
+- term: Hallucination detection
+  aliases: [Contextual grounding check]
+  definition: "Automatically checking whether a response is supported by the provided source and relevant to the query. Bedrock Guardrails contextual grounding checks score both and block answers below a threshold; Automated Reasoning checks verify claims against defined rules."
+  examCue: "On the exam: 'detect and block answers not supported by the retrieved documents' → Guardrails contextual grounding check."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [Hallucination, Grounding, Amazon Bedrock Guardrails]
+  lessonRefs: ['day-26']
+
+- term: IAM roles and policies
+  aliases: [IAM role, IAM policy]
+  definition: "AWS Identity and Access Management controls. Policies are JSON documents that allow or deny actions on resources; roles are identities with temporary credentials that users, services or agents assume to gain those permissions."
+  examCue: "On the exam: give a service or application access to Bedrock or S3 with an IAM role — never embed long-term access keys in code."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [Least privilege, Shared responsibility model]
+  lessonRefs: ['day-25']
+
+- term: Least privilege
+  definition: "The security principle of granting each user, application or agent only the permissions it needs for its task, and nothing more."
+  examCue: "On the exam: 'most secure' access answer is usually the narrowest IAM policy scoped to specific actions and resources."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [IAM roles and policies, Policy in AgentCore]
+  lessonRefs: ['day-25']
+
+- term: Output filtering
+  definition: "Inspecting and cleaning model responses before they reach users or downstream systems — blocking toxic content, masking PII, validating format and removing unsafe instructions."
+  examCue: "On the exam: filter both inputs and outputs — Bedrock Guardrails applies policies to prompts and to responses."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [Amazon Bedrock Guardrails, Toxicity, Personally identifiable information]
+  lessonRefs: ['day-17', 'day-25']
+
+- term: Personally identifiable information
+  aliases: [PII]
+  definition: "Information that can identify a person, such as names, addresses, phone numbers, ID numbers and financial details. Amazon Macie discovers PII in S3; Bedrock Guardrails can mask or block it in prompts and responses."
+  examCue: "On the exam: 'find sensitive data in S3 buckets' → Amazon Macie; 'redact PII in model responses' → Guardrails sensitive information filters."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [Output filtering, Data catalog]
+  lessonRefs: ['day-25', 'day-26']
+
+- term: Policy in AgentCore
+  aliases: [AgentCore Policy]
+  definition: "An Amazon Bedrock AgentCore capability for defining rules about which tools and actions an agent may use, and under what conditions. Policies are enforced outside the agent's code, at the AgentCore Gateway, before tool calls run."
+  examCue: "On the exam: 'deterministically stop an agent from calling a tool or exceeding a limit, regardless of the prompt' → Policy in AgentCore."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [AgentCore Identity, Least privilege, Tool use]
+  lessonRefs: ['day-25']
+
+- term: Shared responsibility model
+  definition: "The split of security duties: AWS secures the cloud (facilities, hardware, managed-service infrastructure) and customers secure what they put in it — data, access permissions, configurations, prompts and application logic."
+  examCue: "On the exam: on Amazon Bedrock, AWS protects the model infrastructure; you own IAM, data protection, Guardrails configuration and how outputs are used."
+  domain: D5
+  taskStatements: ['5.1', '2.3']
+  related: [Generative AI Security Scoping Matrix, IAM roles and policies]
+  lessonRefs: ['day-25']
+
+- term: VPC endpoint
+  aliases: [AWS PrivateLink, Interface endpoint]
+  definition: "A private connection, powered by AWS PrivateLink, between your VPC and an AWS service such as Amazon Bedrock or SageMaker AI, so traffic stays on the AWS network instead of crossing the public internet."
+  examCue: "On the exam: 'call Bedrock without traffic going over the internet' → interface VPC endpoint (AWS PrivateLink)."
+  domain: D5
+  taskStatements: ['5.1']
+  related: [Encryption at rest and in transit, Least privilege]
+  lessonRefs: ['day-25']

@@ -1,0 +1,93 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LessonLinks from '../components/lookup/LessonLinks.astro';
+import { examGuide } from '../lib/data';
+import { searchText } from '../lib/lookup';
+import { slugify } from '../schemas/lookup';
+import '../styles/lookup.css';
+
+const terms = (await getCollection('glossary')).map((e) => ({ ...e.data, id: e.id })).sort((a, b) => a.term.localeCompare(b.term, 'en', { sensitivity: 'base' }));
+const letterOf = (t: string) => (/[a-z]/i.test(t[0]) ? t[0].toUpperCase() : '#');
+const groups = new Map<string, typeof terms>();
+for (const t of terms) groups.set(letterOf(t.term), [...(groups.get(letterOf(t.term)) ?? []), t]);
+const alphabet = ['#', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].filter((l) => l !== '#' || groups.has('#'));
+---
+
+<BaseLayout title="Glossary" active="glossary" description="Plain-English glossary of AWS AI Practitioner (AIF-C01) exam terms with exam cues.">
+  <div id="glossary-root" data-pagefind-body>
+    <h1 class="h1">Glossary</h1>
+    <p class="muted lookup-intro">
+      {terms.length} exam terms in plain English. Each has an <strong>exam cue</strong> — the wording that tells you the term is the answer — and a link to the day that teaches it.
+    </p>
+
+    <div class="filter-bar" data-pagefind-ignore>
+      <label class="sr-only" for="glossary-filter">Filter terms</label>
+      <input id="glossary-filter" class="filter-input" type="search" placeholder="Filter terms…" autocomplete="off" data-filter-input />
+      <div class="facet-group" role="group" aria-label="Filter by domain">
+        <button type="button" class="facet" data-facet="" aria-pressed="true">All</button>
+        {
+          examGuide.domains.map((d) => (
+            <button type="button" class="facet" data-facet={d.id} aria-pressed="false" title={d.name}>
+              {d.id}
+            </button>
+          ))
+        }
+      </div>
+      <span class="filter-count" aria-live="polite" data-filter-count>{terms.length} terms</span>
+    </div>
+
+    <nav aria-label="Jump to letter" data-pagefind-ignore>
+      <ul class="az-bar">
+        {alphabet.map((l) => <li>{groups.has(l) ? <a href={`#letter-${l === '#' ? 'num' : l.toLowerCase()}`}>{l}</a> : <span aria-hidden="true">{l}</span>}</li>)}
+      </ul>
+    </nav>
+
+    <p class="card empty-state" data-empty hidden>No terms match. Clear the filter or try the <a href="/search">full-text search</a>.</p>
+
+    {
+      [...groups].map(([letter, list]) => (
+        <section class="letter-group" data-group aria-labelledby={`letter-${letter === '#' ? 'num' : letter.toLowerCase()}`}>
+          <h2 class="letter-heading" id={`letter-${letter === '#' ? 'num' : letter.toLowerCase()}`}>
+            <span class="num-icon">{letter}</span>
+            <span class="sr-only">Terms starting with {letter}</span>
+          </h2>
+          <div class="entry-grid">
+            {list.map((t) => (
+              <article class="entry" data-entry data-facets={t.domain} data-search={searchText(t.term, t.aliases, t.definition, t.examCue, t.related)} data-testid="glossary-term">
+                <h3 id={t.id}>
+                  {t.term}
+                  {t.aliases?.length ? <span class="muted font-normal"> ({t.aliases.join(', ')})</span> : null}
+                </h3>
+                <div class="meta" data-pagefind-ignore>
+                  <span class={`chip chip-${t.domain}`}>{t.domain}</span>
+                  {t.taskStatements.map((ts) => (
+                    <span class="ts-pill" title={`Task statement ${ts}`}>
+                      TS {ts}
+                    </span>
+                  ))}
+                </div>
+                <p>{t.definition}</p>
+                <p class="cue">
+                  <strong>Exam cue:</strong> {t.examCue.replace(/^On the exam:\s*/i, '')}
+                </p>
+                {t.related?.length ? (
+                  <p class="entry-links">
+                    Related:{' '}
+                    {t.related.map((r, i) => [i > 0 ? ', ' : '', <a href={`#${slugify(r)}`}>{r}</a>])}
+                  </p>
+                ) : null}
+                <LessonLinks refs={t.lessonRefs} />
+              </article>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>
+
+<script>
+  import { setupFilter } from '../lib/lookup-filter';
+  setupFilter(document.getElementById('glossary-root')!, ['term', 'terms']);
+</script>

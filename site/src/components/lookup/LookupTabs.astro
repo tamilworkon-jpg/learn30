@@ -1,0 +1,21 @@
+---
+interface Props {
+  current: 'services' | 'metrics' | 'coverage';
+}
+const { current } = Astro.props;
+const tabs = [
+  { key: 'services', href: '/cheatsheet/services', label: 'AWS services' },
+  { key: 'metrics', href: '/cheatsheet/metrics', label: 'Evaluation metrics' },
+  { key: 'coverage', href: '/coverage', label: 'Exam coverage' },
+];
+---
+
+<nav class="lookup-tabs" aria-label="Cheat sheets">
+  {
+    tabs.map((t) => (
+      <a href={t.href} aria-current={t.key === current ? 'page' : undefined}>
+        {t.label}
+      </a>
+    ))
+  }
+</nav>

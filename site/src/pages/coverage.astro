@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LookupTabs from '../components/lookup/LookupTabs.astro';
+import { computeCoverage, coverageSummary, MIN_QUESTIONS_PER_TS } from '../lib/coverage';
+import { course, examGuide, pad } from '../lib/data';
+import '../styles/lookup.css';
+
+const lessons = (await getCollection('lessons')).map((l) => l.data);
+const questions = (await getCollection('questions')).map((q) => q.data);
+const glossary = (await getCollection('glossary')).map((g) => g.data);
+const rows = computeCoverage({ guide: examGuide, course, lessons, questions, glossary });
+const summary = coverageSummary(rows);
+const written = new Set(lessons.map((l) => l.day));
+const domainName = Object.fromEntries(examGuide.domains.map((d) => [d.id, `${d.name} (${d.weight}%)`]));
+---
+
+<BaseLayout title="Exam coverage" active="cheatsheet" description="How the course covers each AIF-C01 v1.2 task statement: lesson days, questions and glossary terms.">
+  <LookupTabs current="coverage" />
+  <h1 class="h1">Exam coverage</h1>
+  <p class="muted lookup-intro">
+    Every task statement in exam guide v{examGuide.version}, the days that teach it, and how many practice questions and glossary terms back it up. Task statements with fewer than {MIN_QUESTIONS_PER_TS} questions are flagged.
+  </p>
+
+  <div class="flex flex-wrap gap-3 my-4" data-testid="coverage-summary">
+    <span class="pill pill-accent">{summary.taskStatements} task statements</span>
+    <span class="pill btn-ghost">{lessons.length} of {course.days.length} days written</span>
+    <span class="pill btn-ghost">{summary.questions} questions</span>
+    <span class={`pill ${summary.low ? 'scope-out' : 'scope-in'}`}>{summary.low} need more questions</span>
+  </div>
+
+  <table class="cov-table" data-testid="coverage-table">
+    <caption class="sr-only">Coverage per task statement</caption>
+    <thead>
+      <tr>
+        <th scope="col">Task statement</th>
+        <th scope="col">Days</th>
+        <th scope="col" class="num">Questions</th>
+        <th scope="col" class="num">Terms</th>
+        <th scope="col">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((r) => (
+          <tr data-ts={r.id}>
+            <td>
+              <span class={`chip chip-${r.domain}`} title={domainName[r.domain]}>
+                {r.id}
+              </span>{' '}
+              <span class="font-medium">{r.title}</span>
+            </td>
+            <td data-label="Days">
+              {r.plannedDays.map((d) => (
+                <a class={`day-link ${written.has(d) ? 'written' : ''}`} href={`/day/${pad(d)}`} title={`${course.days.find((x) => x.day === d)?.title}${written.has(d) ? '' : ' (coming soon)'}`}>
+                  Day {d}
+                  {!written.has(d) && <span class="sr-only"> (coming soon)</span>}
+                </a>
+              ))}
+            </td>
+            <td class="num" data-label="Questions">
+              {r.questions}
+            </td>
+            <td class="num" data-label="Glossary terms">
+              {r.glossaryTerms}
+            </td>
+            <td data-label="Status">
+              {r.low ? <span class="scope-badge scope-out">Needs questions</span> : <span class="scope-badge scope-in">Covered</span>}
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  <p class="muted text-sm mt-4">
+    <span class="day-link written">Day N</span> lesson available · <span class="day-link">Day N</span> coming soon. Weekly reviews (Days 7, 14, 21, 28) and mock exams (Days 29–30) revisit every task statement.
+  </p>
+</BaseLayout>
