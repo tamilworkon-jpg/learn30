@@ -42,7 +42,8 @@ interface Group {
   nodes: HTMLElement[]; // everything this group shows/hides
   extraRoots: HTMLElement[]; // roots outside `main` (lesson intro, finish blocks)
   blocks: () => SlideBlock<HTMLElement>[];
-  single: boolean; // interactive content (quiz, finish): one scrollable page
+  single: boolean; // the quiz: one page
+  scroll: boolean; // interactive content (quiz, finish) may grow, so its slide may scroll
   illo: HTMLImageElement;
   part: HTMLElement | null;
   deep?: HTMLDetailsElement;
@@ -161,6 +162,7 @@ export function initSlideDeck(deck: HTMLElement) {
           extraRoots,
           blocks: () => (sec.open && body ? kids(body).map(blockOf) : []),
           single: false,
+          scroll: false,
           illo: img,
           part: null,
           deep: sec,
@@ -188,6 +190,7 @@ export function initSlideDeck(deck: HTMLElement) {
         extraRoots,
         blocks: () => blocks,
         single: !!sec.querySelector('astro-island'),
+        scroll: !!sec.querySelector('astro-island'),
         illo: img,
         part: partLabel(h),
       };
@@ -204,7 +207,7 @@ export function initSlideDeck(deck: HTMLElement) {
       const img = illo('finish');
       h.after(img);
       const blocks = trailing.map((el) => ({ el }));
-      const g: Group = { id: 'finish', type: 'finish', main: null, header: h, title: h.textContent, nodes: [h, img], extraRoots: trailing, blocks: () => blocks, single: true, illo: img, part: null };
+      const g: Group = { id: 'finish', type: 'finish', main: null, header: h, title: h.textContent, nodes: [h, img], extraRoots: trailing, blocks: () => blocks, single: false, scroll: true, illo: img, part: null };
       collect(g, blocks);
       out.push(g);
     }
@@ -302,11 +305,15 @@ export function initSlideDeck(deck: HTMLElement) {
   };
 
   // ---------- pagination ----------
-  const stageHeight = () => {
+  const bottomBar = () => {
     const nav = document.querySelector<HTMLElement>('.sidebar');
-    const bottom = nav && getComputedStyle(nav).position === 'fixed' ? nav.getBoundingClientRect().height : 0;
-    controls.style.bottom = `${bottom}px`;
-    const h = Math.max(320, Math.floor(window.innerHeight - bottom - bar.offsetHeight - controls.offsetHeight - 28));
+    return nav && getComputedStyle(nav).position === 'fixed' ? nav.getBoundingClientRect().height : 0;
+  };
+  // The deck (toolbar, skip notice, stage, controls) is sized to fill the viewport above the mobile tab
+  // bar; slide changes and first load scroll it to the top, so the controls never cover the slide.
+  const stageHeight = () => {
+    const above = article.getBoundingClientRect().top - deck.getBoundingClientRect().top;
+    const h = Math.max(300, Math.floor(window.innerHeight - bottomBar() - above - controls.offsetHeight - 16));
     article.style.height = `${h}px`;
     article.style.setProperty('--slide-img-max', `${Math.max(160, h - 190)}px`);
   };
@@ -315,6 +322,7 @@ export function initSlideDeck(deck: HTMLElement) {
     if (!groups) return;
     const anchor = slides[index];
     const anchorLeaf = anchor?.leaves[0];
+    const placed = Math.abs(deck.getBoundingClientRect().top - 8) <= 2;
     paging = true;
     article.classList.remove('slide-scroll');
     article.classList.add('slide-measuring');
@@ -340,17 +348,13 @@ export function initSlideDeck(deck: HTMLElement) {
     if (linked !== null) return go(linked, { focus: false, scroll: true, replace: false });
     let i = anchorLeaf ? slides.findIndex((s) => s.leaves.some((l) => l === anchorLeaf || l.contains(anchorLeaf))) : -1;
     if (i < 0 && anchor) i = slides.findIndex((s) => s.group === anchor.group);
-    go(Math.max(0, i), { focus: false, scroll: false, replace: false });
+    go(Math.max(0, i), { focus: false, scroll: placed, replace: false });
   };
 
   // ---------- navigation ----------
   const deckInView = () => {
-    const r = deck.getBoundingClientRect();
-    const nav = document.querySelector<HTMLElement>('.sidebar');
-    const bottom = nav && getComputedStyle(nav).position === 'fixed' ? nav.getBoundingClientRect().height : 0;
-    if (r.top < -1 || r.top + bar.offsetHeight + article.offsetHeight + controls.offsetHeight > window.innerHeight - bottom + 1) {
-      window.scrollTo({ top: window.scrollY + r.top - 8, behavior: 'instant' });
-    }
+    const top = deck.getBoundingClientRect().top;
+    if (Math.abs(top - 8) > 1) window.scrollTo({ top: window.scrollY + top - 8, behavior: 'instant' });
   };
 
   function go(i: number, opts: { focus: boolean; scroll: boolean; replace: boolean } = { focus: true, scroll: true, replace: true }) {
@@ -361,7 +365,7 @@ export function initSlideDeck(deck: HTMLElement) {
     show(s.group, s.leaves);
     s.group.illo.classList.toggle('illo-off', hasVisual(s.leaves));
     if (s.group.part) s.group.part.textContent = s.parts > 1 ? `${s.part}/${s.parts}` : '';
-    article.classList.toggle('slide-scroll', s.group.single);
+    article.classList.toggle('slide-scroll', s.group.scroll);
     article.scrollTop = 0;
     const t = terms(s.group, s.leaves);
     if (strip) {
@@ -372,6 +376,10 @@ export function initSlideDeck(deck: HTMLElement) {
         label.className = 'key-strip-label';
         label.textContent = 'Key terms on this slide';
         strip.append(label, ...t.map((x) => Object.assign(document.createElement('span'), { className: 'key-term', textContent: x })));
+        // One row only: drop the terms that wrapped.
+        const row = label.offsetTop;
+        [...strip.querySelectorAll<HTMLElement>('.key-term')].forEach((k) => k.offsetTop > row + 4 && k.remove());
+        if (strip.querySelectorAll('.key-term').length < 2) strip.hidden = true;
         // Optional extra: only when it fits below the slide's content.
         const content = s.group.main ?? s.group.header;
         if (content.getBoundingClientRect().bottom > strip.getBoundingClientRect().top - 4) strip.hidden = true;
@@ -417,8 +425,15 @@ export function initSlideDeck(deck: HTMLElement) {
   // ---------- mode switching ----------
   const setButtons = () => viewBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
 
+  // The "you haven't finished yesterday" notice sits inside the deck in slide view, so it stays on screen.
+  const notice = document.getElementById('skip-notice');
+  const noticeHome = document.createComment('skip-notice');
+  notice?.before(noticeHome);
+  if (notice) new MutationObserver(() => later(0)).observe(notice, { attributes: true, attributeFilter: ['hidden'] });
+
   const enterSlides = (initial: boolean) => {
     root.dataset.lessonView = 'slides';
+    if (notice) bar.after(notice);
     controls.hidden = false;
     article.querySelectorAll<HTMLImageElement>('img[loading="lazy"]').forEach((img) => (img.loading = 'eager')); // hidden lazy images would never load
     groups ??= build();
@@ -427,7 +442,7 @@ export function initSlideDeck(deck: HTMLElement) {
     index = 0;
     repaginate();
     const fromUrl = fromHash(location.hash);
-    go(fromUrl ?? 0, { focus: !initial, scroll: !initial || fromUrl !== null, replace: !initial });
+    go(fromUrl ?? 0, { focus: !initial, scroll: true, replace: !initial });
     root.dataset.deckReady = 'true';
   };
 
@@ -435,6 +450,7 @@ export function initSlideDeck(deck: HTMLElement) {
     const anchor = slides[index];
     root.dataset.lessonView = 'full';
     controls.hidden = true;
+    if (notice) noticeHome.after(notice);
     managed.forEach((n) => n.classList.remove('slide-off'));
     zoomed.forEach((el) => el.style.removeProperty('zoom'));
     zoomed.clear();
@@ -566,7 +582,7 @@ export function initSlideDeck(deck: HTMLElement) {
         }),
     );
     // fonts.ready alone resolves before a lazily-used web font has even started loading: ask for the faces.
-    const fonts = document.fonts ? Promise.all(['400', '600', '700'].map((w) => document.fonts.load(`${w} 20px Poppins`).catch(() => []))) : Promise.resolve();
+    const fonts = document.fonts ? Promise.all(['400', '500', '600', '700'].map((w) => document.fonts.load(`${w} 20px Poppins`).catch(() => []))) : Promise.resolve();
     document.fonts?.addEventListener('loadingdone', () => later());
     Promise.race([Promise.all([fonts, ...loaded]), new Promise((r) => setTimeout(r, 1500))]).then(() => {
       if (view === 'slides') enterSlides(true);

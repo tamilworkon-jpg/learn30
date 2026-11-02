@@ -54,6 +54,12 @@ export function paginate<T>(blocks: SlideBlock<T>[], fits: (leaves: T[]) => bool
     flush();
     cur = [...carry, b.el];
     if (fits(cur)) return;
+    if (carry.length && fits([b.el])) {
+      // Lead-in + block don't fit together: the lead-in keeps its page rather than shrinking the block.
+      pages.push(carry);
+      cur = [b.el];
+      return;
+    }
     shrink?.(b.el, cur); // oversize: shrink it to fit (together with its heading, if any)
     flush(); // and nothing else joins that page
   };
