@@ -104,8 +104,13 @@ test.describe('accounts (T190) @visual', () => {
       expect((await page.request.get('/api/progress')).status()).toBe(401);
       expect(await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('aip-course') || k.startsWith('aip-profiles')))).toEqual([]);
       await page.reload();
-      await page.locator('[data-quiz="day-02"]').scrollIntoViewIfNeeded();
-      await expect(quiz).toHaveAttribute('data-ready', 'true');
+      // The deck restores the quiz slide and re-pages once the web font lands, so the box can still be
+      // moving here; scroll without Playwright's "stable" wait (it times out under parallel load) and
+      // retry until the island has hydrated.
+      await expect(async () => {
+        await quiz.evaluate((e) => e.scrollIntoView({ block: 'center' }));
+        await expect(quiz).toHaveAttribute('data-ready', 'true', { timeout: 2000 });
+      }).toPass({ timeout: 30000 });
       await expect(quiz).not.toContainText(/\b1 \/ \d+ answered/);
       expect(problems, problems.join('\n')).toEqual([]);
     });

@@ -422,7 +422,9 @@ export function initSlideDeck(deck: HTMLElement) {
     article.dataset.slideIndex = String(index + 1);
     document.dispatchEvent(new CustomEvent('slidechange', { detail: { index, section: s.group.id } }));
     if (settled) getUiState().setSlide(day, { sectionId: s.group.id, block: s.part - 1 });
-    if (opts.replace) history.replaceState(history.state, '', `#slide-${index + 1}`);
+    // The #slide-n link is a page index, which shifts when late fonts/images re-page; history.state
+    // (kept across a reload of this tab) remembers which section/part it meant so a reload reopens it.
+    if (opts.replace) history.replaceState({ ...(history.state ?? {}), aipSlide: { day, n: index + 1, sectionId: s.group.id, block: s.part - 1 } }, '', `#slide-${index + 1}`);
     if (opts.focus) {
       live.textContent = `Slide ${index + 1} of ${n}: ${s.group.title}${s.parts > 1 ? `, part ${s.part} of ${s.parts}` : ''}`;
       s.group.header.focus({ preventScroll: true });
@@ -433,7 +435,14 @@ export function initSlideDeck(deck: HTMLElement) {
 
   const fromHash = (hash: string): number | null => {
     const n = parseSlideHash(hash);
-    if (n !== null) return Math.min(n, slides.length - 1);
+    if (n !== null) {
+      const meant = (history.state as { aipSlide?: { day: unknown; n: number; sectionId: string; block: number } } | null)?.aipSlide;
+      if (meant && meant.day === day && meant.n === n + 1) {
+        const first = slides.findIndex((x) => x.group.id === meant.sectionId);
+        if (first >= 0) return first + Math.min(meant.block, slides[first].parts - 1);
+      }
+      return Math.min(n, slides.length - 1);
+    }
     if (hash.length < 2) return null;
     let target: Element | null = null;
     try {
