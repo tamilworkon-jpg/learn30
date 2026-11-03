@@ -12,7 +12,7 @@ All three parallel streams (server, client, tests) build against THIS document. 
 - Entry: `site/server/index.ts`. Scripts in `site/package.json`:
   - `npm start` → `npm run build && tsx server/index.ts` (production-like: build, then serve).
   - `npm run serve` → `tsx server/index.ts` (serve an existing `dist/`).
-- Config (env): `PORT` (default 4321), `HOST` (default `0.0.0.0`, so port forwarding / LAN works), `AIP_DB` (default `site/data/aip.db`; `site/data/` is gitignored), `AIP_DIST` (default `site/dist`), `NODE_ENV=production` → cookies get `Secure` only when the request is HTTPS (`x-forwarded-proto: https` or TLS socket) so http://localhost still works.
+- Config (env): `PORT` (default 4321), `HOST` (default `127.0.0.1` — this computer only; VS Code port forwarding still works; `HOST=0.0.0.0` opts in to LAN access), `AIP_MAX_USERS` (default 50; total accounts), `AIP_SIGNUPS_PER_HOUR` (default 5; successful sign-ups per IP per hour), `AIP_SCRYPT_N` (default 131072 = 2^17; power of two 2^14–2^18; cost of new password hashes — tests may lower it), `AIP_TRUST_PROXY=1` (key rate limits for loopback peers on the right-most `X-Forwarded-For` entry; off by default), `AIP_DB` (default `site/data/aip.db`; `site/data/` is gitignored), `AIP_DIST` (default `site/dist`), `NODE_ENV=production` → cookies get `Secure` only when the request is HTTPS (`x-forwarded-proto: https` or TLS socket) so http://localhost still works.
 - The server serves `dist/` files (correct `Content-Type`, `index.html` for directory paths, 404 page `dist/404.html` if present, ETag/Last-Modified for assets, `Cache-Control: no-store` for HTML). Path traversal must be impossible (resolve + prefix check).
 - Security headers on every response: `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin`, `X-Frame-Options: DENY`, `Permissions-Policy: interest-cohort=()`. Pages keep their build-time `<meta>` CSP.
 
@@ -47,10 +47,14 @@ CREATE TABLE ui_state (
 
 ## 3. Auth
 
-- Passwords: 8–128 chars. `scrypt` (N=16384, r=8, p=1, 64-byte key, 16-byte random salt); compare with `timingSafeEqual`.
+- Passwords: 8–128 chars. `scrypt` (N=2^17, r=8, p=1, 64-byte key, 16-byte random salt, `maxmem` raised accordingly); compare with `timingSafeEqual`. Stored parameters are bounded when parsed (N a power of two in 2^10–2^18, r ≤ 8, p ≤ 4); hashes with a lower N (e.g. the original 16384) still verify and are re-hashed on the next successful login. Password inputs over 1024 chars are rejected without hashing.
 - Session cookie: `aip_session=<base64url 32 random bytes>; HttpOnly; SameSite=Lax; Path=/; Max-Age=2592000` (+ `Secure` on HTTPS). Sliding expiry: refresh `expires_at` (and cookie) at most once per hour.
 - CSRF: every non-GET `/api/*` request must have `Content-Type: application/json` (or none for empty bodies), header `X-AIP-Request: 1`, and — when an `Origin` header is present — Origin host must equal the request `Host`. Otherwise 403.
-- Rate limit: login and sign-up — max 10 failed attempts per (IP, username) per 15 min and 50 per IP per 15 min → 429 with `Retry-After`. In-memory is fine.
+- Rate limit (in memory): login and sign-up — max 10 failed attempts per (IP, username) per 15 min and 50 per IP per 15 min → 429 with `Retry-After`. Each attempt is reserved **before** the password check and released on success, so parallel guesses all count. When the TCP peer is loopback (localhost, or a local tunnel / port forwarder through which every client arrives), the per-user bucket is keyed on the username only and the per-IP cap is 200; with `AIP_TRUST_PROXY=1` a loopback peer's right-most `X-Forwarded-For` entry is used as the client IP instead (normal limits). Failed sign-ups (400/409) count as failures.
+- Sign-up caps: successful sign-ups max `AIP_SIGNUPS_PER_HOUR` (5) per IP per hour (×4 for loopback peers) → 429 + `Retry-After`; total accounts max `AIP_MAX_USERS` (50) → 403 `{ error, field: 'username' }` with a message naming `AIP_MAX_USERS`.
+- Re-verification of the current password (`PATCH /api/me` password change, `DELETE /api/me`): max 10 failures per user per 15 min → 429.
+- Display names: 1–30 chars, no control (`Cc`) or invisible format (`Cf`) characters.
+- `next` (login redirect): same-site relative paths only, re-checked after URL normalisation (a result starting with `//` or containing `\` → `/`).
 - Errors are generic: login failure → 401 `{ "error": "Incorrect username or password." }` (never reveal which part).
 
 ## 4. JSON API (all bodies ≤ 1 MB; JSON only; `Cache-Control: no-store`)

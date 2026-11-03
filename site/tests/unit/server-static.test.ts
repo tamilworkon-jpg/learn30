@@ -186,3 +186,48 @@ describe('SV7 page access (T188)', () => {
     }
   });
 });
+
+describe('T192 hardening — redirects and paths', () => {
+  it('H1: next values that normalise to a protocol-relative URL fall back to /', async () => {
+    const { cookie } = await h.signup('olive', 'password123');
+    for (const next of ['/..//evil.com', '/.//evil.com', '/a/%2e%2e//evil.com', '/a/..//evil.com/x', '/%2e%2e//evil.com', '/a/../\\evil.com']) {
+      const r = await h.req('GET', `/login?next=${encodeURIComponent(next)}`, { cookie });
+      expect(r.status, next).toBe(302);
+      expect(r.headers.location, next).toBe('/');
+    }
+  });
+
+  it('H1: safeNext unit cases', async () => {
+    const { safeNext } = await import('../../server/access');
+    expect(safeNext('/..//evil.com')).toBe('/');
+    expect(safeNext('/.//evil.com')).toBe('/');
+    expect(safeNext('/a/%2e%2e//evil.com')).toBe('/');
+    expect(safeNext('/day/02?x=1#s')).toBe('/day/02?x=1#s');
+    expect(safeNext('/a/../day/02')).toBe('/day/02');
+  });
+
+  it('L3: repeated slashes cannot bypass the access rules', async () => {
+    for (const [p, loc] of [
+      ['//settings', '/login?next=%2Fsettings'],
+      ['///settings/', '/login?next=%2Fsettings%2F'],
+      ['/mock//1', '/login?next=%2Fmock%2F1'],
+      ['//', '/login?next=%2F'],
+    ]) {
+      const r = await h.req('GET', p);
+      expect(r.status, p).toBe(302);
+      expect(r.headers.location, p).toBe(loc);
+    }
+    expect((await h.req('GET', '//day//1')).status).toBe(200);
+  });
+
+  it('L5: Windows device names are rejected in any segment', async () => {
+    for (const p of ['/con', '/CON', '/nul.txt', '/day/aux', '/prn.html', '/com1', '/LPT9.js', '/scripts/Com3.css']) {
+      const r = await h.req('GET', p);
+      expect(r.status, p).toBe(404);
+    }
+    const { safePath } = await import('../../server/static');
+    expect(safePath('/console/x')).toBe('/console/x');
+    expect(safePath('/com10')).toBe('/com10');
+    expect(safePath('/nul.txt')).toBeNull();
+  });
+});

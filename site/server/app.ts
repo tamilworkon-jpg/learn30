@@ -3,7 +3,7 @@ import { join, resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import { isAuthPage, requiresSignIn, routeOf, safeNext } from './access';
 import { getProgress, getUi, handleApi, sendJson } from './api';
-import { getSession, publicUser, purgeExpiredSessions, RateLimiter, type Session } from './auth';
+import { clientOf, DEFAULT_LIMITS, getSession, publicUser, purgeExpiredSessions, RateLimiter, SCRYPT_N, type Limits, type Session } from './auth';
 import { openDb } from './db';
 import { findFile, safePath, sendAsset, sendHtml } from './static';
 
@@ -12,7 +12,17 @@ export interface AppOptions {
   distDir: string;
   /** Clock override for tests (ms since epoch). */
   now?: () => number;
+  /** Maximum number of accounts (AIP_MAX_USERS, default 50). */
+  maxUsers?: number;
+  /** Rate-limit overrides (AIP_SIGNUPS_PER_HOUR; tests). */
+  limits?: Partial<Limits>;
+  /** Key loopback peers on their X-Forwarded-For address (AIP_TRUST_PROXY=1). */
+  trustProxy?: boolean;
+  /** scrypt cost for new hashes (default 2^17; tests use less). */
+  scryptN?: number;
 }
+
+export const DEFAULT_MAX_USERS = 50;
 
 export interface App {
   handler: RequestListener;
@@ -40,7 +50,10 @@ export function createApp(opts: AppOptions): App {
   const now = opts.now ?? Date.now;
   const db = openDb(opts.dbPath);
   const dist = resolve(opts.distDir);
-  const limiter = new RateLimiter(now);
+  const limiter = new RateLimiter(now, { ...DEFAULT_LIMITS, ...opts.limits });
+  const maxUsers = opts.maxUsers ?? DEFAULT_MAX_USERS;
+  const scryptN = opts.scryptN ?? SCRYPT_N;
+  const trustProxy = opts.trustProxy ?? false;
   purgeExpiredSessions(db, now());
   let lastPurge = now();
 
@@ -53,6 +66,7 @@ export function createApp(opts: AppOptions): App {
     for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.setHeader(k, v);
     if (now() - lastPurge > 60 * 60 * 1000) {
       purgeExpiredSessions(db, now());
+      limiter.sweep();
       lastPurge = now();
     }
     const rawUrl = req.url ?? '/';
@@ -62,7 +76,7 @@ export function createApp(opts: AppOptions): App {
 
     if (rawPath === '/api' || rawPath.startsWith('/api/')) {
       const session = getSession(db, req, now());
-      await handleApi(req, res, rawPath, { db, limiter, now, session, ip: req.socket.remoteAddress ?? '' });
+      await handleApi(req, res, rawPath, { db, limiter, now, session, client: clientOf(req, trustProxy), scryptN, maxUsers });
       return;
     }
 

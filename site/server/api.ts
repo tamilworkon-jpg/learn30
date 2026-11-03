@@ -14,10 +14,14 @@ import {
   getDummyHash,
   hashPassword,
   isHttps,
+  MAX_PASSWORD_INPUT,
+  needsRehash,
   publicUser,
   sessionCookie,
   verifyPassword,
+  type Client,
   type RateLimiter,
+  type Reservation,
   type Session,
   type UserRow,
 } from './auth';
@@ -30,7 +34,11 @@ export interface ApiContext {
   limiter: RateLimiter;
   now: () => number;
   session: Session | null;
-  ip: string;
+  client: Client;
+  /** scrypt cost for new hashes (tests lower it). */
+  scryptN: number;
+  /** Total accounts allowed on this server (contract §3, AIP_MAX_USERS). */
+  maxUsers: number;
 }
 
 class HttpError extends Error {
@@ -143,7 +151,7 @@ const DAY_KEY = /^([1-9]|[12][0-9]|30)$/;
 export function uiStateError(v: unknown): string | null {
   if (!isObject(v)) return 'UI state must be an object.';
   for (const [k, val] of Object.entries(v)) {
-    if (k in UI_ENUMS) {
+    if (Object.hasOwn(UI_ENUMS, k)) {
       if (typeof val !== 'string' || !UI_ENUMS[k].includes(val)) return `Invalid value for ${k}.`;
     } else if (k === 'slides') {
       if (!isObject(val)) return 'slides must be an object.';
@@ -192,62 +200,104 @@ type Result = { status: number; body: unknown; cookie?: string };
 
 const INCORRECT = 'Incorrect username or password.';
 
+const tooMany = (wait: number) => new HttpError(429, { error: 'Too many attempts. Try again later.' }, { 'Retry-After': String(wait) });
+
+/** Reserve a rate-limited attempt (before any await, so parallel requests all count) or throw 429. */
+function reserve(r: Reservation | number): Reservation {
+  if (typeof r === 'number') throw tooMany(r);
+  return r;
+}
+
+function userCount(db: DatabaseSync): number {
+  return (db.prepare('SELECT COUNT(*) AS n FROM users').get() as { n: number }).n;
+}
+
+const accountLimit = (max: number) =>
+  err(403, `This server has reached its limit of ${max} accounts. Ask whoever runs it to raise AIP_MAX_USERS.`, { field: 'username' });
+
 async function signup(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
   const b = objectBody(await readJson(req));
   const ipUser = typeof b.username === 'string' ? b.username.trim().toLowerCase().slice(0, 64) : '';
-  const wait = ctx.limiter.retryAfter(ctx.ip, ipUser);
-  if (wait) throw new HttpError(429, { error: 'Too many attempts. Try again later.' }, { 'Retry-After': String(wait) });
-  const fail = (e: HttpError) => {
-    ctx.limiter.fail(ctx.ip, ipUser);
-    return e;
-  };
-  const username = checkUsername(b.username);
-  if (!username) throw fail(err(400, 'Username must be 3–30 characters: a–z, 0–9, _ . -', { field: 'username' }));
-  if (!checkPassword(b.password)) throw fail(err(400, 'Password must be 8–128 characters.', { field: 'password' }));
-  let displayName = username;
-  if (b.displayName !== undefined && !(typeof b.displayName === 'string' && b.displayName.trim() === '')) {
-    const d = checkDisplayName(b.displayName);
-    if (!d) throw fail(err(400, 'Display name must be 1–30 characters.', { field: 'displayName' }));
-    displayName = d;
-  }
-  if (findUser(ctx.db, username)) throw fail(err(409, 'That username is taken.', { field: 'username' }));
-  const passHash = await hashPassword(b.password);
-  const now = ctx.now();
-  const iso = new Date(now).toISOString();
-  let user: UserRow;
+  const { limiter, client } = ctx;
+  const signupWait = limiter.signups.retryAfter(limiter.signupSlots(client));
+  if (signupWait) throw tooMany(signupWait);
+  // Counted as a failure until it succeeds; a successful sign-up is then counted per IP per hour.
+  const failure = reserve(limiter.fails.reserve(limiter.authSlots(client, ipUser)));
+  const success = reserve(limiter.signups.reserve(limiter.signupSlots(client)));
   try {
-    user = tx(ctx.db, () => {
-      const r = ctx.db
-        .prepare('INSERT INTO users (username, display_name, pass_hash, created_at) VALUES (?, ?, ?, ?)')
-        .run(username, displayName, passHash, iso);
-      const id = Number(r.lastInsertRowid);
-      ctx.db.prepare('INSERT INTO progress (user_id, doc, updated_at) VALUES (?, ?, ?)').run(id, JSON.stringify(defaultProgress(now)), iso);
-      return { id, username, display_name: displayName, pass_hash: passHash, created_at: iso };
-    });
+    const username = checkUsername(b.username);
+    if (!username) throw err(400, 'Username must be 3–30 characters: a–z, 0–9, _ . -', { field: 'username' });
+    if (!checkPassword(b.password)) throw err(400, 'Password must be 8–128 characters.', { field: 'password' });
+    let displayName = username;
+    if (b.displayName !== undefined && !(typeof b.displayName === 'string' && b.displayName.trim() === '')) {
+      const d = checkDisplayName(b.displayName);
+      if (!d) throw err(400, 'Display name must be 1–30 characters (no control or invisible characters).', { field: 'displayName' });
+      displayName = d;
+    }
+    if (findUser(ctx.db, username)) throw err(409, 'That username is taken.', { field: 'username' });
+    if (userCount(ctx.db) >= ctx.maxUsers) {
+      failure.release();
+      throw accountLimit(ctx.maxUsers);
+    }
+    const passHash = await hashPassword(b.password, ctx.scryptN);
+    const now = ctx.now();
+    const iso = new Date(now).toISOString();
+    let user: UserRow;
+    try {
+      user = tx(ctx.db, () => {
+        // Re-checked inside the (synchronous) transaction: parallel sign-ups cannot overshoot the cap.
+        if (userCount(ctx.db) >= ctx.maxUsers) throw accountLimit(ctx.maxUsers);
+        const r = ctx.db
+          .prepare('INSERT INTO users (username, display_name, pass_hash, created_at) VALUES (?, ?, ?, ?)')
+          .run(username, displayName, passHash, iso);
+        const id = Number(r.lastInsertRowid);
+        ctx.db.prepare('INSERT INTO progress (user_id, doc, updated_at) VALUES (?, ?, ?)').run(id, JSON.stringify(defaultProgress(now)), iso);
+        return { id, username, display_name: displayName, pass_hash: passHash, created_at: iso };
+      });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        failure.release();
+        throw e;
+      }
+      if (String((e as Error).message).includes('UNIQUE')) throw err(409, 'That username is taken.', { field: 'username' });
+      throw e;
+    }
+    failure.release();
+    const token = createSession(ctx.db, user.id, now);
+    return { status: 201, body: { user: publicUser(user) }, cookie: sessionCookie(token, isHttps(req)) };
   } catch (e) {
-    if (String((e as Error).message).includes('UNIQUE')) throw fail(err(409, 'That username is taken.', { field: 'username' }));
+    success.release();
     throw e;
   }
-  const token = createSession(ctx.db, user.id, now);
-  return { status: 201, body: { user: publicUser(user) }, cookie: sessionCookie(token, isHttps(req)) };
 }
 
 async function login(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
   const b = objectBody(await readJson(req));
   const ipUser = typeof b.username === 'string' ? b.username.trim().toLowerCase().slice(0, 64) : '';
-  const wait = ctx.limiter.retryAfter(ctx.ip, ipUser);
-  if (wait) throw new HttpError(429, { error: 'Too many attempts. Try again later.' }, { 'Retry-After': String(wait) });
+  const { limiter, client } = ctx;
+  const slots = limiter.authSlots(client, ipUser);
+  const attempt = reserve(limiter.fails.reserve(slots));
   const username = checkUsername(b.username);
-  const password = typeof b.password === 'string' && b.password.length <= 1024 ? b.password : '';
+  const password = typeof b.password === 'string' && b.password.length <= MAX_PASSWORD_INPUT ? b.password : '';
   const user = username ? findUser(ctx.db, username) : undefined;
-  const ok = await verifyPassword(password, user?.pass_hash ?? (await getDummyHash()));
-  if (!user || !ok || !password) {
-    ctx.limiter.fail(ctx.ip, ipUser);
-    throw err(401, INCORRECT);
+  const ok = await verifyPassword(password, user?.pass_hash ?? (await getDummyHash(ctx.scryptN)));
+  if (!user || !ok || !password) throw err(401, INCORRECT);
+  attempt.release();
+  limiter.fails.clear(slots[0].key);
+  if (needsRehash(user.pass_hash, ctx.scryptN)) {
+    const upgraded = await hashPassword(password, ctx.scryptN);
+    ctx.db.prepare('UPDATE users SET pass_hash = ? WHERE id = ? AND pass_hash = ?').run(upgraded, user.id, user.pass_hash);
   }
-  ctx.limiter.succeed(ctx.ip, ipUser);
   const token = createSession(ctx.db, user.id, ctx.now());
   return { status: 200, body: { user: publicUser(user) }, cookie: sessionCookie(token, isHttps(req)) };
+}
+
+/** Check the signed-in user's password (PATCH/DELETE /api/me), rate-limited per user. */
+async function reverify(ctx: ApiContext, s: Session, password: unknown, field: string, message: string): Promise<void> {
+  const attempt = reserve(ctx.limiter.fails.reserve(ctx.limiter.reverifySlots(s.user.id)));
+  const ok = typeof password === 'string' && password.length <= MAX_PASSWORD_INPUT && (await verifyPassword(password, s.user.pass_hash));
+  if (!ok) throw err(403, message, { field });
+  attempt.release();
 }
 
 async function logout(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
@@ -270,10 +320,8 @@ async function patchMe(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
   let passHash = s.user.pass_hash;
   if (b.newPassword !== undefined) {
     if (!checkPassword(b.newPassword)) throw err(400, 'Password must be 8–128 characters.', { field: 'newPassword' });
-    if (typeof b.currentPassword !== 'string' || !(await verifyPassword(b.currentPassword, s.user.pass_hash))) {
-      throw err(403, 'Current password is incorrect.', { field: 'currentPassword' });
-    }
-    passHash = await hashPassword(b.newPassword);
+    await reverify(ctx, s, b.currentPassword, 'currentPassword', 'Current password is incorrect.');
+    passHash = await hashPassword(b.newPassword, ctx.scryptN);
   }
   tx(ctx.db, () => {
     ctx.db.prepare('UPDATE users SET display_name = ?, pass_hash = ? WHERE id = ?').run(displayName, passHash, s.user.id);
@@ -288,9 +336,7 @@ async function patchMe(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
 async function deleteMe(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
   const s = requireSession(ctx);
   const b = objectBody(await readJson(req));
-  if (typeof b.password !== 'string' || !(await verifyPassword(b.password, s.user.pass_hash))) {
-    throw err(403, 'Password is incorrect.', { field: 'password' });
-  }
+  await reverify(ctx, s, b.password, 'password', 'Password is incorrect.');
   ctx.db.prepare('DELETE FROM users WHERE id = ?').run(s.user.id);
   return { status: 204, body: null, cookie: clearCookie(isHttps(req)) };
 }
