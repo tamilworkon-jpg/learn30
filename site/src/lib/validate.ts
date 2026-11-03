@@ -108,6 +108,15 @@ const setRule = (set: string): [number, number] | null => {
   return null;
 };
 
+/**
+ * Questions must test exam CONTENT (AI/ML/GenAI concepts, AWS services, responsible AI, security), never
+ * the exam itself: format, question count, duration, pass mark/scoring, question types, domain weights,
+ * the exam guide, study planning or retakes are not examined (learner feedback 2026-11-03).
+ */
+export const EXAM_META_STEM =
+  /\b(exam format|format of the exam|AIF-C01|exam guide|(passing|pass) (mark|score)|scaled score|unscored|retakes?|study (time|plan)|an exam question|on the exam|for the exam|preparing for (the )?(exam|certification)|certification exam|questions? (are|is) scored|domain weight(ing)?s?|weighted domains?)\b/i;
+export const isExamMetaStem = (stem: string) => EXAM_META_STEM.test(stem);
+
 export function validateContent(input: ValidateInput): ValidateResult {
   const { guide, course, final } = input;
   const errors: string[] = [];
@@ -208,6 +217,7 @@ export function validateContent(input: ValidateInput): ValidateResult {
       const stemKey = q.stem.trim().toLowerCase();
       const prevSet = stems.get(stemKey);
       if (prevSet && prevSet !== set) errors.push(`${q.id}: stem reused from ${prevSet}`);
+      if (isExamMetaStem(q.stem)) errors.push(`${q.id}: asks about the exam itself (format, scoring, guide, study planning) — questions must test exam content`);
       stems.set(stemKey, set);
       const optionIds = new Set(q.options.map((o) => o.id));
       const keys = Array.isArray(q.answer) ? q.answer : Object.keys(q.answer);

@@ -219,7 +219,7 @@
 - id: q-day-06-014
   set: day-06
   type: single
-  stem: "Sales managers with no technical background want to explore dashboards, ask questions of company data in natural language and automate routine follow-up work with AI agents. Which AWS service named in the exam guide fits this use stage of the lifecycle?"
+  stem: "Sales managers with no technical background want to explore dashboards, ask questions of company data in natural language and automate routine follow-up work with AI agents. Which AWS service fits this stage, where business users consume insights and act on them?"
   options:
     - { id: a, text: "Amazon EMR", explanation: "Incorrect. EMR runs big-data processing clusters for engineers." }
     - { id: b, text: "Kiro", explanation: "Incorrect. Kiro is an agentic IDE for developers building applications." }

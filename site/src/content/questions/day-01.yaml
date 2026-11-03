@@ -18,17 +18,17 @@
 - id: q-day-01-002
   set: day-01
   type: single
-  stem: "A candidate is planning study time for the AWS Certified AI Practitioner (AIF-C01) exam, guide v1.2. Which description of the exam format is correct?"
+  stem: "A retailer is choosing between a classic machine learning model and a deep learning model to classify millions of product photos. Which trade-off should the team expect if it chooses deep learning?"
   options:
-    - { id: a, text: "50 questions, 60 minutes, passing score of 750 out of 1,000", explanation: "Incorrect. The exam has 65 questions in 90 minutes and the passing score is 700." }
-    - { id: b, text: "65 questions, 130 minutes, passing score of 720 out of 1,000", explanation: "Incorrect. 130 minutes and 720 belong to other AWS exams; AIF-C01 is 90 minutes with a 700 passing score." }
-    - { id: c, text: "85 questions, 120 minutes, passing score of 700 out of 1,000", explanation: "Incorrect. The passing score is right, but AIF-C01 has 65 questions and a 90-minute limit." }
-    - { id: d, text: "65 questions (50 scored), 90 minutes, passing score of 700 out of 1,000", explanation: "Correct. AIF-C01 v1.2 has 65 questions, of which 50 are scored, in 90 minutes, with a scaled passing score of 700." }
-  answer: [d]
-  explanation: "AIF-C01 v1.2 contains 65 questions (50 scored and 15 unscored), lasts 90 minutes and requires a scaled score of 700 out of 1,000 across five domains weighted 20/24/28/14/14."
+    - { id: a, text: "It works well with very little data and runs cheaply on any CPU", explanation: "Incorrect. Deep learning usually needs much more data and compute, often GPUs, than classic ML." }
+    - { id: b, text: "It usually needs more data and compute, and its decisions are harder to explain", explanation: "Correct. Deep neural networks excel at images and language but need large datasets, more compute (often GPUs) and are harder to interpret." }
+    - { id: c, text: "It cannot be used for images and only works with text", explanation: "Incorrect. Computer vision is one of the areas where deep learning made the biggest leaps." }
+    - { id: d, text: "It follows hand-written if-then rules, so every decision is fully explainable", explanation: "Incorrect. That describes rules-based automation; deep learning learns patterns from data and is less transparent." }
+  answer: [b]
+  explanation: "Deep learning is the subset of ML that uses many-layered neural networks. It made big gains in computer vision and NLP, but it usually needs more data and compute than classic ML and its decisions are harder to explain."
   domain: D1
   taskStatement: "1.1"
-  lessonRef: day-01#orientation
+  lessonRef: day-01#explanation
   difficulty: easy
 
 - id: q-day-01-003
@@ -178,17 +178,17 @@
 - id: q-day-01-012
   set: day-01
   type: single
-  stem: "A learner's older training course features AWS DeepLens, a deep-learning video camera, in its AI services section. How should the learner treat AWS DeepLens when preparing for AIF-C01 v1.2?"
+  stem: "A gardening app lets users take a photo of a plant and then tells them the plant's species. Which label BEST describes this capability?"
   options:
-    - { id: a, text: "Skip it, because AWS DeepLens is discontinued and not part of the v1.2 exam", explanation: "Correct. AWS DeepLens is a discontinued legacy device and is not covered by the v1.2 exam guide." }
-    - { id: b, text: "Study it as the main AWS service for computer vision", explanation: "Incorrect. Computer vision on AWS is covered by services such as Amazon Rekognition, not the discontinued DeepLens." }
-    - { id: c, text: "Study it as the AWS service for running AI agents at scale", explanation: "Incorrect. Amazon Bedrock AgentCore runs agents at scale; DeepLens was a camera device and is discontinued." }
-    - { id: d, text: "Study it as the new name for Amazon SageMaker AI", explanation: "Incorrect. DeepLens was never a name for SageMaker AI; it was a separate, now-discontinued camera product." }
+    - { id: a, text: "Deep learning (computer vision)", explanation: "Correct. Recognising objects in images is computer vision, an area powered by deep neural networks." }
+    - { id: b, text: "Rules-based automation", explanation: "Incorrect. No fixed if-then rule can recognise thousands of plant species from photos; the patterns are learned from data." }
+    - { id: c, text: "Generative AI", explanation: "Incorrect. The app classifies an existing photo; it does not create new content." }
+    - { id: d, text: "Agentic AI", explanation: "Incorrect. Agentic AI plans steps and calls tools to act; this app only recognises what is in an image." }
   answer: [a]
-  explanation: "Some older courses still show AWS DeepLens, but it is discontinued and not on the v1.2 exam. Learn the current v1.2 names, such as Amazon Quick and Kiro where older material said Amazon Q."
+  explanation: "Keywords help: recognise images or speech points to deep learning, predict or classify from tabular data points to ML, create or summarise points to generative AI, and take actions across systems points to agentic AI."
   domain: D1
   taskStatement: "1.1"
-  lessonRef: day-01#exam-tips
+  lessonRef: day-01#examples
   difficulty: easy
 
 - id: q-day-01-013

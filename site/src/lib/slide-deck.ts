@@ -338,6 +338,9 @@ export function initSlideDeck(deck: HTMLElement) {
     const anchor = slides[index];
     const anchorLeaf = anchor?.leaves[0];
     const placed = Math.abs(deck.getBoundingClientRect().top - 8) <= 2;
+    // A scrolling slide (the quiz) re-pages when its island changes — e.g. choosing an option. Landing
+    // back on the same slide must keep the learner's scroll position instead of jumping to the top.
+    const keepScroll = article.scrollTop;
     paging = true;
     article.classList.remove('slide-scroll');
     article.classList.add('slide-measuring');
@@ -360,10 +363,14 @@ export function initSlideDeck(deck: HTMLElement) {
     paging = false;
     // Until the learner moves, a #slide-n deep link keeps pointing at slide n (late fonts/images re-page).
     const linked = settled ? null : (fromHash(location.hash) ?? savedSlide());
-    if (linked !== null) return go(linked, { focus: false, scroll: true, replace: false });
-    let i = anchorLeaf ? slides.findIndex((s) => s.leaves.some((l) => l === anchorLeaf || l.contains(anchorLeaf))) : -1;
-    if (i < 0 && anchor) i = slides.findIndex((s) => s.group === anchor.group);
-    go(Math.max(0, i), { focus: false, scroll: placed, replace: false });
+    if (linked !== null) go(linked, { focus: false, scroll: true, replace: false });
+    else {
+      let i = anchorLeaf ? slides.findIndex((s) => s.leaves.some((l) => l === anchorLeaf || l.contains(anchorLeaf))) : -1;
+      if (i < 0 && anchor) i = slides.findIndex((s) => s.group === anchor.group);
+      go(Math.max(0, i), { focus: false, scroll: placed, replace: false });
+    }
+    const now = slides[index];
+    if (anchor && now && now.group === anchor.group && now.part === anchor.part && now.group.scroll) article.scrollTop = keepScroll;
   };
 
   // ---------- navigation ----------

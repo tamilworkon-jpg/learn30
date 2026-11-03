@@ -265,14 +265,14 @@
 - id: q-day-02-017
   set: day-02
   type: single
-  stem: "An exam question states that a credit model approves applicants from one demographic group far less often than equally qualified applicants from other groups, and calls this bias. Which meaning of bias does the question use?"
+  stem: "An auditor reports that a credit model approves applicants from one demographic group far less often than equally qualified applicants from other groups, and calls this bias. Which meaning of bias is the auditor using?"
   options:
     - { id: a, text: "Statistical bias: error from overly simple assumptions that causes underfitting", explanation: "Incorrect. Statistical bias relates to training and test scores and model complexity, not to how groups of people are treated." }
-    - { id: b, text: "Responsible-AI bias: the model systematically disadvantages a group of people", explanation: "Correct. When a question talks about groups of people, fairness or demographics, bias means unfair outcomes." }
+    - { id: b, text: "Responsible-AI bias: the model systematically disadvantages a group of people", explanation: "Correct. When the context is groups of people, fairness or demographics, bias means unfair outcomes." }
     - { id: c, text: "Variance: sensitivity to the particular training sample", explanation: "Incorrect. Variance describes how much a model changes when trained on slightly different data, which leads to overfitting." }
     - { id: d, text: "Data drift: a change in the input data after deployment", explanation: "Incorrect. Data drift describes inputs changing over time in production, not unfair treatment of a group." }
   answer: [b]
-  explanation: "Bias has two meanings on the exam. With training versus test scores or model complexity, it means systematic error (underfitting). With groups of people, fairness or demographics, it means unfair outcomes. Read the context before answering."
+  explanation: "Bias has two meanings in AI. With training versus test scores or model complexity, it means systematic error (underfitting). With groups of people, fairness or demographics, it means unfair outcomes. Read the context before answering."
   domain: D4
   taskStatement: "4.1"
   lessonRef: day-02#exam-tips

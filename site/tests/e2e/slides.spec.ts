@@ -382,4 +382,29 @@ test.describe('slide lessons (T182) @visual', () => {
       }
     });
   }
+
+  // Learner bug 2026-11-03: on the quiz slide, choosing an option re-paged the deck and threw the
+  // scrolled-down quiz back to the top. Covers both re-page paths (deep link / restored slide, and
+  // after moving with the arrows).
+  for (const how of ['link', 'arrows'] as const) {
+    test(`SL10 quiz slide keeps its scroll position when an option is chosen (${how})`, async ({ page }) => {
+      test.slow();
+      await page.setViewportSize({ width: 1366, height: 650 });
+      await page.goto('/day/02#quiz');
+      const quiz = page.locator('[data-quiz="day-02"]');
+      await expect(quiz).toHaveAttribute('data-ready', 'true');
+      if (how === 'arrows') {
+        await page.getByRole('button', { name: 'Previous slide' }).click();
+        await page.getByRole('button', { name: 'Next slide' }).click();
+        await expect(quiz).toBeVisible();
+      }
+      const art = page.locator('.slide-deck article');
+      await art.evaluate((a) => (a.scrollTop = a.scrollHeight));
+      const before = await art.evaluate((a) => a.scrollTop);
+      expect(before).toBeGreaterThan(50);
+      await quiz.locator('label.opt').last().click();
+      await page.waitForTimeout(600); // the deck re-pages ~150 ms after the island changes
+      expect(await art.evaluate((a) => a.scrollTop)).toBeGreaterThan(before - 5);
+    });
+  }
 });

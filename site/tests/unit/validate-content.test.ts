@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { estimateMinutes, parseLesson, validateContent, type QuestionSet } from '../../src/lib/validate';
+import { estimateMinutes, isExamMetaStem, parseLesson, validateContent, type QuestionSet } from '../../src/lib/validate';
 import { course, examGuide } from '../../src/lib/data';
 
 const words = (n: number) => Array.from({ length: n }, (_, i) => `word${i}`).join(' ');
@@ -95,6 +95,28 @@ describe('content validator (T014)', () => {
     const r = run({}, [], true);
     expect(r.errors.join()).toMatch(/1\.2.*fewer than 3/);
     expect(r.errors.join()).toMatch(/900/);
+  });
+
+  it('F21 questions about the exam itself (format, scoring, guide, study planning) are rejected', () => {
+    for (const stem of [
+      'A candidate is planning study time for the AWS Certified AI Practitioner (AIF-C01) exam, guide v1.2. Which description of the exam format is correct?',
+      'What is the passing score on a 100–1000 scale?',
+      'How many questions are unscored?',
+      'How should a learner treat AWS DeepLens when preparing for the exam?',
+      'An exam question states that a model is biased. Which meaning of bias does it use?',
+      'Which domain weighting applies to Domain 3?',
+    ])
+      expect(isExamMetaStem(stem), stem).toBe(true);
+    for (const stem of [
+      'A data scientist is preparing three years of hourly readings to train a forecasting model. What matters MOST?',
+      'A hospital compares two candidate models for discharge summaries. Which evaluation option fits?',
+      'Inside a neural network, what is the role of the weights?',
+      'An auditor asks for the AWS SOC 2 report. Where can the company download it?',
+    ])
+      expect(isExamMetaStem(stem), stem).toBe(false);
+    const set = qset('day-02', 20);
+    set.questions[0].stem = 'Which description of the exam format is correct?';
+    expect(run({ 2: lessonMdx(2) }, [set]).errors.join()).toMatch(/q-day-02-001: asks about the exam itself/);
   });
 
   it('F16 unresolvable lessonRef', () => {

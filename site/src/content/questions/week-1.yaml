@@ -426,14 +426,14 @@
 - id: q-week-1-027
   set: week-1
   type: single
-  stem: "An older study guide recommends Amazon Forecast for building a demand forecast from historical sales. For the AIF-C01 exam guide v1.2, which AWS option should a candidate associate with this task instead?"
+  stem: "A retail planner with no coding experience wants to predict next quarter's weekly sales for each store from three years of historical sales data. Which AWS option meets this requirement with the LEAST effort?"
   options:
     - { id: a, text: "Amazon Personalize", explanation: "Incorrect. Personalize builds recommendations from user interaction data, not time-series forecasts." }
-    - { id: b, text: "Amazon Kendra", explanation: "Incorrect. Kendra is enterprise search and is also not listed in guide v1.2." }
-    - { id: c, text: "Amazon SageMaker AI or SageMaker Canvas", explanation: "Correct. Forecast is not listed in guide v1.2; forecasting is regression on time-series data built with SageMaker AI or the no-code SageMaker Canvas." }
+    - { id: b, text: "Amazon Rekognition", explanation: "Incorrect. Rekognition analyses images and video; it does not forecast numeric values." }
+    - { id: c, text: "Amazon SageMaker Canvas", explanation: "Correct. Forecasting is regression on time-series data, and SageMaker Canvas lets analysts build such models without writing code." }
     - { id: d, text: "Amazon Comprehend", explanation: "Incorrect. Comprehend extracts insights from text; it does not forecast numeric values." }
   answer: [c]
-  explanation: "Amazon Forecast, Amazon Fraud Detector and Amazon Kendra appear in older courses but not in exam guide v1.2. For forecasting and fraud, think SageMaker AI or SageMaker Canvas; for searching company knowledge with generative answers, think Amazon Bedrock Knowledge Bases."
+  explanation: "Forecasting future values from historical data is regression on time-series data. No pre-built AI service covers it, so the path is SageMaker AI for full control or the no-code SageMaker Canvas for analysts."
   domain: D1
   taskStatement: "1.2"
   lessonRef: day-05#explanation
@@ -585,7 +585,7 @@
     - { id: t3, text: "Amazon SageMaker AI" }
     - { id: t4, text: "Amazon Personalize" }
   answer: { a: t1, b: t2, c: t3, d: t4 }
-  explanation: "The exam guide's application families map to AWS options: knowledge bases to Amazon Bedrock Knowledge Bases, agentic AI to Bedrock AgentCore (the recommended path for new agents), forecasting and fraud detection to SageMaker AI or Canvas, and recommendations to Amazon Personalize."
+  explanation: "Common AI application families map to AWS options: knowledge bases to Amazon Bedrock Knowledge Bases, agentic AI to Bedrock AgentCore (the recommended path for new agents), forecasting and fraud detection to SageMaker AI or Canvas, and recommendations to Amazon Personalize."
   domain: D1
   taskStatement: "1.2"
   lessonRef: day-05#explanation
