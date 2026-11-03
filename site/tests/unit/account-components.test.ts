@@ -140,10 +140,22 @@ describe('ImportOffer', () => {
     expect(root.querySelector('[data-import-offer]')).toBeNull();
   });
 
-  it('signed in with old progress: offer → confirm → imported once', async () => {
+  it('fresh account: one click imports (nothing to overwrite)', async () => {
     legacy();
     vi.stubGlobal('fetch', vi.fn(async () => new Response(null, { status: 204 })));
     setBootstrap({ user: USER, progress: defaultProgress(), ui: null });
+    await mount(h(ImportOffer, {}));
+    await act(() => root.querySelector<HTMLButtonElement>('[data-import-accept]')!.click());
+    expect(getStore().get().days['1'].status).toBe('completed');
+    expect(root.querySelector('[data-import-offer]')!.getAttribute('data-state')).toBe('done');
+  });
+
+  it('account with progress: offer → confirm → imported once', async () => {
+    legacy();
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(null, { status: 204 })));
+    const mine = defaultProgress();
+    mine.days['5'] = { status: 'in-progress', sectionsViewed: ['recap'] };
+    setBootstrap({ user: USER, progress: mine, ui: null });
     await mount(h(ImportOffer, {}));
     const offer = root.querySelector<HTMLElement>('[data-import-offer]')!;
     expect(offer.textContent).toContain('Import progress saved in this browser');

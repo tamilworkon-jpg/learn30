@@ -9,7 +9,7 @@ describe('safeNext', () => {
     ['/day/3?x=1#slide-2', '/day/3?x=1#slide-2'],
     ['/settings', '/settings'],
   ])('accepts %s', (raw, out) => expect(safeNext(raw)).toBe(out));
-  it.each(['//evil.example', 'https://evil.example/', 'http:/x', 'javascript:alert(1)', '/\\evil.example', '\\\\evil', 'day/3', '', '/login', '/signup/', '/x\n/y'])('rejects %j', (raw) =>
+  it.each(['//evil.example', 'https://evil.example/', 'http:/x', 'javascript:alert(1)', '/\\evil.example', '\\\\evil', 'day/3', '', '/login', '/signup/', '/x\n/y', '/..//evil.com', '/.//evil.com', '/a/%2e%2e//evil.com', '/a/../..//evil.com', '/%2e%2e//evil.com/x?y'])('rejects %j', (raw) =>
     expect(safeNext(raw)).toBe('/'),
   );
   it('null / missing → fallback', () => {
