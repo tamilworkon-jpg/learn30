@@ -42,7 +42,11 @@ Open http://localhost:4321, **Create account**, and start Day 1. Search only wor
 | Variable | Default | Meaning |
 |---|---|---|
 | `PORT` | `4321` | HTTP port |
-| `HOST` | `0.0.0.0` | Listen address (all interfaces, so port forwarding and your LAN work); use `127.0.0.1` to allow this computer only |
+| `HOST` | `127.0.0.1` | Listen address: this computer only (VS Code port forwarding still works). Set `HOST=0.0.0.0` to let other devices on your LAN connect directly |
+| `AIP_MAX_USERS` | `50` | Maximum number of accounts; sign-up is refused (with a message) once reached |
+| `AIP_SIGNUPS_PER_HOUR` | `5` | Successful sign-ups allowed per IP address per hour (×4 for connections arriving through localhost / a tunnel) |
+| `AIP_SCRYPT_N` | `131072` | scrypt cost for new password hashes (power of two, 16384–262144); 2^17 uses 128 MiB and about 1–2 s per sign-in on a laptop |
+| `AIP_TRUST_PROXY` | off | `1` = when a request comes from localhost (a tunnel or reverse proxy), rate-limit by the address in the last `X-Forwarded-For` entry |
 | `AIP_DB` | `site/data/aip.db` | SQLite database file (created with its schema on first start) |
 
 Example: `PORT=8080 AIP_DB=/path/to/aip.db npm run serve` (Windows `cmd`: `set PORT=8080&& npm run serve`).
@@ -56,7 +60,7 @@ Example: `PORT=8080 AIP_DB=/path/to/aip.db npm run serve` (Windows `cmd`: `set P
 
 ### Use it on your phone / another device (port forwarding)
 
-1. `npm start` (the server already listens on all interfaces).
+1. `npm start` (forwarding works with the default `HOST=127.0.0.1`; to open it by LAN IP instead, start with `HOST=0.0.0.0`).
 2. VS Code → **Ports** panel → **Forward a Port** → `4321` → open the forwarded URL on the other device.
 3. **Sign in** there with the same username and password: progress is stored on the server, so it is the same on every address and device (localhost, the forwarded URL, your LAN IP). Each address asks you to sign in once, because the browser keeps a separate login cookie per address.
 
@@ -146,7 +150,7 @@ New work: add tasks to `tasks.md` (next free `T###`), follow the gate, tick the 
 ## 8. Security and privacy
 
 - A small local server (no analytics, no external requests at runtime — fonts, diagrams and search are local). Passwords are hashed with scrypt; sessions are random tokens in an `HttpOnly`, `SameSite=Lax` cookie (only their hash is stored); API writes require a CSRF header and same-origin requests; login and sign-up are rate-limited and errors never say whether the username or the password was wrong.
-- The server listens on all interfaces by default: anyone who can reach the port can create an account. Use `HOST=127.0.0.1` on untrusted networks.
+- The server listens on `127.0.0.1` by default; `HOST=0.0.0.0` exposes it to your network, and anyone who can reach the port (or a public forwarded URL) can create an account. Sign-up is limited per IP per hour (`AIP_SIGNUPS_PER_HOUR`) and in total (`AIP_MAX_USERS`, default 50); keep forwarded ports private where possible.
 - Strict Content-Security-Policy (`default-src 'self'`, hashed scripts/styles); `/search` adds only `'wasm-unsafe-eval'` for Pagefind.
 - Progress is stored only in your SQLite file; it leaves it only through an explicit export. Saved progress and imports are size-limited, parsed with `JSON.parse` and schema-validated (imports also require confirmation).
 

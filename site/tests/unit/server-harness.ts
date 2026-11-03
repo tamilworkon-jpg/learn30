@@ -4,7 +4,7 @@ import { createServer, request, type IncomingHttpHeaders, type Server } from 'no
 import type { AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { createApp, type App } from '../../server/app';
+import { createApp, type App, type AppOptions } from '../../server/app';
 
 const page = (title: string) =>
   `<!doctype html><html><head><meta charset="utf-8"><title>${title}</title></head><body><h1>${title}</h1></body></html>`;
@@ -54,7 +54,14 @@ export function cookieOf(res: Res): string {
   return c.split(';')[0];
 }
 
-export async function startHarness(): Promise<Harness> {
+/** scrypt cost used by the harness (fast); production uses SCRYPT_N = 2^17. */
+export const TEST_SCRYPT_N = 2 ** 11;
+
+/**
+ * Requests come from 127.0.0.1 (a loopback peer). The harness trusts X-Forwarded-For from loopback, so a test
+ * can act as a remote client by sending `X-Forwarded-For: <ip>`. Sign-up / account caps are generous unless overridden.
+ */
+export async function startHarness(opts: Partial<Omit<AppOptions, 'dbPath' | 'distDir' | 'now'>> = {}): Promise<Harness> {
   const root = mkdtempSync(join(tmpdir(), 'aip-server-'));
   const dist = join(root, 'dist');
   for (const [rel, content] of Object.entries(FAKE_DIST)) {
@@ -65,7 +72,16 @@ export async function startHarness(): Promise<Harness> {
   writeFileSync(join(root, 'secret.txt'), 'outside-dist');
   const dbPath = join(root, 'data', 'test.db');
   const clock = { t: Date.parse('2026-11-02T10:00:00.000Z') };
-  const app = createApp({ dbPath, distDir: dist, now: () => clock.t });
+  const app = createApp({
+    dbPath,
+    distDir: dist,
+    now: () => clock.t,
+    scryptN: TEST_SCRYPT_N,
+    maxUsers: 10_000,
+    trustProxy: true,
+    ...opts,
+    limits: { signupsPerHour: 10_000, ...opts.limits },
+  });
   const server: Server = createServer(app.handler);
   await new Promise<void>((r) => server.listen(0, '127.0.0.1', r));
   const port = (server.address() as AddressInfo).port;
