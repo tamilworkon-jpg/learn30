@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COURSE_DAYS, finishDate, isStudyDay, localDay, nextStudyDay, planDayOn, plannedDate, scheduleStatus, toDateInput, fromDateInput } from '../../src/lib/schedule';
+import { COURSE_DAYS, finishDate, projectedFinish, isStudyDay, localDay, nextStudyDay, planDayOn, plannedDate, scheduleStatus, toDateInput, fromDateInput } from '../../src/lib/schedule';
 
 // T183 SD1 — schedule maths in the browser's local time zone.
 const d = (y: number, m: number, day: number, h = 12) => new Date(y, m - 1, day, h);
@@ -54,6 +54,16 @@ describe('schedule (T183, weekdays only)', () => {
     expect(scheduleStatus(start, d(2026, 11, 8), 5)).toMatchObject({ planDay: 6, expectedDone: 5, state: 'on-track' }); // Sunday
     expect(scheduleStatus(start, d(2027, 1, 20), 30)).toMatchObject({ expectedDone: 30, state: 'on-track' });
     expect(scheduleStatus(start, d(2026, 11, 1), 0)).toMatchObject({ planDay: 0, expectedDone: 0, state: 'not-started' });
+  });
+
+  it('projected finish moves the original finish by the lag (weekdays)', () => {
+    const start = d(2026, 11, 2); // original finish Fri 11 Dec
+    const fri = d(2026, 11, 6); // plan Day 5 → 4 should be done
+    expect(localDay(projectedFinish(start, fri, 4)!)).toEqual(localDay(d(2026, 12, 11))); // on track
+    expect(localDay(projectedFinish(start, fri, 2)!)).toEqual(localDay(d(2026, 12, 15))); // 2 behind → Tue
+    expect(localDay(projectedFinish(start, fri, 5)!)).toEqual(localDay(d(2026, 12, 10))); // 1 ahead → Thu
+    expect(localDay(projectedFinish(start, d(2026, 10, 30), 0)!)).toEqual(localDay(d(2026, 12, 11))); // not started
+    expect(projectedFinish(start, fri, 30)).toBeNull();
   });
 
   it('date input helpers round-trip local dates', () => {

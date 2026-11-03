@@ -1,5 +1,5 @@
 // T183 — the learner's plan dates from the browser's current date: start, finish, today's plan day, ahead/behind.
-import { COURSE_DAYS, finishDate, formatDate, isStudyDay, plannedDate, scheduleStatus } from '../../lib/schedule';
+import { COURSE_DAYS, finishDate, formatDate, isStudyDay, plannedDate, projectedFinish, scheduleStatus } from '../../lib/schedule';
 
 interface Props {
   startedAt: string;
@@ -21,6 +21,11 @@ export default function ScheduleCard({ startedAt, completed, now = new Date() }:
           : s.state === 'behind'
             ? `${n} day${n === 1 ? '' : 's'} behind`
             : 'On track';
+  // Recomputed on every dashboard load from completed days + today's date (no background job).
+  const projected = projectedFinish(start, now, completed);
+  const original = finishDate(start);
+  const shift = s.state === 'not-started' ? 0 : -s.delta;
+  const projectedNote = projected === null ? 'All 30 days done' : shift > 0 ? `${shift} study day${shift === 1 ? '' : 's'} later than planned` : shift < 0 ? `${-shift} study day${shift === -1 ? '' : 's'} earlier than planned` : 'Same as planned';
   const today =
     s.planDay < 1
       ? 'Before Day 1'
@@ -38,9 +43,18 @@ export default function ScheduleCard({ startedAt, completed, now = new Date() }:
         </span>
       </div>
       <div class="sched-item">
-        <span class="sched-label">Finish by</span>
+        <span class="sched-label">Original finish</span>
         <span class="sched-value" data-sched-finish>
-          {formatDate(finishDate(start))}
+          {formatDate(original)}
+        </span>
+      </div>
+      <div class="sched-item">
+        <span class="sched-label">Updated finish (your pace)</span>
+        <span class="sched-value" data-sched-projected data-shift={shift}>
+          {projected ? formatDate(projected) : 'Finished'}
+        </span>
+        <span class="sched-note" data-sched-projected-note>
+          {projectedNote}
         </span>
       </div>
       <div class="sched-item">

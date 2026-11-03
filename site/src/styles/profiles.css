@@ -34,6 +34,16 @@
 .schedule-card .sched-value {
   font-weight: 600;
 }
+.schedule-card .sched-note {
+  font-size: 12px;
+  color: var(--muted);
+}
+.schedule-card [data-sched-projected][data-shift]:not([data-shift='0']):not([data-shift^='-']) {
+  color: #9a3412;
+}
+html[data-theme='dark'] .schedule-card [data-sched-projected][data-shift]:not([data-shift='0']):not([data-shift^='-']) {
+  color: #fdba74;
+}
 .sched-state {
   border-radius: 999px;
   padding: 4px 12px;

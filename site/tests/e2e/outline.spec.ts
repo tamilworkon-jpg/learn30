@@ -18,8 +18,12 @@ test.describe('outline (T067) @visual', () => {
     const root = page.locator('[data-outline]');
     await expect(root).toHaveAttribute('data-ready', 'true');
 
-    await expect(root.locator('[data-week]')).toHaveCount(5);
-    await expect(root.locator('[data-week="1"] h2')).toContainText('Week 1');
+    // Six study weeks of five days (Mon–Fri); each heading names its days, the row below its modules.
+    await expect(root.locator('[data-week]')).toHaveCount(6);
+    await expect(root.locator('[data-week="1"] h2')).toContainText('Week 1 · Days 1–5');
+    await expect(root.locator('[data-week="2"] .outline-modules')).toContainText('Module 1');
+    await expect(root.locator('[data-week="2"] .outline-modules')).toContainText('Module 2');
+    for (let w = 1; w <= 6; w++) await expect(root.locator(`[data-week="${w}"] [data-day-row]`)).toHaveCount(5);
     await expect(root.locator('[data-day-row]')).toHaveCount(30);
 
     const d1 = root.locator('[data-day-row="1"]');

@@ -1,10 +1,10 @@
 # AIP 30 — AWS Certified AI Practitioner in 30 days
 
-A free, offline-friendly study website for the **AWS Certified AI Practitioner (AIF-C01, exam guide v1.2)** exam: 30 one-hour days of lessons shown as screen-sized slides, daily quizzes, weekly reviews, three full 65-question mock exams, a glossary and cheat sheets. A small Node server serves the site and keeps each learner's progress in a local SQLite file: one login = one learner, and your progress follows you to any browser or device that signs in.
+A free, offline-friendly study website for the **AWS Certified AI Practitioner (AIF-C01, exam guide v1.2)** exam: 30 one-hour days of lessons shown as screen-sized slides, daily quizzes, module reviews, three full 65-question mock exams, a glossary and cheat sheets. A small Node server serves the site and keeps each learner's progress in a local SQLite file: one login = one learner, and your progress follows you to any browser or device that signs in.
 
 | | |
 |---|---|
-| Content | 24 lesson days · 4 weekly review days · 2 mock-exam days · 903 exam-style questions · 166 glossary terms · 75 service cards |
+| Content | 24 lesson days · 4 module review days · 2 mock-exam days · 903 exam-style questions · 166 glossary terms · 75 service cards |
 | Stack | Astro 5 (static build) + MDX · Preact islands · Tailwind CSS v4 · build-time Mermaid SVG · Pagefind search · Node 22 server (`node:http` + built-in `node:sqlite`, no extra runtime dependencies) · Vitest · Playwright + axe |
 | Spec | [`specs/001-aws-ai-practitioner-course/`](specs/001-aws-ai-practitioner-course/) — spec, plan, tasks, contracts, review log |
 
@@ -68,7 +68,7 @@ Example: `PORT=8080 AIP_DB=/path/to/aip.db npm run serve` (Windows `cmd`: `set P
 
 - **Accounts:** **Create account** (username, display name, password of 8+ characters) or **Sign in**; the avatar menu in the top-right shows who is signed in and has **Settings** and **Log out**. One login = one learner: each account has its own progress, start date, quiz attempts, theme and UI preferences. **Settings → Account** changes the display name or password and deletes the account (password required). The dashboard, Settings and mock exams need you to be signed in; lessons, glossary, cheat sheets and search are readable signed out, where quizzes work but nothing is saved (a banner offers **Sign in to save your progress**).
 - **Progress from the old browser-only version:** the first time you sign in on a browser that still holds progress saved by the earlier version of the site, it offers **Import progress saved in this browser** once.
-- **Schedule:** a learner's course starts on the day the account is created; Day N is planned for start + N − 1 and the course finishes 29 days later. The dashboard shows start, finish, today's plan day and whether you're ahead or behind; the outline shows a date for every day. Change it in **Settings → Your schedule**.
+- **Schedule:** weekdays only (Mon–Fri). Day 1 is the account's start date (or the Monday after, if it is a weekend) and each later day is the next weekday, so the 30 days make **6 weeks of 5 days**; the course's 5 topic groups are called **Modules** (Module 1 = Days 1–7, …, Module 5 = Days 29–30). The dashboard shows start, the **original finish**, an **updated finish** (the original moved by one weekday per day you are behind or ahead — recomputed whenever you open it), today's plan day and ahead/behind; "This week" lists the current Week's five days; the outline groups days by Week with dates. Weekends never break a streak. Change the start in **Settings → Your schedule**.
 - **Lessons as slides:** each lesson section becomes screen-sized slides with big type, a visual on every slide and highlighted key terms. Navigate with the buttons, ←/→ keys or swipe; **Full page** switches back to the long view (used for printing and search).
 - **Quizzes and mocks:** answers save as you go; results explain every option and link back to the lesson section. Mock exams are timed (90 min) with a palette, flags and a review screen; scores use the 100–1000 scale (pass 700).
 - **Backup:** Settings → Export / Import (JSON, validated, ≤ 1 MB) and Reset (with confirmation) act on the signed-in learner; the whole database is backed up by copying the SQLite file (above).

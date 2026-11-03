@@ -39,7 +39,7 @@ test.describe('weekly review (T079) @visual', () => {
       }),
     );
     await page.goto('/day/07');
-    await expect(page.locator('h1')).toHaveText('Week 1 review');
+    await expect(page.locator('h1')).toHaveText('Module 1 review');
     const d1 = page.locator('.review-domain[data-domain="D1"]');
     const d4 = page.locator('.review-domain[data-domain="D4"]');
     await expect(page.locator('.review-domain')).toHaveCount(2);
@@ -79,7 +79,7 @@ test.describe('weekly review (T079) @visual', () => {
     await page.goto('/design/fixture-review');
     // W2
     const map = page.locator('#concept-map figure.diagram');
-    await expect(map.locator('figcaption')).toContainText('Week 1 concept map');
+    await expect(map.locator('figcaption')).toContainText('Module 1 concept map');
     await map.locator('img').scrollIntoViewIfNeeded();
     await expect
       .poll(() => map.locator('img').evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth > 0))

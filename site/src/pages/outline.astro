@@ -6,6 +6,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { buildPlan } from '../lib/course-plan';
 import { course, examGuide, pad } from '../lib/data';
+import { STUDY_WEEKS, studyWeekDays } from '../lib/schedule';
 import '../styles/dashboard.css';
 
 const lessons = await getCollection('lessons');
@@ -15,6 +16,12 @@ const plan = buildPlan(
   lessons.map((l) => ({ day: l.data.day, body: l.body })),
 );
 const domainName = (id: string) => examGuide.domains.find((d) => d.id === id)?.name ?? id;
+// Study weeks of five lesson days (Mon–Fri); each lists the modules (topic groups) it covers.
+const studyWeeks = Array.from({ length: STUDY_WEEKS }, (_, i) => {
+  const days = studyWeekDays(i + 1);
+  const modules = plan.weeks.filter((w) => w.days.some((n) => days.includes(n)));
+  return { number: i + 1, days, modules };
+});
 const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as const;
 ---
 
@@ -22,7 +29,7 @@ const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as 
   <div data-outline>
     <h1 class="h1">Course outline</h1>
     <p class="muted mt-0">
-      {plan.days.length} study days in {plan.weeks.length} topic weeks · about an hour a day, Monday–Friday (six calendar weeks; weekends are free). Jump to any day — the order is a suggestion.
+      {plan.days.length} days · {STUDY_WEEKS} weeks of five days (Monday–Friday, weekends free) · {plan.weeks.length} modules · about an hour a day. Jump to any day — the order is a suggestion.
     </p>
     <p class="outline-legend text-sm" aria-hidden="true">
       <span><span class="status-icon" data-s="completed">✓</span> Completed</span>
@@ -30,11 +37,13 @@ const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as 
       <span><span class="status-icon" data-s="not-started">○</span> Not started</span>
     </p>
     {
-      plan.weeks.map((w) => (
+      studyWeeks.map((w) => (
         <section class="outline-week" data-week={w.number} aria-labelledby={`week-${w.number}-h`}>
           <h2 class="h2" id={`week-${w.number}-h`}>
-            Week {w.number} · {w.title}
+            Week {w.number} · Days {w.days[0]}–{w.days[w.days.length - 1]}
+            <span class="muted text-sm font-normal" data-week-dates={`${w.days[0]}-${w.days[w.days.length - 1]}`}></span>
           </h2>
+          <p class="muted text-sm mt-0 outline-modules">{w.modules.map((m) => `Module ${m.number} · ${m.title}`).join('  ·  ')}</p>
           <ol class="outline-days" role="list">
             {w.days.map((n) => {
               const d = plan.days.find((x) => x.day === n)!;
@@ -121,6 +130,11 @@ const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as 
         si.setAttribute('aria-label', v ? 'Viewed' : 'Not viewed');
       });
       if (status === 'in-progress') row.querySelector('details')?.setAttribute('open', '');
+    });
+    // Each study week's planned Monday–Friday range for this learner.
+    root.querySelectorAll<HTMLElement>('[data-week-dates]').forEach((el) => {
+      const [a, b] = el.dataset.weekDates!.split('-').map(Number);
+      el.textContent = ` · ${formatDate(plannedDate(start, a)).replace(/,? \d{4}$/, '')} – ${formatDate(plannedDate(start, b))}`;
     });
     root.dataset.ready = 'true';
   };

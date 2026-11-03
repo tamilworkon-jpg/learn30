@@ -1,6 +1,7 @@
 ---
 // T093 — mock day (kind: mock, days 29–30): authored MDX (launch → remediation → [finalRevision → examStrategy]).
 // Without MDX the day still offers its mock launch cards. Contract: specs/001-aws-ai-practitioner-course/contracts/review-and-mock-days.md
+import { studyWeekOf } from '../lib/schedule';
 import BaseLayout from './BaseLayout.astro';
 import PlannedDate from '../components/schedule/PlannedDate.astro';
 import MockLaunch from '../components/mock/MockLaunch.astro';
@@ -22,7 +23,7 @@ const { prev, next } = getPrevNext(cd.day, course);
 ---
 
 <BaseLayout active="outline" title={`Day ${cd.day}: ${title}`}>
-  <p class="muted text-sm m-0">Week {week.number} · {week.title} › Day {cd.day}</p>
+  <p class="muted text-sm m-0">Week {studyWeekOf(cd.day)} · Module {week.number}: {week.title} › Day {cd.day}</p>
   <h1 class="h1">{title}</h1>
   <PlannedDate day={cd.day} />
   <div class="flex flex-wrap items-center gap-2 mb-2">

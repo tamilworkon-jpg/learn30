@@ -10,7 +10,7 @@ const noUnsafeHtml = {
 };
 
 export default tseslint.config(
-  { ignores: ['dist/**', '.astro/**', 'node_modules/**', 'test-results/**', 'playwright-report/**', 'tests/fixtures/**', 'src/schemas/generated/**', '**/*.astro'] },
+  { ignores: ['dist/**', 'dist-e2e/**', 'dist-*/**', '.astro/**', 'node_modules/**', 'test-results/**', 'playwright-report/**', 'tests/fixtures/**', 'src/schemas/generated/**', '**/*.astro'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

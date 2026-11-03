@@ -25,10 +25,15 @@ import '../../styles/slides.css';
     </div>
   </div>
   <slot />
+  <!-- Round ‹ › arrows centred on the slide card's left and right edges (positioned over the stage by
+       slide-deck.ts); the header shows "Slide n of N", so there is no separate button bar. -->
   <div class="deck-controls" data-pagefind-ignore hidden>
-    <button class="btn btn-ghost deck-btn deck-prev" type="button"><span aria-hidden="true">←</span> Previous slide</button>
-    <span class="deck-count-mini muted" aria-hidden="true">1 / 1</span>
-    <button class="btn deck-btn deck-next" type="button">Next slide <span aria-hidden="true">→</span></button>
+    <button class="deck-arrow deck-prev" type="button" aria-label="Previous slide" title="Previous slide (←)">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+    </button>
+    <button class="deck-arrow deck-next" type="button" aria-label="Next slide" title="Next slide (→)">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+    </button>
   </div>
   <p class="deck-live sr-only" aria-live="polite"></p>
 </div>

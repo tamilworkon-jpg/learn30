@@ -71,7 +71,7 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
   };
 
   if (questions.length === 0)
-    return <p class="muted">{kind === 'weekly' ? 'The cumulative test for this week is coming soon.' : 'Questions for this day are coming soon.'}</p>;
+    return <p class="muted">{kind === 'weekly' ? 'The cumulative test for this module is coming soon.' : 'Questions for this day are coming soon.'}</p>;
 
   return (
     <div class="quiz" ref={root} data-ready={session ? 'true' : undefined} data-quiz={assessmentId}>

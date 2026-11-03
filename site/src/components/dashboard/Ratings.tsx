@@ -12,14 +12,14 @@ export default function Ratings({ ratings }: Props) {
   if (weeks.length === 0) return null;
   return (
     <section class="card dash-ratings" data-ratings>
-      <h2 class="h2 m-0">Your weekly ratings</h2>
+      <h2 class="h2 m-0">Your module ratings</h2>
       <ul class="dash-ratings-list">
         {weeks.map(([key, value]) => {
           const n = Number(key.slice(5));
           return (
             <li key={key} data-week-rating={n}>
-              <span>Week {n}</span>
-              <span class="stars" role="img" aria-label={`Week ${n}: ${value} out of 5`}>
+              <span>Module {n}</span>
+              <span class="stars" role="img" aria-label={`Module ${n}: ${value} out of 5`}>
                 {'★'.repeat(value)}
                 <span class="stars-off">{'★'.repeat(5 - value)}</span>
               </span>

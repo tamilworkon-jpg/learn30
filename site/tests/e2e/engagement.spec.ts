@@ -26,7 +26,7 @@ async function markDay3(page: Page) {
 }
 
 test.describe('engagement (T107) @visual', () => {
-  test('E5 seeded progress shows streak 7 + Week 1 badge', async ({ page }) => {
+  test('E5 seeded progress shows streak 7 + Module 1 badge', async ({ page }) => {
     const problems = trackConsole(page);
     await seed(page, progress({ days: week1(), streak: { current: 7, longest: 7, lastStudyDate: today() } }));
     await page.goto('/');
@@ -46,7 +46,7 @@ test.describe('engagement (T107) @visual', () => {
     expect(problems, problems.join('\n')).toEqual([]);
   });
 
-  test('W4 weekly ratings show on the dashboard (hidden until a week is rated)', async ({ page }) => {
+  test('W4 module ratings show on the dashboard (hidden until a week is rated)', async ({ page }) => {
     await seed(page, progress());
     await page.goto('/');
     const dash = page.locator('[data-dashboard]');
@@ -58,9 +58,9 @@ test.describe('engagement (T107) @visual', () => {
     });
     await expect(dash).toHaveAttribute('data-ready', 'true');
     const ratings = dash.locator('[data-ratings]');
-    await expect(ratings.getByRole('heading', { name: 'Your weekly ratings' })).toBeVisible();
-    await expect(ratings.getByRole('img', { name: 'Week 1: 4 out of 5' })).toBeVisible();
-    await expect(ratings.getByRole('img', { name: 'Week 2: 2 out of 5' })).toBeVisible();
+    await expect(ratings.getByRole('heading', { name: 'Your module ratings' })).toBeVisible();
+    await expect(ratings.getByRole('img', { name: 'Module 1: 4 out of 5' })).toBeVisible();
+    await expect(ratings.getByRole('img', { name: 'Module 2: 2 out of 5' })).toBeVisible();
     await expect(ratings.locator('[data-week-rating]')).toHaveCount(2);
   });
 
@@ -86,7 +86,7 @@ test.describe('engagement (T107) @visual', () => {
     await expect(cel).toBeVisible();
     await expect(cel).toHaveAttribute('data-motion', 'full');
     await expect(cel).toContainText('Day 3 complete');
-    await expect(cel).toContainText('Week 1');
+    await expect(cel).toContainText('Module 1');
     await expect(cel.locator('.confetti i').first()).toBeAttached();
     expect(await cel.locator('.confetti i').first().evaluate((el) => getComputedStyle(el).animationName)).not.toBe('none');
     await page.waitForTimeout(400);

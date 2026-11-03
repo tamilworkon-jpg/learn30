@@ -23,7 +23,11 @@ test.describe('resume & dashboard (T065) @visual', () => {
     await openDashboard(page);
     await expect(dash(page)).toContainText('0 of 30 days complete');
     await expect(page.getByRole('link', { name: /Continue: Day 1/ })).toHaveAttribute('href', '/day/01');
-    await expect(page.locator('.week-tile')).toHaveCount(7);
+    // Weekday plan: "This week" lists the lessons planned Mon–Fri of the current calendar week (1–5).
+    const tiles = await page.locator('.week-tile').count();
+    expect(tiles).toBeGreaterThanOrEqual(1);
+    expect(tiles).toBeLessThanOrEqual(5);
+    await expect(page.locator('#this-week-h')).toContainText('Mon–Fri');
     await noHorizontalScroll(page);
     expect(problems, problems.join('\n')).toEqual([]);
   });

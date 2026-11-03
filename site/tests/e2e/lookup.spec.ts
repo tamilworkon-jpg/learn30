@@ -43,6 +43,7 @@ test.describe('lookup (T096) @visual', () => {
   });
 
   test('K5 glossary A–Z anchors and domain filter', async ({ page }) => {
+    test.slow(); // long pages (166 terms / 75 cards) + full-page screenshots: > 30 s on mobile under parallel workers
     const problems = trackConsole(page);
     await page.goto('/glossary');
     const terms = page.getByTestId('glossary-term');
@@ -55,8 +56,11 @@ test.describe('lookup (T096) @visual', () => {
     await expect(page).toHaveURL(/#letter-r$/);
     await expect(page.locator('#letter-r')).toBeInViewport();
 
-    await page.getByRole('button', { name: 'D4', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'D4', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    // The filter island may hydrate after the page is visible: retry the click until it takes.
+    await expect(async () => {
+      await page.getByRole('button', { name: 'D4', exact: true }).click();
+      await expect(page.getByRole('button', { name: 'D4', exact: true })).toHaveAttribute('aria-pressed', 'true', { timeout: 1000 });
+    }).toPass({ timeout: 15000 });
     const visible = page.locator('[data-testid="glossary-term"]:visible');
     const d4 = await visible.count();
     expect(d4).toBeGreaterThan(5);
@@ -80,6 +84,7 @@ test.describe('lookup (T096) @visual', () => {
   });
 
   test('K6 services sheet shows purpose / choose-when / not-this / scope badge; AWS WAF out of scope', async ({ page }) => {
+    test.slow(); // long pages (166 terms / 75 cards) + full-page screenshots: > 30 s on mobile under parallel workers
     const problems = trackConsole(page);
     await page.goto('/cheatsheet/services');
     const cards = page.getByTestId('service-card');

@@ -9,10 +9,10 @@ export interface BadgeInfo {
 }
 
 export const BADGES: Record<string, BadgeInfo> = {
-  'week-1': { emoji: '🧠', label: 'Week 1', description: 'Completed Week 1 — AI & ML foundations' },
-  'week-2': { emoji: '✨', label: 'Week 2', description: 'Completed Week 2 — Generative AI & agents' },
-  'week-3': { emoji: '🛠️', label: 'Week 3', description: 'Completed Week 3 — Building with foundation models' },
-  'week-4': { emoji: '🛡️', label: 'Week 4', description: 'Completed Week 4 — Responsible, secure & governed AI' },
+  'week-1': { emoji: '🧠', label: 'Module 1', description: 'Completed Module 1 — AI & ML foundations' },
+  'week-2': { emoji: '✨', label: 'Module 2', description: 'Completed Module 2 — Generative AI & agents' },
+  'week-3': { emoji: '🛠️', label: 'Module 3', description: 'Completed Module 3 — Building with foundation models' },
+  'week-4': { emoji: '🛡️', label: 'Module 4', description: 'Completed Module 4 — Responsible, secure & governed AI' },
   'mock-pass': { emoji: '🎯', label: 'Mock pass', description: 'Scored 700+ on a mock exam' },
   'streak-7': { emoji: '🔥', label: '7-day streak', description: 'Studied 7 study days in a row (weekends never break it)' },
   'course-complete': { emoji: '🏆', label: 'Course complete', description: 'Completed all 30 days' },

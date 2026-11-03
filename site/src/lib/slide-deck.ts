@@ -64,7 +64,6 @@ export function initSlideDeck(deck: HTMLElement) {
   const prevBtn = controls.querySelector<HTMLButtonElement>('.deck-prev')!;
   const nextBtn = controls.querySelector<HTMLButtonElement>('.deck-next')!;
   const count = bar.querySelector<HTMLElement>('.deck-count')!;
-  const mini = controls.querySelector<HTMLElement>('.deck-count-mini')!;
   const progress = bar.querySelector<HTMLProgressElement>('.deck-progress')!;
   const live = deck.querySelector<HTMLElement>('.deck-live')!;
   const viewBtns = [...bar.querySelectorAll<HTMLButtonElement>('[data-view]')];
@@ -311,20 +310,28 @@ export function initSlideDeck(deck: HTMLElement) {
     const nav = document.querySelector<HTMLElement>('.sidebar');
     return nav && getComputedStyle(nav).position === 'fixed' ? nav.getBoundingClientRect().height : 0;
   };
-  // The deck (compact title bar, skip notice, stage, controls) fits the viewport from where it starts, so a
+  // The deck (compact title bar, skip notice, stage; the ‹ › arrows overlay the stage) fits the viewport from where it starts, so a
   // slide is fully visible without scrolling the page; only if that leaves too little room (very short
   // windows) is the deck sized to the whole viewport and scrolled to the top.
   const MIN_STAGE = 260;
   const stageHeight = () => {
     const vh = window.innerHeight - bottomBar();
     const docTop = article.getBoundingClientRect().top + window.scrollY;
-    const fromTop = Math.floor(vh - docTop - controls.offsetHeight - 12);
+    const fromTop = Math.floor(vh - docTop - 12);
     const above = article.getBoundingClientRect().top - deck.getBoundingClientRect().top;
-    const h = fromTop >= MIN_STAGE ? fromTop : Math.max(MIN_STAGE, Math.floor(vh - above - controls.offsetHeight - 16));
+    const h = fromTop >= MIN_STAGE ? fromTop : Math.max(MIN_STAGE, Math.floor(vh - above - 16));
     article.style.height = `${h}px`;
     article.style.setProperty('--slide-img-max', `${Math.max(120, h - 150)}px`);
     article.classList.toggle('slide-short', h < 420);
+    placeArrows();
   };
+  // The ‹ › arrows overlay the stage: keep their box on the article (its top moves with the skip notice / title bar).
+  function placeArrows() {
+    const a = article.getBoundingClientRect();
+    const d = deck.getBoundingClientRect();
+    deck.style.setProperty('--stage-top', `${Math.round(a.top - d.top)}px`);
+    deck.style.setProperty('--stage-h', `${Math.round(a.height)}px`);
+  }
 
   const repaginate = () => {
     if (!groups) return;
@@ -363,7 +370,7 @@ export function initSlideDeck(deck: HTMLElement) {
   // Bring the whole deck on screen with the smallest scroll (none when it already fits).
   const deckInView = () => {
     const top = deck.getBoundingClientRect().top;
-    const bottom = controls.getBoundingClientRect().bottom;
+    const bottom = article.getBoundingClientRect().bottom;
     const limit = window.innerHeight - bottomBar() - 4;
     let dy = 0;
     if (top < 0) dy = top - 8;
@@ -412,7 +419,6 @@ export function initSlideDeck(deck: HTMLElement) {
     }
     const n = slides.length;
     count.textContent = `Slide ${index + 1} of ${n}`;
-    mini.textContent = `${index + 1} / ${n}`;
     progress.max = n;
     progress.value = index + 1;
     progress.setAttribute('aria-label', `Slide ${index + 1} of ${n}`);
@@ -430,6 +436,7 @@ export function initSlideDeck(deck: HTMLElement) {
       s.group.header.focus({ preventScroll: true });
     }
     if (opts.scroll) deckInView();
+    placeArrows();
     markScrollable();
   }
 
@@ -488,8 +495,9 @@ export function initSlideDeck(deck: HTMLElement) {
     for (const e of entries) {
       if (e.target === deck) {
         const w = Math.round(e.contentRect.width);
-        if (lastDeckW && w !== lastDeckW) changed = true;
-        lastDeckW = w;
+        // ignore a scrollbar appearing/disappearing (~15px); side bars change the width by far more
+        if (lastDeckW && Math.abs(w - lastDeckW) > 24) changed = true;
+        if (!lastDeckW || Math.abs(w - lastDeckW) > 24) lastDeckW = w;
       } else {
         const h = Math.round(e.contentRect.height);
         if (sizes.has(e.target) && sizes.get(e.target) !== h) changed = true;

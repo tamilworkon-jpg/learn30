@@ -1,6 +1,7 @@
-// T073 — the current week's days as tiles with status (Phase 0 dashboard "This week").
+// T073 — the learner's current study week (five lesson days, Mon–Fri) as tiles with status.
 import type { CoursePlan, PlanDay } from '../../lib/course-plan';
 import { dayHref, dayStatus, type Status } from '../../lib/dashboard';
+import { STUDY_WEEKS, formatDate, plannedDate, studyWeekDays, studyWeekOf } from '../../lib/schedule';
 import type { Progress } from '../../lib/types';
 
 interface Props {
@@ -11,26 +12,31 @@ interface Props {
 
 function pill(d: PlanDay, s: Status, current: boolean) {
   if (s === 'completed') return '✓ Done';
-  if (current) return 'Today';
+  if (current) return 'Up next'; // the learner's next lesson (the plan's "today" is on the schedule card)
   if (s === 'in-progress') return 'In progress';
   if (!d.available) return 'Soon';
   return `${d.minutes} min`;
 }
 
 export default function WeekTimeline({ plan, progress, currentDay }: Props) {
-  const week = plan.weeks.find((w) => w.days.includes(currentDay)) ?? plan.weeks[0];
+  const start = new Date(progress.startedAt);
+  const studyWeek = studyWeekOf(currentDay);
+  const days = studyWeekDays(studyWeek);
+  const first = plannedDate(start, days[0]);
+  const last = plannedDate(start, days[days.length - 1]);
+  const range = `${formatDate(first).replace(/,? \d{4}$/, '')} – ${formatDate(last)}`;
   return (
-    <section aria-labelledby="this-week-h" data-week-timeline={week.number}>
+    <section aria-labelledby="this-week-h" data-week-timeline={studyWeek}>
       <div class="flex items-center justify-between mt-8 gap-3">
         <h2 class="h2 m-0" id="this-week-h">
-          This week
+          This week <span class="muted text-sm font-normal">· Week {studyWeek} of {STUDY_WEEKS} · Mon–Fri · {range}</span>
         </h2>
         <a class="icon-btn" href="/outline" aria-label="Open course outline">
           →
         </a>
       </div>
       <ol class="week-row mt-3" role="list">
-        {week.days.map((n) => {
+        {days.map((n) => {
           const d = plan.days.find((x) => x.day === n)!;
           const s = dayStatus(progress, n);
           const current = n === currentDay;

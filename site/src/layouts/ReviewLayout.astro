@@ -1,6 +1,7 @@
 ---
 // T083 — weekly review day (kind: review): summary → authored MDX (concept map, top facts, traps) → cumulative test →
 // per-domain results → engagement rating. Contract: specs/001-aws-ai-practitioner-course/contracts/review-and-mock-days.md
+import { studyWeekOf } from '../lib/schedule';
 import BaseLayout from './BaseLayout.astro';
 import PlannedDate from '../components/schedule/PlannedDate.astro';
 import ReviewSummary from '../components/review/ReviewSummary.astro';
@@ -32,7 +33,7 @@ const slim = questions.map(({ id, domain, lessonRef, type, answer }) => ({ id, d
 ---
 
 <BaseLayout active="outline" title={`Day ${cd.day}: ${title}`}>
-  <p class="muted text-sm m-0">Week {week.number} · {week.title} › Day {cd.day}</p>
+  <p class="muted text-sm m-0">Week {studyWeekOf(cd.day)} · Module {week.number}: {week.title} › Day {cd.day}</p>
   <h1 class="h1">{title}</h1>
   <PlannedDate day={cd.day} />
   <div class="flex flex-wrap items-center gap-2 mb-2">
@@ -65,7 +66,7 @@ const slim = questions.map(({ id, domain, lessonRef, type, answer }) => ({ id, d
           </p>
         )
       }
-      <QuizRunner client:visible assessmentId={set} kind="weekly" title={`Week ${week.number} · Cumulative test`} questions={questions} />
+      <QuizRunner client:visible assessmentId={set} kind="weekly" title={`Module ${week.number} · Cumulative test`} questions={questions} />
     </section>
 
     <section class="review-section" id="domain-results" data-section-type="results" aria-labelledby="domain-results-h">
@@ -74,7 +75,7 @@ const slim = questions.map(({ id, domain, lessonRef, type, answer }) => ({ id, d
     </section>
 
     <section class="review-section" id="rating" data-section-type="rating" aria-labelledby="rating-h">
-      <h2 class="h2 sec-head" id="rating-h">Your week</h2>
+      <h2 class="h2 sec-head" id="rating-h">Your module</h2>
       <RatingPrompt client:visible week={week.number} />
     </section>
 

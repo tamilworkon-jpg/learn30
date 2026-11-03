@@ -44,7 +44,7 @@
   color: #1f1a3a;
 }
 .view-toggle button:focus-visible,
-.deck-btn:focus-visible {
+.deck-arrow:focus-visible {
   outline: 3px solid var(--brand-orange);
   outline-offset: 2px;
 }
@@ -92,9 +92,13 @@
   html[data-lesson-view='slides'] .slide-off {
     display: none !important;
   }
-  /* Re-paging changes heights inside the deck; the browser must not "compensate" by scrolling. */
+  /* Re-paging changes heights inside the deck; the browser must not "compensate" by scrolling,
+     and a scrollbar coming and going must not change the width. */
   html[data-lesson-view='slides'] body {
     overflow-anchor: none;
+  }
+  html[data-lesson-view='slides'] {
+    scrollbar-gutter: stable;
   }
   /* The skip-ahead notice moves into the deck in slide view: keep it compact. */
   html[data-lesson-view='slides'] .slide-deck .skip-notice:not([hidden]) {
@@ -121,7 +125,7 @@
     border-radius: 24px;
     padding: 18px 28px 20px;
     box-shadow: 0 10px 30px rgb(80 62 157 / 0.1);
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.6;
   }
   html[data-lesson-view='slides'] .slide-deck article.slide-scroll {
@@ -141,7 +145,7 @@
     padding-right: 56px; /* room for the "1/3" part label */
   }
   html[data-lesson-view='slides'] .slide-deck .sec-head {
-    font-size: 20px;
+    font-size: 18px;
     line-height: 1.25;
     margin: 0 0 14px;
     padding-bottom: 10px;
@@ -178,7 +182,7 @@
     padding: 2px 12px;
   }
   html[data-lesson-view='slides'] .slide-deck article h3 {
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--brand-purple);
     margin: 4px 0 10px;
@@ -212,7 +216,7 @@
     margin-top: 6px;
   }
   html[data-lesson-view='slides'] .slide-deck article table {
-    font-size: 14px;
+    font-size: 13px;
     margin-bottom: 14px;
   }
   html[data-lesson-view='slides'] .slide-deck .diagram {
@@ -263,7 +267,7 @@
   }
   .deep-teaser {
     flex-basis: 100%;
-    font-size: 15px;
+    font-size: 14px;
     color: var(--deep-text);
   }
 
@@ -282,7 +286,7 @@
   }
   html[data-lesson-view='slides'] .slide-deck .slide-keypoint {
     position: relative;
-    font-size: 16px;
+    font-size: 14px;
     padding: 30px 22px 16px;
     margin: 16px 0;
     border-left-width: 10px;
@@ -303,7 +307,7 @@
     padding: 3px 12px;
   }
   html[data-lesson-view='slides'] .slide-deck .slide-keypoint .callout-title {
-    font-size: 17px;
+    font-size: 15px;
   }
   html[data-lesson-view='slides'] .slide-deck .key-strip:not([hidden]) {
     position: absolute;
@@ -359,13 +363,16 @@
     min-width: 0;
     flex: 1;
   }
+  /* Up to two lines, so the day title is readable even when both side bars are open. */
   html[data-lesson-view='slides'] .deck-title .h1 {
     font-size: 17px;
     line-height: 1.3;
     margin: 0;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
     overflow: hidden;
-    text-overflow: ellipsis;
   }
   html[data-lesson-view='slides'] .deck-title .planned-date {
     margin: 0;
@@ -406,7 +413,7 @@
     display: none;
   }
   html[data-lesson-view='slides'] .slide-deck article.slide-short .sec-head {
-    font-size: 18px;
+    font-size: 17px;
     margin-bottom: 8px;
     padding-bottom: 6px;
   }
@@ -415,37 +422,71 @@
     padding-bottom: 12px;
   }
 
-  /* ---------- controls ---------- */
+  /* ---------- controls: ‹ › arrows centred on the card's left/right edges ---------- */
+  html[data-lesson-view='slides'] .slide-deck {
+    position: relative;
+  }
   .deck-controls:not([hidden]) {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px 0 0;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--stage-top, 0);
+    height: var(--stage-h, 0);
+    pointer-events: none; /* only the arrows take clicks; the slide stays selectable */
+    z-index: 3;
+  }
+  .deck-arrow {
+    pointer-events: auto;
+    position: absolute;
+    top: 50%;
+    width: 44px;
+    height: 44px;
+    margin-top: -22px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--border);
     background: var(--panel);
+    color: var(--brand-purple);
+    box-shadow: 0 4px 14px rgb(80 62 157 / 0.2);
+    cursor: pointer;
+    transition:
+      background-color 0.15s,
+      color 0.15s,
+      opacity 0.15s;
   }
-  .deck-btn {
-    min-height: 48px;
-    min-width: 160px;
-    justify-content: center;
-    font-size: 15px;
+  .deck-prev {
+    left: -22px; /* half over the card border */
   }
-  .deck-btn:disabled {
-    opacity: 0.45;
+  .deck-next {
+    right: -22px;
+  }
+  .deck-arrow:hover:not(:disabled) {
+    background: var(--brand-purple);
+    color: #fff;
+  }
+  [data-theme='dark'] .deck-arrow {
+    color: #d8ceff;
+  }
+  [data-theme='dark'] .deck-arrow:hover:not(:disabled) {
+    background: var(--brand-orange);
+    color: #1f1a3a;
+  }
+  .deck-arrow:disabled {
+    opacity: 0.3;
     cursor: not-allowed;
-  }
-  .deck-count-mini {
-    font-weight: 600;
+    box-shadow: none;
   }
 
   @media (max-width: 760px) {
     html[data-lesson-view='slides'][data-deck-ready] .slide-deck article {
-      font-size: 15px;
+      font-size: 14px;
       padding: 14px 16px 16px;
       border-radius: 20px;
     }
     html[data-lesson-view='slides'] .slide-deck .sec-head {
-      font-size: 18px;
+      font-size: 17px;
     }
     /* Course-source line and domain/minute chips: on the long page and in the section list; too costly on a phone slide. */
     html[data-lesson-view='slides'] .slide-deck article > p.muted.text-sm,
@@ -453,10 +494,10 @@
       display: none;
     }
     html[data-lesson-view='slides'] .slide-deck article h3 {
-      font-size: 16px;
+      font-size: 15px;
     }
     html[data-lesson-view='slides'] .slide-deck article table {
-      font-size: 14px;
+      font-size: 13px;
     }
     html[data-lesson-view='slides'] .slide-deck .slide-illo,
     html[data-lesson-view='slides'] .slide-deck article.slide-short .slide-illo {
@@ -477,7 +518,7 @@
       display: none;
     }
     html[data-lesson-view='slides'] .slide-deck article.slide-short .sec-head {
-      font-size: 16px;
+      font-size: 15px;
       padding-right: 44px;
     }
     /* minutes are in the section list; a short phone slide needs the line */
@@ -491,21 +532,29 @@
     }
     html[data-lesson-view='slides'] .slide-deck .slide-keypoint,
     html[data-lesson-view='slides'] .slide-deck .slide-keypoint .callout-title {
-      font-size: 15px;
+      font-size: 14px;
     }
     html[data-lesson-view='slides'] .slide-deck .key-strip:not([hidden]) {
       left: 12px;
       right: 12px;
     }
-    .deck-btn {
-      min-width: 0;
-      flex: 1;
-      font-size: 15px;
-      padding-left: 10px;
-      padding-right: 10px;
+    /* Phone: smaller arrows just inside the card edge, on a translucent panel; the card's side padding
+       matches so text never sits under an arrow. */
+    html[data-lesson-view='slides'][data-deck-ready] .slide-deck article {
+      padding-left: 26px;
+      padding-right: 26px;
     }
-    .deck-count-mini {
-      display: none;
+    .deck-arrow {
+      width: 36px;
+      height: 36px;
+      margin-top: -18px;
+      background: color-mix(in srgb, var(--panel) 82%, transparent);
+    }
+    .deck-prev {
+      left: -10px;
+    }
+    .deck-next {
+      right: -10px;
     }
     .deck-progress {
       width: 56px;

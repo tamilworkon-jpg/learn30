@@ -28,7 +28,7 @@ export default function RatingPrompt({ week }: Props) {
   return (
     <div class="card rating" data-ready={ready ? 'true' : undefined} data-rating={value ?? ''}>
       <fieldset class="q-fieldset">
-        <legend class="font-semibold">How engaging was Week {week}? (optional)</legend>
+        <legend class="font-semibold">How engaging was Module {week}? (optional)</legend>
         <p class="muted text-sm m-0 mt-1">
           Your rating stays on this device with your progress and appears on the dashboard.
         </p>

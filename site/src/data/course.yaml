@@ -12,27 +12,27 @@ days:
   - { day: 4, kind: lesson, title: 'Neural networks & deep learning', taskStatements: ['1.1'] }
   - { day: 5, kind: lesson, title: 'Use cases & AWS managed AI services', taskStatements: ['1.2'] }
   - { day: 6, kind: lesson, title: 'ML lifecycle, MLOps & metrics', taskStatements: ['1.3'] }
-  - { day: 7, kind: review, title: 'Week 1 review', taskStatements: ['1.1', '1.2', '1.3', '4.1'] }
+  - { day: 7, kind: review, title: 'Module 1 review', taskStatements: ['1.1', '1.2', '1.3', '4.1'] }
   - { day: 8, kind: lesson, title: 'GenAI building blocks', taskStatements: ['2.1'] }
   - { day: 9, kind: lesson, title: 'FM lifecycle, token pricing & context engineering', taskStatements: ['2.1'] }
   - { day: 10, kind: lesson, title: 'Agentic AI & MCP', taskStatements: ['2.1', '3.1'] }
   - { day: 11, kind: lesson, title: 'GenAI capabilities, limits & business value', taskStatements: ['2.2'] }
   - { day: 12, kind: lesson, title: 'The AWS GenAI stack', taskStatements: ['2.3'] }
   - { day: 13, kind: lesson, title: 'GenAI cost trade-offs', taskStatements: ['2.3', '3.1'] }
-  - { day: 14, kind: review, title: 'Week 2 review', taskStatements: ['1.1', '1.2', '1.3', '2.1', '2.2', '2.3'] }
+  - { day: 14, kind: review, title: 'Module 2 review', taskStatements: ['1.1', '1.2', '1.3', '2.1', '2.2', '2.3'] }
   - { day: 15, kind: lesson, title: 'Choosing & tuning foundation models', taskStatements: ['3.1'] }
   - { day: 16, kind: lesson, title: 'Prompt engineering essentials', taskStatements: ['3.2'] }
   - { day: 17, kind: lesson, title: 'Prompt risks & defences', taskStatements: ['3.2', '5.1'] }
   - { day: 18, kind: lesson, title: 'RAG & vector stores', taskStatements: ['3.1'] }
   - { day: 19, kind: lesson, title: 'Training, fine-tuning & distillation', taskStatements: ['3.3'] }
   - { day: 20, kind: lesson, title: 'Evaluating FMs & FM apps', taskStatements: ['3.4'] }
-  - { day: 21, kind: review, title: 'Week 3 review', taskStatements: ['2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '3.4'] }
+  - { day: 21, kind: review, title: 'Module 3 review', taskStatements: ['2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '3.4'] }
   - { day: 22, kind: lesson, title: 'Responsible AI dimensions', taskStatements: ['4.1'] }
   - { day: 23, kind: lesson, title: 'Responsible AI tooling', taskStatements: ['4.1'] }
   - { day: 24, kind: lesson, title: 'Transparency & explainability', taskStatements: ['4.2'] }
   - { day: 25, kind: lesson, title: 'Securing AI systems', taskStatements: ['5.1'] }
   - { day: 26, kind: lesson, title: 'Secure data & grounding', taskStatements: ['5.1'] }
   - { day: 27, kind: lesson, title: 'Governance & compliance', taskStatements: ['5.2'] }
-  - { day: 28, kind: review, title: 'Week 4 review', taskStatements: ['4.1', '4.2', '5.1', '5.2'] }
+  - { day: 28, kind: review, title: 'Module 4 review', taskStatements: ['4.1', '4.2', '5.1', '5.2'] }
   - { day: 29, kind: mock, title: 'Mock exam 1 & remediation', taskStatements: [] }
   - { day: 30, kind: mock, title: 'Mock exam 2, final revision & exam day', taskStatements: [] }

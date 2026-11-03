@@ -40,7 +40,11 @@ const measure = (page: Page) =>
     const nav = document.querySelector<HTMLElement>('.sidebar')!;
     const bottomBar = getComputedStyle(nav).position === 'fixed' ? nav.getBoundingClientRect().height : 0;
     const bar = document.querySelector('.deck-bar')!.getBoundingClientRect();
-    const ctl = document.querySelector('.deck-controls')!.getBoundingClientRect();
+    // The ‹ › arrows overlay the slide card (no separate button bar): the card is the bottom of the deck.
+    const card = a.getBoundingClientRect();
+    const box = (sel: string) => document.querySelector(sel)!.getBoundingClientRect();
+    const pv = box('.deck-prev');
+    const nx = box('.deck-next');
     const p = [...a.querySelectorAll('p, li')].find((e) => shown(e) && !e.closest('.callout, .lab-banner, .quiz, figure, .console, .chip, table, [class*="text-sm"]'));
     // Bottom of the lowest visible content inside the stage, in viewport coordinates.
     const contentBottom = Math.max(...[...a.querySelectorAll('*')].filter((e) => e.getClientRects().length > 0).map((e) => e.getBoundingClientRect().bottom));
@@ -48,14 +52,15 @@ const measure = (page: Page) =>
       contentBottom,
       contentTop: a.getBoundingClientRect().top,
       scrollY: window.scrollY,
-      navTop: ctl.top,
+      navTop: card.bottom,
+      arrows: { prevMid: pv.top + pv.height / 2, nextMid: nx.top + nx.height / 2, cardMid: card.top + card.height / 2, prevX: pv.left + pv.width / 2, nextX: nx.left + nx.width / 2, cardLeft: card.left, cardRight: card.right, w: innerWidth },
       noticeShown: !!document.querySelector('#skip-notice:not([hidden])'),
       interactive: a.classList.contains('slide-scroll'),
       quiz: !!a.querySelector('.quiz-slot')?.getClientRects().length,
       overflow: a.scrollHeight - a.clientHeight,
       visual,
       deckTop: bar.top,
-      deckBottom: ctl.bottom,
+      deckBottom: card.bottom,
       viewport: innerHeight - bottomBar,
       font: p ? parseFloat(getComputedStyle(p).fontSize) : null,
     };
@@ -95,7 +100,7 @@ test.describe('slide lessons (T182) @visual', () => {
           if (path === '/day/02' && vp.width === 1280 && vp.height === 800) await viewShot(page, 'slide-first');
           if (path === '/day/02' && vp.width === 375 && vp.height === 812) await viewShot(page, 'slide-first');
           if (path === '/day/02' && vp.width === 1366) await viewShot(page, 'slide-short-viewport');
-          const minFont = project === 'mobile' ? 18 : 20;
+          const minFont = 14; // glossary / cheat-sheet reading scale (learner feedback: 20px slides were too big)
           for (let i = 1; i <= n; i++) {
             if (i > 1) await next(page).click();
             expect(await total(page), 'slide count stays stable').toBe(n);
@@ -109,10 +114,17 @@ test.describe('slide lessons (T182) @visual', () => {
             expect(m.deckTop, where).toBeGreaterThanOrEqual(0);
             expect(m.contentTop, where).toBeGreaterThanOrEqual(0);
             expect(m.deckBottom, where).toBeLessThanOrEqual(m.viewport + 1);
+            // ‹ › arrows: vertically centred on the card, on (desktop) or just inside (phone) its left/right edges, on screen.
+            expect(Math.abs(m.arrows.prevMid - m.arrows.cardMid), `${where} ‹ centred`).toBeLessThanOrEqual(2);
+            expect(Math.abs(m.arrows.nextMid - m.arrows.cardMid), `${where} › centred`).toBeLessThanOrEqual(2);
+            expect(Math.abs(m.arrows.prevX - m.arrows.cardLeft), `${where} ‹ on the left edge`).toBeLessThanOrEqual(10);
+            expect(Math.abs(m.arrows.nextX - m.arrows.cardRight), `${where} › on the right edge`).toBeLessThanOrEqual(10);
+            expect(m.arrows.prevX - 22, where).toBeGreaterThanOrEqual(0);
+            expect(m.arrows.nextX + 22, where).toBeLessThanOrEqual(m.arrows.w);
             // … and nothing of a reading slide is hidden under the controls or clipped (no inner scroll).
             // Only the quiz slide may scroll inside the stage (one question at a time, but results grow).
             if (!m.quiz) {
-              expect(m.contentBottom, `${where} content ends above the controls`).toBeLessThanOrEqual(m.navTop + 0.5);
+              expect(m.contentBottom, `${where} content ends inside the card`).toBeLessThanOrEqual(m.navTop + 0.5);
               expect(m.overflow, `${where} fits without inner scroll`).toBeLessThanOrEqual(0);
               if (m.font !== null) expect(m.font, `${where} body font`).toBeGreaterThanOrEqual(minFont);
             }

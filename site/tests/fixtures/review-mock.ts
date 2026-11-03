@@ -27,7 +27,7 @@ function single(set: string, n: number, domain: DomainId, lessonRef: string): Qu
   };
 }
 
-/** Week 1 fixture: 8 single-answer questions (D1 × 6 across Days 1–3, D4 × 2 on Day 2). Correct option is always "a". */
+/** Module 1 fixture: 8 single-answer questions (D1 × 6 across Days 1–3, D4 × 2 on Day 2). Correct option is always "a". */
 export const weekFixture: Question[] = [
   single('week-1', 1, 'D1', 'day-01#explanation'),
   single('week-1', 2, 'D1', 'day-01#examples'),

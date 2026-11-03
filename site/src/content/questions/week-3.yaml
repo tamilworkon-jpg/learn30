@@ -422,7 +422,7 @@
     - { id: c, text: "The model is overfitting; use fewer epochs or add more varied training data", explanation: "Correct. Rising validation loss while training loss falls means the model is memorising the training examples." }
     - { id: d, text: "The learning rate is too low; raise it and train longer", explanation: "Incorrect. A low learning rate slows training loss improvement; it does not explain diverging validation loss." }
   answer: [c]
-  explanation: "Overfitting during fine-tuning shows as validation loss rising while training loss keeps falling. Fixes are fewer epochs (early stopping), more and more varied examples, or regularisation. The same fit concepts from Week 1 apply to foundation models."
+  explanation: "Overfitting during fine-tuning shows as validation loss rising while training loss keeps falling. Fixes are fewer epochs (early stopping), more and more varied examples, or regularisation. The same fit concepts from Module 1 apply to foundation models."
   domain: D3
   taskStatement: "3.3"
   lessonRef: day-19#exam-tips

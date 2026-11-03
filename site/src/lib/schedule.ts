@@ -89,3 +89,27 @@ export function fromDateInput(value: string): Date {
 
 /** e.g. "Mon, 2 Nov 2026" in the browser's locale. */
 export const formatDate = (date: Date, locale?: string) => date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+
+/**
+ * The finish date at the learner's real pace, recomputed whenever the page loads (no background job):
+ * the original finish moved by the lag — each study day behind pushes it one weekday later, each day
+ * ahead pulls it one weekday earlier. Before the start it is the original finish; once all 30 days are
+ * done it is null (finished).
+ */
+export function projectedFinish(start: Date, today: Date, completed: number): Date | null {
+  if (completed >= COURSE_DAYS) return null;
+  const { delta, state } = scheduleStatus(start, today, completed);
+  if (state === 'not-started') return finishDate(start);
+  return plannedDate(start, COURSE_DAYS - delta);
+}
+
+
+/** Study weeks: five lesson days (Mon–Fri) each, so the 30 days make six weeks. The course's topic
+ *  groups (course.yaml `weeks`) are shown as "Modules" so a week never lists seven days. */
+export const STUDY_WEEK_DAYS = 5;
+export const STUDY_WEEKS = Math.ceil(COURSE_DAYS / STUDY_WEEK_DAYS);
+export const studyWeekOf = (day: number) => Math.floor((day - 1) / STUDY_WEEK_DAYS) + 1;
+export function studyWeekDays(week: number): number[] {
+  const first = (week - 1) * STUDY_WEEK_DAYS + 1;
+  return Array.from({ length: STUDY_WEEK_DAYS }, (_, i) => first + i).filter((n) => n <= COURSE_DAYS);
+}
