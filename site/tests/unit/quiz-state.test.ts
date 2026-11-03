@@ -42,6 +42,44 @@ describe('quiz state (T049)', () => {
     expect(again.answers()).toEqual({ 'q-day-02-001': ['b'], 'q-day-02-002': ['a', 'c'] });
   });
 
+  it('Q-S1b submitted (locked) questions and the current question persist and are restored (learner feedback 2026-11-03)', () => {
+    const store = createStore();
+    const s = createQuizSession(store, 'day-02', questions);
+    s.answer('q-day-02-001', ['b']);
+    s.check('q-day-02-001');
+    s.check('q-day-02-003', ['d', 'c', 'b', 'a']); // untouched ordering: answered with the shown order
+    s.check('q-day-02-001'); // idempotent
+    s.check('q-nope'); // unknown ids ignored
+    s.setIndex(2);
+    s.setIndex(99); // clamped to the last question
+    const saved = store.get().inProgress['day-02'];
+    expect(saved.checked).toEqual(['q-day-02-001', 'q-day-02-003']);
+    expect(saved.index).toBe(3);
+    expect(saved.answers['q-day-02-003']).toEqual(['d', 'c', 'b', 'a']);
+    expect(validateProgress(store.get())).toBe(true);
+
+    const again = createQuizSession(store, 'day-02', questions);
+    expect(again.checked()).toEqual(['q-day-02-001', 'q-day-02-003']);
+    expect(again.index()).toBe(3);
+
+    // submitting clears them for the next attempt
+    again.submit();
+    expect(store.get().inProgress['day-02']).toBeUndefined();
+    const fresh = createQuizSession(store, 'day-02', questions);
+    expect([fresh.checked(), fresh.index(), fresh.attemptCount()]).toEqual([[], 0, 1]);
+  });
+
+  it('Q-S1c moving between questions before answering does not create an in-progress entry; older saves without checked/index stay valid', () => {
+    const store = createStore();
+    const s = createQuizSession(store, 'day-02', questions);
+    s.setIndex(1);
+    expect(store.get().inProgress['day-02']).toBeUndefined();
+    store.saveInProgress('day-02', { answers: { 'q-day-02-001': ['b'] }, flagged: [] });
+    expect(validateProgress(store.get())).toBe(true);
+    const old = createQuizSession(store, 'day-02', questions);
+    expect([old.checked(), old.index()]).toEqual([[], 0]);
+  });
+
   it('answers to unknown questions are ignored; clearing removes the answer', () => {
     const store = createStore();
     const s = createQuizSession(store, 'day-02', questions);

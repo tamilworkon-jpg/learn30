@@ -79,7 +79,9 @@
           "answers": { "type": "object" },
           "flagged": { "type": "array", "items": { "type": "string" } },
           "startedAt": { "type": "string", "format": "date-time" },
-          "deadline": { "type": "string", "format": "date-time" }
+          "deadline": { "type": "string", "format": "date-time" },
+          "checked": { "type": "array", "items": { "type": "string" } },
+          "index": { "type": "integer", "minimum": 0 }
         }
       }
     },

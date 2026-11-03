@@ -70,8 +70,10 @@ export function createMockSession(
     ? Object.fromEntries(Object.entries(saved?.answers ?? {}).filter(([id]) => known.has(id)))
     : {};
   let flagged: string[] = deadline ? (saved?.flagged ?? []).filter((id) => known.has(id)) : [];
+  // The question the learner was on, so a reload reopens it (learner feedback 2026-11-03).
+  let index = deadline ? Math.max(0, Math.min(questions.length - 1, saved?.index ?? 0)) : 0;
 
-  const persist = () => store.saveInProgress(assessmentId, { answers, flagged, deadline });
+  const persist = () => store.saveInProgress(assessmentId, { answers, flagged, deadline, index });
   const remaining = () => (deadline ? remainingMs(deadline, now()) : (opts.minutes ?? MOCK_MINUTES) * MIN);
 
   return {
@@ -85,9 +87,17 @@ export function createMockSession(
       deadline = deadlineFor(now(), opts.minutes);
       answers = {};
       flagged = [];
+      index = 0;
       persist();
     },
     deadline: () => deadline,
+    index: () => index,
+    setIndex(i: number) {
+      const next = Math.max(0, Math.min(questions.length - 1, i));
+      if (next === index || !deadline) return;
+      index = next;
+      persist();
+    },
     remaining,
     answers: () => answers,
     flagged: () => flagged,
@@ -121,6 +131,7 @@ export function createMockSession(
       deadline = undefined;
       answers = {};
       flagged = [];
+      index = 0;
       return attempt;
     },
     lastAttempt: () =>

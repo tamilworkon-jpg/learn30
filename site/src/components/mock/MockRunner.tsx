@@ -68,6 +68,7 @@ export default function MockRunner({
       setPhase('results');
     } else {
       sync(s);
+      setIndex(s.index());
       setPhase(status === 'running' ? 'exam' : 'intro');
     }
   }, [assessmentId, questions, minutes]);
@@ -92,7 +93,9 @@ export default function MockRunner({
   };
   const go = (i: number) => {
     moved.current = true;
-    setIndex(Math.max(0, Math.min(questions.length - 1, i)));
+    const next = Math.max(0, Math.min(questions.length - 1, i));
+    setIndex(next);
+    session?.setIndex(next);
     setPhase('exam');
   };
   const setAnswer = (v: Answer) => {
@@ -185,6 +188,12 @@ export default function MockRunner({
           {header}
           <div class="mock-grid">
             <div class="card quiz-card" key={q.id}>
+              <button type="button" class="quiz-arrow quiz-arrow-prev" aria-label="Previous question" title="Previous question" disabled={index === 0} onClick={() => go(index - 1)}>
+                <span aria-hidden="true">‹</span>
+              </button>
+              <button type="button" class="quiz-arrow quiz-arrow-next" aria-label="Next question" title="Next question" disabled={index === questions.length - 1} onClick={() => go(index + 1)}>
+                <span aria-hidden="true">›</span>
+              </button>
               <span class={`chip chip-${q.domain}`}>
                 {q.domain} · {q.taskStatement}
               </span>
@@ -230,14 +239,6 @@ export default function MockRunner({
               <div class="mock-actions">
                 <button
                   type="button"
-                  class="btn btn-ghost"
-                  onClick={() => go(index - 1)}
-                  disabled={index === 0}
-                >
-                  ← Previous
-                </button>
-                <button
-                  type="button"
                   class="btn btn-ghost btn-flag"
                   aria-pressed={flagged.includes(q.id) ? 'true' : 'false'}
                   aria-label={`Flag question ${index + 1} for review`}
@@ -245,12 +246,9 @@ export default function MockRunner({
                 >
                   ⚑ {flagged.includes(q.id) ? 'Flagged' : 'Flag'}
                 </button>
-                {index < questions.length - 1 ? (
-                  <button type="button" class="btn" onClick={() => go(index + 1)}>
-                    Next →
-                  </button>
-                ) : (
-                  <button type="button" class="btn" onClick={() => setPhase('review')}>
+                {index === questions.length - 1 && (
+                  // The final hand-in lives on the last question only.
+                  <button type="button" class="btn" data-review-submit onClick={() => setPhase('review')}>
                     Review &amp; submit
                   </button>
                 )}
@@ -267,9 +265,6 @@ export default function MockRunner({
                 current={index}
                 onJump={go}
               />
-              <button type="button" class="btn mt-4 w-full justify-center" onClick={() => setPhase('review')}>
-                Review &amp; submit
-              </button>
             </div>
           </div>
         </>

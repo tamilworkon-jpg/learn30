@@ -340,3 +340,81 @@ html[data-theme='dark'] .opt-input {
   background: var(--d5);
   color: #fff;
 }
+
+/* Learner feedback 2026-11-03 (round 2): ‹ › arrows on the question card's edges replace the bottom
+   Previous / Next bar; inside the card so they never collide with the slide deck's own arrows. */
+.card.quiz-card {
+  position: relative;
+  padding-left: 64px;
+  padding-right: 64px;
+}
+.quiz-arrow {
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--brand-purple);
+  box-shadow: 0 4px 14px rgb(80 62 157 / 0.18);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 1;
+}
+.quiz-arrow-prev {
+  left: 12px;
+}
+.quiz-arrow-next {
+  right: 12px;
+}
+.quiz-arrow:hover:not(:disabled) {
+  background: var(--brand-purple);
+  color: #fff;
+}
+.quiz-arrow:focus-visible {
+  outline: 3px solid var(--brand-orange);
+  outline-offset: 2px;
+}
+.quiz-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+[data-theme='dark'] .quiz-arrow {
+  color: #d8ceff;
+}
+[data-theme='dark'] .quiz-arrow:hover:not(:disabled) {
+  background: var(--brand-orange);
+  color: #1f1a3a;
+}
+.q-submit-quiz {
+  margin-left: auto;
+}
+.quiz-count {
+  text-align: center;
+  margin: 12px 0 0;
+}
+@media (max-width: 640px) {
+  .card.quiz-card {
+    padding-left: 44px;
+    padding-right: 44px;
+  }
+  .quiz-arrow {
+    width: 32px;
+    height: 32px;
+    margin-top: -16px;
+    font-size: 22px;
+  }
+  .quiz-arrow-prev {
+    left: 6px;
+  }
+  .quiz-arrow-next {
+    right: 6px;
+  }
+}

@@ -603,3 +603,19 @@
     overflow: visible !important;
   }
 }
+
+/* Quiz slide: the section intro is the full-page lead-in; in slide view the question starts at the top. */
+html[data-lesson-view='slides'] .slide-deck .sec-quiz .quiz-slot > p {
+  display: none;
+}
+
+/* One set of arrows on the quiz slide: the quiz's question arrows (they continue to the previous /
+   next slide at the ends), so the deck's own arrows step aside there. The quiz title line repeats
+   the section heading, so it is hidden in slide view too. */
+html[data-lesson-view='slides'] .slide-deck:has(article[data-slide-type='quiz']) .deck-arrow {
+  display: none;
+}
+html[data-lesson-view='slides'] .slide-deck .quiz-head > p.muted {
+  display: none;
+}
+

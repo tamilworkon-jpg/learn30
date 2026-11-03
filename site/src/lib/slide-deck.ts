@@ -247,7 +247,7 @@ export function initSlideDeck(deck: HTMLElement) {
   const hasVisual = (leaves: HTMLElement[]) => leaves.some((l) => l.matches(VISUAL) || !!l.querySelector(VISUAL) || !!l.parentElement?.closest('table, figure, .console'));
   const fits = (g: Group, leaves: HTMLElement[]) => {
     show(g, leaves);
-    g.illo.classList.toggle('illo-off', hasVisual(leaves));
+    g.illo.classList.toggle('illo-off', hasVisual(leaves) || g.type === 'quiz');
     return article.scrollHeight <= article.clientHeight;
   };
   const shrink = (g: Group, leaf: HTMLElement, page: HTMLElement[]) => {
@@ -325,6 +325,24 @@ export function initSlideDeck(deck: HTMLElement) {
     article.classList.toggle('slide-short', h < 420);
     placeArrows();
   };
+  // The quiz slide is interactive and taller than any viewport: bring the deck to the top of the window
+  // and let the card fill everything below it (instead of keeping the page header in view and leaving a
+  // blank strip under a clipped quiz). Other slides use the normal stage height.
+  let fitted = false;
+  function fitStage(full: boolean) {
+    if (!full) {
+      if (fitted) stageHeight();
+      fitted = false;
+      return;
+    }
+    fitted = true;
+    const deckTop = deck.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top: Math.max(0, deckTop - 8), behavior: 'instant' });
+    const above = article.getBoundingClientRect().top - deck.getBoundingClientRect().top;
+    const h = Math.max(MIN_STAGE, Math.floor(window.innerHeight - bottomBar() - 8 - above - 12));
+    article.style.height = `${h}px`;
+    placeArrows();
+  }
   // The ‹ › arrows overlay the stage: keep their box on the article (its top moves with the skip notice / title bar).
   function placeArrows() {
     const a = article.getBoundingClientRect();
@@ -407,9 +425,10 @@ export function initSlideDeck(deck: HTMLElement) {
     index = Math.max(0, Math.min(slides.length - 1, i));
     const s = slides[index];
     show(s.group, s.leaves);
-    s.group.illo.classList.toggle('illo-off', hasVisual(s.leaves));
+    s.group.illo.classList.toggle('illo-off', hasVisual(s.leaves) || s.group.type === 'quiz');
     if (s.group.part) s.group.part.textContent = s.parts > 1 ? `${s.part}/${s.parts}` : '';
     article.classList.toggle('slide-scroll', s.group.scroll);
+    fitStage(s.group.type === 'quiz');
     article.scrollTop = 0;
     const t = terms(s.group, s.leaves);
     if (strip) {
@@ -436,6 +455,7 @@ export function initSlideDeck(deck: HTMLElement) {
     progress.setAttribute('aria-label', `Slide ${index + 1} of ${n}`);
     prevBtn.disabled = index === 0;
     nextBtn.disabled = index === n - 1;
+    article.dataset.slideType = s.group.type;
     article.dataset.slideSection = s.group.type === 'finish' ? (groups?.[groups.length - 2]?.id ?? '') : s.group.id;
     article.dataset.slideIndex = String(index + 1);
     document.dispatchEvent(new CustomEvent('slidechange', { detail: { index, section: s.group.id } }));
@@ -556,6 +576,7 @@ export function initSlideDeck(deck: HTMLElement) {
     article.style.removeProperty('height');
     article.classList.remove('slide-scroll');
     delete article.dataset.slideSection;
+    delete article.dataset.slideType;
     delete article.dataset.slideIndex;
     root.dataset.deckReady = 'true';
     document.dispatchEvent(new CustomEvent('slidechange', { detail: null }));
@@ -579,6 +600,8 @@ export function initSlideDeck(deck: HTMLElement) {
   // ---------- events ----------
   viewBtns.forEach((b) => b.addEventListener('click', () => setView(b.dataset.view === 'full' ? 'full' : 'slides')));
   prevBtn.addEventListener('click', () => go(index - 1));
+  // The quiz's own arrows hand over to the deck before its first / after its last question.
+  document.addEventListener('deck-nav', (e) => view === 'slides' && go(index + ((e as CustomEvent<string>).detail === 'next' ? 1 : -1)));
   nextBtn.addEventListener('click', () => go(index + 1));
 
   document.addEventListener('keydown', (e) => {

@@ -101,10 +101,10 @@ test.describe('weekly review (T079) @visual', () => {
         .locator('label.opt')
         .filter({ hasText: n <= 6 ? `Correct answer ${n}` : `Distractor B ${n}` })
         .click();
-      // weekly test uses the practice flow: Submit answer → feedback → Next question / See my results
+      // weekly test uses the practice flow: Submit answer → feedback → Next question; the last question hands the test in
       await quiz.locator('[data-submit-answer]').click();
       await expect(quiz.locator('[data-feedback]')).toHaveAttribute('data-correct', n <= 6 ? 'true' : 'false');
-      await quiz.getByRole('button', { name: n < 8 ? 'Next question →' : 'See my results →' }).click();
+      await quiz.getByRole('button', { name: n < 8 ? 'Next question →' : 'Submit quiz →' }).click();
     }
     await expect(quiz.locator('[data-results-heading]')).toContainText('6 / 8');
     const results = page.locator('#domain-results');

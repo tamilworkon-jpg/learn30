@@ -91,6 +91,10 @@ export interface InProgressAttempt {
   flagged: string[];
   startedAt: string;
   deadline?: string;
+  /** Practice quizzes: questions whose answer was submitted (locked, feedback shown). */
+  checked?: string[];
+  /** The question the learner was on (0-based), so a reload reopens it. */
+  index?: number;
 }
 
 export interface Progress {

@@ -102,13 +102,28 @@ test.describe('slide lessons (T182) @visual', () => {
           if (path === '/day/02' && vp.width === 1366) await viewShot(page, 'slide-short-viewport');
           const minFont = 14; // glossary / cheat-sheet reading scale (learner feedback: 20px slides were too big)
           for (let i = 1; i <= n; i++) {
-            if (i > 1) await next(page).click();
+            if (i > 1) {
+              // The quiz slide hides the deck arrows (its question arrows take over): move on with the keyboard there.
+              if (await next(page).isVisible()) await next(page).click();
+              else {
+                await page.locator('body').click({ position: { x: 5, y: 5 } });
+                await page.keyboard.press('ArrowRight');
+              }
+            }
             expect(await total(page), 'slide count stays stable').toBe(n);
             expect(await slideNo(page)).toBe(i);
             const m = await measure(page);
             const where = `${path} @${vp.width}×${vp.height} slide ${i} (${await article(page).getAttribute('data-slide-section')})`;
             if (i === 1) expect(m.noticeShown, 'notice visible on slide 1').toBe(true);
-            expect(m.visual, `${where} has a visual`).toBe(true);
+            if (!m.quiz) expect(m.visual, `${where} has a visual`).toBe(true); // the quiz slide drops its illustration for room
+            if (m.quiz) {
+              // The quiz slide fills the window (deck brought to the top) and shows one set of arrows: the quiz's own.
+              expect(m.deckBottom, where).toBeLessThanOrEqual(m.viewport + 1);
+              expect(m.viewport - m.deckBottom, `${where} card reaches the bottom`).toBeLessThanOrEqual(24);
+              await expect(prev(page)).toBeHidden();
+              await expect(page.getByRole('button', { name: 'Next question' })).toBeVisible();
+              continue;
+            }
             // No page scroll needed — on first load and after navigating: title bar, slide and controls all on screen …
             expect(m.scrollY, `${where} page not scrolled`).toBe(0);
             expect(m.deckTop, where).toBeGreaterThanOrEqual(0);
@@ -236,7 +251,7 @@ test.describe('slide lessons (T182) @visual', () => {
     await expect(quiz).toHaveAttribute('data-ready', 'true');
     await quiz.locator('label.opt').first().click();
     await expect(quiz).toContainText(/1 \/ \d+ answered/);
-    await quiz.getByRole('button', { name: /^Next →/ }).click();
+    await quiz.getByRole('button', { name: 'Next question', exact: true }).click();
     await expect(quiz).toContainText(/Question 2 of/);
     await expect(article(page)).toHaveAttribute('data-slide-section', 'quiz'); // quiz buttons don't change slides
     expect(problems, problems.join('\n')).toEqual([]);
@@ -394,7 +409,9 @@ test.describe('slide lessons (T182) @visual', () => {
       const quiz = page.locator('[data-quiz="day-02"]');
       await expect(quiz).toHaveAttribute('data-ready', 'true');
       if (how === 'arrows') {
-        await page.getByRole('button', { name: 'Previous slide' }).click();
+        // Q1's ‹ hands over to the deck (previous slide); the deck's › brings the quiz back.
+        await page.getByRole('button', { name: 'Previous question' }).click();
+        await expect(page.getByRole('button', { name: 'Previous slide' })).toBeVisible();
         await page.getByRole('button', { name: 'Next slide' }).click();
         await expect(quiz).toBeVisible();
       }

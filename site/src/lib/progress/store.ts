@@ -105,7 +105,7 @@ function createCore({ initial, persist, persistent, recovered, signedIn }: CoreO
       delete d.completedAt;
       save();
     },
-    saveInProgress(assessmentId: string, data: { answers: Progress['inProgress'][string]['answers']; flagged: string[]; deadline?: string }) {
+    saveInProgress(assessmentId: string, data: { answers: Progress['inProgress'][string]['answers']; flagged: string[]; deadline?: string; checked?: string[]; index?: number }) {
       const prev = state.inProgress[assessmentId];
       state.inProgress[assessmentId] = { ...data, startedAt: prev?.startedAt ?? new Date().toISOString() };
       save();

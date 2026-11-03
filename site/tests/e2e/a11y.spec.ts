@@ -50,8 +50,10 @@ test.describe('accessibility (T174)', () => {
     await kb.press('Enter');
     await expect(runner.locator('.mock-head .h1')).toContainText('5');
 
-    // open review & submit with the keyboard; focus lands on the review heading
-    await runner.locator('.mock-side').getByRole('button', { name: 'Review & submit' }).focus();
+    // open review & submit (on the last question) with the keyboard; focus lands on the review heading
+    await runner.locator('.palette button').last().focus();
+    await kb.press('Enter');
+    await runner.locator('[data-review-submit]').focus();
     await kb.press('Enter');
     await expect(runner.locator('[data-mock-review]').getByRole('heading', { name: 'Review before you submit' })).toBeFocused();
     await runner.getByRole('button', { name: 'Submit exam' }).focus();

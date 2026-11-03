@@ -65,8 +65,11 @@ export function createQuizSession(store: Store, assessmentId: string, questions:
   const saved = store.get().inProgress[assessmentId];
   let answers: Record<string, Answer> = Object.fromEntries(Object.entries(saved?.answers ?? {}).filter(([id]) => known.has(id)));
   let startedAt = saved?.startedAt ?? new Date().toISOString();
+  // Submitted (locked) questions and the current question survive a reload / another device.
+  let checked: string[] = (saved?.checked ?? []).filter((id) => known.has(id));
+  let index = Math.max(0, Math.min(questions.length - 1, saved?.index ?? 0));
 
-  const persist = () => store.saveInProgress(assessmentId, { answers, flagged: [] });
+  const persist = () => store.saveInProgress(assessmentId, { answers, flagged: [], checked, index });
   const dayKey = /^day-(\d{2})$/.exec(assessmentId)?.[1];
 
   return {
@@ -80,6 +83,22 @@ export function createQuizSession(store: Store, assessmentId: string, questions:
       persist();
     },
     unanswered: () => unanswered(questions, answers),
+    checked: () => checked,
+    index: () => index,
+    /** Lock a question's answer (practice "Submit answer"); an ordering question left as shown is answered with that order. */
+    check(questionId: string, value?: Answer) {
+      if (!known.has(questionId) || checked.includes(questionId)) return;
+      if (value !== undefined && answers[questionId] === undefined) answers = { ...answers, [questionId]: value };
+      checked = [...checked, questionId];
+      persist();
+    },
+    setIndex(i: number) {
+      const next = Math.max(0, Math.min(questions.length - 1, i));
+      if (next === index) return;
+      index = next;
+      // Only worth saving once the learner has started (avoids creating an empty in-progress entry).
+      if (Object.keys(answers).length || checked.length || store.get().inProgress[assessmentId]) persist();
+    },
     submit(autoSubmitted = false): Attempt {
       const attempt = store.recordAttempt({
         assessmentId,
@@ -92,6 +111,8 @@ export function createQuizSession(store: Store, assessmentId: string, questions:
         autoSubmitted,
       });
       answers = {};
+      checked = [];
+      index = 0;
       startedAt = new Date().toISOString();
       return attempt;
     },
@@ -101,6 +122,7 @@ export function createQuizSession(store: Store, assessmentId: string, questions:
       return scores.length ? Math.max(...scores) : undefined;
     },
     lastAttempt: () => store.get().attempts.filter((a) => a.assessmentId === assessmentId).at(-1),
+    attemptCount: () => store.get().attempts.filter((a) => a.assessmentId === assessmentId).length,
   };
 }
 

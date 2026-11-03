@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { load } from 'js-yaml';
-import { expect, test, type Page } from './fixtures';
+import { expect, settleSaves, test, type Page } from './fixtures';
 import type { Question } from '../../src/lib/types';
 import { noHorizontalScroll, shotEl, trackConsole } from './helpers';
 
@@ -27,9 +27,15 @@ async function goTo(page: Page, i: number) {
     }
     moved = true;
     await quiz(page)
-      .getByRole('button', { name: current < i ? 'Next →' : '← Previous' })
+      .getByRole('button', { name: current < i ? 'Next question' : 'Previous question', exact: true })
       .click();
   }
+}
+
+/** The whole-quiz submit lives on the last question only (learner feedback 2026-11-03). */
+async function submitQuiz(page: Page) {
+  await goTo(page, qs.length - 1);
+  await quiz(page).locator('[data-submit-quiz]').click();
 }
 
 /** Reorder with the ↑ buttons until the list equals the key (mouse only). */
@@ -114,14 +120,16 @@ test.describe('daily quiz (T050) @visual', () => {
     await expect(quiz(page).locator('.q-hint')).toContainText(`${mt.options.length} of ${mt.options.length} matched`);
     await shotEl(quiz(page), 'quiz-matching');
 
-    // Q-E2 submit with 16 unanswered → confirmation, "go to first unanswered" cancels
-    await quiz(page).getByRole('button', { name: 'Submit now' }).click();
+    // Q-E2 submit (last question only) with 16 unanswered → confirmation, "go to first unanswered" cancels
+    await expect(quiz(page).getByRole('button', { name: 'Submit now' })).toHaveCount(0);
+    await expect(quiz(page).locator('[data-submit-quiz]')).toHaveCount(0); // not on this (non-last) question
+    await submitQuiz(page);
     const dialog = quiz(page).getByRole('alertdialog');
     await expect(dialog).toContainText('Submit with 16 unanswered questions?');
     await dialog.getByRole('button', { name: 'Go to first unanswered' }).click();
     await expect(dialog).toBeHidden();
     await expect(quiz(page)).toContainText(`Question ${qs.findIndex((_, i) => ![idx('single'), idx('multi'), idx('ordering'), idx('matching')].includes(i)) + 1} of 20`);
-    await quiz(page).getByRole('button', { name: 'Submit now' }).click();
+    await submitQuiz(page);
     await quiz(page).getByRole('alertdialog').getByRole('button', { name: 'Submit anyway' }).click();
 
     // Q-E3 results
@@ -148,7 +156,7 @@ test.describe('daily quiz (T050) @visual', () => {
     await expect(quiz(page)).toContainText('0 / 20 answered');
 
     // Q-E5 retake from results starts empty at question 1
-    await quiz(page).getByRole('button', { name: 'Submit now' }).click();
+    await submitQuiz(page);
     await quiz(page).getByRole('alertdialog').getByRole('button', { name: 'Submit anyway' }).click();
     await expect(quiz(page).locator('.quiz-results')).toContainText('0 / 20');
     await expect(quiz(page).locator('.quiz-results')).toContainText('Best score: 20%');
@@ -168,8 +176,8 @@ test.describe('daily quiz (T050) @visual', () => {
     await kb.press('Space');
     await kb.press('ArrowDown');
     await expect(quiz(page).locator('input[type="radio"]:checked')).toHaveValue(qs[idx('single')].options[1].id);
-    // Tab to "Next" (Previous may be disabled) and activate with Enter → focus lands on the new question
-    await quiz(page).getByRole('button', { name: 'Next →' }).focus();
+    // The › edge arrow is a button: activate with Enter → focus lands on the new question
+    await quiz(page).getByRole('button', { name: 'Next question', exact: true }).focus();
     await kb.press('Enter');
     await expect(quiz(page).locator('legend.q-stem')).toBeFocused();
 
@@ -209,5 +217,44 @@ test.describe('daily quiz (T050) @visual', () => {
     await goTo(page, idx('matching'));
     await expect(quiz(page).locator('select.match-select').first()).not.toHaveValue('');
     await expect(quiz(page).locator('.q-hint')).toContainText(`1 of ${qs[idx('matching')].options.length} matched`);
+  });
+
+  test('Q-P1 a reload keeps answers, submitted (locked) questions and the current question; arrows; submit on the last question only', async ({ page }) => {
+    await openQuiz(page);
+    // ‹ › arrows on the card: Previous disabled on question 1; no Submit now / Submit quiz there
+    await expect(quiz(page).getByRole('button', { name: 'Previous question', exact: true })).toBeDisabled();
+    await expect(quiz(page).getByRole('button', { name: 'Submit now' })).toHaveCount(0);
+    await expect(quiz(page).locator('[data-submit-quiz]')).toHaveCount(0);
+    await expect(quiz(page).locator('.quiz-nav')).toHaveCount(0);
+
+    // answer + submit the single question, answer the multi question without submitting
+    const s1 = qs[idx('single')];
+    await goTo(page, idx('single'));
+    await quiz(page).locator('label.opt').filter({ hasText: s1.options.find((o) => o.id === (s1.answer as string[])[0])!.text }).click();
+    await quiz(page).locator('[data-submit-answer]').click();
+    await expect(quiz(page).locator('[data-feedback]')).toHaveAttribute('data-correct', 'true');
+    const m = qs[idx('multi')];
+    await goTo(page, idx('multi'));
+    await quiz(page).locator('label.opt').filter({ hasText: m.options[0].text }).click();
+    await settleSaves(page);
+
+    await page.reload();
+    await page.locator('.quiz-slot').scrollIntoViewIfNeeded();
+    await expect(quiz(page)).toHaveAttribute('data-ready', 'true');
+    // reopens on the same question with its partial answer
+    await expect(quiz(page)).toContainText(`Question ${idx('multi') + 1} of 20`);
+    await expect(quiz(page).locator('input[type="checkbox"]:checked')).toHaveCount(1);
+    await expect(quiz(page)).toContainText('2 / 20 answered');
+    // the submitted question is still locked with its feedback
+    await goTo(page, idx('single'));
+    await expect(quiz(page).locator('[data-feedback]')).toHaveAttribute('data-correct', 'true');
+    await expect(quiz(page).locator('input[type="radio"]').first()).toBeDisabled();
+    await expect(quiz(page).locator('[data-submit-answer]')).toHaveCount(0);
+
+    // the last question offers the final submit; Next is disabled there
+    await goTo(page, qs.length - 1);
+    await expect(quiz(page).getByRole('button', { name: 'Next question', exact: true })).toBeDisabled();
+    await expect(quiz(page).locator('[data-submit-quiz]')).toBeVisible();
+    await shotEl(quiz(page), 'quiz-last-question');
   });
 });

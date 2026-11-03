@@ -1,4 +1,6 @@
-// T056 — one question at a time with progress, domain chip, prev/next and submit confirmation.
+// T056 — one question at a time with progress, domain chip, ‹ › edge arrows and a final submit on the
+// last question. Answers, submitted (locked) questions and the current question are saved in the
+// learner's in-progress attempt, so a reload or another device reopens the quiz where it was left.
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { getStore } from '../../lib/progress/store';
 import { canSubmitAnswer, createQuizSession, displayOrder, isAnswered, type QuizSession } from '../../lib/quiz-state';
@@ -7,6 +9,7 @@ import QuestionMatching from './QuestionMatching';
 import QuestionMulti from './QuestionMulti';
 import QuestionOrdering from './QuestionOrdering';
 import QuestionSingle from './QuestionSingle';
+import AttemptHistory from './AttemptHistory';
 import Results, { QuestionFeedback } from './Results';
 
 interface Props {
@@ -17,6 +20,11 @@ interface Props {
   kind?: Attempt['kind'];
 }
 
+// In slide view the quiz slide hides the deck's ‹ › (one set of arrows): past the first/last question
+// the quiz arrows hand over to the deck (previous / next slide). In full-page view they stop at the ends.
+const inDeck = () => typeof document !== 'undefined' && document.documentElement.dataset.lessonView === 'slides' && !!document.querySelector('.slide-deck .quiz-slot, .slide-deck [data-section-type="quiz"]');
+const deckNav = (dir: 'prev' | 'next') => document.dispatchEvent(new CustomEvent('deck-nav', { detail: dir }));
+
 export default function QuizRunner({ assessmentId, title, questions, kind = 'daily' }: Props) {
   const [session, setSession] = useState<QuizSession | null>(null);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
@@ -24,17 +32,30 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
   const [confirming, setConfirming] = useState(false);
   const [attempt, setAttempt] = useState<Attempt | null>(null);
   const [best, setBest] = useState<number | undefined>(undefined);
-  // Questions whose answer was submitted in this sitting (locked, feedback shown). Not persisted: after a
-  // reload the saved answers stay and can be submitted again.
+  // Questions whose answer was submitted (locked, feedback shown) — saved with the in-progress attempt.
   const [checked, setChecked] = useState<string[]>([]);
+  const [attempts, setAttempts] = useState(0);
   const root = useRef<HTMLDivElement>(null);
+  // Slide view is set up after the quiz may already have rendered (fonts/images first), and the learner
+  // can switch views: follow the <html data-lesson-view> attribute.
+  const [deck, setDeck] = useState(false);
+  useEffect(() => {
+    const update = () => setDeck(inDeck());
+    update();
+    const mo = new MutationObserver(update);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-lesson-view', 'data-deck-ready'] });
+    return () => mo.disconnect();
+  }, []);
   const moved = useRef(false);
 
   useEffect(() => {
     const s = createQuizSession(getStore(), assessmentId, questions, kind);
     setSession(s);
     setAnswers(s.answers());
+    setChecked(s.checked());
+    setIndex(s.index());
     setBest(s.best());
+    setAttempts(s.attemptCount());
   }, [assessmentId, questions, kind]);
 
   // Move focus to the new question / results for keyboard and screen-reader users (not on first render).
@@ -54,7 +75,9 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
   const go = (i: number) => {
     moved.current = true;
     setConfirming(false);
-    setIndex(Math.max(0, Math.min(questions.length - 1, i)));
+    const next = Math.max(0, Math.min(questions.length - 1, i));
+    setIndex(next);
+    session?.setIndex(next);
   };
   const submit = () => {
     if (!session) return;
@@ -63,7 +86,9 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
     setConfirming(false);
     setAttempt(a);
     setChecked([]);
+    setIndex(0);
     setBest(session.best());
+    setAttempts(session.attemptCount());
     root.current?.scrollIntoView({ block: 'start' });
   };
   const requestSubmit = () => (remaining > 0 ? setConfirming(true) : submit());
@@ -72,8 +97,11 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
   const checkAnswer = () => {
     if (!ready || isChecked) return;
     // An untouched ordering question is answered with the order shown.
-    if (q.type === 'ordering' && !answers[q.id]) setAnswer(displayOrder(q));
-    setChecked([...checked, q.id]);
+    session?.check(q.id, q.type === 'ordering' && !answers[q.id] ? displayOrder(q) : undefined);
+    if (session) {
+      setAnswers(session.answers());
+      setChecked(session.checked());
+    }
   };
   const retake = () => {
     moved.current = true;
@@ -89,7 +117,11 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
   return (
     <div class="quiz" ref={root} data-ready={session ? 'true' : undefined} data-quiz={assessmentId}>
       {attempt ? (
-        <Results questions={questions} attempt={attempt} best={best} onRetake={retake} />
+        <>
+          <Results questions={questions} attempt={attempt} best={best} onRetake={retake} />
+          {/* Results already has its own Retake button, so the history below it doesn't repeat one. */}
+          <AttemptHistory assessmentId={assessmentId} questions={questions} kind={kind} refreshKey={attempts} />
+        </>
       ) : (
         <>
           <div class="quiz-head">
@@ -107,8 +139,17 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
             </div>
             <progress class="quiz-progress mt-3" max={questions.length} value={answeredCount} aria-label={`${answeredCount} of ${questions.length} answered`} />
           </div>
+          {attempts > 0 && index === 0 && answeredCount === 0 && checked.length === 0 && (
+            <AttemptHistory assessmentId={assessmentId} questions={questions} kind={kind} refreshKey={attempts} />
+          )}
 
           <div class="card mt-4 quiz-card" key={q.id}>
+            <button type="button" class="quiz-arrow quiz-arrow-prev" aria-label="Previous question" title="Previous question" disabled={index === 0 && !deck} onClick={() => (index === 0 ? deckNav('prev') : go(index - 1))}>
+              <span aria-hidden="true">‹</span>
+            </button>
+            <button type="button" class="quiz-arrow quiz-arrow-next" aria-label="Next question" title="Next question" disabled={index === questions.length - 1 && !deck} onClick={() => (index === questions.length - 1 ? deckNav('next') : go(index + 1))}>
+              <span aria-hidden="true">›</span>
+            </button>
             {q.type === 'single' && <QuestionSingle q={q} value={answers[q.id] as string[]} onChange={setAnswer} locked={isChecked} reveal={isChecked} />}
             {q.type === 'multi' && <QuestionMulti q={q} value={answers[q.id] as string[]} onChange={setAnswer} locked={isChecked} reveal={isChecked} />}
             {q.type === 'ordering' && <QuestionOrdering q={q} value={answers[q.id] as string[]} onChange={setAnswer} locked={isChecked} />}
@@ -121,8 +162,8 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
                     Next question →
                   </button>
                 ) : (
-                  <button type="button" class="btn" data-next-question onClick={requestSubmit}>
-                    See my results →
+                  <button type="button" class="btn" data-submit-quiz onClick={requestSubmit}>
+                    Submit quiz →
                   </button>
                 )
               ) : (
@@ -135,35 +176,20 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
                       {q.type === 'multi' ? `Choose ${(q.answer as string[]).length} answers to submit` : q.type === 'matching' ? 'Match every item to submit' : 'Choose an answer to submit'}
                     </span>
                   )}
+                  {index === questions.length - 1 && (
+                    // Last question only: hand in the whole quiz (unanswered ones are confirmed first).
+                    <button type="button" class="btn btn-ghost q-submit-quiz" data-submit-quiz onClick={requestSubmit}>
+                      Submit quiz
+                    </button>
+                  )}
                 </>
               )}
             </div>
           </div>
 
-          <div class="quiz-nav">
-            <button type="button" class="btn btn-ghost" onClick={() => go(index - 1)} disabled={index === 0}>
-              ← Previous
-            </button>
-            <span class="muted text-sm">
-              {answeredCount} / {questions.length} answered
-            </span>
-            {index < questions.length - 1 ? (
-              <button type="button" class="btn" onClick={() => go(index + 1)}>
-                Next →
-              </button>
-            ) : (
-              <button type="button" class="btn" onClick={requestSubmit}>
-                Submit quiz
-              </button>
-            )}
-          </div>
-          {index < questions.length - 1 && (
-            <p class="text-right m-0 mt-2">
-              <button type="button" class="link-btn text-sm" onClick={requestSubmit}>
-                Submit now
-              </button>
-            </p>
-          )}
+          <p class="quiz-count muted text-sm" aria-live="polite">
+            {answeredCount} / {questions.length} answered
+          </p>
 
           {confirming && (
             <div class="card quiz-confirm" role="alertdialog" aria-labelledby="quiz-confirm-title" aria-describedby="quiz-confirm-desc">

@@ -68,11 +68,14 @@ describe('mock exam logic (T085)', () => {
     s.toggleFlag(questions[1].id);
     s.toggleFlag(questions[2].id);
     s.toggleFlag(questions[2].id);
+    s.setIndex(7); // the question the learner was on is reopened after a reload
     const reloaded = createMockSession(createStore(), 'mock-1', questions, { now: () => T0 + 30 * MIN });
     expect(reloaded.status()).toBe('running');
     expect(reloaded.remaining()).toBe(60 * MIN);
     expect(reloaded.answers()).toEqual({ [questions[0].id]: ['a'] });
     expect(reloaded.flagged()).toEqual([questions[1].id]);
+    expect(reloaded.index()).toBe(7);
+    expect(validateProgress(store.get())).toBe(true);
     expect(remainingMs('2026-11-02T11:30:00.000Z', T0 + 100 * MIN)).toBe(0);
   });
 

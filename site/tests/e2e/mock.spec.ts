@@ -33,6 +33,12 @@ const inProgress = (deadlineMs: number, answers: Record<string, string[]> = {}, 
   },
 });
 const runner = (page: Page) => page.locator('[data-mock="mock-1"]');
+
+/** The final hand-in lives on the last question only: jump there with the palette, then Review & submit. */
+async function openReview(page: Page) {
+  await runner(page).locator('.palette button').last().click();
+  await runner(page).locator('[data-review-submit]').click();
+}
 const heading = (page: Page) => runner(page).locator('.mock-head .h1');
 
 test.describe('mock exam (T086) @visual', () => {
@@ -75,8 +81,8 @@ test.describe('mock exam (T086) @visual', () => {
     await expect(flag).toHaveAttribute('aria-pressed', 'false');
     await expect(pal.nth(9)).not.toHaveClass(/flagged/);
     await flag.click();
-    await runner(page).getByRole('button', { name: 'Next →' }).click();
-    await runner(page).getByRole('button', { name: 'Next →' }).click();
+    await runner(page).getByRole('button', { name: 'Next question', exact: true }).click();
+    await runner(page).getByRole('button', { name: 'Next question', exact: true }).click();
     await expect(heading(page)).toHaveText('Question 12 of 65');
     await runner(page).locator('label.opt').filter({ hasText: 'Distractor B 12' }).click();
     await flag.click();
@@ -91,7 +97,7 @@ test.describe('mock exam (T086) @visual', () => {
     await expect(runner(page).locator('.palette button.answered')).toHaveCount(2);
 
     // M8 review screen
-    await runner(page).locator('.mock-side').getByRole('button', { name: 'Review & submit' }).click();
+    await openReview(page);
     const review = runner(page).locator('[data-mock-review]');
     await expect(review.getByRole('heading', { name: 'Review before you submit' })).toBeFocused();
     await expect(review).toContainText('2 of 65 answered · 2 flagged · 63 unanswered');
@@ -102,7 +108,7 @@ test.describe('mock exam (T086) @visual', () => {
     await shotEl(runner(page), 'mock-review');
     await review.locator('[data-review-flagged]').getByRole('button', { name: 'Go to question 10' }).click();
     await expect(heading(page)).toHaveText('Question 10 of 65');
-    await runner(page).locator('.mock-side').getByRole('button', { name: 'Review & submit' }).click();
+    await openReview(page);
     await runner(page).getByRole('button', { name: 'Submit exam' }).click();
 
     // 1 correct of 65 (Q12 was answered wrongly) → 100 + 900·1/65 = 114 → FAIL
@@ -129,7 +135,7 @@ test.describe('mock exam (T086) @visual', () => {
     await page.goto('/design/fixture-mock');
     await expect(runner(page)).toHaveAttribute('data-phase', 'exam');
     await expect(page.getByRole('timer')).toHaveText(/⏱ (60:00|59:5\d)/);
-    await runner(page).locator('.mock-side').getByRole('button', { name: 'Review & submit' }).click();
+    await openReview(page);
     await expect(runner(page).locator('[data-mock-review]')).toContainText(
       '50 of 65 answered · 1 flagged · 15 unanswered',
     );
