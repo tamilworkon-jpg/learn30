@@ -323,14 +323,16 @@ test.describe('slide lessons (T182) @visual', () => {
     // reload without the #slide-n hash: the saved position is restored
     await openDeck(page, '/day/02');
     await expect(article(page)).toHaveAttribute('data-slide-section', section!);
-    expect(await slideNo(page)).toBe(6);
+    // The deck may first page before the web font arrives and re-page when it does; the restored position
+    // converges on the saved slide (same as a #slide-n deep link, see SL1).
+    await expect.poll(() => slideNo(page)).toBe(6);
 
     // a second browser context (own storage) signed in as the same learner, same viewport → same slide
     const other = await signedInContext(browser, account, { baseURL: baseURL!, viewport: page.viewportSize() });
     const op = await other.newPage();
     await openDeck(op, '/day/02');
     await expect(article(op)).toHaveAttribute('data-slide-section', section!);
-    expect(await slideNo(op)).toBe(6);
+    await expect.poll(() => slideNo(op)).toBe(6);
     await other.close();
   });
 
