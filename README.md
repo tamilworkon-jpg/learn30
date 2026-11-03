@@ -84,9 +84,11 @@ All commands run from `site/`.
 | `npm run validate:content` | Lesson structure, timing (50–70 min), question sets, coverage per task statement, glossary/service cards |
 | `npx tsx scripts/validate-content.ts --final` | Release gate: also requires all 30 days, ≥ 900 unique questions, ≥ 3 questions per task statement |
 | `npm run test` | Unit tests (Vitest), incl. the server (`tests/unit/server-*.test.ts`: in-process server, temp database) |
-| `npm run test:e2e` | All browser tests (Playwright: desktop 1280×800 + mobile 375×812). Builds the site and starts the real server with a fresh temporary database (`site/data/e2e/e2e-<port>-<run>.db`, older ones for the same port deleted at start); every test signs up its own random account |
+| `npm run test:sanity` | **Default browser check** (~30 s after the build): every page once, one screenshot per page (desktop), no console errors → `site/tests/e2e/__screenshots__/sanity/`. Builds into `dist-e2e/`, so it never disturbs a running `npm start` |
+| `npm run test:e2e` | **Full suite — run only when you want "all"** (~9 min): all browser tests (Playwright: desktop 1280×800 + mobile 375×812). Builds the site and starts the real server with a fresh temporary database (`site/data/e2e/e2e-<port>-<run>.db`, older ones for the same port deleted at start); every test signs up its own random account |
 | `npm run test:visual` | Only the `@visual` specs (screenshots in `tests/e2e/__screenshots__/`) |
-| `npm run verify` | lint + typecheck + validate + unit + e2e |
+| `npm run verify` | lint + typecheck + validate + unit + sanity |
+| `npm run verify:all` | the same with the full e2e suite |
 | `npm run audit:tasks` | Checks `tasks.md`: completed tasks have their test files and screenshots; lists unchecked tasks (`-- --final` fails on any) |
 | `npx tsx scripts/perf-check.ts /day/02` | Gzipped JS shipped by a page (budget 200 KB) |
 

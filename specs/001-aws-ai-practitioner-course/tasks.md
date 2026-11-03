@@ -23,12 +23,13 @@ description: "Task list for AWS AI Practitioner 30-Day Course Website (TDD + fin
 
 ---
 
-## Quality Gate (applies to EVERY task — Constitution II, III, IV)
+## Quality Gate (applies to EVERY task — Constitution II, III, IV, VIII)
 
 1. **Red**: write/extend tests from TC → run → confirm they FAIL for the expected reason.
 2. **Green**: implement per Plan → tests PASS.
 3. **Static**: `npm run lint`, `npm run typecheck`, `npm run validate:content` clean.
-4. **Visual**: for any visible change, `npm run test:visual -- <spec>` captures desktop 1280×800 + mobile 375×812 (light + dark where relevant) into `site/tests/e2e/__screenshots__/`. **Open every PNG and inspect** (layout, overlap, truncation, colours vs. design tokens, diagrams rendered, no horizontal scroll). Approve baseline only after inspection; afterwards `toHaveScreenshot` with `maxDiffPixelRatio: 0.01`.
+4. **Visual (sanity — default)**: `npm run test:sanity` (every page once, one viewport screenshot per page, desktop 1280×800, no console errors → `site/tests/e2e/__screenshots__/sanity/`). **Open the PNGs of the pages you changed and inspect** (layout, overlap, truncation, colours, diagrams, no horizontal scroll). A spec that directly covers the change MAY be run on its own. The **full suite** (`npm run test:e2e`, desktop + mobile, light + dark, `--update-snapshots=all` after inspection) runs **only when the learner asks for "all"** (Constitution v3.0.0 Principle IV).
+4a. **Parallel**: tasks marked `[P]` (or independent by file ownership) are executed in parallel by subagents/worktrees; the coordinator integrates, runs the gate once on the combined result and commits (Constitution Principle VIII).
 5. **Commit**: `T###: <summary>`.
 
 The **multi-model swarm review runs once at the end** (task T181, Constitution v2.0.0 Principle III), not per task:

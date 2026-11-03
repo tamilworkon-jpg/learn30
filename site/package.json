@@ -17,10 +17,12 @@
     "typecheck": "astro check",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:sanity": "playwright test sanity.spec --project=desktop",
     "test:visual": "playwright test --grep @visual",
     "validate:content": "tsx scripts/validate-content.ts",
     "audit:tasks": "tsx scripts/audit-tasks.ts",
-    "verify": "npm run lint && npm run typecheck && npm run validate:content && npm run test && npm run test:e2e"
+    "verify": "npm run lint && npm run typecheck && npm run validate:content && npm run test && npm run test:sanity",
+    "verify:all": "npm run lint && npm run typecheck && npm run validate:content && npm run test && npm run test:e2e"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.14",
