@@ -111,4 +111,14 @@ describe('badges (T106 E4)', () => {
     st.awardBadges(['week-1', 'streak-7']);
     expect(st.get().badges).toEqual(['week-1', 'streak-7']);
   });
+
+  it('weekends are not study days: Fri → Mon keeps the streak, a missed weekday breaks it', () => {
+    const fri = { current: 3, longest: 3, lastStudyDate: '2026-11-06' };
+    expect(recordStudyDay(fri, '2026-11-09').current).toBe(4); // Monday
+    expect(recordStudyDay(fri, '2026-11-07').current).toBe(4); // Saturday study still counts
+    expect(recordStudyDay(fri, '2026-11-10').current).toBe(1); // Tuesday: Monday was missed
+    expect(currentStreak(fri, '2026-11-08')).toBe(3); // Sunday
+    expect(currentStreak(fri, '2026-11-09')).toBe(3); // Monday, not studied yet
+    expect(currentStreak(fri, '2026-11-10')).toBe(0);
+  });
 });

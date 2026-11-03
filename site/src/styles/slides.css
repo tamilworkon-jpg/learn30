@@ -52,7 +52,7 @@
   align-items: center;
   gap: 10px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
 }
 .deck-progress {
   width: 160px;
@@ -121,7 +121,7 @@
     border-radius: 24px;
     padding: 18px 28px 20px;
     box-shadow: 0 10px 30px rgb(80 62 157 / 0.1);
-    font-size: 17px;
+    font-size: 16px;
     line-height: 1.6;
   }
   html[data-lesson-view='slides'] .slide-deck article.slide-scroll {
@@ -141,7 +141,7 @@
     padding-right: 56px; /* room for the "1/3" part label */
   }
   html[data-lesson-view='slides'] .slide-deck .sec-head {
-    font-size: 22px;
+    font-size: 20px;
     line-height: 1.25;
     margin: 0 0 14px;
     padding-bottom: 10px;
@@ -178,7 +178,7 @@
     padding: 2px 12px;
   }
   html[data-lesson-view='slides'] .slide-deck article h3 {
-    font-size: 19px;
+    font-size: 17px;
     font-weight: 700;
     color: var(--brand-purple);
     margin: 4px 0 10px;
@@ -212,7 +212,7 @@
     margin-top: 6px;
   }
   html[data-lesson-view='slides'] .slide-deck article table {
-    font-size: 15px;
+    font-size: 14px;
     margin-bottom: 14px;
   }
   html[data-lesson-view='slides'] .slide-deck .diagram {
@@ -263,7 +263,7 @@
   }
   .deep-teaser {
     flex-basis: 100%;
-    font-size: 16px;
+    font-size: 15px;
     color: var(--deep-text);
   }
 
@@ -282,7 +282,7 @@
   }
   html[data-lesson-view='slides'] .slide-deck .slide-keypoint {
     position: relative;
-    font-size: 17px;
+    font-size: 16px;
     padding: 30px 22px 16px;
     margin: 16px 0;
     border-left-width: 10px;
@@ -303,7 +303,7 @@
     padding: 3px 12px;
   }
   html[data-lesson-view='slides'] .slide-deck .slide-keypoint .callout-title {
-    font-size: 18px;
+    font-size: 17px;
   }
   html[data-lesson-view='slides'] .slide-deck .key-strip:not([hidden]) {
     position: absolute;
@@ -360,7 +360,7 @@
     flex: 1;
   }
   html[data-lesson-view='slides'] .deck-title .h1 {
-    font-size: 18px;
+    font-size: 17px;
     line-height: 1.3;
     margin: 0;
     white-space: nowrap;
@@ -406,7 +406,7 @@
     display: none;
   }
   html[data-lesson-view='slides'] .slide-deck article.slide-short .sec-head {
-    font-size: 20px;
+    font-size: 18px;
     margin-bottom: 8px;
     padding-bottom: 6px;
   }
@@ -428,7 +428,7 @@
     min-height: 48px;
     min-width: 160px;
     justify-content: center;
-    font-size: 16px;
+    font-size: 15px;
   }
   .deck-btn:disabled {
     opacity: 0.45;
@@ -440,12 +440,12 @@
 
   @media (max-width: 760px) {
     html[data-lesson-view='slides'][data-deck-ready] .slide-deck article {
-      font-size: 16px;
+      font-size: 15px;
       padding: 14px 16px 16px;
       border-radius: 20px;
     }
     html[data-lesson-view='slides'] .slide-deck .sec-head {
-      font-size: 20px;
+      font-size: 18px;
     }
     /* Course-source line and domain/minute chips: on the long page and in the section list; too costly on a phone slide. */
     html[data-lesson-view='slides'] .slide-deck article > p.muted.text-sm,
@@ -453,7 +453,7 @@
       display: none;
     }
     html[data-lesson-view='slides'] .slide-deck article h3 {
-      font-size: 17px;
+      font-size: 16px;
     }
     html[data-lesson-view='slides'] .slide-deck article table {
       font-size: 14px;
@@ -477,7 +477,7 @@
       display: none;
     }
     html[data-lesson-view='slides'] .slide-deck article.slide-short .sec-head {
-      font-size: 17px;
+      font-size: 16px;
       padding-right: 44px;
     }
     /* minutes are in the section list; a short phone slide needs the line */
@@ -491,7 +491,7 @@
     }
     html[data-lesson-view='slides'] .slide-deck .slide-keypoint,
     html[data-lesson-view='slides'] .slide-deck .slide-keypoint .callout-title {
-      font-size: 16px;
+      font-size: 15px;
     }
     html[data-lesson-view='slides'] .slide-deck .key-strip:not([hidden]) {
       left: 12px;
@@ -500,7 +500,7 @@
     .deck-btn {
       min-width: 0;
       flex: 1;
-      font-size: 16px;
+      font-size: 15px;
       padding-left: 10px;
       padding-right: 10px;
     }
@@ -523,7 +523,7 @@
       flex-basis: 100%;
     }
     html[data-lesson-view='slides'] .deck-title .h1 {
-      font-size: 16px;
+      font-size: 15px;
     }
     html[data-lesson-view='slides'] .panel {
       padding-top: 10px;

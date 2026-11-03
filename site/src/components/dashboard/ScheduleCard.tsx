@@ -1,5 +1,5 @@
 // T183 — the learner's plan dates from the browser's current date: start, finish, today's plan day, ahead/behind.
-import { COURSE_DAYS, finishDate, formatDate, scheduleStatus } from '../../lib/schedule';
+import { COURSE_DAYS, finishDate, formatDate, isStudyDay, plannedDate, scheduleStatus } from '../../lib/schedule';
 
 interface Props {
   startedAt: string;
@@ -13,7 +13,7 @@ export default function ScheduleCard({ startedAt, completed, now = new Date() }:
   const n = Math.abs(s.delta);
   const label =
     s.state === 'not-started'
-      ? `Starts ${formatDate(start)}`
+      ? `Starts ${formatDate(plannedDate(start, 1))}`
       : completed >= COURSE_DAYS
         ? 'Course complete 🎉'
         : s.state === 'ahead'
@@ -21,13 +21,20 @@ export default function ScheduleCard({ startedAt, completed, now = new Date() }:
           : s.state === 'behind'
             ? `${n} day${n === 1 ? '' : 's'} behind`
             : 'On track';
-  const today = s.planDay < 1 ? 'Before Day 1' : s.planDay > COURSE_DAYS ? 'Plan finished' : `Day ${s.planDay}`;
+  const today =
+    s.planDay < 1
+      ? 'Before Day 1'
+      : s.planDay > COURSE_DAYS
+        ? 'Plan finished'
+        : isStudyDay(now)
+          ? `Day ${s.planDay} of your plan`
+          : `Weekend · Day ${s.planDay} on ${formatDate(plannedDate(start, s.planDay))}`;
   return (
-    <section class="card schedule-card" data-schedule aria-label="Your 30-day plan">
+    <section class="card schedule-card" data-schedule aria-label="Your 30-day plan (weekdays only)">
       <div class="sched-item">
         <span class="sched-label">Started</span>
         <span class="sched-value" data-sched-start>
-          {formatDate(start)}
+          {formatDate(plannedDate(start, 1))}
         </span>
       </div>
       <div class="sched-item">
@@ -39,7 +46,7 @@ export default function ScheduleCard({ startedAt, completed, now = new Date() }:
       <div class="sched-item">
         <span class="sched-label">Today ({formatDate(now)})</span>
         <span class="sched-value" data-sched-today>
-          {today} of your plan
+          {today}
         </span>
       </div>
       <span class="sched-state" data-state={completed >= COURSE_DAYS ? 'on-track' : s.state} data-sched-status>

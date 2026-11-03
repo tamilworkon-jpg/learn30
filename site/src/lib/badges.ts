@@ -14,7 +14,7 @@ export const BADGES: Record<string, BadgeInfo> = {
   'week-3': { emoji: '🛠️', label: 'Week 3', description: 'Completed Week 3 — Building with foundation models' },
   'week-4': { emoji: '🛡️', label: 'Week 4', description: 'Completed Week 4 — Responsible, secure & governed AI' },
   'mock-pass': { emoji: '🎯', label: 'Mock pass', description: 'Scored 700+ on a mock exam' },
-  'streak-7': { emoji: '🔥', label: '7-day streak', description: 'Studied 7 days in a row' },
+  'streak-7': { emoji: '🔥', label: '7-day streak', description: 'Studied 7 study days in a row (weekends never break it)' },
   'course-complete': { emoji: '🏆', label: 'Course complete', description: 'Completed all 30 days' },
 };
 

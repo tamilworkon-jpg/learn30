@@ -1,4 +1,6 @@
-// T183 — the learner's 30-day plan in the browser's local time zone: Day N = start + N − 1 calendar days.
+// T183 — the learner's 30-day plan in the browser's local time zone. Study days are weekdays only
+// (Mon–Fri): Day 1 is the start date (or the Monday after, if it falls on a weekend) and each later
+// day is the next weekday, so 30 days take six calendar weeks. No lesson is dropped; only dates move.
 export const COURSE_DAYS = 30;
 
 /** Local midnight of the date's calendar day. */
@@ -6,12 +8,17 @@ export function localDay(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-export function plannedDate(start: Date, day: number): Date {
-  const s = localDay(start);
-  return new Date(s.getFullYear(), s.getMonth(), s.getDate() + day - 1);
-}
+const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
 
-export const finishDate = (start: Date) => plannedDate(start, COURSE_DAYS);
+/** Monday–Friday. */
+export const isStudyDay = (date: Date) => date.getDay() !== 0 && date.getDay() !== 6;
+
+/** The date itself, or the next Monday when it is a Saturday or Sunday. */
+export function nextStudyDay(date: Date): Date {
+  let d = localDay(date);
+  while (!isStudyDay(d)) d = addDays(d, 1);
+  return d;
+}
 
 /** Calendar days between two local dates (DST-safe: compares UTC dates of the local calendar days). */
 function dayDiff(a: Date, b: Date): number {
@@ -20,8 +27,38 @@ function dayDiff(a: Date, b: Date): number {
   return Math.round((ub - ua) / 86_400_000);
 }
 
-/** Which plan day `today` is (1 = start date). 0 or less = not started yet; > 30 = past the finish date. */
-export const planDayOn = (start: Date, today: Date) => dayDiff(start, today) + 1;
+/** Weekdays in [a, b) — a and b are local dates, a ≤ b. */
+function weekdaysBetween(a: Date, b: Date): number {
+  const days = dayDiff(a, b);
+  const weeks = Math.floor(days / 7);
+  let n = weeks * 5;
+  for (let d = addDays(localDay(a), weeks * 7); dayDiff(d, b) > 0; d = addDays(d, 1)) if (isStudyDay(d)) n++;
+  return n;
+}
+
+export function plannedDate(start: Date, day: number): Date {
+  let d = nextStudyDay(start);
+  const weeks = Math.floor((day - 1) / 5);
+  d = addDays(d, weeks * 7);
+  for (let left = (day - 1) % 5; left > 0; left--) {
+    d = addDays(d, 1);
+    while (!isStudyDay(d)) d = addDays(d, 1);
+  }
+  return d;
+}
+
+export const finishDate = (start: Date) => plannedDate(start, COURSE_DAYS);
+
+/**
+ * Which plan day `today` is (1 = first study day). On a weekend it is the day planned for the coming
+ * Monday. 0 or less = not started yet; > 30 = past the finish date.
+ */
+export function planDayOn(start: Date, today: Date): number {
+  const first = nextStudyDay(start);
+  const t = localDay(today);
+  if (dayDiff(first, t) < 0) return 0 - weekdaysBetween(t, first);
+  return weekdaysBetween(first, t) + 1;
+}
 
 export interface ScheduleStatus {
   planDay: number;

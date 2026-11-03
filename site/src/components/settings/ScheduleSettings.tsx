@@ -33,7 +33,7 @@ export default function ScheduleSettings() {
         Your schedule
       </h2>
       <p class="muted mt-0 text-sm">
-        Day 1 is your start date; each day after that is one lesson day, so the {COURSE_DAYS}-day plan finishes {COURSE_DAYS - 1} days later. Dates use this device's calendar.
+        Lessons are planned on weekdays only (Monday–Friday). Day 1 is your start date (or the Monday after, if you pick a weekend) and each later day is the next weekday, so the {COURSE_DAYS}-day plan takes six weeks. Dates use this device's calendar.
       </p>
       <form
         class="flex gap-2 flex-wrap items-end"

@@ -97,7 +97,7 @@
 }
 .auth-field label {
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
 }
 .auth-input {
   width: 100%;
@@ -190,7 +190,7 @@
 }
 .account-sub {
   margin: 0;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 600;
 }
 .account-msg {
@@ -219,7 +219,7 @@
 }
 .import-offer-title {
   margin: 0 0 8px;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
 }
 .import-choices {

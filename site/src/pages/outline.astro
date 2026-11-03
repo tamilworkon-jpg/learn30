@@ -22,7 +22,7 @@ const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as 
   <div data-outline>
     <h1 class="h1">Course outline</h1>
     <p class="muted mt-0">
-      {plan.days.length} days · {plan.weeks.length} weeks · about an hour a day. Jump to any day — the order is a suggestion.
+      {plan.days.length} study days in {plan.weeks.length} topic weeks · about an hour a day, Monday–Friday (six calendar weeks; weekends are free). Jump to any day — the order is a suggestion.
     </p>
     <p class="outline-legend text-sm" aria-hidden="true">
       <span><span class="status-icon" data-s="completed">✓</span> Completed</span>
@@ -89,19 +89,21 @@ const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as 
 
 <script>
   import { getStore } from '../lib/progress/store';
-  import { formatDate, planDayOn, plannedDate } from '../lib/schedule';
+  import { formatDate, isStudyDay, planDayOn, plannedDate } from '../lib/schedule';
 
   const ICON = { completed: ['✓', 'Completed'], 'in-progress': ['◐', 'In progress'], 'not-started': ['○', 'Not started'] } as const;
   const root = document.querySelector<HTMLElement>('[data-outline]')!;
   const render = () => {
     const p = getStore().get();
     const start = new Date(p.startedAt);
-    const todayPlan = planDayOn(start, new Date());
+    const now = new Date();
+    const todayPlan = planDayOn(start, now);
+    const todayLabel = isStudyDay(now) ? 'Today · ' : 'Next · '; // weekends: highlight Monday's day
     root.querySelectorAll<HTMLElement>('[data-day-row]').forEach((row) => {
       // T183 — the learner's planned date for this day (browser calendar).
       const n = Number(row.dataset.dayRow);
       const dateEl = row.querySelector<HTMLElement>('[data-plan-date]');
-      if (dateEl) dateEl.textContent = (n === todayPlan ? 'Today · ' : '') + formatDate(plannedDate(start, n));
+      if (dateEl) dateEl.textContent = (n === todayPlan ? todayLabel : '') + formatDate(plannedDate(start, n));
       row.toggleAttribute('data-today', n === todayPlan);
       const ds = p.days[row.dataset.dayRow!];
       const status = ds?.status ?? 'not-started';

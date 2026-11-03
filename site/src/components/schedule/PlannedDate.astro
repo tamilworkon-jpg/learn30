@@ -10,14 +10,18 @@ const { day } = Astro.props;
 
 <script>
   import { getStore } from '../../lib/progress/store';
-  import { formatDate, planDayOn, plannedDate } from '../../lib/schedule';
+  import { formatDate, isStudyDay, planDayOn, plannedDate } from '../../lib/schedule';
 
   const el = document.querySelector<HTMLElement>('[data-planned-day]');
   if (el) {
     const start = new Date(getStore().get().startedAt);
     const day = Number(el.dataset.plannedDay);
-    const today = planDayOn(start, new Date());
-    el.textContent = `📅 Planned for ${formatDate(plannedDate(start, day))}${today === day ? ' · today' : today > day ? '' : ` · in ${day - today} day${day - today === 1 ? '' : 's'}`}`;
+    const now = new Date();
+    const today = planDayOn(start, now);
+    // Weekends are not study days: planDayOn then names Monday's day, which is the next one, not today's.
+    const ahead = day - today + (isStudyDay(now) ? 0 : 1);
+    const when = ahead === 0 ? ' · today' : ahead < 0 ? '' : ahead === 1 && !isStudyDay(now) ? ' · next study day' : ` · in ${ahead} study day${ahead === 1 ? '' : 's'}`;
+    el.textContent = `📅 Planned for ${formatDate(plannedDate(start, day))}${when}`;
     el.hidden = false;
   }
 </script>
