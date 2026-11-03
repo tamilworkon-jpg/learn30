@@ -79,6 +79,9 @@ test.describe('slide lessons (T182) @visual', () => {
       for (const path of ['/day/02', '/day/15']) {
         test(`SL1 SL3 SL4 ${path} @ ${vp.width}×${vp.height}: every slide fits above the controls without page scroll`, async ({ page }, info) => {
           test.skip(info.project.name !== project, `${project} viewport`);
+          // Walks and measures every slide (up to ~130 on /day/15 at 1280×600, ≈ 0.25 s per click before measuring):
+          // the default 30 s is too tight, especially under parallel workers.
+          test.setTimeout(240_000);
           const problems = trackConsole(page);
           await page.setViewportSize(vp);
           await openDeck(page, path);
@@ -320,14 +323,16 @@ test.describe('slide lessons (T182) @visual', () => {
     // reload without the #slide-n hash: the saved position is restored
     await openDeck(page, '/day/02');
     await expect(article(page)).toHaveAttribute('data-slide-section', section!);
-    expect(await slideNo(page)).toBe(6);
+    // The deck may first page before the web font arrives and re-page when it does; the restored position
+    // converges on the saved slide (same as a #slide-n deep link, see SL1).
+    await expect.poll(() => slideNo(page)).toBe(6);
 
     // a second browser context (own storage) signed in as the same learner, same viewport → same slide
     const other = await signedInContext(browser, account, { baseURL: baseURL!, viewport: page.viewportSize() });
     const op = await other.newPage();
     await openDeck(op, '/day/02');
     await expect(article(op)).toHaveAttribute('data-slide-section', section!);
-    expect(await slideNo(op)).toBe(6);
+    await expect.poll(() => slideNo(op)).toBe(6);
     await other.close();
   });
 

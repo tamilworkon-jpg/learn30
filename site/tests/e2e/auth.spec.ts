@@ -84,6 +84,8 @@ test.describe('accounts (T190) @visual', () => {
     });
 
     test('AU6 signed out on a lesson: banner, quiz works in memory, nothing saved', async ({ page }) => {
+      // Three slide-view loads of /day/02 (signed out = default view): > 30 s on mobile under parallel workers.
+      test.slow();
       const problems = trackConsole(page);
       await page.goto('/day/02');
       const banner = page.locator('[data-signed-out-banner]');

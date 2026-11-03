@@ -139,7 +139,7 @@ export default function AccountSettings() {
       )}
 
       <form class="account-form" onSubmit={saveName} noValidate data-display-name-form>
-        <h3 class="account-sub">Profile</h3>
+        <h3 class="account-sub">Display name</h3>
         <TextField id="acct-display-name" label="Display name" value={name} onInput={(v) => (setName(v), setNameErr(undefined))} autocomplete="nickname" maxLength={30} required error={nameErr} />
         <div>
           <button class="btn" type="submit" disabled={busy === 'name' || !user}>

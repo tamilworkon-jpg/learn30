@@ -10,9 +10,13 @@ export function safeNext(raw: string | null | undefined, fallback = '/'): string
   try {
     const u = new URL(raw, 'http://same.invalid');
     if (u.origin !== 'http://same.invalid') return fallback;
+    const out = u.pathname + u.search + u.hash;
+    // Dot segments / encoded dots can normalise to a protocol-relative "//host" (off-site): re-check the result.
+    // eslint-disable-next-line no-control-regex
+    if (!out.startsWith('/') || out.startsWith('//') || out.includes('\\') || /[\u0000-\u001f\u007f]/.test(out)) return fallback;
     // Never bounce back to the auth pages themselves.
     if (/^\/(login|signup)\/?$/.test(u.pathname)) return fallback;
-    return u.pathname + u.search + u.hash;
+    return out;
   } catch {
     return fallback;
   }

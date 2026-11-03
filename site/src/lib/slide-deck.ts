@@ -77,6 +77,7 @@ export function initSlideDeck(deck: HTMLElement) {
   let index = 0;
   let paging = false;
   let settled = false; // the learner has navigated since the page loaded
+  let restore: { sectionId: string; block: number } | null = null; // saved position to reopen (no #slide-n link)
   let strip: HTMLElement | null = null;
   const managed = new Set<HTMLElement>();
   const zoomed = new Set<HTMLElement>();
@@ -351,7 +352,7 @@ export function initSlideDeck(deck: HTMLElement) {
     slides = next;
     paging = false;
     // Until the learner moves, a #slide-n deep link keeps pointing at slide n (late fonts/images re-page).
-    const linked = settled ? null : fromHash(location.hash);
+    const linked = settled ? null : (fromHash(location.hash) ?? savedSlide());
     if (linked !== null) return go(linked, { focus: false, scroll: true, replace: false });
     let i = anchorLeaf ? slides.findIndex((s) => s.leaves.some((l) => l === anchorLeaf || l.contains(anchorLeaf))) : -1;
     if (i < 0 && anchor) i = slides.findIndex((s) => s.group === anchor.group);
@@ -371,8 +372,9 @@ export function initSlideDeck(deck: HTMLElement) {
   };
 
   // T189 — the slide the learner was on last time (section + page within it, so it survives re-paging).
+  // Resolved again on every re-paging until the learner moves (late fonts/images change the page count).
   const savedSlide = (): number | null => {
-    const pos = getUiState().slide(day);
+    const pos = restore;
     if (!pos) return null;
     const first = slides.findIndex((x) => x.group.id === pos.sectionId);
     if (first < 0) return null;
@@ -507,7 +509,8 @@ export function initSlideDeck(deck: HTMLElement) {
     index = 0;
     repaginate();
     const fromUrl = fromHash(location.hash);
-    go(fromUrl ?? (initial ? savedSlide() : null) ?? 0, { focus: !initial, scroll: true, replace: !initial });
+    restore = initial && fromUrl === null ? getUiState().slide(day) : null;
+    go(fromUrl ?? savedSlide() ?? 0, { focus: !initial, scroll: true, replace: !initial });
     root.dataset.deckReady = 'true';
   };
 

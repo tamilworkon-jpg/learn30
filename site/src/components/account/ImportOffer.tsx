@@ -4,8 +4,11 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { isSignedIn } from '../../lib/bootstrap';
 import { legacyImportOffer, rememberImportDecision, type LegacyProgress } from '../../lib/progress/legacy';
 import { getStore } from '../../lib/progress/store';
+import type { Progress } from '../../lib/types';
 import '../../styles/account.css';
 
+/** The account already has something an import would overwrite → ask first; a fresh account imports directly. */
+const hasProgress = (p: Progress) => p.attempts.length > 0 || Object.values(p.days).some((d) => d.status !== 'not-started' || d.sectionsViewed.length > 0);
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
 const fmtDate = (iso: string) => new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -89,7 +92,7 @@ export default function ImportOffer() {
         </div>
       ) : (
         <div class="flex flex-wrap gap-2 mt-3">
-          <button type="button" class="btn" onClick={() => setConfirming(true)} data-import-accept>
+          <button type="button" class="btn" onClick={() => (hasProgress(getStore().get()) ? setConfirming(true) : doImport())} data-import-accept>
             Import progress…
           </button>
           <button type="button" class="btn btn-ghost" onClick={decline} data-import-decline>
