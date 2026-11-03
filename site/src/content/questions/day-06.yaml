@@ -129,7 +129,7 @@
     - { id: t4, text: "Amazon Redshift" }
     - { id: t5, text: "AWS Data Exchange" }
   answer: { a: t3, b: t2, c: t4, d: t5, e: t1 }
-  explanation: "S3 stores the data, Glue catalogs and transforms it, EMR processes it at very large scale, Lake Formation governs access, Redshift serves warehouse analytics and Data Exchange brings in third-party data. Knowing one sentence per service is enough for the exam."
+  explanation: "S3 stores the data, Glue catalogs and transforms it, EMR processes it at very large scale, Lake Formation governs access, Redshift serves warehouse analytics and Data Exchange brings in third-party data. One sentence per service captures its role in the data pipeline."
   domain: D1
   taskStatement: "1.3"
   lessonRef: day-06#explanation
@@ -177,7 +177,7 @@
     - { id: c, text: "AWS Glue DataBrew", explanation: "Incorrect. DataBrew is a visual data preparation tool." }
     - { id: d, text: "SageMaker Model Monitor", explanation: "Incorrect. Model Monitor detects drift in deployed models." }
   answer: [a]
-  explanation: "Exam guide v1.2 names Kiro and Amazon Quick as lifecycle tools. Kiro supports the build stage for developers with spec-driven, agentic coding; Amazon Quick supports business users who consume AI insights, dashboards and agents."
+  explanation: "Kiro and Amazon Quick serve different people in the AI lifecycle. Kiro supports the build stage for developers with spec-driven, agentic coding; Amazon Quick supports business users who consume AI insights, dashboards and agents."
   domain: D1
   taskStatement: "1.3"
   lessonRef: day-06#explanation

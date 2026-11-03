@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { estimateMinutes, isExamMetaStem, parseLesson, validateContent, type QuestionSet } from '../../src/lib/validate';
+import { estimateMinutes, hasExamFraming, isExamMetaStem, parseLesson, validateContent, type QuestionSet } from '../../src/lib/validate';
 import { course, examGuide } from '../../src/lib/data';
 
 const words = (n: number) => Array.from({ length: n }, (_, i) => `word${i}`).join(' ');
@@ -117,6 +117,16 @@ describe('content validator (T014)', () => {
     const set = qset('day-02', 20);
     set.questions[0].stem = 'Which description of the exam format is correct?';
     expect(run({ 2: lessonMdx(2) }, [set]).errors.join()).toMatch(/q-day-02-001: asks about the exam itself/);
+  });
+
+  it('F22 options and explanations explain the topic, not the exam', () => {
+    for (const t of ['AWS WAF filters HTTP requests and is out of scope for the exam.', 'The exam guide lists knowledge bases as an application.', 'Task statement 3.2 names four prompt risks.', 'The exam tests whether a rule needs ML.'])
+      expect(hasExamFraming(t), t).toBe(true);
+    for (const t of ['AWS WAF filters HTTP requests; it does not create private connectivity.', 'Few-shot examples should be balanced.', 'RAG works like an open-book exam: retrieve, augment, generate.', 'Scope 4 adds the fine-tuning data.'])
+      expect(hasExamFraming(t), t).toBe(false);
+    const set = qset('day-02', 20);
+    set.questions[0].options[1].explanation = 'Incorrect. GuardDuty is out of scope for this exam.';
+    expect(run({ 2: lessonMdx(2) }, [set]).errors.join()).toMatch(/q-day-02-001: option or explanation talks about the exam/);
   });
 
   it('F16 unresolvable lessonRef', () => {

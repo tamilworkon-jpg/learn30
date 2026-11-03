@@ -42,7 +42,7 @@ keyPoints:
 
 In traditional software, code and data are kept apart: a user types a name into a form, and the program treats it as data, never as a command. Large language models break that separation. Everything — the developer's system prompt, the user's message, a retrieved document, a web page an agent read — arrives as one stream of text, and the model decides what to treat as an instruction. An attacker who can get text in front of the model can try to give it orders.
 
-Yesterday you learned to write prompts that steer a model. Today you look at the same skill from the attacker's side. Task statement 3.2 names four prompt risks — **exposure, poisoning, hijacking and jailbreaking** — and task statement 5.1 adds **prompt injection**, **data leakage**, **output filtering**, **toxicity** and **audit logging**. Learn the definitions precisely; the exam often describes an attack and asks you to name it.
+Yesterday you learned to write prompts that steer a model. Today you look at the same skill from the attacker's side. There are four main prompt risks — **exposure, poisoning, hijacking and jailbreaking** — and AI security adds **prompt injection**, **data leakage**, **output filtering**, **toxicity** and **audit logging**. Learn the definitions precisely so you can name an attack from its description.
 
 ### Prompt injection
 
@@ -78,7 +78,7 @@ The difference to remember: **jailbreaking targets the model's safety alignment*
 
 ### Toxicity, bias and hallucination: harms without an attacker
 
-Not every risk needs a villain. Task statement 5.1 also lists **toxicity** — offensive, hateful or harassing output — and **hallucination**. A model can produce toxic text because toxic examples existed in its training data, or because an innocent prompt led it somewhere unexpected. It can confidently invent a policy, a statistic or a citation. These are not attacks, but the same defences apply: content filters on output, grounding checks against trusted sources, clear instructions to say "I don't know", and human review where stakes are high. On the exam, if a scenario mentions offensive output *without* any malicious user, think **toxicity → content filters**; if it mentions made-up facts in a RAG app, think **hallucination → contextual grounding check and source citations**.
+Not every risk needs a villain. Two more risks matter: **toxicity** — offensive, hateful or harassing output — and **hallucination**. A model can produce toxic text because toxic examples existed in its training data, or because an innocent prompt led it somewhere unexpected. It can confidently invent a policy, a statistic or a citation. These are not attacks, but the same defences apply: content filters on output, grounding checks against trusted sources, clear instructions to say "I don't know", and human review where stakes are high. If a scenario mentions offensive output *without* any malicious user, think **toxicity → content filters**; if it mentions made-up facts in a RAG app, think **hallucination → contextual grounding check and source citations**.
 
 ### Why system prompts alone cannot stop attacks
 

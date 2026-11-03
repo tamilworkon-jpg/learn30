@@ -51,7 +51,7 @@ AWS describes the life of a foundation model in seven stages. Think of it like b
 6. **Deployment.** Make the model available for inference — as a managed API (Amazon Bedrock) or on your own endpoints (Amazon SageMaker AI) — with monitoring, scaling, security and guardrails in place.
 7. **Feedback.** Collect signals from real use — thumbs up and down, corrections, escalation rates, failure cases — and feed them into the next round of data selection, fine-tuning or prompt changes. The lifecycle is a **loop**, not a line.
 
-**Who does which stages?** Model providers such as Amazon (Nova), Anthropic, Meta and Mistral AI perform data selection and pre-training. A typical company *consuming* models starts at **model selection**, skips pre-training, may **fine-tune** or (more often) use prompting and retrieval, then **evaluates**, **deploys** and gathers **feedback**. On the exam, "a company wants generative AI without the cost of training from scratch" points to choosing an existing FM, not pre-training.
+**Who does which stages?** Model providers such as Amazon (Nova), Anthropic, Meta and Mistral AI perform data selection and pre-training. A typical company *consuming* models starts at **model selection**, skips pre-training, may **fine-tune** or (more often) use prompting and retrieval, then **evaluates**, **deploys** and gathers **feedback**. In practice, "a company wants generative AI without the cost of training from scratch" points to choosing an existing FM, not pre-training.
 
 ### What generative AI is used for
 
@@ -71,7 +71,7 @@ Where is generative AI a *poor* fit? When you need an exact, deterministic answe
 
 ### Token-based pricing
 
-On Amazon Bedrock, the default way to pay for text models is **on-demand**: no commitment, pay for what you use, billed **per token**. Prices are quoted per 1,000 or per million tokens and differ by model. Four rules cover most exam questions:
+On Amazon Bedrock, the default way to pay for text models is **on-demand**: no commitment, pay for what you use, billed **per token**. Prices are quoted per 1,000 or per million tokens and differ by model. Four rules cover most pricing decisions:
 
 - **Input and output tokens are priced separately.** Input tokens are everything you send — system prompt, instructions, retrieved documents, conversation history, tool definitions and the user's question. Output tokens are what the model generates.
 - **Output tokens usually cost more than input tokens** — often several times more — because generation happens token by token.
@@ -192,7 +192,7 @@ An online travel company launched a trip-planning assistant on Amazon Bedrock. I
 
 Why did quality improve while cost fell? Because the original context was cluttered: old turns contradicted newer preferences ("I want beaches" in turn two, "actually, mountains" in turn fifteen), and a dozen loosely related chunks pushed the relevant facts into the middle of a long context. A smaller, cleaner context made the model's job easier. The team also closed the **feedback** loop: thumbs-down ratings were reviewed every week, which revealed that the assistant was weak on visa rules, so the visa documents were re-chunked and the system instructions updated — an example of the lifecycle's feedback stage driving improvements without touching the model itself.
 
-A second example: an insurance claims team uses generative AI to **summarise** long adjuster notes and **extract** key fields (policy number, incident date, damage type) into a form. They choose a small, fast model for extraction and a more capable one only for complex summaries, route the large backlog through batch inference overnight, and keep a human adjuster approving every summary before it reaches a customer. Choosing the right model and pricing option per task — not one model for everything — is a recurring theme on the exam.
+A second example: an insurance claims team uses generative AI to **summarise** long adjuster notes and **extract** key fields (policy number, incident date, damage type) into a form. They choose a small, fast model for extraction and a more capable one only for complex summaries, route the large backlog through batch inference overnight, and keep a human adjuster approving every summary before it reaches a customer. Choosing the right model and pricing option per task — not one model for everything — is a recurring theme in real projects.
 
 </Section>
 

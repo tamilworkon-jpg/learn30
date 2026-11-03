@@ -73,7 +73,7 @@
     - { id: c, text: "Use Amazon Comprehend to analyze the photos", explanation: "Incorrect. Amazon Comprehend extracts insights from text, not from images." }
     - { id: d, text: "Run an open-source vision model on Amazon EC2 GPU instances", explanation: "Incorrect. Self-managing models on infrastructure has the highest operational overhead of the options." }
   answer: [b]
-  explanation: "The exam rewards choosing the highest AWS layer that solves the problem. When a pre-trained AI service such as Amazon Rekognition already supports the task, there is no need to build or host a model yourself."
+  explanation: "Choose the highest AWS layer that solves the problem. When a pre-trained AI service such as Amazon Rekognition already supports the task, there is no need to build or host a model yourself."
   domain: D1
   taskStatement: "1.1"
   lessonRef: day-01#real-world
@@ -246,7 +246,7 @@
   stem: "Which statements about how AI, machine learning, deep learning and generative AI relate to each other are correct? (Select TWO.)"
   options:
     - { id: a, text: "Every deep learning model is a generative AI model.", explanation: "Incorrect. An image classifier is deep learning but only labels images; it does not generate content." }
-    - { id: b, text: "In the AI hierarchy used by the exam, generative AI is a subset of deep learning.", explanation: "Correct. AI ⊃ machine learning ⊃ deep learning ⊃ generative AI — today's generative models are deep neural networks, largely transformers." }
+    - { id: b, text: "In the AI hierarchy, generative AI is a subset of deep learning.", explanation: "Correct. AI ⊃ machine learning ⊃ deep learning ⊃ generative AI — today's generative models are deep neural networks, largely transformers." }
     - { id: c, text: "Every machine learning model is a neural network.", explanation: "Incorrect. A decision tree is machine learning but is not a neural network." }
     - { id: d, text: "A rules-based expert system is AI but is not machine learning.", explanation: "Correct. An expert system follows hand-written rules, so it is AI without learning from data." }
     - { id: e, text: "Agentic AI replaces foundation models with hand-written rules.", explanation: "Incorrect. Agentic AI uses a foundation model as its brain and adds planning, tool use and memory." }
@@ -326,7 +326,7 @@
     - { id: t4, text: "The input text, including instructions, context and examples, given to a generative model" }
     - { id: t5, text: "A model made of layers of connected units whose weights are adjusted during training" }
   answer: { a: t3, b: t1, c: t4, d: t2, e: t5 }
-  explanation: "Task statement 1.1 lists these terms by name. Overfitting and underfitting describe fit, a prompt is the input to a generative model, fairness is a responsible AI goal, and a neural network is the layered model behind deep learning."
+  explanation: "These are core AI vocabulary terms. Overfitting and underfitting describe fit, a prompt is the input to a generative model, fairness is a responsible AI goal, and a neural network is the layered model behind deep learning."
   domain: D1
   taskStatement: "1.1"
   lessonRef: day-01#explanation

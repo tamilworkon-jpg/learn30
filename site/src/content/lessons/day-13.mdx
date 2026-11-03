@@ -42,7 +42,7 @@ keyPoints:
 
 Think about how you pay for getting around a city. A **taxi** charges for each trip: perfect when you travel occasionally, expensive if you ride all day. A **bus pass** bought in advance gives a lower price if you know you will travel a lot. A **hired car with a driver** is reserved for you all day: you always have a ride immediately, but you pay even while it waits outside. And if you can wait, a **night coach** that leaves when it is full is the cheapest of all.
 
-Amazon Bedrock pricing works in much the same way. Task statement 2.3 asks you to describe the **cost trade-offs** of AWS GenAI services — token pricing, provisioned throughput, custom models and Regional coverage — and task statement 3.1 includes **prompt caching** and customisation costs as part of choosing and designing an FM application. Exam questions describe a workload and ask for the most cost-effective option.
+Amazon Bedrock pricing works in much the same way. Today covers the **cost trade-offs** of AWS GenAI services — token pricing, provisioned throughput, custom models and Regional coverage — and **prompt caching** and customisation costs are part of choosing and designing an FM application. Real workloads call for the most cost-effective option.
 
 ### What drives the cost of a GenAI request
 
@@ -69,7 +69,7 @@ So cost per request ≈ (input tokens × input price) + (output tokens × output
 
 The trade-off is the hired car: great when it is busy all day, wasteful when it sits idle.
 
-**Service tiers.** For supported models Bedrock offers four service tiers: **Standard** (the default), **Priority** (faster responses for latency-critical requests at a premium price), **Flex** (a discount for work that can tolerate slower processing) and **Reserved** (tokens-per-minute capacity reserved for 1 or 3 months). The exam focuses on on-demand, batch and provisioned throughput.
+**Service tiers.** For supported models Bedrock offers four service tiers: **Standard** (the default), **Priority** (faster responses for latency-critical requests at a premium price), **Flex** (a discount for work that can tolerate slower processing) and **Reserved** (tokens-per-minute capacity reserved for 1 or 3 months). The most important options are on-demand, batch and provisioned throughput.
 
 | Option | How you pay | Best for | Watch out for |
 |---|---|---|---|
@@ -87,7 +87,7 @@ Customising a model (Day 19) adds three kinds of cost on top of normal inference
 
 Models imported with **Custom Model Import** are billed for the compute time that copies of the model are active, and models deployed from SageMaker JumpStart or on SageMaker AI endpoints are billed **per instance-hour** while the endpoint runs (unless you use serverless or asynchronous options that scale to zero, Day 2).
 
-This is why the exam treats customisation as a ladder of increasing cost. From cheapest to most expensive: **prompt engineering and in-context learning** (only extra input tokens) → **RAG** (vector store and retrieval, plus larger prompts) → **fine-tuning** (training, storage, dedicated hosting) → **continued pre-training** (much more data and compute) → **pre-training a model from scratch** (by far the most expensive). Climb the ladder only when the step below does not meet the requirement.
+This is why customisation is best seen as a ladder of increasing cost. From cheapest to most expensive: **prompt engineering and in-context learning** (only extra input tokens) → **RAG** (vector store and retrieval, plus larger prompts) → **fine-tuning** (training, storage, dedicated hosting) → **continued pre-training** (much more data and compute) → **pre-training a model from scratch** (by far the most expensive). Climb the ladder only when the step below does not meet the requirement.
 
 **Distillation** is the exception that *saves* money at inference time: a large *teacher* model generates answers that train a smaller *student* model, which then serves requests faster and at a fraction of the per-token price, with accuracy close to the teacher for that specific use case. You pay for the distillation job once and save on every request afterwards.
 
@@ -104,7 +104,7 @@ Good candidates for prompt caching:
 - Agents that send the same tool definitions on every step;
 - Few-shot prompts with many examples.
 
-Prompt caching is part of **FM selection** in task statement 3.1: whether a model supports caching can change its effective price a lot for these workloads.
+Prompt caching also matters for **FM selection**: whether a model supports caching can change its effective price a lot for these workloads.
 
 ### More levers to reduce cost
 
@@ -116,7 +116,7 @@ Prompt caching is part of **FM selection** in task statement 3.1: whether a mode
 
 ### Bedrock or self-hosting: a different cost shape
 
-Day 12 contrasted Amazon Bedrock with SageMaker JumpStart. The cost shapes are different, and the exam may ask you to reason about them:
+Day 12 contrasted Amazon Bedrock with SageMaker JumpStart. The cost shapes are different:
 
 - **Bedrock on-demand** has **variable cost**: zero when nobody uses the application, rising in proportion to tokens. There is nothing to patch or scale.
 - **A model hosted on a SageMaker AI real-time endpoint** (or on Amazon EC2, ECS or EKS) has a mostly **fixed cost**: you pay for GPU instances per hour whether they serve one request or a million, plus the people needed to operate them. At very high, steady utilisation, self-hosting a smaller open model can work out cheaper per token; at low or spiky utilisation it is usually more expensive.
@@ -191,7 +191,7 @@ To make these tools useful for GenAI, **tag** resources and usage by team, appli
 | Find which application caused last month's cost increase | AWS Cost Explorer with tags | Historical analysis grouped by tag or service |
 | EU customer data must be processed in the EU, with burst capacity | EU geographic cross-Region inference profile | Throughput across EU Regions while staying in the geography |
 
-**Worked example — on-demand or provisioned?** Suppose (illustrative numbers) one model unit costs \$40 per hour, or about \$29,000 per month if kept all month. Your application's on-demand token bill would be \$6,000 per month. Provisioned throughput would cost almost five times more — on-demand wins. If traffic grows until the on-demand bill exceeds the provisioned cost, or you start hitting quotas, provisioned throughput becomes attractive. Real prices vary by model and Region; the reasoning is what the exam tests.
+**Worked example — on-demand or provisioned?** Suppose (illustrative numbers) one model unit costs \$40 per hour, or about \$29,000 per month if kept all month. Your application's on-demand token bill would be \$6,000 per month. Provisioned throughput would cost almost five times more — on-demand wins. If traffic grows until the on-demand bill exceeds the provisioned cost, or you start hitting quotas, provisioned throughput becomes attractive. Real prices vary by model and Region; the reasoning is what matters.
 
 **Worked example — the value of prompt caching.** A support bot sends a 4,000-token system prompt plus about 200 tokens of question with every message, 2 million messages a month. That is 8.4 billion input tokens. If 4,000 of every 4,200 input tokens are read from the cache at a 90% discount, the billable-equivalent input falls to roughly 0.8 + 0.4 = 1.2 billion tokens — about one-seventh of the original input cost — and responses start faster.
 

@@ -40,7 +40,7 @@ keyPoints:
 
 Imagine your company hires a new colleague who has read most of the public internet. They write fluently in dozens of languages, draft a marketing email in seconds, summarise a 60-page contract over coffee and never get tired. But they have two quirks: when they do not know something they sometimes *make it up* with total confidence, and if you ask the same question twice you may get two differently worded answers. You cannot look inside their head to see *why* they said what they said.
 
-That colleague is a foundation model (FM). Task statement 2.2 asks you to understand both sides — the **capabilities** that make generative AI valuable and the **limitations** that decide where and how it can be used safely — then to pick a suitable model and to measure **business value**. Exam questions in this area are usually scenarios: "a company wants…, which is a limitation they must consider?" or "which metric shows the chatbot is paying off?"
+That colleague is a foundation model (FM). You need to understand both sides — the **capabilities** that make generative AI valuable and the **limitations** that decide where and how it can be used safely — then to pick a suitable model and to measure **business value**. Exam questions in this area are usually scenarios: "a company wants…, which is a limitation they must consider?" or "which metric shows the chatbot is paying off?"
 
 ### Advantages of generative AI
 
@@ -86,7 +86,7 @@ You rarely solve these limitations by "picking a better model" alone. You design
 
 ### When generative AI is the wrong tool
 
-Task statement 1.2 already taught that AI is not appropriate when a **deterministic outcome** is required or when costs outweigh benefits. For GenAI this is even sharper:
+Day 5 already taught that AI is not appropriate when a **deterministic outcome** is required or when costs outweigh benefits. For GenAI this is even sharper:
 
 - **Exact calculations and rules** — tax computation, interest calculation, inventory counts. Use ordinary code; a spreadsheet never hallucinates.
 - **Decisions that must be fully explainable** — some regulators require a clear reason for declining a loan. A transparent model or rule set may be mandatory.
@@ -98,7 +98,7 @@ A useful rule: **use GenAI where variety, language and creativity are valuable a
 
 ### Model selection factors
 
-Amazon Bedrock offers models from many providers, plus thousands more through SageMaker JumpStart (Day 12). How do you choose? The exam lists *model selection factors*. Think of them as a checklist:
+Amazon Bedrock offers models from many providers, plus thousands more through SageMaker JumpStart (Day 12). How do you choose? Use these *model selection factors* as a checklist:
 
 1. **Modality and model type** — Does the task need text in and text out, images (understanding or generation), audio, video, or embeddings for search? A text-only model cannot read a scanned invoice; an embedding model cannot write an email.
 2. **Capability and quality for *your* task** — reasoning, coding, summarisation, multilingual ability. Benchmarks help, but evaluating on your own sample of real tasks is better (Day 20).
@@ -115,7 +115,7 @@ The best answer in a scenario is almost never "the biggest model". It is the **s
 
 ### Business value and metrics
 
-Model metrics (accuracy, ROUGE, latency) tell you whether the model works. **Business metrics** tell you whether the project is worth the money. Leaders fund projects that move business metrics. The exam guide names several; learn what each measures:
+Model metrics (accuracy, ROUGE, latency) tell you whether the model works. **Business metrics** tell you whether the project is worth the money. Leaders fund projects that move business metrics. Common ones include the following; learn what each measures:
 
 - **Return on investment (ROI)** = (benefit − cost) ÷ cost. If an assistant saves \$500,000 a year and costs \$200,000 to build and run, ROI = 300,000 ÷ 200,000 = 150%.
 - **Conversion rate** — the share of visitors or leads who take a desired action (buy, sign up). A GenAI shopping assistant that answers questions might lift conversion from 2.0% to 2.4%.
@@ -217,7 +217,7 @@ A car insurer built a GenAI assistant that reads accident descriptions, photos a
 
 The business case was tracked from day one. Before the pilot the team measured a **baseline**: average handle time per claim, claims closed per adjuster per week and customer satisfaction. After three months the assistant had raised claims closed per adjuster by 30% (**efficiency**), lifted CSAT because customers heard back sooner, and cost about \$0.40 per claim in model usage (**cost per interaction**). Against the build and run cost, the projected **ROI** was well over 100% in the first year. Just as important, the team tracked the share of drafts accepted without major edits; when it dipped after a policy change, they updated the knowledge base rather than retraining the model.
 
-**A second story: a software company's sales emails.** A SaaS company used an FM to personalise outreach emails using each prospect's industry and recent news. The team A/B tested AI-personalised emails against the old templates. Reply rate rose from 3% to 5% and the **conversion rate** from trial to paid customer rose modestly, while the sales team spent half as long writing emails. They also learned a limitation: occasionally the model "remembered" outdated facts about a prospect's company because of its **knowledge cut-off**. The fix was to feed fresh company data into the prompt and have a salesperson approve each email before sending. This pattern — measurable business metric, known limitation, practical mitigation — is the shape of many exam scenarios.
+**A second story: a software company's sales emails.** A SaaS company used an FM to personalise outreach emails using each prospect's industry and recent news. The team A/B tested AI-personalised emails against the old templates. Reply rate rose from 3% to 5% and the **conversion rate** from trial to paid customer rose modestly, while the sales team spent half as long writing emails. They also learned a limitation: occasionally the model "remembered" outdated facts about a prospect's company because of its **knowledge cut-off**. The fix was to feed fresh company data into the prompt and have a salesperson approve each email before sending. This pattern — measurable business metric, known limitation, practical mitigation — is the shape of many real projects.
 
 </Section>
 

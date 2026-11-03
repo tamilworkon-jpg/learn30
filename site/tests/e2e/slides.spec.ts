@@ -407,4 +407,23 @@ test.describe('slide lessons (T182) @visual', () => {
       expect(await art.evaluate((a) => a.scrollTop)).toBeGreaterThan(before - 5);
     });
   }
+
+  // Learner bug 2026-11-03: the matching dropdown closed as soon as it opened. The quiz slide re-paged
+  // itself ~5×/s (paging toggled classes inside the quiz island, whose watcher queued another re-page).
+  test('SL11 an idle quiz slide does not keep re-paging (dropdowns stay open)', async ({ page }) => {
+    test.slow();
+    await page.setViewportSize({ width: 1366, height: 768 });
+    await page.goto('/day/02#quiz');
+    const quiz = page.locator('[data-quiz="day-02"]');
+    await expect(quiz).toHaveAttribute('data-ready', 'true');
+    await page.waitForTimeout(1500); // let start-up paging (fonts, images) settle
+    await page.evaluate(() => {
+      (window as unknown as { __pages: number }).__pages = 0;
+      document.addEventListener('slidechange', () => (window as unknown as { __pages: number }).__pages++);
+    });
+    await page.waitForTimeout(1000);
+    await quiz.locator('select, label.opt').first().focus();
+    await page.waitForTimeout(800);
+    expect(await page.evaluate(() => (window as unknown as { __pages: number }).__pages)).toBe(0);
+  });
 });

@@ -12,6 +12,28 @@ export function isAnswered(q: Question, a: Answer | undefined): boolean {
   return Array.isArray(a) && a.length > 0;
 }
 
+/** What a question asks for, shown as a pill above its options (learner feedback 2026-11-03). */
+export function requirement(q: Question): { kind: Question['type']; need: number; label: string } {
+  if (q.type === 'single') return { kind: 'single', need: 1, label: 'Single answer · choose 1' };
+  if (q.type === 'multi') {
+    const need = (q.answer as string[]).length;
+    return { kind: 'multi', need, label: `Multiple answers · choose ${need}` };
+  }
+  if (q.type === 'ordering') return { kind: 'ordering', need: q.options.length, label: 'Put in order' };
+  return { kind: 'matching', need: q.options.length, label: 'Match each item' };
+}
+
+/**
+ * Whether the per-question "Submit answer" may be pressed: single → one choice; multi → exactly the
+ * required number; ordering → always (the shown order is an answer); matching → every item matched.
+ */
+export function canSubmitAnswer(q: Question, a: Answer | undefined): boolean {
+  if (q.type === 'ordering') return true;
+  if (q.type === 'matching') return isAnswered(q, a);
+  const n = Array.isArray(a) ? a.length : 0;
+  return n === requirement(q).need;
+}
+
 export const unanswered = (questions: Question[], answers: Record<string, Answer>) => questions.filter((q) => !isAnswered(q, answers[q.id]));
 
 // Small deterministic PRNG seeded from the question id, so SSR and client agree on the order.

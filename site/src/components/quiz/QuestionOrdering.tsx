@@ -2,14 +2,16 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { displayOrder } from '../../lib/quiz-state';
 import type { Question } from '../../lib/types';
+import Requirement from './Requirement';
 
 interface Props {
   q: Question;
   value?: string[];
   onChange: (v: string[]) => void;
+  locked?: boolean;
 }
 
-export default function QuestionOrdering({ q, value, onChange }: Props) {
+export default function QuestionOrdering({ q, value, onChange, locked = false }: Props) {
   const order = value && value.length === q.options.length ? value : displayOrder(q);
   const text = (id: string) => q.options.find((o) => o.id === id)?.text ?? id;
   const [announce, setAnnounce] = useState('');
@@ -41,7 +43,8 @@ export default function QuestionOrdering({ q, value, onChange }: Props) {
   return (
     <fieldset class="q-fieldset">
       <legend class="q-stem" tabIndex={-1}>{q.stem}</legend>
-      <p class="q-hint">Put the items in order using the arrow buttons (top = first).{value ? '' : ' Move at least one item to record your answer.'}</p>
+      <Requirement q={q} />
+      <p class="q-hint">Put the items in order using the arrow buttons (top = first).{value ? '' : ' The order shown is recorded when you submit or move an item.'}</p>
       <ol class="order-list" ref={list}>
         {order.map((id, i) => (
           <li key={id} class="order-item" data-item={id}>
@@ -50,10 +53,10 @@ export default function QuestionOrdering({ q, value, onChange }: Props) {
             </span>
             <span class="flex-1">{text(id)}</span>
             <span class="order-btns">
-              <button type="button" class="icon-btn" data-dir="up" aria-label={`Move "${text(id)}" up`} disabled={i === 0} onClick={() => move(i, -1)}>
+              <button type="button" class="icon-btn" data-dir="up" aria-label={`Move "${text(id)}" up`} disabled={locked || i === 0} onClick={() => move(i, -1)}>
                 ↑
               </button>
-              <button type="button" class="icon-btn" data-dir="down" aria-label={`Move "${text(id)}" down`} disabled={i === order.length - 1} onClick={() => move(i, 1)}>
+              <button type="button" class="icon-btn" data-dir="down" aria-label={`Move "${text(id)}" down`} disabled={locked || i === order.length - 1} onClick={() => move(i, 1)}>
                 ↓
               </button>
             </span>

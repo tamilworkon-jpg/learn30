@@ -116,6 +116,11 @@ const setRule = (set: string): [number, number] | null => {
 export const EXAM_META_STEM =
   /\b(exam format|format of the exam|AIF-C01|exam guide|(passing|pass) (mark|score)|scaled score|unscored|retakes?|study (time|plan)|an exam question|on the exam|for the exam|preparing for (the )?(exam|certification)|certification exam|questions? (are|is) scored|domain weight(ing)?s?|weighted domains?)\b/i;
 export const isExamMetaStem = (stem: string) => EXAM_META_STEM.test(stem);
+/** Options and explanations must explain the topic, not the exam: no "out of scope for the exam",
+ *  "the exam guide lists…", "on the exam" or task-statement references (learner feedback 2026-11-03). */
+export const EXAM_FRAMING =
+  /\b(out of scope (for|in) (the|this) (v1\.2 )?(exam|guide)|exam guide|AIF-C01|guide v1\.2|v1\.2 (exam|guide|objective)|on the exam|for the exam|in the exam|the exam (tests|asks|expects|rewards|uses|loves|likes|wants|favou?rs)|exam trap|exam clues?|[Tt]ask statement \d\.\d)\b/i;
+export const hasExamFraming = (text: string) => EXAM_FRAMING.test(text);
 
 export function validateContent(input: ValidateInput): ValidateResult {
   const { guide, course, final } = input;
@@ -218,6 +223,8 @@ export function validateContent(input: ValidateInput): ValidateResult {
       const prevSet = stems.get(stemKey);
       if (prevSet && prevSet !== set) errors.push(`${q.id}: stem reused from ${prevSet}`);
       if (isExamMetaStem(q.stem)) errors.push(`${q.id}: asks about the exam itself (format, scoring, guide, study planning) — questions must test exam content`);
+      for (const t of [q.explanation, ...q.options.flatMap((o) => [o.text, o.explanation])])
+        if (t && hasExamFraming(t)) errors.push(`${q.id}: option or explanation talks about the exam instead of the topic — "${t.slice(0, 60)}…"`);
       stems.set(stemKey, set);
       const optionIds = new Set(q.options.map((o) => o.id));
       const keys = Array.isArray(q.answer) ? q.answer : Object.keys(q.answer);

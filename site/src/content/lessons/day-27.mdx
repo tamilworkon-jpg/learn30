@@ -42,7 +42,7 @@ keyPoints:
 
 The last two days were about *security*: stopping bad things from happening. **Governance** is about *deciding the rules and making sure they are followed* — who may build which AI systems, with which data, reviewed how often. **Compliance** is about *proving* that you follow the rules — your own policies and external ones such as data protection laws, industry standards and AI regulations.
 
-A good analogy is driving. Security is the car's brakes, locks and airbags. Governance is the highway code and the decision about who may drive which vehicle. Compliance is the MOT certificate, driving licence and insurance documents you can show when a police officer asks. Task statement 5.2 asks you to recognise the AWS services and the processes that make all three possible. The exam rarely asks for deep configuration; it asks which service fits which need.
+A good analogy is driving. Security is the car's brakes, locks and airbags. Governance is the highway code and the decision about who may drive which vehicle. Compliance is the MOT certificate, driving licence and insurance documents you can show when a police officer asks. Today covers the AWS services and the processes that make all three possible. What matters is not deep configuration but which service fits which need.
 
 ### AWS Config: is everything configured the way it should be?
 
@@ -54,11 +54,11 @@ A good analogy is driving. Security is the car's brakes, locks and airbags. Gove
 - SageMaker AI notebook instances must not have direct internet access.
 - SageMaker AI endpoint configurations must use a KMS key.
 
-Groups of rules can be deployed together as **conformance packs**, and non-compliant resources can be fixed automatically with remediation actions. Exam clue: *"continuously evaluate whether resources comply"*, *"track configuration changes"*, *"configuration history"* → **AWS Config**.
+Groups of rules can be deployed together as **conformance packs**, and non-compliant resources can be fixed automatically with remediation actions. Requirement clue: *"continuously evaluate whether resources comply"*, *"track configuration changes"*, *"configuration history"* → **AWS Config**.
 
 ### Amazon Inspector: are there known vulnerabilities?
 
-**Amazon Inspector** is an automated **vulnerability management** service. It continuously scans **Amazon EC2 instances, container images and AWS Lambda functions** for known software vulnerabilities (CVEs) and unintended network exposure, and ranks findings by severity. For AI teams this matters when you run your own model servers on EC2, package inference code in containers for Amazon ECS or Amazon EKS, or use Lambda functions as agent tools. An unpatched library in a model-serving container is a classic way in for attackers. Exam clue: *"scan for software vulnerabilities"*, *"CVEs"*, *"unpatched packages"* → **Amazon Inspector**.
+**Amazon Inspector** is an automated **vulnerability management** service. It continuously scans **Amazon EC2 instances, container images and AWS Lambda functions** for known software vulnerabilities (CVEs) and unintended network exposure, and ranks findings by severity. For AI teams this matters when you run your own model servers on EC2, package inference code in containers for Amazon ECS or Amazon EKS, or use Lambda functions as agent tools. An unpatched library in a model-serving container is a classic way in for attackers. Requirement clue: *"scan for software vulnerabilities"*, *"CVEs"*, *"unpatched packages"* → **Amazon Inspector**.
 
 Inspector does *not* check model quality or bias, and it does not scan prompts. It checks software.
 
@@ -66,7 +66,7 @@ Inspector does *not* check model quality or bias, and it does not scan prompts. 
 
 Under the shared responsibility model, auditors want evidence that AWS has done *its* part. **AWS Artifact** is a self-service portal in the console where you download **AWS compliance reports** — for example SOC reports, ISO certifications and PCI DSS attestations produced by independent auditors — and review and accept **agreements** with AWS, such as a Business Associate Addendum for health data. AWS has also obtained certification under **ISO/IEC 42001**, the international standard for AI management systems, for a number of its AI services.
 
-The key word is *AWS's* evidence. Artifact does not assess *your* resources; it provides the documents that show the underlying AWS services meet a standard, which you combine with your own evidence. Exam clue: *"download SOC or ISO reports"*, *"evidence that AWS services are compliant"*, *"accept an agreement"* → **AWS Artifact**.
+The key word is *AWS's* evidence. Artifact does not assess *your* resources; it provides the documents that show the underlying AWS services meet a standard, which you combine with your own evidence. Requirement clue: *"download SOC or ISO reports"*, *"evidence that AWS services are compliant"*, *"accept an agreement"* → **AWS Artifact**.
 
 ### AWS CloudTrail: who did what, and when?
 
@@ -80,7 +80,7 @@ The easy way to keep CloudTrail and CloudWatch apart: **CloudTrail = audit of ac
 
 ### AWS Trusted Advisor: are we following best practice?
 
-**AWS Trusted Advisor** inspects your account and recommends improvements in categories including **cost optimisation, performance, security, fault tolerance, service quotas** and operational excellence. Examples: idle or under-used instances (such as a forgotten GPU instance), S3 buckets with open access, IAM access keys that have not been rotated, the root user without multi-factor authentication, or services close to a quota limit. All support plans get a core set of checks; the full set comes with Business Support+ and higher plans. Exam clue: *"recommendations to reduce cost and improve security across the account"* → **Trusted Advisor**.
+**AWS Trusted Advisor** inspects your account and recommends improvements in categories including **cost optimisation, performance, security, fault tolerance, service quotas** and operational excellence. Examples: idle or under-used instances (such as a forgotten GPU instance), S3 buckets with open access, IAM access keys that have not been rotated, the root user without multi-factor authentication, or services close to a quota limit. All support plans get a core set of checks; the full set comes with Business Support+ and higher plans. Requirement clue: *"recommendations to reduce cost and improve security across the account"* → **Trusted Advisor**.
 
 ### AWS Well-Architected Tool: is this workload designed well?
 
@@ -214,7 +214,7 @@ The auditor's only significant finding was about **retention**: invocation logs 
 <Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
 
 <Callout type="examTrap" title="Out-of-scope governance services">
-AWS Security Hub, AWS Control Tower, AWS Backup and Amazon GuardDuty are **out of scope** in the AIF-C01 v1.2 guide, and AWS Audit Manager is not listed. They are real services, but when they appear as options they are usually distractors. For the exam, reach for **Config** (configuration compliance), **Inspector** (vulnerabilities), **Artifact** (AWS compliance reports), **CloudTrail** (API audit), **CloudWatch** (monitoring), **Trusted Advisor** (best-practice checks) and the **Well-Architected Tool** (workload review).
+AWS Security Hub (aggregates security findings), AWS Control Tower (multi-account setup), AWS Backup (scheduled copies), Amazon GuardDuty (threat detection) and AWS Audit Manager (audit evidence collection) are real services with narrower jobs. For AI governance questions, reach for **Config** (configuration compliance), **Inspector** (vulnerabilities), **Artifact** (AWS compliance reports), **CloudTrail** (API audit), **CloudWatch** (monitoring), **Trusted Advisor** (best-practice checks) and the **Well-Architected Tool** (workload review).
 </Callout>
 
 - "Track configuration changes", "evaluate compliance with rules" → **AWS Config**.

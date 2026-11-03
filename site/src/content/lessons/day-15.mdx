@@ -40,13 +40,13 @@ keyPoints:
 
 ### Module 3 begins: from "what is GenAI" to "how do I build with it"
 
-Module 2 explained what foundation models (FMs) are and where they fit in a business. Domain 3 — the heaviest domain on the exam at 28% — asks a builder's questions: *Which model should I use? How do I steer its answers? When do I need to customise it, and how much will that cost?* Today answers all three. The rest of the module goes deeper into prompts (Days 16–17), RAG (Day 18), training (Day 19) and evaluation (Day 20).
+Module 2 explained what foundation models (FMs) are and where they fit in a business. Now come a builder's questions: *Which model should I use? How do I steer its answers? When do I need to customise it, and how much will that cost?* Today answers all three. The rest of the module goes deeper into prompts (Days 16–17), RAG (Day 18), training (Day 19) and evaluation (Day 20).
 
 A useful analogy: choosing an FM is like hiring for a job. You do not hire the most expensive senior consultant to answer the phone, and you do not ask a junior assistant to write the legal strategy. You match skills, speed, languages and salary to the role — then you give clear instructions, and only invest in formal training when instructions are not enough.
 
 ### Selection criteria for a foundation model
 
-Amazon Bedrock offers models from Amazon (the **Amazon Nova** family and Amazon Titan embeddings) and from providers such as Anthropic, Meta, Mistral AI, Cohere, AI21 Labs, Stability AI and others, all through one API. That choice is powerful but means you must decide. The exam expects you to weigh these criteria:
+Amazon Bedrock offers models from Amazon (the **Amazon Nova** family and Amazon Titan embeddings) and from providers such as Anthropic, Meta, Mistral AI, Cohere, AI21 Labs, Stability AI and others, all through one API. That choice is powerful but means you must decide. Weigh these criteria:
 
 | Criterion | Question to ask | Example |
 |---|---|---|
@@ -127,7 +127,7 @@ When a general model is not good enough out of the box, you have a ladder of opt
 3. **Fine-tuning** — continue training a pre-trained model on a smaller *labelled* dataset (prompt–response pairs) so it learns a style, format or specialised task. Changes the model weights and produces a custom model (Day 19).
 4. **Distillation** — a large *teacher* model generates responses that are used to train a smaller *student* model. The student becomes nearly as good as the teacher on your specific task while being faster and cheaper to run. Amazon Bedrock Model Distillation automates this.
 5. **Continued pre-training** — keep training on large amounts of *unlabelled* domain text (for example medical journals) so the model absorbs domain vocabulary and knowledge.
-6. **Pre-training from scratch** — build your own foundation model on massive data with huge compute. Months of work and very high cost; almost never the right exam answer for a business scenario.
+6. **Pre-training from scratch** — build your own foundation model on massive data with huge compute. Months of work and very high cost; almost never the right choice for a business scenario.
 
 ### Cost trade-offs at a glance
 
@@ -140,7 +140,7 @@ When a general model is not good enough out of the box, you have a ladder of opt
 | Continued pre-training | Yes | Large unlabelled domain corpus | High | Custom model hosting | No |
 | Pre-training | Yes (new model) | Massive corpus | Very high | Your own hosting | No |
 
-A detail the exam likes: in Amazon Bedrock, a fine-tuned, distilled or continued-pre-trained model generally needs **Provisioned Throughput** (or on-demand inference for custom models where supported) before you can use it. That is an ongoing cost to include in the comparison — not just the training job.
+An important detail: in Amazon Bedrock, a fine-tuned, distilled or continued-pre-trained model generally needs **Provisioned Throughput** (or on-demand inference for custom models where supported) before you can use it. That is an ongoing cost to include in the comparison — not just the training job.
 
 ### Choosing on the ladder
 

@@ -46,7 +46,7 @@ A language model does not see letters or whole words. It sees **tokens** — sma
 
 A useful rule of thumb for English: **one token is about four characters, or roughly three-quarters of a word**, so 1,000 tokens is around 750 words. Other languages, source code and unusual text often use more tokens per word. Every model family has its own tokenizer, so the same sentence can be a different number of tokens on different models.
 
-Why does this matter to you? Three reasons that appear on the exam:
+Why does this matter to you? Three practical reasons:
 
 - **Context window.** Every model has a maximum number of tokens it can consider at once — the prompt *plus* the response. This limit is the *context window*. If your instructions, a long document and the conversation history together exceed it, something must be cut.
 - **Pricing.** Amazon Bedrock and most other providers charge on-demand usage **per token**, with input tokens and output tokens priced separately. More tokens means more cost (Day 9 goes deeper).
@@ -135,7 +135,7 @@ How does a model create a brand-new image? Most modern image generators are **di
 
 Think of a sculptor who starts with a rough block of marble and removes a little at a time until a statue appears — except the "block" is static and the "chisel" is a learned denoiser guided by your words. Stability AI's Stable Diffusion models, available on Amazon Bedrock, are well-known diffusion models. Diffusion is also used for video and audio generation.
 
-Two older generative families you may see named: **GANs** (generative adversarial networks), in which a generator and a discriminator compete, and **VAEs** (variational autoencoders), which learn a compressed representation and decode new samples from it. For the exam, the key association is: **text generation → transformer LLMs; image generation from noise → diffusion models.**
+Two older generative families you may see named: **GANs** (generative adversarial networks), in which a generator and a discriminator compete, and **VAEs** (variational autoencoders), which learn a compressed representation and decode new samples from it. The key association is: **text generation → transformer LLMs; image generation from noise → diffusion models.**
 
 </Section>
 

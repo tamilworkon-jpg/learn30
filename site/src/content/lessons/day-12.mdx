@@ -42,14 +42,14 @@ keyPoints:
 
 ### Think of it as a building with floors
 
-AWS offers a lot of GenAI services with similar-sounding names, and the exam loves to ask "which service should the company use?". The easiest way to keep them apart is to picture a building with three floors, plus the agent tooling that runs between them:
+AWS offers a lot of GenAI services with similar-sounding names, and the real question is always "which service should the company use?". The easiest way to keep them apart is to picture a building with three floors, plus the agent tooling that runs between them:
 
 - **Ground floor — infrastructure and model building.** Compute (GPU instances, and AWS-designed AI chips such as Trainium for training and Inferentia for inference) and **Amazon SageMaker AI**, where data scientists build, train, tune and host their own models. **SageMaker JumpStart** lives here too: a catalogue of pre-trained models you deploy into your own account.
 - **Middle floor — foundation models as a service.** **Amazon Bedrock** gives you ready-to-use foundation models (including Amazon's own **Amazon Nova** family) through one API, with no servers to manage, plus building blocks such as Knowledge Bases, Guardrails and Agents.
 - **Agent tooling.** **Strands Agents** is an open-source SDK for *writing* agents in code; **Amazon Bedrock AgentCore** provides the services to *run and operate* agents securely at scale.
 - **Top floor — ready-made applications.** You use them rather than build them: **Amazon Quick** for business users, **Kiro** for software developers and **AWS Transform** for migrating and modernising applications.
 
-The higher the floor, the less you build and manage yourself — and the less low-level control you have. Exam questions usually contain a clue about *who* the user is (business analyst, developer, data scientist) and *how much control* is needed (none, some, full).
+The higher the floor, the less you build and manage yourself — and the less low-level control you have. A scenario usually contains a clue about *who* the user is (business analyst, developer, data scientist) and *how much control* is needed (none, some, full).
 
 ### Amazon Bedrock: foundation models as a service
 
@@ -69,7 +69,7 @@ Bedrock also includes the building blocks you need around a model — each one i
 | **Prompt management and flows** | Save, version and test prompts; chain prompts, models and tools into workflows | Day 16 |
 | **Custom Model Import and Marketplace** | Bring supported open-weight models you have customised elsewhere; discover and deploy additional specialised models | Day 15 |
 
-A key exam fact: **Bedrock does not use your prompts and outputs to train the base models, and does not share them with model providers.** Your data is encrypted in transit and at rest, you can reach Bedrock privately from your VPC through AWS PrivateLink, and access is controlled with IAM. When you customise a model, Bedrock makes a *private copy* that only your account can use.
+A key fact: **Bedrock does not use your prompts and outputs to train the base models, and does not share them with model providers.** Your data is encrypted in transit and at rest, you can reach Bedrock privately from your VPC through AWS PrivateLink, and access is controlled with IAM. When you customise a model, Bedrock makes a *private copy* that only your account can use.
 
 ### Amazon Nova: Amazon's own foundation models
 
@@ -80,9 +80,9 @@ A key exam fact: **Bedrock does not use your prompts and outputs to train the ba
 - **Agents that use a browser** — **Amazon Nova Act** is an AWS service for building and running fleets of agents that perform actions in web browsers and user interfaces, such as filling forms.
 - **Embeddings** — **Nova Multimodal Embeddings** turns text, images, video and audio into vectors in one shared space for search and RAG.
 
-What about images and video? The creative models **Nova Canvas** (images) and **Nova Reel** (video) were **retired from Amazon Bedrock in September 2026**, as was the first **Nova Sonic** — older exam questions may still name them. To generate images on Bedrock today, use another provider's image model in the catalogue, such as a **Stability AI** model.
+What about images and video? The creative models **Nova Canvas** (images) and **Nova Reel** (video) were **retired from Amazon Bedrock in September 2026**, as was the first **Nova Sonic** — older materials may still name them. To generate images on Bedrock today, use another provider's image model in the catalogue, such as a **Stability AI** model.
 
-Exam angle: Nova models are positioned as **cost-effective and fast**, with a choice of sizes. "Lowest-cost, lowest-latency text model for simple tasks" points to a small Nova model such as Micro; "real-time voice conversation" points to Nova 2 Sonic; "generate marketing images" points to an image-generation model in Bedrock such as a Stability AI model.
+Positioning: Nova models are positioned as **cost-effective and fast**, with a choice of sizes. "Lowest-cost, lowest-latency text model for simple tasks" points to a small Nova model such as Micro; "real-time voice conversation" points to Nova 2 Sonic; "generate marketing images" points to an image-generation model in Bedrock such as a Stability AI model.
 
 ### Amazon SageMaker AI and SageMaker JumpStart
 
@@ -94,7 +94,7 @@ Exam angle: Nova models are positioned as **cost-effective and fast**, with a ch
 2. **Fine-tune** it with your own data.
 3. **Evaluate** it before putting it into production.
 
-**Bedrock or JumpStart?** Both give you pre-trained foundation models, so the exam often contrasts them:
+**Bedrock or JumpStart?** Both give you pre-trained foundation models, so compare them carefully:
 
 | | Amazon Bedrock | SageMaker JumpStart |
 |---|---|---|
@@ -122,7 +122,7 @@ A prototype agent on a laptop is easy. Running thousands of agent sessions safel
 - **AgentCore Observability** — traces and metrics for every step an agent takes, viewable in Amazon CloudWatch.
 - **AgentCore Evaluations** — continuous quality checks on agent behaviour.
 
-**Bedrock Agents vs AgentCore.** Bedrock Agents is a configuration-driven, fully managed agent: you describe instructions, action groups and knowledge bases in the console. AgentCore is for teams who write agents in code with any framework and need enterprise-grade hosting and controls. Both are part of Bedrock. Note: since **30 July 2026** Bedrock Agents (now called *Bedrock Agents Classic*) is **closed to new customers** — existing agents keep working, but AWS recommends **AgentCore** (including its managed agent harness) for new agents. Older exam questions may still name Bedrock Agents.
+**Bedrock Agents vs AgentCore.** Bedrock Agents is a configuration-driven, fully managed agent: you describe instructions, action groups and knowledge bases in the console. AgentCore is for teams who write agents in code with any framework and need enterprise-grade hosting and controls. Both are part of Bedrock. Note: since **30 July 2026** Bedrock Agents (now called *Bedrock Agents Classic*) is **closed to new customers** — existing agents keep working, but AWS recommends **AgentCore** (including its managed agent harness) for new agents. Older material may still name Bedrock Agents.
 
 ### Ready-made applications: Amazon Quick, Kiro and AWS Transform
 
@@ -133,12 +133,12 @@ A prototype agent on a laptop is easy. Running thousands of agent sessions safel
 **AWS Transform** is an **agentic AI service for migration and modernisation**. Specialised agents help analyse, plan and carry out large transformation projects — for example modernising mainframe applications, porting .NET Framework applications to cross-platform .NET, migrating VMware workloads to Amazon EC2 and upgrading code such as Java versions — work that once took months of manual effort. Clue words: *legacy, modernise, migrate, mainframe, upgrade at scale*.
 
 <Callout type="remember" title="Older materials mention Amazon Q">
-Many courses written before guide v1.2 feature **Amazon Q** (Q Business and Q Developer). Version 1.2 of the exam guide does **not** list Amazon Q. It lists **Amazon Quick** (business users), **Kiro** (developers) and **AWS Transform** (modernisation) for those kinds of jobs. If an answer option offers Amazon Q, treat it with suspicion.
+Many older courses feature **Amazon Q** (Q Business and Q Developer). Today those jobs are done by **Amazon Quick** (business users), **Kiro** (developers) and **AWS Transform** (modernisation). Amazon Q is the older name for these assistants.
 </Callout>
 
 ### Why build GenAI on AWS?
 
-Task statement 2.3 also asks for the **advantages of AWS GenAI services** and the **benefits of AWS infrastructure**. Group them like this:
+Two more topics complete the picture: the **advantages of AWS GenAI services** and the **benefits of AWS infrastructure**. Group them like this:
 
 - **Accessibility and a lower barrier to entry** — pre-trained models through an API; no ML PhD or GPU cluster needed. No-code tools (Amazon Quick, SageMaker Canvas) open AI to business users.
 - **Speed to market** — managed building blocks (Knowledge Bases, Guardrails, AgentCore) remove months of undifferentiated work.

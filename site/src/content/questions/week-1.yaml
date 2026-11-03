@@ -8,7 +8,7 @@
     - { id: c, text: "Rule-based automation, not machine learning", explanation: "Correct. A person wrote fixed if-then thresholds and the system never learns or changes them, so it is rules, not ML." }
     - { id: d, text: "Generative AI, because it produces an action", explanation: "Incorrect. Generative AI creates new content such as text or images; switching a valve on a threshold is not content generation." }
   answer: [c]
-  explanation: "Machine learning learns patterns from data and produces a model. A system that applies thresholds hand-written by an expert is classic rule-based automation. The exam often tests whether a simple, fixed rule needs ML at all; it usually does not."
+  explanation: "Machine learning learns patterns from data and produces a model. A system that applies thresholds hand-written by an expert is classic rule-based automation. Always ask whether a simple, fixed rule needs ML at all; it usually does not."
   domain: D1
   taskStatement: "1.1"
   lessonRef: day-01#examples
@@ -56,7 +56,7 @@
     - { id: c, text: "The data scientist means the model is unfair; the compliance officer means it is too simple", explanation: "Incorrect. This reverses the two meanings." }
     - { id: d, text: "The data scientist means systematic error from overly simple assumptions; the compliance officer means unfair treatment of a group of people", explanation: "Correct. Statistical bias is error from a too-simple model (underfitting); responsible-AI bias is a model systematically disadvantaging certain people." }
   answer: [d]
-  explanation: "The exam uses bias in two senses. In statistics, high bias means the model makes overly simple assumptions and underfits. In responsible AI, bias means outcomes that unfairly favour or disadvantage individuals or groups, often because the training data under-represents them. Read the context to know which is meant."
+  explanation: "Bias has two meanings in AI. In statistics, high bias means the model makes overly simple assumptions and underfits. In responsible AI, bias means outcomes that unfairly favour or disadvantage individuals or groups, often because the training data under-represents them. Read the context to know which is meant."
   domain: D1
   taskStatement: "1.1"
   lessonRef: day-01#explanation
@@ -353,7 +353,7 @@
     - { id: t3, text: "Text" }
     - { id: t4, text: "Audio" }
   answer: { a: t2, b: t4, c: t1, d: t3 }
-  explanation: "Task statement 1.1 names several data types. Tabular data suits credit scoring and churn; time-series suits forecasting and must not be shuffled; text suits Amazon Comprehend or Amazon Bedrock; audio suits Amazon Transcribe."
+  explanation: "Each data type suits different tasks and services. Tabular data suits credit scoring and churn; time-series suits forecasting and must not be shuffled; text suits Amazon Comprehend or Amazon Bedrock; audio suits Amazon Transcribe."
   domain: D1
   taskStatement: "1.1"
   lessonRef: day-03#explanation
@@ -481,7 +481,7 @@
     - { id: c, text: "A diffusion model that generates synthetic vibration signals", explanation: "Incorrect. Diffusion models generate content such as images; they do not classify sensor readings in real time." }
     - { id: d, text: "An Amazon Lex bot that asks the operator about each reading", explanation: "Incorrect. Lex builds conversational bots; a human conversation for every few-millisecond reading is impractical." }
   answer: [a]
-  explanation: "Task statement 1.2 asks you to choose between traditional ML and foundation models. Structured data, one narrow prediction, millisecond latency, very high volume, small devices and a need for identical outputs all point to traditional ML. Foundation models fit unstructured data, generation and many tasks where seconds of latency are acceptable."
+  explanation: "Choosing between traditional ML and foundation models depends on the job. Structured data, one narrow prediction, millisecond latency, very high volume, small devices and a need for identical outputs all point to traditional ML. Foundation models fit unstructured data, generation and many tasks where seconds of latency are acceptable."
   domain: D1
   taskStatement: "1.2"
   lessonRef: day-05#explanation
@@ -883,7 +883,7 @@
     - { id: c, text: "Concept drift, caused by changes in medical practice", explanation: "Incorrect. Nothing in the scenario says the relationship between inputs and outcomes changed over time." }
     - { id: d, text: "A good fit, because the overall accuracy is acceptable", explanation: "Incorrect. Unstable and often wrong predictions for a group are not a good fit, whatever the average says." }
   answer: [a]
-  explanation: "Task statement 4.1 asks you to describe the effects of bias and variance on demographic groups. With very few examples, a model can be unstable (high variance) or too simple (high bias) for that group, and either way the group receives worse outcomes. Representative data and subgroup evaluation are the remedies."
+  explanation: "Bias and variance can both harm demographic groups. With very few examples, a model can be unstable (high variance) or too simple (high bias) for that group, and either way the group receives worse outcomes. Representative data and subgroup evaluation are the remedies."
   domain: D4
   taskStatement: "4.1"
   lessonRef: day-02#explanation

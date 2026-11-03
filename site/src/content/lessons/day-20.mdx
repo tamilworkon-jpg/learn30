@@ -141,7 +141,7 @@ Traces from Bedrock Agents and **AgentCore Observability** show every reasoning 
 
 ### Does it meet the business objective?
 
-A model with excellent ROUGE scores can still be a failed project. Task statement 3.4 asks you to judge whether an FM application meets **business objectives**, using **alignment metrics** such as:
+A model with excellent ROUGE scores can still be a failed project. You also have to judge whether an FM application meets **business objectives**, using **alignment metrics** such as:
 
 - **Task completion rate** — the share of conversations where the user's goal is achieved without escalation.
 - **User satisfaction** — CSAT surveys, thumbs-up rate, net promoter score.
@@ -223,7 +223,7 @@ The results surprise them: the largest model is only marginally better than a mi
 
 **Agent evaluation.** For the "add to basket" action, they measure tool-use accuracy (right product, size and quantity) and the number of steps per task. Early traces show the agent sometimes searching three times before acting; a clearer instruction reduces the average from 4.1 to 2.6 steps, cutting latency and cost.
 
-**Online evaluation.** After launch, 10% of traffic goes to the assistant in an A/B test. The team tracks task completion, thumbs-up rate, conversion and cost per conversation daily, and reviews a weekly sample of conversations by hand. Every change to prompts, models or chunking reruns the offline evaluation first. That discipline — **agreed business metrics, a representative golden dataset, layered evaluation methods and continuous monitoring** — is exactly what task statement 3.4 describes.
+**Online evaluation.** After launch, 10% of traffic goes to the assistant in an A/B test. The team tracks task completion, thumbs-up rate, conversion and cost per conversation daily, and reviews a weekly sample of conversations by hand. Every change to prompts, models or chunking reruns the offline evaluation first. That discipline — **agreed business metrics, a representative golden dataset, layered evaluation methods and continuous monitoring** — is what evaluating an FM application properly looks like.
 
 </Section>
 

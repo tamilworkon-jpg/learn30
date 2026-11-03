@@ -38,13 +38,13 @@ keyPoints:
 
 ### Why responsible AI is an engineering topic
 
-Module 4 opens Domain 4, *Guidelines for Responsible AI* (14% of the exam). It is easy to treat responsible AI as a vague ethics topic, but the exam treats it as engineering: a model that is unfair, unsafe or untruthful is a *defective* model, in the same way that a bridge that sways too much is a defective bridge. A credit model that wrongly rejects qualified applicants from one neighbourhood loses the bank customers, invites regulators and damages its reputation. A chatbot that invents a refund policy creates a legal obligation the company never intended.
+Module 4 opens Domain 4, *Guidelines for Responsible AI*. It is easy to treat responsible AI as a vague ethics topic, but in practice it is engineering: a model that is unfair, unsafe or untruthful is a *defective* model, in the same way that a bridge that sways too much is a defective bridge. A credit model that wrongly rejects qualified applicants from one neighbourhood loses the bank customers, invites regulators and damages its reputation. A chatbot that invents a refund policy creates a legal obligation the company never intended.
 
 **Responsible AI** is the set of practices that keeps AI systems fair, safe, truthful, private and accountable across their whole lifecycle — from choosing the use case and the data, through training and evaluation, to deployment and monitoring. It is not a single step at the end. Think of it like food hygiene in a restaurant kitchen: it applies to buying ingredients, storing them, cooking and serving, and an inspector checks all of it.
 
 ### The core dimensions
 
-AWS describes responsible AI through a set of **core dimensions**, and the exam guide lists *bias, fairness, inclusivity, robustness, safety and veracity* by name. Learn each one as a short definition plus an example.
+AWS describes responsible AI through a set of **core dimensions**, and the core ones are *bias, fairness, inclusivity, robustness, safety and veracity*. Learn each one as a short definition plus an example.
 
 | Dimension | Plain-English meaning | Failure example |
 |---|---|---|
@@ -76,7 +76,7 @@ Bias rarely comes from a programmer deciding to discriminate. It usually creeps 
 
 ### Dataset characteristics that support responsible AI
 
-The exam guide asks you to identify the characteristics of a good dataset. Remember these five:
+A good dataset has five characteristics:
 
 1. **Inclusive** — covers every group of people and every situation the model will meet in production (regions, languages, ages, devices, lighting conditions).
 2. **Diverse** — varied examples within each group, so the model learns the real pattern rather than one narrow version of it.
@@ -99,7 +99,7 @@ The practical responses are the same tools you know from Module 1 — more repre
 
 ### Legal risks of generative AI
 
-Generative AI adds risks that traditional ML rarely had. The exam guide names these:
+Generative AI adds risks that traditional ML rarely had:
 
 - **Intellectual property (IP) infringement** — a model may reproduce copyrighted text, code, images or a recognisable artistic style from its training data, and the company that publishes the output may face claims. Training on data you are not licensed to use creates the same exposure.
 - **Biased model outputs** — generated text or images that stereotype or exclude groups can breach anti-discrimination laws, especially in hiring, lending, housing and insurance.
@@ -108,11 +108,11 @@ Generative AI adds risks that traditional ML rarely had. The exam guide names th
 - **Hallucinations** — confident but false outputs. If a company's assistant states a false policy, price or legal fact, the company may be held to it.
 - **Privacy and data leakage** — personal or confidential data in prompts, training data or logs can surface in outputs or be stored where it should not be.
 
-Each risk has typical controls: licensed and curated training data and output filters (IP), bias testing and guardrails (biased outputs), transparency and human escalation (trust), safety filters and human review for high-stakes use (end-user risk), grounding with retrieval-augmented generation and citations (hallucinations), and data minimisation and PII redaction (privacy). Some model providers also offer **IP indemnity** for outputs of certain models; AWS, for example, extends IP indemnity to outputs of its own Amazon Nova models, subject to its terms. The exam-level point is simple: *legal risk is managed by data provenance, output controls, human oversight and documentation*, not by hoping the model behaves.
+Each risk has typical controls: licensed and curated training data and output filters (IP), bias testing and guardrails (biased outputs), transparency and human escalation (trust), safety filters and human review for high-stakes use (end-user risk), grounding with retrieval-augmented generation and citations (hallucinations), and data minimisation and PII redaction (privacy). Some model providers also offer **IP indemnity** for outputs of certain models; AWS, for example, extends IP indemnity to outputs of its own Amazon Nova models, subject to its terms. The key point is simple: *legal risk is managed by data provenance, output controls, human oversight and documentation*, not by hoping the model behaves.
 
 ### Measuring fairness: a first look at the numbers
 
-"Fair" has to be turned into something you can measure, or nobody can check it. You do not need formulas for this exam, but you should recognise the ideas behind the most common checks:
+"Fair" has to be turned into something you can measure, or nobody can check it. You do not need the formulas, but you should recognise the ideas behind the most common checks:
 
 - **Representation** — what share of the training data does each group make up, compared with the population the model will serve? If 3% of the data covers a group that is 20% of your customers, expect trouble. Tomorrow you will see SageMaker Clarify call this **class imbalance**.
 - **Outcome rates** — what share of each group receives the positive outcome (approved, shortlisted, offered a discount)? Large gaps are a warning sign. A common rule of thumb compares the rate for one group with the rate for another; a ratio far below 1 suggests disparate impact.
@@ -190,7 +190,7 @@ Put it together and responsible AI touches every step: define the use case and w
 
 **Worked example — the hidden subgroup.** *A bank's loan-default model is 93% accurate. Broken down by age, it is 94% accurate for applicants aged 25–60 but 74% for applicants over 70, who are 3% of the training data.* The headline number looks great, but the model is failing a group. The cause is sampling bias (too few older applicants) combined with variance (the model memorised the few examples it had). The responsible response: collect or rebalance data for older applicants, evaluate per age band before launch, and monitor that metric in production. Simply deleting the age column would not help — retirement income and account tenure act as proxies.
 
-**Worked example — fairness vs accuracy.** *Two candidate models: model A is 91% accurate with similar error rates across groups; model B is 92% accurate but its false positive rate for one group is double.* For a decision that affects people's access to credit, the responsible choice is usually model A. On the exam, when a question pits a slightly higher overall score against equitable treatment in a high-impact use case, the equitable option is almost always the intended answer.
+**Worked example — fairness vs accuracy.** *Two candidate models: model A is 91% accurate with similar error rates across groups; model B is 92% accurate but its false positive rate for one group is double.* For a decision that affects people's access to credit, the responsible choice is usually model A. Whenever a slightly higher overall score competes with equitable treatment in a high-impact use case, the equitable option is almost always the responsible choice.
 
 **Worked example — legal risk triage.** *A marketing team wants to use a generative model to produce product images and blog posts at scale.* Risks: IP (output resembling copyrighted images or brands), biased imagery (who appears in the pictures), veracity (false product claims in the text) and trust (customers discovering undisclosed AI content). Controls: use a model with clear licensing and, where offered, IP indemnity; add content filters; require human review before publication; ground product claims in the official spec sheet; and label AI-generated content where appropriate.
 
@@ -210,7 +210,7 @@ Put it together and responsible AI touches every step: define the use case and w
 A large technology company built an experimental model to score job applicants, trained on about ten years of résumés submitted to the company. Because most past hires for technical roles were men, the model learned to down-rank résumés containing words associated with women — for example the name of a women's college or "women's chess club captain". Engineers removed those specific terms, but could not be confident that other proxy features would not reintroduce the bias, and the project was abandoned. Nobody programmed the model to discriminate; it faithfully learned **historical bias** from its data.
 </Callout>
 
-The story illustrates almost every point from today. The *data* was the problem (historical bias), *removing obvious features* did not fix it (proxies), the risk was *legal and reputational* (discrimination in hiring is regulated in most countries), and the right controls would have been an inclusive, balanced dataset, subgroup analysis of outcomes, and human decision-makers who treat the score as one input rather than the answer. Hiring, lending, housing, insurance, healthcare and criminal justice are the classic **high-impact** domains: expect exam scenarios in these areas to reward the option that adds fairness testing and human oversight.
+The story illustrates almost every point from today. The *data* was the problem (historical bias), *removing obvious features* did not fix it (proxies), the risk was *legal and reputational* (discrimination in hiring is regulated in most countries), and the right controls would have been an inclusive, balanced dataset, subgroup analysis of outcomes, and human decision-makers who treat the score as one input rather than the answer. Hiring, lending, housing, insurance, healthcare and criminal justice are the classic **high-impact** domains: in these areas, choose the option that adds fairness testing and human oversight.
 
 </Section>
 

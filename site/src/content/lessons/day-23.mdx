@@ -51,7 +51,7 @@ Yesterday you learned *what* responsible AI means. Today is about *how* AWS help
 | Are my training labels correct and consistent? | **SageMaker Ground Truth** label-quality features and human audits |
 | Is this the right-sized, most efficient model for the job? | **Responsible model selection** (sustainability) |
 
-Keep this table in mind: many exam questions simply describe one of these questions in business language and ask which tool fits.
+Keep this table in mind: real requests usually describe one of these questions in business language, and you pick the tool that fits.
 
 ### Amazon Bedrock Guardrails
 
@@ -96,7 +96,7 @@ Remember: **Clarify** measures bias and explanations at a point in time; **Model
 
 ### Human review of predictions
 
-Some predictions should not take effect without a person checking them — low-confidence results, or decisions with high impact on people. **Amazon Augmented AI (A2I)** provided managed human review workflows for this pattern; it is not listed in the v1.2 exam guide, so learn the **concept**: define a condition (for example *confidence below 80%*, or *every loan rejection*), route matching predictions to a human work team, and use their decisions as the final outcome and as new labelled data. Workforces can be your own employees, a vendor or a public crowd. Human review improves safety and fairness, catches model blind spots and provides the feedback needed to improve the model — at the cost of time and money, so it is usually applied selectively.
+Some predictions should not take effect without a person checking them — low-confidence results, or decisions with high impact on people. **Amazon Augmented AI (A2I)** provided managed human review workflows for this pattern; the **concept** is what matters: define a condition (for example *confidence below 80%*, or *every loan rejection*), route matching predictions to a human work team, and use their decisions as the final outcome and as new labelled data. Workforces can be your own employees, a vendor or a public crowd. Human review improves safety and fairness, catches model blind spots and provides the feedback needed to improve the model — at the cost of time and money, so it is usually applied selectively.
 
 ### Label quality, human audits and subgroup analysis
 
@@ -106,7 +106,7 @@ Some predictions should not take effect without a person checking them — low-c
 
 ### Responsible model selection and sustainability
 
-The exam guide explicitly mentions **environmental considerations and sustainability** when choosing a model. Training and running large models consume a lot of energy, water for cooling and hardware. Responsible choices include:
+**Environmental considerations and sustainability** also matter when choosing a model. Training and running large models consume a lot of energy, water for cooling and hardware. Responsible choices include:
 
 - **Right-size the model** — use the smallest model that meets the quality bar. A small model (for example Amazon Nova Micro or Nova Lite) that handles a classification or extraction task well uses far less compute per request than the largest model.
 - **Reuse rather than retrain** — prompting, RAG or light fine-tuning of an existing foundation model avoids the huge cost of pre-training from scratch.
@@ -208,7 +208,7 @@ Monitoring needs similar care. If Model Monitor thresholds are too sensitive, th
 A consumer lender uses an ML model to recommend approve or decline on small loans. Before training, a **SageMaker Clarify** pre-training report revealed that applicants under 25 had a much lower share of positive labels in historical data, so the team reviewed whether past decisions had been unfair and rebalanced the data. After training, Clarify post-training metrics confirmed similar approval rates for equally qualified applicants across age bands, and SHAP explanations were used to generate the "main reasons" listed in every decline letter, as lending regulations require. **SageMaker Model Monitor** runs daily bias drift and feature attribution drift checks, with CloudWatch alarms to the model risk team. Every decline near the decision threshold is reviewed by a **human underwriter**. The lender also added a customer chatbot on Amazon Bedrock protected by **Bedrock Guardrails** with a denied topic for personalised financial advice and PII masking.
 </Callout>
 
-The pattern is typical of regulated industries: detect bias early, explain every adverse decision, monitor continuously, keep a human in the loop near the threshold, and guard the generative AI front door. When an exam scenario describes a bank, insurer or hospital, look for answers that combine these controls rather than a single tool.
+The pattern is typical of regulated industries: detect bias early, explain every adverse decision, monitor continuously, keep a human in the loop near the threshold, and guard the generative AI front door. When a scenario describes a bank, insurer or hospital, look for answers that combine these controls rather than a single tool.
 
 </Section>
 
@@ -244,7 +244,7 @@ The pattern is typical of regulated industries: detect bias early, explain every
 - Bias in the dataset before training → **Clarify pre-training bias**; bias in predictions → **Clarify post-training bias**.
 - "Why did the model decide this?" for an ML model → **Clarify SHAP feature attributions**.
 - Drift after deployment → **Model Monitor** (data quality, model quality, bias drift, feature attribution drift). Model quality monitoring needs **ground-truth labels**.
-- Low-confidence predictions to people → **human review workflow** (A2I concept, not listed in the v1.2 guide).
+- Low-confidence predictions to people → **human review workflow** (the A2I concept).
 - Sustainability → **smallest suitable model**, distillation, Inferentia/Trainium/Graviton, no idle endpoints.
 
 </Section>

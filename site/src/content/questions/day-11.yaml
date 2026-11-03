@@ -233,7 +233,7 @@
     - { id: d, text: "Complete transparency into why each answer was produced", explanation: "Incorrect. Large FMs are black boxes; low interpretability is a limitation." }
     - { id: e, text: "Answers that are always factually correct", explanation: "Incorrect. FMs can hallucinate and be inaccurate, so outputs must be grounded and checked." }
   answer: [a, c]
-  explanation: "The advantages named in the exam guide are adaptability, responsiveness, natural conversation and content generation (plus simplicity and speed to market). Determinism, interpretability and guaranteed accuracy are exactly the areas where GenAI is weak."
+  explanation: "The main advantages of generative AI are adaptability, responsiveness, natural conversation and content generation (plus simplicity and speed to market). Determinism, interpretability and guaranteed accuracy are exactly the areas where GenAI is weak."
   domain: D2
   taskStatement: "2.2"
   lessonRef: day-11#explanation

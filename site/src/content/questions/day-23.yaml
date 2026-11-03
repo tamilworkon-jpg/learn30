@@ -184,7 +184,7 @@
     - { id: c, text: "Retrain the model every night on the same data", explanation: "Incorrect. Retraining on the same data does not add human checks for risky predictions." }
     - { id: d, text: "Enable Model Monitor data quality monitoring", explanation: "Incorrect. Data quality monitoring detects input drift across traffic; it does not send individual predictions for review." }
   answer: [a]
-  explanation: "Human review is applied selectively to low-confidence or high-impact predictions. Amazon Augmented AI (A2I) provided managed workflows for this; the v1.2 exam expects the concept — define a condition, route to a workforce, use their decisions as outcomes and feedback."
+  explanation: "Human review is applied selectively to low-confidence or high-impact predictions. Amazon Augmented AI (A2I) provided managed workflows for this; the pattern is what matters — define a condition, route to a workforce, use their decisions as outcomes and feedback."
   domain: D4
   taskStatement: "4.1"
   lessonRef: day-23#explanation

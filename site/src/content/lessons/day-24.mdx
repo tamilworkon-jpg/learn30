@@ -42,7 +42,7 @@ keyPoints:
 
 Imagine your mortgage application is declined and the bank says only "the computer said no". You cannot fix the problem, you cannot challenge a mistake, and you have no reason to trust the bank next time. Now imagine the letter says: "declined mainly because your existing debt is 48% of your income; below 40% would usually qualify". That explanation lets you act, lets the bank check the model is behaving sensibly, and lets a regulator confirm the decision was lawful.
 
-Task statement 4.2 asks you to recognise why this matters. Transparent and explainable models help to:
+Here is why this matters. Transparent and explainable models help to:
 
 - **build trust** with customers and employees, who are more willing to rely on decisions they understand;
 - **meet regulations** — many laws on credit, insurance, employment and data protection require meaningful reasons for automated decisions;
@@ -83,7 +83,7 @@ A linear model for house prices might say: *price = 50,000 + 3,000 × square met
 
 **Amazon SageMaker Model Cards** are structured documents for your *own* models, created in SageMaker AI and stored with versions. A model card records: model overview and owner; **intended uses** and out-of-scope uses; a **risk rating** (unknown, low, medium or high); training details (algorithm, data, hyperparameters); **evaluation results**, which can include Clarify bias and explainability reports; and additional information such as ethical considerations and caveats. Model cards can be linked to models in the **SageMaker Model Registry**, exported as PDF for auditors and shared with other stakeholders. Think of a model card as the nutrition label and instruction leaflet for a model. SageMaker Model Cards sit alongside the **SageMaker Model Dashboard**, which gives one view of deployed models and their monitoring status.
 
-**AWS AI Service Cards** are AWS's own transparency documents for its AI services and models (for example Amazon Rekognition face matching, Amazon Textract, Amazon Transcribe and Amazon Nova models). Each describes intended use cases, limitations, the responsible AI design choices AWS made, and best practices for deploying responsibly. Use them when your solution *consumes* an AWS AI service and you need to understand and document its behaviour. Exam shorthand: **Model Cards = your models; AI Service Cards = AWS's services**.
+**AWS AI Service Cards** are AWS's own transparency documents for its AI services and models (for example Amazon Rekognition face matching, Amazon Textract, Amazon Transcribe and Amazon Nova models). Each describes intended use cases, limitations, the responsible AI design choices AWS made, and best practices for deploying responsibly. Use them when your solution *consumes* an AWS AI service and you need to understand and document its behaviour. Shorthand: **Model Cards = your models; AI Service Cards = AWS's services**.
 
 **Amazon Bedrock Model Evaluations** helps you compare and select foundation models — and evaluate your knowledge bases — using evidence instead of opinion. Evaluation types:
 
@@ -195,7 +195,7 @@ In practice: tailor explanations to the audience (a data scientist wants SHAP va
 | A startup wants to fine-tune and resell a model commercially | Check the **licence** for commercial use and derivative rights |
 | A fraud team is asked to publish its detection rules | Decline — **safety vs transparency**; share full details with auditors only |
 
-**Worked example — choosing a model for a regulated decision.** *An insurer compares a logistic regression (84% accurate) with a gradient-boosted ensemble (87% accurate) for approving claims, and must give reasons for every denial.* Options: use the logistic regression for its built-in interpretability, or use the ensemble with Clarify SHAP explanations, validated to be stable and sensible, plus a model card documenting the choice. Both can be responsible; what is *not* acceptable is deploying the ensemble with no explanations. The exam rewards answers that keep explainability when decisions affect people.
+**Worked example — choosing a model for a regulated decision.** *An insurer compares a logistic regression (84% accurate) with a gradient-boosted ensemble (87% accurate) for approving claims, and must give reasons for every denial.* Options: use the logistic regression for its built-in interpretability, or use the ensemble with Clarify SHAP explanations, validated to be stable and sensible, plus a model card documenting the choice. Both can be responsible; what is *not* acceptable is deploying the ensemble with no explanations. Keep explainability when decisions affect people.
 
 **Worked example — evidence-based model selection.** *A retailer must pick a foundation model for product-description generation.* The team runs an automatic Bedrock evaluation on 500 of its own prompts for accuracy and toxicity, then an LLM-as-a-judge evaluation for helpfulness, then a human evaluation with five copywriters on brand voice for the top two models. The smaller model scores within 2% of the largest and costs much less, so it is selected. The evaluation report is attached to the solution's documentation. This combines today's transparency with Day 23's sustainability.
 

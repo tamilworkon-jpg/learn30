@@ -2,7 +2,7 @@
 day: 2
 kind: lesson
 title: 'ML vocabulary, fit & inference types'
-summary: 'Learn the words the exam uses for the ML journey — model, algorithm, features, labels, training, validation, inference — and how to recognise underfitting, overfitting, bias and variance. Then compare real-time, batch, asynchronous and serverless inference.'
+summary: 'Learn the core vocabulary of the ML journey — model, algorithm, features, labels, training, validation, inference — and how to recognise underfitting, overfitting, bias and variance. Then compare real-time, batch, asynchronous and serverless inference.'
 domains: [D1, D4]
 taskStatements: ['1.1', '4.1']
 sources:
@@ -44,7 +44,7 @@ Imagine you want to predict the price of a house. You collect 10,000 past sales.
 - **Algorithm** is the learning method, such as linear regression or XGBoost. It defines *how* to learn.
 - **Model** is the result of running the algorithm on your data: a function with learned values that maps features to a prediction.
 - **Parameters** are the values the model learns by itself during training (for example, the weight given to "size").
-- **Hyperparameters** are settings *you* choose before training that control how learning happens — learning rate, number of trees, number of training passes (*epochs*). Searching for good hyperparameters is *hyperparameter tuning*. (The AI Practitioner exam expects you to know the term, not to tune them yourself.)
+- **Hyperparameters** are settings *you* choose before training that control how learning happens — learning rate, number of trees, number of training passes (*epochs*). Searching for good hyperparameters is *hyperparameter tuning*. (An AI practitioner needs to know the term, not to tune them by hand.)
 
 ### Training, validation and test data
 
@@ -83,7 +83,7 @@ When data is scarce, holding back 30% feels wasteful. **Cross-validation** solve
 
 ### Bias and variance (statistical meaning)
 
-The exam links fit to two kinds of error:
+Fit is linked to two kinds of error:
 
 - **Bias** is error from overly simple assumptions. A high-bias model consistently misses the target in the same direction — it *underfits*.
 - **Variance** is error from being too sensitive to the particular training data. A high-variance model changes a lot if you train it on a slightly different sample — it *overfits*.
@@ -105,11 +105,11 @@ A model learns the world as it was in its training data. When the world changes,
 
 ### Bias (responsible-AI meaning) — why this lesson touches Domain 4
 
-Task statement 4.1 asks you to describe the effects of bias and variance, including on **demographic groups**. In responsible AI, *bias* means a model systematically favours or disadvantages certain people. It often comes from data: if a loan model was trained mostly on applicants from one region or age group, it may underfit — and be less accurate — for everyone else. A model can have a good *average* accuracy while performing badly for a subgroup. That is why you should evaluate performance per subgroup (sometimes called *subgroup analysis*) and check that training data is **representative and balanced**. Overfitting can also amplify quirks of a small, unrepresentative dataset. Amazon SageMaker Clarify, which you will meet on Day 23, measures this kind of bias.
+Bias and variance also affect **demographic groups**. In responsible AI, *bias* means a model systematically favours or disadvantages certain people. It often comes from data: if a loan model was trained mostly on applicants from one region or age group, it may underfit — and be less accurate — for everyone else. A model can have a good *average* accuracy while performing badly for a subgroup. That is why you should evaluate performance per subgroup (sometimes called *subgroup analysis*) and check that training data is **representative and balanced**. Overfitting can also amplify quirks of a small, unrepresentative dataset. Amazon SageMaker Clarify, which you will meet on Day 23, measures this kind of bias.
 
 ### Four ways to run inference on AWS
 
-Once a model is trained, you must decide how predictions are requested and delivered. Task statement 1.1 names four types; Amazon SageMaker AI supports each of them.
+Once a model is trained, you must decide how predictions are requested and delivered. There are four types; Amazon SageMaker AI supports each of them.
 
 1. **Real-time inference** — a persistent endpoint answers individual requests within milliseconds. Use it when a user or system is waiting for the answer: fraud checks during checkout, product recommendations on a web page. You pay for the endpoint while it runs, even when idle.
 2. **Batch inference** (SageMaker AI *batch transform*) — process a large dataset in one go, offline, and write all predictions to Amazon S3. Use it when nobody is waiting: scoring every customer overnight for churn risk, re-pricing a whole catalogue weekly. No endpoint stays running, so it is usually the most cost-effective option for large, scheduled jobs.
@@ -175,9 +175,9 @@ Generative AI services follow similar patterns: Amazon Bedrock offers on-demand 
 A retail bank runs a **real-time** fraud model behind its card network: every swipe gets a risk score in under 100 milliseconds. Each night a **batch** job scores all 8 million customers for churn risk and writes the results to Amazon S3 for the marketing team. Mortgage applications include scanned documents of up to 200 pages, so a document-analysis model runs **asynchronously**, notifying the case worker when the analysis is ready. An internal "explain this transaction" tool is used only by a handful of analysts, so it runs on **serverless** inference and costs almost nothing when idle.
 </Callout>
 
-The bank also learned a lesson about fit and fairness. Its first churn model was trained only on two years of data from city branches. It scored brilliantly in testing — the test set came from the same city branches — but performed poorly for rural customers once deployed. The model had *overfit* to city behaviour and was *biased* against a group it had rarely seen. The fix was to collect representative data from every region, evaluate accuracy per customer segment before launch and monitor it after deployment. This combination of statistical thinking (fit, variance) and responsible-AI thinking (representative data, subgroup analysis) is exactly what the exam tests in Domains 1 and 4.
+The bank also learned a lesson about fit and fairness. Its first churn model was trained only on two years of data from city branches. It scored brilliantly in testing — the test set came from the same city branches — but performed poorly for rural customers once deployed. The model had *overfit* to city behaviour and was *biased* against a group it had rarely seen. The fix was to collect representative data from every region, evaluate accuracy per customer segment before launch and monitor it after deployment. This combination of statistical thinking (fit, variance) and responsible-AI thinking (representative data, subgroup analysis) is exactly what good AI practice needs.
 
-**A second story: radiology at a hospital network.** A hospital network uses a deep learning model to flag possible fractures on X-rays. Each image is large and the analysis takes tens of seconds, and radiologists review the flags later in the day rather than waiting in front of the screen — a natural fit for **asynchronous inference**, with results written to storage and a notification sent to the reporting system. When the network added a new brand of X-ray machine, the model's accuracy on those images dropped: the new images were brighter and sharper than anything in the training data. That is **data drift** caught by monitoring. The team collected and labelled a few thousand images from the new machines, retrained, re-validated on a test set that included every machine type, and redeployed. Clinicians stayed in the loop throughout: the model only *flags* images; a radiologist always makes the final call. Expect the exam to reward this pattern — monitoring, retraining on representative data, and human review where decisions affect people's health or rights.
+**A second story: radiology at a hospital network.** A hospital network uses a deep learning model to flag possible fractures on X-rays. Each image is large and the analysis takes tens of seconds, and radiologists review the flags later in the day rather than waiting in front of the screen — a natural fit for **asynchronous inference**, with results written to storage and a notification sent to the reporting system. When the network added a new brand of X-ray machine, the model's accuracy on those images dropped: the new images were brighter and sharper than anything in the training data. That is **data drift** caught by monitoring. The team collected and labelled a few thousand images from the new machines, retrained, re-validated on a test set that included every machine type, and redeployed. Clinicians stayed in the loop throughout: the model only *flags* images; a radiologist always makes the final call. This is the pattern to follow — monitoring, retraining on representative data, and human review where decisions affect people's health or rights.
 
 </Section>
 

@@ -2,7 +2,7 @@
 day: 18
 kind: lesson
 title: 'RAG & vector stores'
-summary: 'Learn how Retrieval Augmented Generation (RAG) grounds a foundation model in your own documents: embeddings, chunking strategies, vector search and Amazon Bedrock Knowledge Bases. Compare the AWS vector stores the exam names — OpenSearch Service, Aurora and RDS for PostgreSQL (pgvector), Neptune and DocumentDB — weigh RAG against other customisation options, and see how Bedrock Agents and AgentCore use knowledge bases and tools in multi-step tasks.'
+summary: 'Learn how Retrieval Augmented Generation (RAG) grounds a foundation model in your own documents: embeddings, chunking strategies, vector search and Amazon Bedrock Knowledge Bases. Compare the main AWS vector stores — OpenSearch Service, Aurora and RDS for PostgreSQL (pgvector), Neptune and DocumentDB — weigh RAG against other customisation options, and see how Bedrock Agents and AgentCore use knowledge bases and tools in multi-step tasks.'
 domains: [D3]
 taskStatements: ['3.1']
 sources:
@@ -24,7 +24,7 @@ keyPoints:
   - 'RAG retrieves relevant chunks of your own data at question time and adds them to the prompt, so answers are current, grounded and citable without retraining the model.'
   - 'Embeddings turn text into vectors; similar meanings sit close together, so a vector store finds relevant chunks by similarity search, not keyword match.'
   - 'Bedrock Knowledge Bases is managed RAG: connect a data source, choose chunking and an embedding model, pick a vector store, then call Retrieve or RetrieveAndGenerate.'
-  - 'Vector stores on the exam: OpenSearch Service (search + vectors), Aurora / RDS for PostgreSQL with pgvector (keep SQL data), Neptune (graphs, GraphRAG), DocumentDB (JSON documents).'
+  - 'AWS vector stores: OpenSearch Service (search + vectors), Aurora / RDS for PostgreSQL with pgvector (keep SQL data), Neptune (graphs, GraphRAG), DocumentDB (JSON documents).'
   - 'Cheapest to costliest customisation: prompt engineering / in-context learning, RAG, fine-tuning, continued pre-training, pre-training from scratch.'
   - 'Agents plan, call tools and APIs, and query knowledge bases to complete multi-step tasks; AgentCore runs and secures agents built with any framework and is recommended for new agents; Bedrock Agents (managed) is closed to new customers since July 2026.'
 ---
@@ -49,7 +49,7 @@ You could retrain the model on your documents, but that is slow, expensive and o
 2. **Augment** — paste those passages into the prompt as context, with an instruction such as "Answer using only the context below".
 3. **Generate** — the FM writes an answer grounded in the retrieved text, and can cite which document each fact came from.
 
-The model's weights never change. When a document is updated, you re-index it and the very next answer reflects the change. That is why RAG is the exam's go-to answer for "use company data", "reduce hallucinations", "answers must reflect the latest documents" and "show the source of the answer".
+The model's weights never change. When a document is updated, you re-index it and the very next answer reflects the change. That is why RAG is the go-to answer for "use company data", "reduce hallucinations", "answers must reflect the latest documents" and "show the source of the answer".
 
 ### Embeddings: turning meaning into numbers
 
@@ -59,7 +59,7 @@ An **embedding model** converts a piece of text (or an image) into a **vector** 
 
 To search, you embed the user's question with the *same* embedding model and look for the stored vectors nearest to it. Closeness is measured with a **similarity metric** such as cosine similarity, dot product or Euclidean distance. This is **semantic search** (also called vector search or *k-nearest-neighbour*, k-NN, search: "find the k closest vectors"). Because comparing a question against millions of vectors one by one is slow, vector stores build special indexes (for example HNSW) that find *approximately* nearest neighbours very quickly.
 
-On Amazon Bedrock you can choose embedding models such as **Amazon Titan Text Embeddings** or **Cohere Embed**, and Amazon Nova offers multimodal embeddings for text, images and other media. One rule matters for the exam and for real projects: **documents and questions must be embedded with the same model**. Vectors from two different embedding models live on different "maps" and cannot be compared.
+On Amazon Bedrock you can choose embedding models such as **Amazon Titan Text Embeddings** or **Cohere Embed**, and Amazon Nova offers multimodal embeddings for text, images and other media. One rule matters in every real project: **documents and questions must be embedded with the same model**. Vectors from two different embedding models live on different "maps" and cannot be compared.
 
 ### Chunking: cutting documents into searchable pieces
 
@@ -102,7 +102,7 @@ Useful options include **metadata filtering** (only search documents where `depa
 
 ### Vector stores on AWS
 
-A **vector store** (vector database) stores embeddings and answers "which vectors are nearest to this one?" quickly. Task statement 3.1 names several AWS options. The exam rarely asks for low-level detail; it asks you to pick the best fit for a scenario.
+A **vector store** (vector database) stores embeddings and answers "which vectors are nearest to this one?" quickly. AWS offers several options. What matters is picking the best fit for a scenario.
 
 | Vector store | What it is | Choose it when |
 |---|---|---|
@@ -112,11 +112,11 @@ A **vector store** (vector database) stores embeddings and answers "which vector
 | **Amazon Neptune** (Neptune Analytics) | Graph database that also stores vectors | Relationships matter — people, products, parts, regulations linked to each other. Powers **GraphRAG** in Knowledge Bases, which follows links between entities to answer multi-hop questions. |
 | **Amazon DocumentDB** (with MongoDB compatibility) | JSON document database with vector search | Your data is stored as JSON documents and you want to add semantic search without a separate database. |
 
-Bedrock Knowledge Bases also supports some third-party stores (such as Pinecone, Redis Enterprise Cloud and MongoDB Atlas) and Amazon S3 Vectors, a low-cost option for storing very large numbers of vectors where query latency is less critical. For other databases, the exam pattern is the same: **if the data already lives in a database that supports vectors, adding vectors there avoids running and syncing a second system.** Amazon DynamoDB and Amazon ElastiCache are in scope as databases, but think of DynamoDB as key-value storage — not the classic answer for a vector store question.
+Bedrock Knowledge Bases also supports some third-party stores (such as Pinecone, Redis Enterprise Cloud and MongoDB Atlas) and Amazon S3 Vectors, a low-cost option for storing very large numbers of vectors where query latency is less critical. For other databases, the pattern is the same: **if the data already lives in a database that supports vectors, adding vectors there avoids running and syncing a second system.** Amazon DynamoDB and Amazon ElastiCache are in scope as databases, but think of DynamoDB as key-value storage — not the classic answer for a vector store question.
 
 ### Where RAG sits among customisation options
 
-Task statement 3.1 asks you to compare the **cost trade-offs** of customising an FM. Order them from cheapest to most expensive:
+Compare the **cost trade-offs** of customising an FM. Order them from cheapest to most expensive:
 
 1. **Prompt engineering and in-context learning** — put instructions and a few examples in the prompt (Day 16). No training, instant, but every example adds input tokens to every call.
 2. **RAG** — no training; you pay for embeddings, the vector store and longer prompts. Best when knowledge changes often or answers must cite sources.

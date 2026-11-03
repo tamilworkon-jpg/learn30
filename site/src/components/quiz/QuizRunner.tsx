@@ -1,13 +1,13 @@
 // T056 — one question at a time with progress, domain chip, prev/next and submit confirmation.
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { getStore } from '../../lib/progress/store';
-import { createQuizSession, isAnswered, type QuizSession } from '../../lib/quiz-state';
+import { canSubmitAnswer, createQuizSession, displayOrder, isAnswered, type QuizSession } from '../../lib/quiz-state';
 import type { Answer, Attempt, Question } from '../../lib/types';
 import QuestionMatching from './QuestionMatching';
 import QuestionMulti from './QuestionMulti';
 import QuestionOrdering from './QuestionOrdering';
 import QuestionSingle from './QuestionSingle';
-import Results from './Results';
+import Results, { QuestionFeedback } from './Results';
 
 interface Props {
   assessmentId: string;
@@ -24,6 +24,9 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
   const [confirming, setConfirming] = useState(false);
   const [attempt, setAttempt] = useState<Attempt | null>(null);
   const [best, setBest] = useState<number | undefined>(undefined);
+  // Questions whose answer was submitted in this sitting (locked, feedback shown). Not persisted: after a
+  // reload the saved answers stay and can be submitted again.
+  const [checked, setChecked] = useState<string[]>([]);
   const root = useRef<HTMLDivElement>(null);
   const moved = useRef(false);
 
@@ -59,14 +62,24 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
     moved.current = true;
     setConfirming(false);
     setAttempt(a);
+    setChecked([]);
     setBest(session.best());
     root.current?.scrollIntoView({ block: 'start' });
   };
   const requestSubmit = () => (remaining > 0 ? setConfirming(true) : submit());
+  const isChecked = checked.includes(q.id);
+  const ready = canSubmitAnswer(q, answers[q.id]);
+  const checkAnswer = () => {
+    if (!ready || isChecked) return;
+    // An untouched ordering question is answered with the order shown.
+    if (q.type === 'ordering' && !answers[q.id]) setAnswer(displayOrder(q));
+    setChecked([...checked, q.id]);
+  };
   const retake = () => {
     moved.current = true;
     setAttempt(null);
     setAnswers({});
+    setChecked([]);
     setIndex(0);
   };
 
@@ -96,10 +109,35 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
           </div>
 
           <div class="card mt-4 quiz-card" key={q.id}>
-            {q.type === 'single' && <QuestionSingle q={q} value={answers[q.id] as string[]} onChange={setAnswer} />}
-            {q.type === 'multi' && <QuestionMulti q={q} value={answers[q.id] as string[]} onChange={setAnswer} />}
-            {q.type === 'ordering' && <QuestionOrdering q={q} value={answers[q.id] as string[]} onChange={setAnswer} />}
-            {q.type === 'matching' && <QuestionMatching q={q} value={answers[q.id] as Record<string, string>} onChange={setAnswer} />}
+            {q.type === 'single' && <QuestionSingle q={q} value={answers[q.id] as string[]} onChange={setAnswer} locked={isChecked} reveal={isChecked} />}
+            {q.type === 'multi' && <QuestionMulti q={q} value={answers[q.id] as string[]} onChange={setAnswer} locked={isChecked} reveal={isChecked} />}
+            {q.type === 'ordering' && <QuestionOrdering q={q} value={answers[q.id] as string[]} onChange={setAnswer} locked={isChecked} />}
+            {q.type === 'matching' && <QuestionMatching q={q} value={answers[q.id] as Record<string, string>} onChange={setAnswer} locked={isChecked} />}
+            {isChecked && <QuestionFeedback q={q} answer={answers[q.id]} />}
+            <div class="q-submit-row">
+              {isChecked ? (
+                index < questions.length - 1 ? (
+                  <button type="button" class="btn" data-next-question onClick={() => go(index + 1)}>
+                    Next question →
+                  </button>
+                ) : (
+                  <button type="button" class="btn" data-next-question onClick={requestSubmit}>
+                    See my results →
+                  </button>
+                )
+              ) : (
+                <>
+                  <button type="button" class="btn" data-submit-answer disabled={!ready} aria-describedby={ready ? undefined : `${q.id}-gate`} onClick={checkAnswer}>
+                    Submit answer
+                  </button>
+                  {!ready && (
+                    <span class="muted text-sm" id={`${q.id}-gate`}>
+                      {q.type === 'multi' ? `Choose ${(q.answer as string[]).length} answers to submit` : q.type === 'matching' ? 'Match every item to submit' : 'Choose an answer to submit'}
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
           <div class="quiz-nav">

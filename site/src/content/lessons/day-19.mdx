@@ -49,19 +49,19 @@ Each stage changes the model's **weights** (its learned parameters). That is the
 
 A foundation model starts with **pre-training** on an enormous, broad, mostly **unlabelled** dataset — web pages, books, code, scientific papers, often trillions of tokens. The learning is **self-supervised** (Day 3): the data supplies its own labels. A large language model repeatedly sees text with the next word hidden and learns to predict it. Do that billions of times and the model absorbs grammar, facts, reasoning patterns and coding styles.
 
-Pre-training needs thousands of GPUs or AWS Trainium chips running for weeks or months, careful data engineering and deep expertise. On AWS, very large training runs typically use Amazon SageMaker HyperPod, which manages resilient clusters for long jobs. The cost can reach tens of millions of dollars, which is why the exam treats "pre-train your own model from scratch" as the **most expensive** option — only right for organisations whose core business is building models or that have truly unique data at massive scale.
+Pre-training needs thousands of GPUs or AWS Trainium chips running for weeks or months, careful data engineering and deep expertise. On AWS, very large training runs typically use Amazon SageMaker HyperPod, which manages resilient clusters for long jobs. The cost can reach tens of millions of dollars, which is why "pre-train your own model from scratch" is the **most expensive** option — only right for organisations whose core business is building models or that have truly unique data at massive scale.
 
 The result is a *base model*: it can continue text, but it does not reliably follow instructions or hold a polite conversation yet.
 
 ### Continued pre-training: learning a domain's language
 
-**Continued pre-training** (the exam guide also calls it *continuous pre-training*) takes an existing pre-trained model and trains it further, in the same self-supervised way, on a large body of **unlabelled domain text** — for example millions of internal engineering reports, clinical notes or legal judgments.
+**Continued pre-training** (also called *continuous pre-training*) takes an existing pre-trained model and trains it further, in the same self-supervised way, on a large body of **unlabelled domain text** — for example millions of internal engineering reports, clinical notes or legal judgments.
 
 - **Data:** unlabelled raw text from your domain — no prompt–answer pairs needed.
 - **Result:** the model learns the vocabulary, jargon and facts of that domain, such as what "EBITDA", "contraindication" or "estoppel" mean in context.
 - **Cost:** higher than fine-tuning because the dataset is large, far lower than pre-training from scratch.
 
-On Amazon Bedrock, continued pre-training was offered only for a few older Amazon Titan text models (you uploaded the text to Amazon S3 and started a customisation job); current Bedrock customisation centres on supervised fine-tuning, reinforcement fine-tuning and distillation. The concept still matters for the exam, and you can run continued pre-training yourself on SageMaker AI.
+On Amazon Bedrock, continued pre-training was offered only for a few older Amazon Titan text models (you uploaded the text to Amazon S3 and started a customisation job); current Bedrock customisation centres on supervised fine-tuning, reinforcement fine-tuning and distillation. The concept still matters, and you can run continued pre-training yourself on SageMaker AI.
 
 ### Fine-tuning: teaching a task with examples
 
@@ -77,7 +77,7 @@ Fine-tuning jobs have **hyperparameters** (Day 2) such as the number of **epochs
 
 A known risk is **catastrophic forgetting**: fine-tuning narrowly and aggressively can make the model worse at general tasks it used to do well. Using moderate learning rates, fewer epochs, parameter-efficient methods and some general examples in the training mix reduces it.
 
-### Fine-tuning methods named in the exam guide
+### Fine-tuning methods
 
 **Instruction tuning.** A base model predicts text; it does not naturally follow orders. Instruction tuning fine-tunes it on many examples of *instruction → good response* across many tasks ("Translate this…", "List three…", "Explain like I am ten…"). The result is an *instruct* or *chat* model that follows instructions it has never seen. Most models you use on Amazon Bedrock have already been instruction-tuned by their providers; you can add your own instruction-style examples for your tasks.
 
@@ -95,7 +95,7 @@ Instruction tuning teaches a model to follow orders, but not which of several po
 2. **Train a reward model.** A separate model learns to predict the human rankings — it becomes an automated judge of "how much would a person like this answer?"
 3. **Optimise the FM with reinforcement learning.** The FM generates answers, the reward model scores them and an RL algorithm adjusts the FM's weights to earn higher rewards — while staying close enough to the original model that it does not drift into nonsense.
 
-RLHF is a big reason modern assistants refuse harmful requests politely, admit uncertainty and format answers helpfully. Reinforcement learning (Day 3) supplies the trial-and-reward loop; humans supply the definition of "good". RLHF depends on **high-quality human labelling**: Amazon SageMaker Ground Truth can manage human workforces that rank or rate model responses. Newer techniques can learn from preference data more directly, or use AI feedback, but the exam focuses on the RLHF idea: **human preferences → reward → better-aligned model**.
+RLHF is a big reason modern assistants refuse harmful requests politely, admit uncertainty and format answers helpfully. Reinforcement learning (Day 3) supplies the trial-and-reward loop; humans supply the definition of "good". RLHF depends on **high-quality human labelling**: Amazon SageMaker Ground Truth can manage human workforces that rank or rate model responses. Newer techniques can learn from preference data more directly, or use AI feedback, but the core idea is RLHF: **human preferences → reward → better-aligned model**.
 
 ### Distillation: a smaller model that punches above its weight
 
@@ -111,7 +111,7 @@ Choose distillation when a large model already gives the quality you need but **
 
 ### Preparing data: the part that decides success
 
-For every kind of customisation, data quality beats model choice. Task statement 3.3 names five data considerations:
+For every kind of customisation, data quality beats model choice. There are five data considerations:
 
 - **Curation** — select relevant, high-quality examples; remove duplicates, errors, boilerplate, toxic content and examples that contradict each other. A few thousand clean examples outperform a hundred thousand messy ones.
 - **Governance** — know where the data came from (**lineage**), whether you have the **licence and consent** to train on it, and who may access it. Remove or mask **personally identifiable information (PII)** unless there is a lawful reason to keep it. AWS Glue Data Catalog and AWS Lake Formation help catalogue and control access; Amazon Macie can discover sensitive data in S3.

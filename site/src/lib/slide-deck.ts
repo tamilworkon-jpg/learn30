@@ -333,6 +333,10 @@ export function initSlideDeck(deck: HTMLElement) {
     deck.style.setProperty('--stage-h', `${Math.round(a.height)}px`);
   }
 
+  // Watches islands (quiz, MarkComplete) for size-changing updates. Paging itself toggles classes inside
+  // them, so the deck drops its own mutation records after every re-page/slide change — otherwise each
+  // re-page queues the next one (an endless loop that closed dropdowns and reset scrolling).
+  const islandWatch = new MutationObserver(() => later(150)); // `later` is defined below; only called after init
   const repaginate = () => {
     if (!groups) return;
     const anchor = slides[index];
@@ -371,6 +375,7 @@ export function initSlideDeck(deck: HTMLElement) {
     }
     const now = slides[index];
     if (anchor && now && now.group === anchor.group && now.part === anchor.part && now.group.scroll) article.scrollTop = keepScroll;
+    islandWatch.takeRecords();
   };
 
   // ---------- navigation ----------
@@ -445,6 +450,7 @@ export function initSlideDeck(deck: HTMLElement) {
     if (opts.scroll) deckInView();
     placeArrows();
     markScrollable();
+    islandWatch.takeRecords();
   }
 
   const fromHash = (hash: string): number | null => {
@@ -518,7 +524,6 @@ export function initSlideDeck(deck: HTMLElement) {
   if (notice) ro.observe(notice);
   document.addEventListener('layoutchange', () => later(60));
   // Islands (MarkComplete) change size when they hydrate or celebrate: re-page their slide.
-  const islandWatch = new MutationObserver(() => later(150));
   article.querySelectorAll(':scope > astro-island').forEach((isl) => islandWatch.observe(isl, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-ready', 'class'] }));
 
   const enterSlides = (initial: boolean) => {

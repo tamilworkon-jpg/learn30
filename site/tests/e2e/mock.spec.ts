@@ -49,9 +49,20 @@ test.describe('mock exam (T086) @visual', () => {
     const pal = runner(page).locator('.palette button');
     await expect(pal).toHaveCount(65);
 
+    // visible radio + requirement pill; "Save answer" gated until an answer is chosen; never reveals the key
+    const save = runner(page).locator('[data-save-answer]');
+    await expect(runner(page).locator('.q-req')).toHaveText(/Single answer · choose 1/);
+    await expect(runner(page).locator('input.opt-input[type="radio"]').first()).toBeVisible();
+    await expect(save).toBeDisabled();
     // answer Q1, jump with the palette, flag/unflag
     await runner(page).locator('label.opt').filter({ hasText: 'Correct answer 1' }).click();
     await expect(pal.nth(0)).toHaveClass(/answered/);
+    await expect(save).toBeEnabled();
+    await expect(save).toHaveText('Save answer & next question →');
+    await expect(runner(page).locator('[data-feedback], .opt-correct, .opt-wrong')).toHaveCount(0);
+    await save.click();
+    await expect(heading(page)).toHaveText('Question 2 of 65');
+    await expect(runner(page).locator('[data-feedback], .opt-correct, .opt-wrong')).toHaveCount(0);
     await pal.nth(9).click();
     await expect(heading(page)).toHaveText('Question 10 of 65');
     await expect(pal.nth(9)).toHaveAttribute('aria-current', 'step');

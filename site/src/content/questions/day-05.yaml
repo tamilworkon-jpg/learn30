@@ -8,7 +8,7 @@
     - { id: c, text: "Use a foundation model on Amazon Bedrock to calculate the deduction from a prompt", explanation: "Incorrect. Foundation models are probabilistic and can make arithmetic or rule errors; they are the wrong tool for exact calculations." }
     - { id: d, text: "Use clustering to group employees into tax bands", explanation: "Incorrect. Tax bands are already defined by fixed rules, so there is nothing for an unsupervised model to discover." }
   answer: [b]
-  explanation: "ML predictions are probabilistic — right most of the time, not every time. When a result must be exact and follows known rules, such as tax, interest or fixed eligibility criteria, ordinary code is the correct solution. Recognising when not to use AI is part of task statement 1.2."
+  explanation: "ML predictions are probabilistic — right most of the time, not every time. When a result must be exact and follows known rules, such as tax, interest or fixed eligibility criteria, ordinary code is the correct solution. Recognising when not to use AI is as important as knowing when to use it."
   domain: D1
   taskStatement: "1.2"
   lessonRef: day-05#explanation
@@ -291,7 +291,7 @@
     - { id: c, text: "Speech recognition with Amazon Transcribe", explanation: "Incorrect. Transcribe converts speech to text; the requirement is answering questions from documents." }
     - { id: d, text: "Forecasting with a regression model on SageMaker AI", explanation: "Incorrect. Forecasting predicts future numeric values, not answers to policy questions." }
   answer: [a]
-  explanation: "The exam guide lists knowledge bases as a real-world AI application. They let a foundation model answer questions using a company's own documents through retrieval-augmented generation. On AWS this is Amazon Bedrock Knowledge Bases, covered in depth on Day 18."
+  explanation: "Knowledge bases are a common real-world AI application. They let a foundation model answer questions using a company's own documents through retrieval-augmented generation. On AWS this is Amazon Bedrock Knowledge Bases, covered in depth on Day 18."
   domain: D1
   taskStatement: "1.2"
   lessonRef: day-05#explanation

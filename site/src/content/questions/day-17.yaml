@@ -322,7 +322,7 @@
     - { id: t3, text: "Poisoning" }
     - { id: t4, text: "Jailbreaking" }
   answer: { a: t3, b: t4, c: t1, d: t2 }
-  explanation: "Task statement 3.2 names four prompt risks: poisoning (corrupted data), jailbreaking (bypassing safety rules), hijacking (replacing the task) and exposure (revealing sensitive data)."
+  explanation: "There are four main prompt risks: poisoning (corrupted data), jailbreaking (bypassing safety rules), hijacking (replacing the task) and exposure (revealing sensitive data)."
   domain: D3
   taskStatement: "3.2"
   lessonRef: day-17#examples

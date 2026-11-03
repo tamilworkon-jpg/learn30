@@ -640,7 +640,7 @@
     - { id: c, text: "Whether the model supports prompt caching", explanation: "Correct. With caching, the repeated 5,000-token prefix is read from the cache at a large discount on later requests." }
     - { id: d, text: "Whether the model was released most recently", explanation: "Incorrect. Release date does not change the cost of repeated prefixes." }
   answer: [c]
-  explanation: "Task statement 3.1 includes prompt caching as an FM selection criterion. For workloads with a long, stable prefix, caching can cut the cost of cached input tokens by up to about 90% and reduce latency, so caching support can change a model's effective price considerably."
+  explanation: "Prompt caching support is an important FM selection criterion. For workloads with a long, stable prefix, caching can cut the cost of cached input tokens by up to about 90% and reduce latency, so caching support can change a model's effective price considerably."
   domain: D3
   taskStatement: "3.1"
   lessonRef: day-13#explanation

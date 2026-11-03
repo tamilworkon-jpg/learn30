@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createStore } from '../../src/lib/progress/store';
-import { createQuizSession, displayOrder, isAnswered, unanswered } from '../../src/lib/quiz-state';
+import { canSubmitAnswer, createQuizSession, displayOrder, isAnswered, requirement, unanswered } from '../../src/lib/quiz-state';
 import { validateProgress } from '../../src/schemas';
 import type { Question } from '../../src/lib/types';
 
@@ -116,5 +116,21 @@ describe('quiz state (T049)', () => {
     expect(s.best()).toBe(100);
     expect(store.get().days).toEqual({});
     expect(validateProgress(store.get())).toBe(true);
+  });
+
+  it('requirement pill + per-question submit gating (learner feedback)', () => {
+    const [single, multi, ordering, matching] = questions;
+    expect(requirement(single).label).toBe('Single answer · choose 1');
+    expect(requirement(multi)).toMatchObject({ need: 2, label: 'Multiple answers · choose 2' });
+    expect(requirement(ordering).label).toBe('Put in order');
+    expect(requirement(matching).label).toBe('Match each item');
+    expect(canSubmitAnswer(single, undefined)).toBe(false);
+    expect(canSubmitAnswer(single, ['a'])).toBe(true);
+    expect(canSubmitAnswer(multi, ['a'])).toBe(false);
+    expect(canSubmitAnswer(multi, ['a', 'b'])).toBe(true);
+    expect(canSubmitAnswer(multi, ['a', 'b', 'c'])).toBe(false);
+    expect(canSubmitAnswer(ordering, undefined)).toBe(true);
+    expect(canSubmitAnswer(matching, { a: 't1' })).toBe(false);
+    expect(canSubmitAnswer(matching, { a: 't1', b: 't2', c: 't3' })).toBe(true);
   });
 });

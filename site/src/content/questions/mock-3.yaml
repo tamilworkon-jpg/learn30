@@ -193,7 +193,7 @@
     - { id: t4, text: "Strands Agents" }
     - { id: t5, text: "Amazon SageMaker AI" }
   answer: { a: t1, b: t2, c: t3, d: t4, e: t5 }
-  explanation: "Picture the AWS GenAI stack as floors: SageMaker AI for building models with full control, Bedrock for FMs as a service, Strands Agents and AgentCore for writing and running agents, and ready-made applications at the top: Amazon Quick for business users, Kiro for developers and AWS Transform for modernisation. Exam clues are who the user is and how much control they need."
+  explanation: "Picture the AWS GenAI stack as floors: SageMaker AI for building models with full control, Bedrock for FMs as a service, Strands Agents and AgentCore for writing and running agents, and ready-made applications at the top: Amazon Quick for business users, Kiro for developers and AWS Transform for modernisation. The deciding clues are who the user is and how much control they need."
   domain: D2
   taskStatement: "2.3"
   lessonRef: day-12#explanation
@@ -286,11 +286,11 @@
   options:
     - { id: a, text: "An interface VPC endpoint powered by AWS PrivateLink", explanation: "Correct. PrivateLink gives private connectivity from the VPC to Bedrock without traversing the internet." }
     - { id: b, text: "AWS KMS customer managed keys", explanation: "Correct. Customer managed keys let the company control key policy, rotation and revocation, with key use auditable in CloudTrail." }
-    - { id: c, text: "AWS WAF in front of the application", explanation: "Incorrect. WAF filters HTTP traffic and is out of scope for the v1.2 exam; it does not keep traffic private or manage keys." }
-    - { id: d, text: "Amazon GuardDuty", explanation: "Incorrect. GuardDuty is threat detection and is out of scope; it provides neither private connectivity nor key control." }
-    - { id: e, text: "Amazon Cognito user pools", explanation: "Incorrect. Cognito handles end-user sign-in and is out of scope; it does not affect network paths or encryption keys." }
+    - { id: c, text: "AWS WAF in front of the application", explanation: "Incorrect. WAF filters HTTP traffic; it does not keep traffic private or manage keys." }
+    - { id: d, text: "Amazon GuardDuty", explanation: "Incorrect. GuardDuty is threat detection; it provides neither private connectivity nor key control." }
+    - { id: e, text: "Amazon Cognito user pools", explanation: "Incorrect. Cognito handles end-user sign-in; it does not affect network paths or encryption keys." }
   answer: [a, b]
-  explanation: "Private connectivity → VPC interface endpoint (AWS PrivateLink). Control, rotate, revoke or audit encryption keys → AWS KMS customer managed key. AWS WAF, GuardDuty, Shield, Cognito, CloudHSM and ACM are out of scope in the v1.2 guide and usually appear as distractors."
+  explanation: "Private connectivity → VPC interface endpoint (AWS PrivateLink). Control, rotate, revoke or audit encryption keys → AWS KMS customer managed key. AWS WAF (web filtering), GuardDuty (threat detection), Shield (DDoS), Cognito (user sign-in), CloudHSM and ACM (certificates) solve different problems and do not provide private connectivity or customer-controlled keys for Bedrock."
   domain: D5
   taskStatement: "5.1"
   lessonRef: day-25#exam-tips
@@ -367,7 +367,7 @@
   options:
     - { id: a, text: "The model returns the name of a tool and its arguments, and the application or agent runtime executes the tool", explanation: "Correct. LLMs only produce text; the host application, Lambda function or runtime runs the tool and returns the result." }
     - { id: b, text: "Long-term memory stores facts outside the model and retrieves them into the context in later sessions", explanation: "Correct. Long-term memory persists preferences and facts across sessions and is retrieved when relevant, much like RAG." }
-    - { id: c, text: "The LLM opens network connections and calls the API directly", explanation: "Incorrect. The model cannot execute anything itself; this is the classic exam trap." }
+    - { id: c, text: "The LLM opens network connections and calls the API directly", explanation: "Incorrect. The model cannot execute anything itself; the application or agent runtime makes the call." }
     - { id: d, text: "Short-term memory keeps a user's preferences for months across sessions", explanation: "Incorrect. Short-term memory covers the current session and lives in the context window." }
     - { id: e, text: "Using MCP removes the need for the model to emit tool-use requests", explanation: "Incorrect. MCP standardises how tools are described and reached; the model still emits tool-use requests that the host executes through the MCP client." }
   answer: [a, b]
@@ -403,7 +403,7 @@
     - { id: c, text: "Amazon SageMaker JumpStart", explanation: "Incorrect. JumpStart deploys and fine-tunes pre-trained models for teams with ML skills." }
     - { id: d, text: "AWS Glue DataBrew", explanation: "Incorrect. DataBrew is a no-code data preparation tool, not a BI and agent workspace." }
   answer: [a]
-  explanation: "Guide v1.2 names Amazon Quick for business users (insights, dashboards, no-code agents, automation) and Kiro for developers. Older materials referred to Amazon Q, which is not listed in v1.2."
+  explanation: "Amazon Quick serves business users (insights, dashboards, no-code agents, automation) and Kiro serves developers (spec-driven, agentic coding). Older materials referred to Amazon Q for these jobs."
   domain: D1
   taskStatement: "1.3"
   lessonRef: day-06#exam-tips
@@ -554,7 +554,7 @@
     - { id: c, text: "Amazon Bedrock Prompt Management", explanation: "Correct. Prompt Management stores, tests, versions and shares prompts together with their model and inference settings." }
     - { id: d, text: "Amazon Bedrock Knowledge Bases", explanation: "Incorrect. Knowledge Bases provide managed RAG over documents." }
   answer: [c]
-  explanation: "Prompt templates with variables make good prompts reusable and safer. Amazon Bedrock Prompt Management versions, compares, shares and reuses them, which is the v1.2 objective 'prompt versioning'."
+  explanation: "Prompt templates with variables make good prompts reusable and safer. Amazon Bedrock Prompt Management versions, compares, shares and reuses them, which is how prompt versioning is done on AWS."
   domain: D3
   taskStatement: "3.2"
   lessonRef: day-16#summary
@@ -586,7 +586,7 @@
     - { id: c, text: "Open-weight models cannot be fine-tuned, so the plan is not possible", explanation: "Incorrect. Open-weight models can be fine-tuned, subject to their licence." }
     - { id: d, text: "Publishing the fine-tuned weights removes all licence obligations", explanation: "Incorrect. Publishing does not remove the obligations of the original licence." }
   answer: [b]
-  explanation: "Open-weight ≠ open training data. Open models can improve transparency, but always check licence terms (commercial use, attribution, restrictions). Task statement 4.2 lists open-source and licensing among transparency considerations."
+  explanation: "Open-weight ≠ open training data. Open models can improve transparency, but always check licence terms (commercial use, attribution, restrictions). Open-source status and licensing are both part of judging how transparent a model is."
   domain: D4
   taskStatement: "4.2"
   lessonRef: day-24#exam-tips
@@ -912,8 +912,8 @@
   options:
     - { id: a, text: "Deploy in EU Regions and use only EU geographic inference profiles for cross-Region inference", explanation: "Correct. Region choice, with care over cross-Region inference, controls data residency." }
     - { id: b, text: "Store the logs in Amazon S3 with S3 Object Lock and a seven-year retention period", explanation: "Correct. Object Lock prevents changes or deletion for the retention period." }
-    - { id: c, text: "Enable AWS Backup for all Bedrock resources", explanation: "Incorrect. AWS Backup is out of scope for the v1.2 exam and does not by itself make logs immutable or keep data in the EU." }
-    - { id: d, text: "Turn on AWS Security Hub", explanation: "Incorrect. Security Hub is out of scope and does not control residency or retention." }
+    - { id: c, text: "Enable AWS Backup for all Bedrock resources", explanation: "Incorrect. AWS Backup copies resources on a schedule but does not by itself make logs immutable or keep data in the EU." }
+    - { id: d, text: "Turn on AWS Security Hub", explanation: "Incorrect. Security Hub aggregates security findings; it does not control residency or retention." }
     - { id: e, text: "Use a global cross-Region inference profile for resilience", explanation: "Incorrect. Global profiles may process requests in any supported Region, which breaks the residency requirement." }
   answer: [a, b]
   explanation: "Data governance covers lifecycle, logging, residency, monitoring and retention. 'Data must stay in a country' → Region choice and care with cross-Region inference. 'Keep for N years' → retention controls such as S3 Object Lock, Lifecycle rules and log retention."

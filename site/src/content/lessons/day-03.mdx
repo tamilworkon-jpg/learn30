@@ -38,7 +38,7 @@ keyPoints:
 
 ### Why data comes first
 
-A model can only learn what its data contains. Before choosing an algorithm, a practitioner asks three questions: *What form is the data in? Do we know the right answers for past examples? What do we want the model to produce?* The answers decide almost everything else, and the exam often hides the correct option inside these clues.
+A model can only learn what its data contains. Before choosing an algorithm, a practitioner asks three questions: *What form is the data in? Do we know the right answers for past examples? What do we want the model to produce?* The answers decide almost everything else, and the right approach is usually hidden inside these clues.
 
 ### Labelled vs unlabelled data
 
@@ -53,7 +53,7 @@ Most of the world's data is unlabelled, and labelling is slow and costly because
 - **Semi-structured data** has some organisation but no rigid schema — JSON documents, log files, XML.
 - **Unstructured data** has no predefined model — free text, images, audio, video, PDFs. Around 80–90% of enterprise data is unstructured, and deep learning and generative AI are what made it usable at scale.
 
-### Data types named in task statement 1.1
+### Data types
 
 | Type | What it looks like | Typical tasks | AWS examples |
 |---|---|---|---|
@@ -88,9 +88,9 @@ The Udemy course also covers **distance measures** — how "close" two items are
 
 ### Reinforcement learning: learning by trial, error and reward
 
-In **reinforcement learning (RL)** an **agent** takes **actions** in an **environment**, receives a **reward** or penalty, and gradually learns a **policy** — a strategy that maximises total reward over time. Nobody provides the correct answer for each step; the agent discovers good behaviour by experimenting. RL powers game-playing systems, robotics, warehouse routing, dynamic pricing and autonomous driving simulations. Its most important appearance on this exam is **reinforcement learning from human feedback (RLHF)**: people rate a model's answers, and those ratings become the reward signal that teaches a foundation model to be more helpful and less harmful (Day 19).
+In **reinforcement learning (RL)** an **agent** takes **actions** in an **environment**, receives a **reward** or penalty, and gradually learns a **policy** — a strategy that maximises total reward over time. Nobody provides the correct answer for each step; the agent discovers good behaviour by experimenting. RL powers game-playing systems, robotics, warehouse routing, dynamic pricing and autonomous driving simulations. Its most important use for generative AI is **reinforcement learning from human feedback (RLHF)**: people rate a model's answers, and those ratings become the reward signal that teaches a foundation model to be more helpful and less harmful (Day 19).
 
-The Udemy course splits RL into further types (value-based, policy-based, model-based); the AI Practitioner exam only expects the core idea — agent, environment, action, reward, policy — and good use cases.
+The Udemy course splits RL into further types (value-based, policy-based, model-based); for an AI practitioner the core idea is what matters — agent, environment, action, reward, policy — and good use cases.
 
 ### Semi-supervised and self-supervised learning
 
@@ -99,7 +99,7 @@ The Udemy course splits RL into further types (value-based, policy-based, model-
 
 ### Data quality: the step that decides success
 
-Whatever learning type you choose, poor data produces a poor model. Before training, practitioners clean and prepare data. You will not perform these steps on the exam (feature engineering is explicitly out of scope for the candidate), but you must recognise *why* they matter.
+Whatever learning type you choose, poor data produces a poor model. Before training, practitioners clean and prepare data. An AI practitioner does not usually perform these steps by hand (feature engineering is specialist work for data scientists), but you must recognise *why* they matter.
 
 - **Missing values** — a customer's age or income is blank. Options: remove the rows, fill the gap with a typical value (mean, median, most frequent), or let an algorithm that tolerates gaps handle it. Removing too many rows can make the data unrepresentative.
 - **Duplicates and errors** — the same transaction recorded twice, a height of 17 metres, dates in two different formats. These distort patterns and should be fixed or removed.
@@ -123,7 +123,7 @@ On AWS, **SageMaker Data Wrangler** (also available inside SageMaker Canvas) pro
 | Recommendations | Collaborative filtering, factorization machines | Amazon Personalize packages this as a service |
 | Images and text | Convolutional and transformer neural networks | Deep learning (Day 4) |
 
-The exam will not ask you to tune these algorithms. It may ask you to recognise which *family* a named algorithm belongs to, or which managed service hides the algorithm entirely (for example, Amazon Personalize for recommendations).
+As a practitioner you do not need to tune these algorithms. You should recognise which *family* a named algorithm belongs to, or which managed service hides the algorithm entirely (for example, Amazon Personalize for recommendations).
 
 ### Choosing the approach: the decision questions
 
@@ -198,7 +198,7 @@ The exam will not ask you to tune these algorithms. It may ask you to recognise 
 A utility company forecasts electricity demand for each region every hour using **supervised regression on time-series data** (past demand, weather, holidays). It **clusters** smart-meter customers into usage profiles to design new tariffs. **Anomaly detection** watches transformer sensor readings and raises an alert days before likely failures. Field-inspection photos are checked with **computer vision** to spot corroded equipment. And in a simulator, a **reinforcement learning** agent learns when to charge and discharge large batteries to balance the grid at the lowest cost.
 </Callout>
 
-Notice how the *data* drove each choice. Demand history is labelled (the actual demand is recorded every hour), so supervised regression fits. Customer usage profiles have no "right answer", so clustering fits. Failures are rare and poorly labelled, so anomaly detection is the practical starting point. Battery control involves sequences of decisions with delayed consequences, which is exactly what reinforcement learning is designed for. The exam will give you a short scenario like each of these and ask which technique applies; look for clues about labels, output type and whether the system learns by acting.
+Notice how the *data* drove each choice. Demand history is labelled (the actual demand is recorded every hour), so supervised regression fits. Customer usage profiles have no "right answer", so clustering fits. Failures are rare and poorly labelled, so anomaly detection is the practical starting point. Battery control involves sequences of decisions with delayed consequences, which is exactly what reinforcement learning is designed for. Practise reading a short scenario like each of these and naming which technique applies; look for clues about labels, output type and whether the system learns by acting.
 
 A second lesson from the utility: labelling was the bottleneck. Inspection photos needed engineers to mark corrosion, which was slow and expensive. The team used SageMaker Ground Truth with a small expert workforce and active learning, so the model labelled the obvious images and engineers reviewed only the uncertain ones — cutting labelling effort substantially while keeping quality high.
 
@@ -270,6 +270,6 @@ An end-to-end view links data types to the AWS services that store, prepare, lab
   s3 --> fm["Amazon Bedrock foundation models"]`}
 />
 
-**Trade-offs.** Labelling cost often decides between supervised and unsupervised approaches. Pre-trained AI services avoid labelling entirely for common tasks. Foundation models reduce labelled-data needs through prompting and light fine-tuning, but cost more per prediction than a small tabular model. For a tabular churn problem with plenty of labels, a gradient-boosted tree is usually cheaper, faster and easier to explain than a large language model — remember this when the exam asks you to choose between traditional ML and foundation models.
+**Trade-offs.** Labelling cost often decides between supervised and unsupervised approaches. Pre-trained AI services avoid labelling entirely for common tasks. Foundation models reduce labelled-data needs through prompting and light fine-tuning, but cost more per prediction than a small tabular model. For a tabular churn problem with plenty of labels, a gradient-boosted tree is usually cheaper, faster and easier to explain than a large language model — remember this whenever you choose between traditional ML and foundation models.
 
 </Section>

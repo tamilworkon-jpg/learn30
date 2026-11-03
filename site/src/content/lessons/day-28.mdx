@@ -25,7 +25,7 @@ keyPoints:
 
 <Section id="concept-map" type="conceptMap" title="Course concept map" minutes={10}>
 
-All topics from Days 1–27, grouped by exam domain — the whole exam on one page. The second map zooms into this week: which AWS tool answers which responsible-AI, security or governance question.
+All topics from Days 1–27, grouped by exam domain — the whole course on one page. The second map zooms into this module: which AWS tool answers which responsible-AI, security or governance question.
 
 <Diagram
   caption="Concept map of Days 1 to 27 grouped by the five exam domains: AI and ML fundamentals, generative AI fundamentals, applications of foundation models, responsible AI, and security, compliance and governance"
@@ -123,7 +123,7 @@ All topics from Days 1–27, grouped by exam domain — the whole exam on one pa
 - **"Clarify is the documentation tool"** — SageMaker Model Cards document your models and AWS AI Service Cards document AWS services; Clarify reports can be attached to a card.
 - **"AWS secures my prompts and IAM policies"** — under shared responsibility you own IAM, data, prompts, guardrail settings and how outputs are used.
 - **"Catalog, lineage, Model Card and Lake Formation are interchangeable"** — match the verb: find data (Glue Data Catalog), trace its flow (lineage), document the model (Model Card), restrict access (Lake Formation).
-- **"AWS WAF, Amazon GuardDuty, AWS Shield or Amazon Cognito secures the model"** — all are out of scope in guide v1.2 and usually distractors. Harmful prompts → Guardrails; private traffic → PrivateLink; access → IAM.
+- **"AWS WAF, Amazon GuardDuty, AWS Shield or Amazon Cognito secures the model"** — none of these protects the model itself. Harmful prompts → Guardrails; private traffic → PrivateLink; access → IAM.
 - **"AWS Security Hub, AWS Control Tower, AWS Audit Manager or AWS Backup proves compliance"** — out of scope or not listed. Use Config for configuration compliance, Inspector for vulnerabilities, Artifact for AWS reports and CloudTrail for audit.
 - **"Full transparency is always safer"** — publishing everything can help attackers or expose data; balance transparency with safety and explain in terms the audience can act on.
 

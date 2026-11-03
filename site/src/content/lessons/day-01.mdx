@@ -19,7 +19,7 @@ deepDiveMinutes: 15
 lastVerified: '2026-11-02'
 examTraps: ['AWS DeepLens', 'Amazon Q']
 keyPoints:
-  - 'AIF-C01 v1.2: 65 questions (50 scored), 90 minutes, pass 700/1000, five domains weighted 20/24/28/14/14.'
+  - 'Choose the highest AWS layer that solves the problem: managed AI service → Amazon Bedrock → SageMaker AI.'
   - 'AI ⊃ machine learning ⊃ deep learning ⊃ generative AI; agentic AI uses generative models to plan and act with tools.'
   - 'Machine learning learns patterns from data instead of following hand-written rules.'
   - 'Generative AI creates new content (text, images, code, audio) using foundation models trained on huge datasets.'
@@ -32,7 +32,7 @@ Welcome to Day 1 of your 30-day plan for the **AWS Certified AI Practitioner (AI
 
 <Orientation />
 
-**How this course maps to the exam.** Weeks 1–4 each finish with a review day (Days 7, 14, 21 and 28) and Days 29–30 are full mock exams. Study time follows the exam weights, so Domain 3 (applications of foundation models, 28%) gets the most days.
+**How this course maps to the exam.** Modules 1–4 each finish with a review day (Days 7, 14, 21 and 28) and Days 29–30 are full mock exams. Study time follows the exam weights, so Domain 3 (applications of foundation models, 28%) gets the most days.
 
 <Callout type="tip" title="Your daily routine">Study at the same time every weekday, take the quiz *before* re-reading, and write down every question you got wrong. Those notes become your revision sheet in Module 5 (Days 29–30).</Callout>
 
@@ -48,13 +48,13 @@ Welcome to Day 1 of your 30-day plan for the **AWS Certified AI Practitioner (AI
 
 For most of computing history, software followed rules a programmer wrote by hand: *if the account balance is below zero, block the payment*. This works when the rules are simple and known. But try writing rules that recognise a cat in a photo, detect a fraudulent transaction hidden among millions of normal ones, or translate a sentence into Japanese. The rules become impossible to write by hand. **Artificial intelligence (AI)** is the broad field of building systems that perform tasks we normally associate with human intelligence — perceiving, reasoning, learning, understanding language, making decisions.
 
-AI is an umbrella term. Underneath it sit several more specific ideas that the exam expects you to tell apart.
+AI is an umbrella term. Underneath it sit several more specific ideas that you need to tell apart.
 
 ### Machine learning (ML): learning from data instead of rules
 
 **Machine learning** is the part of AI where a system *learns patterns from data* rather than following hand-coded rules. You show an ML algorithm thousands of past transactions labelled "fraud" or "not fraud", and it works out the patterns that separate them. The result of that learning is a **model** — a mathematical function that takes new input and produces a prediction.
 
-Three words you will see on every exam:
+Three words you will meet in every AI project:
 
 - **Algorithm** — the learning procedure (for example, linear regression, decision trees, XGBoost). Think of it as the *recipe*.
 - **Model** — what you get after the algorithm has learned from data. Think of it as the *cooked dish*.
@@ -74,13 +74,13 @@ The engines of generative AI are **foundation models (FMs)**: very large models 
 
 ### Agentic AI: models that plan and act
 
-The newest term on the exam guide (added in v1.2) is **agentic AI**. An **AI agent** uses a foundation model as its "brain" to *reason about a goal, break it into steps, call tools* (APIs, databases, search, other agents) and act — then check the result and continue. A chatbot answers your question about flight times; an agent can search flights, compare prices against your calendar, book the ticket through an API and email you the receipt. Agentic AI adds **planning, tool use, memory and orchestration** on top of generative AI. Day 10 is dedicated to agents, the Model Context Protocol (MCP) and multi-agent systems.
+The newest layer is **agentic AI**. An **AI agent** uses a foundation model as its "brain" to *reason about a goal, break it into steps, call tools* (APIs, databases, search, other agents) and act — then check the result and continue. A chatbot answers your question about flight times; an agent can search flights, compare prices against your calendar, book the ticket through an API and email you the receipt. Agentic AI adds **planning, tool use, memory and orchestration** on top of generative AI. Day 10 is dedicated to agents, the Model Context Protocol (MCP) and multi-agent systems.
 
 ### Putting the family tree together
 
 The terms nest inside each other: **AI ⊃ ML ⊃ deep learning ⊃ generative AI**, and **agentic AI** builds on generative AI by adding the ability to act. Not every AI system is ML (a rules-based expert system is AI without learning), not every ML model is deep learning (a decision tree is not a neural network), and not every deep learning model is generative (an image classifier is deep learning but only labels images).
 
-### A short history (why the exam mentions "evolution")
+### A short history (how AI evolved)
 
 - **1950** — Alan Turing proposes the *imitation game* (Turing test) to ask whether machines can think.
 - **1956** — The Dartmouth workshop coins the term "artificial intelligence".
@@ -94,11 +94,11 @@ The terms nest inside each other: **AI ⊃ ML ⊃ deep learning ⊃ generative A
 
 ### Narrow AI vs general AI
 
-Every system you will meet on the exam is **narrow AI**: it performs specific tasks, sometimes better than people, but cannot transfer that skill to unrelated problems the way humans do. *Artificial general intelligence (AGI)* — human-level intelligence across any task — does not exist today and is not tested.
+Every system in use today is **narrow AI**: it performs specific tasks, sometimes better than people, but cannot transfer that skill to unrelated problems the way humans do. *Artificial general intelligence (AGI)* — human-level intelligence across any task — does not exist today and is not tested.
 
-### Key vocabulary from task statement 1.1
+### Key AI vocabulary
 
-The exam guide lists the terms below by name. Learn a one-sentence definition for each — many questions simply test whether you can match a term to its meaning.
+Learn a one-sentence definition for each term below — knowing exactly what each word means makes every later topic easier.
 
 - **Neural network** — a model made of layers of connected "neurons" (simple mathematical units). Each connection has a weight that is adjusted during training. Many layers = deep learning.
 - **Computer vision (CV)** — AI that interprets images and video: classification ("is this a cat?"), object detection ("where are the cars?"), face analysis, reading text in images.
@@ -106,7 +106,7 @@ The exam guide lists the terms below by name. Learn a one-sentence definition fo
 - **Training data** — the examples a model learns from. Its quality, quantity and representativeness set an upper limit on how good the model can be ("garbage in, garbage out").
 - **Features and labels** — features are the input attributes (house size, location); the label is the answer you want to predict (price). Labelled data has the answer attached; unlabelled data does not.
 - **Fit** — how well a model captures the real pattern. *Underfitting* means it is too simple and misses the pattern; *overfitting* means it memorised the training data, including noise, and fails on new data. Day 2 covers this in depth.
-- **Bias** — has two meanings on the exam. In statistics, bias is systematic error from overly simple assumptions (linked to underfitting). In responsible AI, bias means a model treats groups of people unfairly, often because the training data under-represents or misrepresents them.
+- **Bias** — has two meanings in AI. In statistics, bias is systematic error from overly simple assumptions (linked to underfitting). In responsible AI, bias means a model treats groups of people unfairly, often because the training data under-represents or misrepresents them.
 - **Fairness** — the goal that a model's outcomes do not disadvantage individuals or groups based on attributes such as gender, age or ethnicity. Fairness is measured, not assumed (Module 4).
 - **Large language model (LLM)** — a foundation model trained on vast amounts of text to understand and generate language one token at a time.
 - **Prompt** — the input text (instructions, context, examples) you give a generative model. Writing good prompts is *prompt engineering* (Day 16).
@@ -116,9 +116,9 @@ The exam guide lists the terms below by name. Learn a one-sentence definition fo
 
 AI creates value when a task is **repetitive at large scale** (reviewing millions of transactions), **needs speed** (responding in milliseconds), **benefits from consistency** (applying the same standard every time) or **involves patterns humans cannot see** (subtle signals across hundreds of variables). It also **assists human decisions**, for example by ranking support tickets so agents handle the urgent ones first.
 
-AI struggles — and may be the wrong choice — when there is **too little relevant data**, when a decision must be **fully explainable or exactly deterministic** (calculating tax owed should follow the law's formula, not a prediction), when **errors are very costly and cannot be reviewed**, or when the **cost of building and running a model is higher than the value** it creates. A recurring exam question describes a simple, rules-based problem and asks for the best solution; the correct answer is often *not* to use machine learning at all. Day 5 returns to this cost-benefit thinking.
+AI struggles — and may be the wrong choice — when there is **too little relevant data**, when a decision must be **fully explainable or exactly deterministic** (calculating tax owed should follow the law's formula, not a prediction), when **errors are very costly and cannot be reviewed**, or when the **cost of building and running a model is higher than the value** it creates. A common situation is a simple, rules-based problem and asks for the best solution; the correct answer is often *not* to use machine learning at all. Day 5 returns to this cost-benefit thinking.
 
-Generative models add their own limits: they can hallucinate, give different answers to the same prompt (they are *non-deterministic*), and may reflect biases in their training data. These risks are why the exam spends two whole domains (responsible AI, and security, compliance and governance) on controls such as guardrails, human review and monitoring.
+Generative models add their own limits: they can hallucinate, give different answers to the same prompt (they are *non-deterministic*), and may reflect biases in their training data. These risks are why two whole areas of practice exist (responsible AI, and security, compliance and governance) on controls such as guardrails, human review and monitoring.
 
 ### Where AI lives on AWS
 
@@ -129,7 +129,7 @@ AWS organises its AI offerings in layers. Learn this picture now; every later da
 3. **Generative and agentic AI** — **Amazon Bedrock** gives API access to many foundation models (including Amazon's own **Amazon Nova** models) with features such as Knowledge Bases, Guardrails and Agents; **Amazon Bedrock AgentCore** runs agents securely at scale; **Strands Agents** is an open-source SDK for building agents; **Kiro** is an AI-powered, spec-driven development environment; **Amazon Quick** brings agentic AI to business users for research, analytics and automation.
 4. **Infrastructure** — compute (Amazon EC2 with GPUs and AWS-designed AI chips, AWS Lambda, containers), storage (Amazon S3) and networking that everything above runs on.
 
-The exam rewards picking the *highest* layer that solves the problem: if a managed AI service already does the job, you do not need to train a model in SageMaker AI.
+Pick the *highest* layer that solves the problem: if a managed AI service already does the job, you do not need to train a model in SageMaker AI.
 
 </Section>
 
@@ -185,12 +185,12 @@ The exam rewards picking the *highest* layer that solves the problem: if a manag
 | An assistant that reads a support ticket, checks the order database, issues a refund through an API and replies to the customer | Agentic AI | Plans steps and uses tools to act |
 | A credit-risk score predicted from income and history | Machine learning (supervised) | Predicts a value from historical examples |
 
-Notice the pattern the exam uses: words like *predict*, *classify* and *score* point to ML; *recognise images or speech* points to deep learning; *create, draft, summarise, generate* points to generative AI; *take actions, call APIs, complete multi-step tasks* points to agentic AI.
+Notice the pattern: words like *predict*, *classify* and *score* point to ML; *recognise images or speech* points to deep learning; *create, draft, summarise, generate* points to generative AI; *take actions, call APIs, complete multi-step tasks* points to agentic AI.
 
 **Common confusions to avoid**
 
 1. *“All chatbots are generative AI.”* Not necessarily. A classic Amazon Lex bot recognises the user's intent and fills in slots (date, city) to trigger a fixed workflow — that is NLP and ML, not content generation. A bot that writes free-form answers with an LLM is generative AI.
-2. *“Deep learning and machine learning are different fields.”* Deep learning is a subset of machine learning. The exam may phrase it as “which statement is true” — the subset relationship is the safe answer.
+2. *“Deep learning and machine learning are different fields.”* Deep learning is a subset of machine learning. Whenever the two are compared, remember the subset relationship.
 3. *“A foundation model is the same as an LLM.”* Every LLM is a foundation model, but foundation models also include image, audio and multimodal models.
 4. *“An agent is just a better chatbot.”* The difference is action: an agent decides which tools to call, in which order, and can complete a task without a human typing each step.
 5. *“More AI is always better.”* If a simple rule or a SQL query answers the question reliably, adding ML adds cost and uncertainty without benefit.
@@ -205,7 +205,7 @@ A large online retailer uses **rules** to block orders shipped to embargoed coun
 
 **Other industries follow the same pattern.** In **healthcare**, deep learning models help radiologists by highlighting suspicious regions on scans, while generative AI drafts clinical notes from a recorded consultation that a clinician then reviews and signs. In **financial services**, ML models score transactions for fraud in milliseconds, and an agent can gather documents for a loan application, check them for completeness and route exceptions to a human underwriter. In **media and entertainment**, recommendation models decide which shows appear on your home screen, and generative models create trailers, artwork variations and subtitles in dozens of languages. In **manufacturing**, computer vision inspects products on the line and ML predicts which machine will fail next so maintenance can be scheduled before it breaks.
 
-The lesson for the exam is not the industry itself, but the reasoning: identify the *task* (predict, recognise, generate, act), check whether a *managed* service already does it, and only then consider building something custom. Keep a human in the loop whenever mistakes are expensive or affect people's rights — a theme that returns in Domain 4.
+The lesson is not the industry itself, but the reasoning: identify the *task* (predict, recognise, generate, act), check whether a *managed* service already does it, and only then consider building something custom. Keep a human in the loop whenever mistakes are expensive or affect people's rights — a theme that returns in Domain 4.
 
 </Section>
 
@@ -233,7 +233,7 @@ The lesson for the exam is not the industry itself, but the reasoning: identify 
 <Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={2}>
 
 <Callout type="examTrap" title="Legacy services from older courses">
-Some older training (including the Udemy course) still shows **AWS DeepLens**, a deep-learning video camera. It is discontinued and not part of the v1.2 exam. Similarly, the guide now names **Amazon Quick** and **Kiro** where older material said **Amazon Q** — learn the v1.2 names.
+Some older training (including the Udemy course) still shows **AWS DeepLens**, a deep-learning video camera. It is discontinued. Similarly, **Amazon Quick** and **Kiro** now do the jobs older material gave to **Amazon Q** — learn the current names.
 </Callout>
 
 - If a question says *create, draft, summarise or generate*, think **generative AI**; if it says *take actions across systems* or *multi-step tasks with tools*, think **agentic AI**.
@@ -273,6 +273,6 @@ An architect looks at the same layers as a *request path*. A customer-facing ass
   sec -.-> api`}
 />
 
-**Design trade-offs to notice.** Pre-built services minimise effort but limit customisation. Bedrock gives fast access to many FMs with pay-per-token pricing and no infrastructure to manage. SageMaker AI gives full control (and full responsibility) for custom models. Most real systems mix all three — the skill the exam tests is choosing the right one for each part of the problem.
+**Design trade-offs to notice.** Pre-built services minimise effort but limit customisation. Bedrock gives fast access to many FMs with pay-per-token pricing and no infrastructure to manage. SageMaker AI gives full control (and full responsibility) for custom models. Most real systems mix all three — the real skill is choosing the right one for each part of the problem.
 
 </Section>

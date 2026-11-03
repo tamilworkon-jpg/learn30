@@ -40,7 +40,7 @@ keyPoints:
 
 ### Why prompt engineering is the first tool you reach for
 
-Yesterday's customisation ladder started with **in-context learning** — improving results by changing only the prompt. It needs no training data, no training job and no new model, and you see the effect in seconds. That is why the exam's "least effort" or "lowest cost" answer is so often *prompt engineering*.
+Yesterday's customisation ladder started with **in-context learning** — improving results by changing only the prompt. It needs no training data, no training job and no new model, and you see the effect in seconds. That is why the "least effort" or "lowest cost" choice is so often *prompt engineering*.
 
 **Prompt engineering** is the practice of designing and refining the input to a foundation model so that it produces the output you want. A good analogy is briefing a very capable new colleague who has read the whole internet but knows nothing about your company, your customer or what "good" looks like for this task. Vague briefs get vague work; clear briefs with examples get excellent work.
 
@@ -128,7 +128,7 @@ AWS guidance and the Skill Builder course boil down to these habits:
 
 ### More techniques you may meet
 
-The exam focuses on the techniques above, but course materials and AWS documentation mention a few more. Recognise them by name:
+The techniques above are the core set, but course materials and AWS documentation mention a few more. Recognise them by name:
 
 - **Role (persona) prompting** — assigning the model an identity such as *"You are an experienced tax adviser"*. It changes vocabulary, depth and tone. It is a form of context, not a security control: a role does not stop a determined user from asking for something else.
 - **Prompt chaining** — splitting a big job into a sequence of prompts where each output feeds the next: extract the facts → check them against policy → draft the reply → shorten it. Each step is easier to test, and you can use a cheaper model for simple steps.
@@ -142,7 +142,7 @@ Every word you add to a prompt is tokens you pay for, on every request, and it u
 
 ### Different models, different prompting styles
 
-Prompts are not perfectly portable. Each model family has its own preferred conventions: some respond best to XML-style tags around sections, some have special formatting for system and user turns, and some reasoning models need fewer step-by-step hints because they already reason internally. Model providers publish prompting guides, and Amazon Bedrock's prompt optimisation feature can rewrite a prompt for a chosen model. The practical lesson for the exam: when you switch models, re-test your prompts.
+Prompts are not perfectly portable. Each model family has its own preferred conventions: some respond best to XML-style tags around sections, some have special formatting for system and user turns, and some reasoning models need fewer step-by-step hints because they already reason internally. Model providers publish prompting guides, and Amazon Bedrock's prompt optimisation feature can rewrite a prompt for a chosen model. The practical lesson: when you switch models, re-test your prompts.
 
 ### How do you know a prompt is better?
 
@@ -173,7 +173,7 @@ When prompts become business assets, they need the same care as code. **Amazon B
 - **Reuse prompts** in applications through the Bedrock APIs and as nodes in **Amazon Bedrock Flows**, which chain prompts, knowledge bases and other steps into a workflow.
 - **Optimise prompts** — Bedrock can suggest a rewritten version of a prompt tuned for the chosen model, which you can then compare with the original.
 
-Exam phrasing to watch for: *"version and reuse prompts across teams"*, *"track changes to prompts"*, *"roll back to a previous prompt"* → **Amazon Bedrock Prompt Management**.
+Requirements to watch for: *"version and reuse prompts across teams"*, *"track changes to prompts"*, *"roll back to a previous prompt"* → **Amazon Bedrock Prompt Management**.
 
 </Section>
 

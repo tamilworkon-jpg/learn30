@@ -88,7 +88,7 @@
     - { id: c, text: "Add an instruction to the system prompt telling the model to answer only finance users", explanation: "Incorrect. A prompt instruction is not an access control and can be bypassed by prompt injection." }
     - { id: d, text: "Use IAM policies that allow bedrock:InvokeModel on that model only for the finance application's role", explanation: "Correct. IAM decides who can invoke which model. A least-privilege policy scoped to the model's ARN allows only the finance role." }
   answer: [d]
-  explanation: "Access to AI resources is controlled with IAM: roles and least-privilege policies decide which principals can invoke which models. Guardrails control what content is allowed, not who may call the model. Confusing the two is a common exam trap."
+  explanation: "Access to AI resources is controlled with IAM: roles and least-privilege policies decide which principals can invoke which models. Guardrails control what content is allowed, not who may call the model. Confusing the two is a common design mistake."
   domain: D5
   taskStatement: "5.1"
   lessonRef: day-25#explanation
@@ -261,7 +261,7 @@
   stem: "A healthcare company is building a RAG application on Amazon Bedrock. Traffic between its VPC and Bedrock must not cross the public internet, and the security team must be able to control, rotate and audit the encryption keys that protect the source documents in Amazon S3. Which actions meet these requirements? (Select TWO.)"
   options:
     - { id: a, text: "Create a VPC interface endpoint (AWS PrivateLink) for Amazon Bedrock", explanation: "Correct. An interface endpoint keeps traffic between the VPC and Bedrock on the AWS network, without internet access." }
-    - { id: b, text: "Put AWS WAF in front of the application", explanation: "Incorrect. WAF filters HTTP requests to web applications and is out of scope for this exam; it does not create private connectivity or manage keys." }
+    - { id: b, text: "Put AWS WAF in front of the application", explanation: "Incorrect. WAF filters HTTP requests to web applications; it does not create private connectivity or manage keys." }
     - { id: c, text: "Encrypt the S3 data with an AWS KMS customer managed key", explanation: "Correct. Customer managed keys give the customer control over key policies, rotation and revocation, and every use is logged in CloudTrail." }
     - { id: d, text: "Enable a Bedrock Guardrails sensitive information filter", explanation: "Incorrect. The filter masks PII in prompts and responses; it does not control network paths or encryption keys." }
     - { id: e, text: "Run Amazon Macie on the S3 bucket", explanation: "Incorrect. Macie discovers sensitive data in S3; it does not encrypt data or provide private connectivity." }

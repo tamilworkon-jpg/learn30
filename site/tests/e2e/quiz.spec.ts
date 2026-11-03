@@ -55,16 +55,49 @@ test.describe('daily quiz (T050) @visual', () => {
     // single (correct)
     const s = qs[idx('single')];
     await goTo(page, idx('single'));
+    const submitAnswer = quiz(page).locator('[data-submit-answer]');
+    await expect(quiz(page).locator('.q-req')).toHaveText(/Single answer · choose 1/);
+    await expect(quiz(page).locator('input.opt-input[type="radio"]')).toHaveCount(s.options.length);
+    await expect(quiz(page).locator('input.opt-input[type="radio"]').first()).toBeVisible();
+    await expect(submitAnswer).toBeDisabled();
     await quiz(page).locator('label.opt').filter({ hasText: s.options.find((o) => o.id === (s.answer as string[])[0])!.text }).click();
     await expect(quiz(page).locator('label.opt-selected')).toHaveCount(1);
+    await expect(submitAnswer).toBeEnabled();
     await shotEl(quiz(page), 'quiz-single');
+    // practice: submitting one answer reveals it and locks the question
+    await submitAnswer.click();
+    await expect(quiz(page).locator('[data-feedback]')).toHaveAttribute('data-correct', 'true');
+    await expect(quiz(page).locator('[data-feedback]')).toContainText('Correct');
+    await expect(quiz(page).locator('input.opt-input[type="radio"]:disabled')).toHaveCount(s.options.length);
+    await expect(quiz(page).locator('label.opt-correct')).toHaveCount(1);
+    await expect(quiz(page).getByRole('button', { name: 'Next question →' })).toBeVisible();
+    await shotEl(quiz(page), 'quiz-single-checked');
 
     // multi (correct)
     const m = qs[idx('multi')];
     await goTo(page, idx('multi'));
-    await expect(quiz(page).locator('.q-hint')).toContainText(`Select ${['', 'ONE', 'TWO', 'THREE'][(m.answer as string[]).length]}`);
-    for (const id of m.answer as string[]) await quiz(page).locator('label.opt').filter({ hasText: m.options.find((o) => o.id === id)!.text }).click();
-    await expect(quiz(page).locator('.q-hint')).toContainText(`${(m.answer as string[]).length} selected`);
+    const need = (m.answer as string[]).length;
+    await expect(quiz(page).locator('.q-hint')).toContainText(`Select ${['', 'ONE', 'TWO', 'THREE'][need]}`);
+    await expect(quiz(page).locator('.q-req')).toHaveText(new RegExp(`Multiple answers · choose ${need}`));
+    await expect(quiz(page).locator('input.opt-input[type="checkbox"]').first()).toBeVisible();
+    await expect(submitAnswer).toBeDisabled();
+    await shotEl(quiz(page), 'quiz-multi');
+    const optLabel = (id: string) => quiz(page).locator('label.opt').filter({ hasText: m.options.find((o) => o.id === id)!.text });
+    for (const [k, id] of (m.answer as string[]).entries()) {
+      if (k === need - 1) await expect(submitAnswer).toBeDisabled(); // one short of the requirement
+      await optLabel(id).click();
+    }
+    await expect(quiz(page).locator('.q-hint')).toContainText(`${need} selected`);
+    await expect(submitAnswer).toBeEnabled();
+    // at the limit the other options are disabled until one is unticked
+    await expect(quiz(page).locator('[data-limit]')).toContainText(`You've chosen ${need} of ${need}`);
+    await expect(quiz(page).locator('input.opt-input[type="checkbox"]:disabled')).toHaveCount(m.options.length - need);
+    await shotEl(quiz(page), 'quiz-multi-limit');
+    await optLabel((m.answer as string[])[0]).click();
+    await expect(quiz(page).locator('input.opt-input[type="checkbox"]:disabled')).toHaveCount(0);
+    await expect(submitAnswer).toBeDisabled();
+    await optLabel((m.answer as string[])[0]).click();
+    await expect(submitAnswer).toBeEnabled();
 
     // ordering (correct)
     const o = qs[idx('ordering')];

@@ -42,7 +42,7 @@ keyPoints:
 
 ### Where AI and ML add value
 
-Task statement 1.2 starts with a business question, not a technical one: *should we use AI here at all?* AI and ML earn their place when they deliver one or more of these benefits:
+Every AI project starts with a business question, not a technical one: *should we use AI here at all?* AI and ML earn their place when they deliver one or more of these benefits:
 
 - **Automation** — take over repetitive work that needs judgement: reading invoices, routing support tickets, moderating images. People are freed for higher-value tasks.
 - **Scalability** — handle volumes no team could: scoring every card payment in milliseconds, transcribing millions of calls, checking every product photo uploaded to a marketplace.
@@ -50,11 +50,11 @@ Task statement 1.2 starts with a business question, not a technical one: *should
 - **Personalisation** — tailor experiences for each person: product recommendations, ranked search results, individual offers.
 - **Consistency and availability** — the same criteria applied every time, 24 hours a day, in many languages.
 
-The exam guide lists typical **real-world applications**: computer vision, NLP, speech recognition, recommendation systems, fraud detection, forecasting, knowledge bases and agentic AI. Keep this list in mind — scenario questions are usually one of these in disguise.
+Typical **real-world applications** are computer vision, NLP, speech recognition, recommendation systems, fraud detection, forecasting, knowledge bases and agentic AI. Keep this list in mind — scenario questions are usually one of these in disguise.
 
 ### When AI is NOT the right answer
 
-Knowing when *not* to use AI is just as important, and the exam tests it directly.
+Knowing when *not* to use AI is just as important.
 
 - **A deterministic, exact answer is required.** ML predictions are probabilistic — they are right *most* of the time. Calculating tax, loan interest, payroll or whether an order qualifies for free shipping under fixed rules needs a precise, repeatable result. Write the rules in ordinary code.
 - **The cost outweighs the benefit.** Collecting and labelling data, training, hosting and monitoring a model all cost money. If a simple rule ("flag orders over 10,000 dollars") catches almost everything, a model may not be worth it. Always do a **cost–benefit analysis**.
@@ -78,7 +78,7 @@ Fraud detection is usually classification (or anomaly detection when labels are 
 
 A useful habit: rewrite the business request as a question about the *output*. "Which customers are likely to leave?" becomes "for each customer, leave or stay?" — classification. "How much stock should each store order?" becomes "a number per store per week" — regression. "We don't know what types of customers we have" has no target at all — clustering. The vocabulary of the request ("likely", "how much", "groups") is your strongest clue.
 
-### Real-world applications in the exam guide
+### Real-world applications
 
 Each application family in the guide maps to a technique and to AWS tools you should recognise:
 
@@ -101,7 +101,7 @@ A use case is only successful if it moves a business number. Before building, ag
 
 ### Traditional ML or a foundation model?
 
-Task statement 1.2 now asks you to choose between **traditional ML** (a model trained for one task, such as XGBoost on a table) and a **foundation model (FM)** — a large pre-trained model such as those on Amazon Bedrock that can handle many tasks through prompts. Weigh these factors:
+A key design choice is between **traditional ML** (a model trained for one task, such as XGBoost on a table) and a **foundation model (FM)** — a large pre-trained model such as those on Amazon Bedrock that can handle many tasks through prompts. Weigh these factors:
 
 | Factor | Points to traditional ML | Points to a foundation model |
 |---|---|---|
@@ -144,9 +144,9 @@ When a question says "least operational overhead" or "no ML expertise", the answ
 
 **Amazon SageMaker AI — the build option.** When the task is specific to your business — predicting machine failure from your sensors, scoring your loan applications — and no managed service covers it, SageMaker AI provides the full workbench: data preparation, training with built-in algorithms or your own code, tuning, deployment and monitoring (Day 6).
 
-### Services that are not on the v1.2 exam
+### Older services and what replaced them
 
-Older courses also teach **Amazon Forecast** (time-series forecasting), **Amazon Fraud Detector** (fraud scores) and **Amazon Kendra** (enterprise search). None is listed in exam guide v1.2. For forecasting and fraud, think *SageMaker AI or SageMaker Canvas*; for searching company knowledge with generative answers, think *Amazon Bedrock Knowledge Bases* (Day 18).
+Older courses also teach **Amazon Forecast** (time-series forecasting), **Amazon Fraud Detector** (fraud scores) and **Amazon Kendra** (enterprise search). AWS now steers these jobs to other services. For forecasting and fraud, think *SageMaker AI or SageMaker Canvas*; for searching company knowledge with generative answers, think *Amazon Bedrock Knowledge Bases* (Day 18).
 
 </Section>
 
@@ -256,7 +256,7 @@ Notice the design choices. Reading forms, labelling photos and transcribing call
 <Section id="exam-tips" type="examTips" title="Exam tips & traps" minutes={1}>
 
 <Callout type="examTrap" title="Similar-sounding services">
-**Transcribe** = speech → text; **Polly** = text → speech; **Translate** = language → language; **Comprehend** = understand text; **Textract** = extract text *and structure* from documents (plain OCR in a photo of a street sign is Rekognition's text detection). **Amazon Forecast**, **Amazon Fraud Detector** and **Amazon Kendra** are not in guide v1.2 — prefer SageMaker AI or Bedrock Knowledge Bases.
+**Transcribe** = speech → text; **Polly** = text → speech; **Translate** = language → language; **Comprehend** = understand text; **Textract** = extract text *and structure* from documents (plain OCR in a photo of a street sign is Rekognition's text detection). **Amazon Forecast**, **Amazon Fraud Detector** and **Amazon Kendra** are older services for these jobs — prefer SageMaker AI or Bedrock Knowledge Bases.
 </Callout>
 
 - "Exact, deterministic, rule-based" → **no ML**. "Costs more than it saves" → **no ML**.

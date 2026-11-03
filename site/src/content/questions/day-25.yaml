@@ -21,7 +21,7 @@
   options:
     - { id: a, text: "A NAT gateway in a public subnet", explanation: "Incorrect. A NAT gateway lets private resources reach the internet; traffic would still go to the public endpoint over the internet path." }
     - { id: b, text: "A VPC interface endpoint for Amazon Bedrock powered by AWS PrivateLink", explanation: "Correct. An interface endpoint places a private network interface for Bedrock inside the VPC, so calls stay on the AWS network." }
-    - { id: c, text: "AWS WAF rules attached to the application", explanation: "Incorrect. AWS WAF filters HTTP requests to web applications and is out of scope for the exam; it does not create private connectivity to Bedrock." }
+    - { id: c, text: "AWS WAF rules attached to the application", explanation: "Incorrect. AWS WAF filters HTTP requests to web applications; it does not create private connectivity to Bedrock." }
     - { id: d, text: "An internet gateway with a restrictive security group", explanation: "Incorrect. An internet gateway is exactly the public path the policy forbids; a security group does not change that." }
   answer: [b]
   explanation: "VPC interface endpoints, powered by AWS PrivateLink, give private connectivity from a VPC to AWS services such as Amazon Bedrock and SageMaker AI without using the public internet. Gateway endpoints do the same for Amazon S3."
@@ -180,12 +180,12 @@
   type: single
   stem: "A company needs to stop insults and hate speech in both user prompts and model responses of its Amazon Bedrock chatbot. Which option meets this requirement?"
   options:
-    - { id: a, text: "AWS WAF rules in front of the chatbot", explanation: "Incorrect. AWS WAF is out of scope for the exam and filters web requests by patterns; it is not designed to judge toxicity of model output." }
-    - { id: b, text: "Amazon GuardDuty", explanation: "Incorrect. GuardDuty is an out-of-scope threat detection service that analyses logs; it does not filter chatbot content." }
+    - { id: a, text: "AWS WAF rules in front of the chatbot", explanation: "Incorrect. AWS WAF filters web requests by patterns; it is not designed to judge toxicity of model output." }
+    - { id: b, text: "Amazon GuardDuty", explanation: "Incorrect. GuardDuty is a threat detection service that analyses logs; it does not filter chatbot content." }
     - { id: c, text: "Content filters in Amazon Bedrock Guardrails", explanation: "Correct. Guardrails content filters detect hate, insults, sexual content, violence and misconduct in input and output, with adjustable strengths." }
     - { id: d, text: "Amazon Inspector", explanation: "Incorrect. Inspector scans software for vulnerabilities; it does not analyse conversation content." }
   answer: [c]
-  explanation: "Bedrock Guardrails content filters are the main toxicity control for generative AI applications and apply to both prompts and responses. AWS WAF and Amazon GuardDuty are out-of-scope distractors."
+  explanation: "Bedrock Guardrails content filters are the main toxicity control for generative AI applications and apply to both prompts and responses. AWS WAF filters web traffic and Amazon GuardDuty detects account threats — neither inspects model prompts or responses."
   domain: D5
   taskStatement: "5.1"
   lessonRef: day-25#exam-tips
@@ -197,10 +197,10 @@
   stem: "A hospital will build a summarisation assistant on Amazon Bedrock. Patient notes must stay within the hospital's private network, the hospital must control the encryption keys, and auditors must see who invoked the model. Which services should the hospital use? (Select THREE.)"
   options:
     - { id: a, text: "A VPC interface endpoint for Amazon Bedrock (AWS PrivateLink)", explanation: "Correct. The endpoint keeps traffic between the VPC and Bedrock on the AWS network." }
-    - { id: b, text: "Amazon GuardDuty", explanation: "Incorrect. GuardDuty is out of scope and detects threats; it does not provide private connectivity, key control or an API audit trail." }
+    - { id: b, text: "Amazon GuardDuty", explanation: "Incorrect. GuardDuty detects threats from logs; it does not provide private connectivity, key control or an API audit trail." }
     - { id: c, text: "AWS KMS customer managed keys", explanation: "Correct. Customer managed keys give the hospital control over key policies, rotation and revocation." }
     - { id: d, text: "AWS CloudTrail", explanation: "Correct. CloudTrail records which identity called the model APIs and when." }
-    - { id: e, text: "AWS Shield", explanation: "Incorrect. Shield protects against DDoS attacks, is out of scope and does not address these requirements." }
+    - { id: e, text: "AWS Shield", explanation: "Incorrect. Shield protects against DDoS attacks and does not address these requirements." }
     - { id: f, text: "Amazon Macie", explanation: "Incorrect. Macie discovers sensitive data in S3; none of the three stated requirements is about discovering data." }
   answer: [a, c, d]
   explanation: "Break security requirements into clues: private network leads to a VPC endpoint with PrivateLink, control the keys leads to KMS customer managed keys, and who used the model leads to CloudTrail. Add model invocation logging if auditors also need the content of prompts and responses."

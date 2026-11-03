@@ -275,7 +275,7 @@
   stem: "A hospital's application runs in private subnets of a VPC with no internet gateway. Calls to Amazon Bedrock must not traverse the public internet. Which solution meets this requirement?"
   options:
     - { id: a, text: "Add a NAT gateway so the subnets can reach Bedrock", explanation: "Incorrect. A NAT gateway sends traffic to the service's public endpoint over the internet path." }
-    - { id: b, text: "Put AWS WAF in front of the application", explanation: "Incorrect. AWS WAF filters HTTP requests to web applications and is out of scope for this exam; it does not provide private connectivity." }
+    - { id: b, text: "Put AWS WAF in front of the application", explanation: "Incorrect. AWS WAF filters HTTP requests to web applications; it does not provide private connectivity." }
     - { id: c, text: "Create a VPC interface endpoint for Amazon Bedrock using AWS PrivateLink", explanation: "Correct. Interface endpoints keep traffic between the VPC and Bedrock on the AWS network." }
     - { id: d, text: "Attach an internet gateway and restrict it with a security group", explanation: "Incorrect. This still routes traffic over the internet." }
   answer: [c]
@@ -291,7 +291,7 @@
   stem: "Before fine-tuning, a retailer wants to find out whether any of its 400 Amazon S3 buckets of chat exports contain names, card numbers or addresses. Which service should it use?"
   options:
     - { id: a, text: "Amazon Inspector", explanation: "Incorrect. Inspector scans compute workloads for software vulnerabilities." }
-    - { id: b, text: "Amazon GuardDuty", explanation: "Incorrect. GuardDuty is threat detection from logs and is out of scope for this exam." }
+    - { id: b, text: "Amazon GuardDuty", explanation: "Incorrect. GuardDuty detects threats from logs and network activity; it does not scan S3 objects for personal data (that is Amazon Macie)." }
     - { id: c, text: "Amazon Bedrock Guardrails", explanation: "Incorrect. Guardrails mask PII in live prompts and responses; they do not scan stored S3 data." }
     - { id: d, text: "Amazon Macie", explanation: "Correct. Macie uses ML and pattern matching to discover sensitive data such as PII in S3 buckets." }
   answer: [d]
@@ -477,7 +477,7 @@
     - { id: a, text: "AWS Well-Architected Tool", explanation: "Correct. The Well-Architected Tool reviews workloads against best practices with lenses such as Generative AI and creates improvement plans." }
     - { id: b, text: "AWS Trusted Advisor", explanation: "Incorrect. Trusted Advisor runs automated account-level checks; it does not conduct lens-based workload reviews." }
     - { id: c, text: "AWS Config", explanation: "Incorrect. Config evaluates resource configurations against rules." }
-    - { id: d, text: "AWS Control Tower", explanation: "Incorrect. Control Tower sets up multi-account environments and is out of scope for this exam." }
+    - { id: d, text: "AWS Control Tower", explanation: "Incorrect. Control Tower sets up and governs multi-account environments; it does not run lens-based workload reviews." }
   answer: [a]
   explanation: "'Review a workload against best practices', 'lenses', 'improvement plan' → AWS Well-Architected Tool. 'Recommendations on cost, security, fault tolerance, quotas' → Trusted Advisor."
   domain: D5
@@ -842,7 +842,7 @@
     - { id: c, text: "Amazon Bedrock Knowledge Bases", explanation: "Incorrect. Knowledge Bases provides managed RAG, not code modernisation." }
     - { id: d, text: "Amazon SageMaker Canvas", explanation: "Incorrect. Canvas is no-code ML for analysts." }
   answer: [a]
-  explanation: "AWS Transform is the ready-made agentic application for modernisation and migration. Knowing which packaged application fits a persona is part of task statement 2.3."
+  explanation: "AWS Transform is the ready-made agentic application for modernisation and migration. Match each packaged agentic application to the persona and job it serves."
   domain: D2
   taskStatement: "2.3"
   lessonRef: day-12#explanation
