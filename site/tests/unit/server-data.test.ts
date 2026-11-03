@@ -84,3 +84,13 @@ describe('SV4 progress + ui (T188)', () => {
     expect(huge.status).toBe(400);
   });
 });
+
+describe('T192 L1 — UiState keys from Object.prototype', () => {
+  it('__proto__ / constructor / toString keys → 400, not 500', async () => {
+    const raw = ['{"__proto__":{"lessonView":"full"}}', '{"constructor":"slides"}', '{"toString":"full"}', '{"hasOwnProperty":"x"}', '{"slides":{"__proto__":{"sectionId":"a","block":1}}}'];
+    for (const body of raw) {
+      const r = await h.req('PUT', '/api/ui', { raw: body, cookie, headers: { 'Content-Type': 'application/json', 'X-AIP-Request': '1' } });
+      expect(r.status, body).toBe(400);
+    }
+  });
+});

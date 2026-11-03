@@ -34,8 +34,12 @@ const TYPES: Record<string, string> = {
 /**
  * Decode a URL pathname into a safe, `/`-separated path, or null when it is malformed or could
  * escape / alias files: `..` segments, backslashes, NUL, drive colons, and segments ending in a dot
- * or space (Windows strips those, which would alias e.g. `/settings.` to `/settings`).
+ * or space (Windows strips those, which would alias e.g. `/settings.` to `/settings`), and Windows device
+ * names (`/con`, `/nul.txt`). Repeated slashes are collapsed.
  */
+/** Windows reserved device names (with any extension) open devices instead of files. */
+const WINDOWS_DEVICE = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\..*)?$/i;
+
 export function safePath(rawPathname: string): string | null {
   let p: string;
   try {
@@ -44,8 +48,10 @@ export function safePath(rawPathname: string): string | null {
     return null;
   }
   if (!p.startsWith('/') || /[\\\0:]/.test(p)) return null;
+  // `//settings` must not dodge the access rules for `/settings`.
+  p = p.replace(/\/{2,}/g, '/');
   for (const seg of p.split('/')) {
-    if (seg === '.' || seg === '..' || /[. ]$/.test(seg)) return null;
+    if (seg === '.' || seg === '..' || /[. ]$/.test(seg) || WINDOWS_DEVICE.test(seg)) return null;
   }
   return p;
 }

@@ -29,5 +29,8 @@ export function safeNext(next: string | null | undefined): string {
   }
   if (parsed.host !== 'same.invalid') return '/';
   if (isAuthPage(routeOf(parsed.pathname))) return '/';
-  return parsed.pathname + parsed.search + parsed.hash;
+  const result = parsed.pathname + parsed.search + parsed.hash;
+  // Dot segments can normalise into a protocol-relative URL (`/..//evil.com` → `//evil.com`): re-check the result.
+  if (result.startsWith('//') || result.includes('\\')) return '/';
+  return result;
 }

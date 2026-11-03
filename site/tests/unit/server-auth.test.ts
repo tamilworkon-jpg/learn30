@@ -49,7 +49,7 @@ describe('SV1 auth flows (T188)', () => {
     db.close();
     const raw = cookie.split('=')[1];
     expect(rows.every((r) => /^[0-9a-f]{64}$/.test(r.token_hash) && r.token_hash !== raw)).toBe(true);
-    expect(users.pass_hash).toMatch(/^scrypt\$16384\$8\$1\$[A-Za-z0-9+/=]+\$[A-Za-z0-9+/=]{86}==$/);
+    expect(users.pass_hash).toMatch(/^scrypt\$2048\$8\$1\$[A-Za-z0-9+/=]+\$[A-Za-z0-9+/=]{86}==$/);
   });
 
   it('password + username + display name rules → 400 with field', async () => {
@@ -211,5 +211,47 @@ describe('API misc (T188)', () => {
     expect((await h.api('DELETE', '/api/progress')).status).toBe(405);
     const bad = await h.req('POST', '/api/auth/login', { raw: '{oops', headers: { 'Content-Type': 'application/json', 'X-AIP-Request': '1' } });
     expect(bad.status).toBe(400);
+  });
+});
+
+describe('T192 hardening — names and hashes', () => {
+  it('L8: display names with invisible format characters (Cf) → 400', async () => {
+    for (const name of ['Ad\u200bmin', '\u202eevil', 'a\u2066b', 'na\ufeffme']) {
+      const r = await h.api('POST', '/api/auth/signup', { username: 'cf_user', password: 'password123', displayName: name });
+      expect(r.status, JSON.stringify(name)).toBe(400);
+      expect((r.json() as { field: string }).field).toBe('displayName');
+    }
+    const { cookie } = await h.signup('cf_ok', 'password123', 'Zoë Ünal');
+    expect((await h.api('PATCH', '/api/me', { displayName: 'x\u200dy' }, cookie)).status).toBe(400);
+  });
+
+  it('L4: new hashes use N=2^17 by default; parameters are bounded', async () => {
+    const { hashPassword, verifyPassword, needsRehash, parseHash, SCRYPT_N } = await import('../../server/auth');
+    expect(SCRYPT_N).toBe(2 ** 17);
+    const strong = await hashPassword('password123');
+    expect(strong).toMatch(/^scrypt\$131072\$8\$1\$/);
+    expect(await verifyPassword('password123', strong)).toBe(true);
+    expect(needsRehash(strong)).toBe(false);
+    expect(needsRehash(await hashPassword('password123', 2 ** 14))).toBe(true);
+    const salt = Buffer.alloc(16).toString('base64');
+    const key = Buffer.alloc(64).toString('base64');
+    for (const bad of [`scrypt$${2 ** 30}$8$1$${salt}$${key}`, `scrypt$16383$8$1$${salt}$${key}`, `scrypt$16384$64$1$${salt}$${key}`, `scrypt$16384$8$99$${salt}$${key}`, `scrypt$16384$8$1$$${key}`, `bcrypt$x`]) {
+      expect(parseHash(bad), bad).toBeNull();
+      expect(await verifyPassword('password123', bad)).toBe(false);
+    }
+  }, 30_000); // two real 2^17 hashes (~2 s each on a busy machine)
+
+  it('L4: an old weaker hash still verifies and is upgraded on the next successful login', async () => {
+    const { hashPassword } = await import('../../server/auth');
+    await h.signup('legacy_hash', 'password123');
+    const old = await hashPassword('password123', 2 ** 10);
+    const db = new DatabaseSync(h.dbPath);
+    db.prepare("UPDATE users SET pass_hash = ? WHERE username = 'legacy_hash'").run(old);
+    expect((await h.api('POST', '/api/auth/login', { username: 'legacy_hash', password: 'password123' })).status).toBe(200);
+    const now = (db.prepare("SELECT pass_hash FROM users WHERE username = 'legacy_hash'").get() as { pass_hash: string }).pass_hash;
+    db.close();
+    expect(now).not.toBe(old);
+    expect(now).toMatch(/^scrypt\$2048\$/);
+    expect((await h.api('POST', '/api/auth/login', { username: 'legacy_hash', password: 'password123' })).status).toBe(200);
   });
 });
