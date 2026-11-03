@@ -35,7 +35,7 @@ describe('bindCollapse', () => {
     expect(b.getAttribute('aria-label')).toBe('Expand navigation');
     b.click();
     expect(isCollapsed('sidebar')).toBe(false);
-    expect(localStorage.getItem('aip-ui:sidebar')).toBeNull();
+    expect(localStorage.getItem('aip-ui:sidebar')).toBe('expanded'); // explicit choice (narrow-window defaults never override it)
     expect(changes).toBe(2);
   });
 

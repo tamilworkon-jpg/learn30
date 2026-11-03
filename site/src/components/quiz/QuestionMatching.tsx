@@ -20,10 +20,12 @@ export default function QuestionMatching({ q, value = {}, onChange, locked = fal
   return (
     <fieldset class="q-fieldset">
       <legend class="q-stem" tabIndex={-1}>{q.stem}</legend>
-      <Requirement q={q} />
-      <p class="q-hint" aria-live="polite">
-        Match each item · {done} of {q.options.length} matched
-      </p>
+      <div class="q-meta">
+        <Requirement q={q} />
+        <p class="q-hint" aria-live="polite">
+          Match each item · {done} of {q.options.length} matched
+        </p>
+      </div>
       <div class="match-grid">
         {q.options.map((o, i) => (
           <div key={o.id} class={`match-row${value[o.id] ? ' opt-selected' : ''}`}>

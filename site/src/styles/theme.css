@@ -570,3 +570,57 @@
     font-size: 14px;
   }
 }
+
+/* Short desktop windows — e.g. a 1920×1080 laptop at 150 % Windows scaling gives ~1280×550 CSS px:
+   the shell's generous spacing would leave little room for content, so it tightens (touch targets
+   stay ≥ 36 px). */
+@media (min-width: 761px) and (max-height: 760px) {
+  .app {
+    grid-template-columns: 196px minmax(0, 1fr);
+  }
+  .sidebar {
+    padding: 16px 0 14px 16px;
+    gap: 14px;
+  }
+  .brand {
+    font-size: 16px;
+  }
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    font-size: 12px;
+  }
+  .nav {
+    gap: 2px;
+  }
+  .nav a {
+    padding: 8px 14px;
+    font-size: 14px;
+    min-height: 38px;
+  }
+  .nav svg {
+    width: 18px;
+    height: 18px;
+  }
+  .support-card {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  .panel {
+    margin: 8px 0;
+    padding: 14px 24px 12px;
+  }
+  .topbar {
+    margin-bottom: 10px;
+  }
+  .search-pill {
+    padding: 6px 14px;
+  }
+  .h1 {
+    font-size: 21px;
+  }
+  .h2 {
+    font-size: 16px;
+  }
+}

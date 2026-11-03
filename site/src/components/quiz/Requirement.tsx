@@ -14,8 +14,3 @@ export default function Requirement({ q }: { q: Question }) {
   );
 }
 
-/** Per-option state class once a practice answer is revealed. */
-export function revealClass(correct: boolean, chosen: boolean): string {
-  if (correct) return ' opt-correct';
-  return chosen ? ' opt-wrong' : '';
-}

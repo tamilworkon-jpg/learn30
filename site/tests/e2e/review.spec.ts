@@ -101,11 +101,14 @@ test.describe('weekly review (T079) @visual', () => {
         .locator('label.opt')
         .filter({ hasText: n <= 6 ? `Correct answer ${n}` : `Distractor B ${n}` })
         .click();
-      // weekly test uses the practice flow: Submit answer → feedback → Next question; the last question hands the test in
-      await quiz.locator('[data-submit-answer]').click();
-      await expect(quiz.locator('[data-feedback]')).toHaveAttribute('data-correct', n <= 6 ? 'true' : 'false');
-      await quiz.getByRole('button', { name: n < 8 ? 'Next question →' : 'Submit quiz →' }).click();
+      // no per-question submit: select, move on with ›; "Submit quiz" is on the last question only
+      if (n < 8) {
+        await expect(quiz.locator('[data-submit-quiz]')).toHaveCount(0);
+        await quiz.getByRole('button', { name: 'Next question', exact: true }).click();
+      }
     }
+    await expect(quiz.locator('[data-submit-quiz]')).toBeEnabled();
+    await quiz.locator('[data-submit-quiz]').click();
     await expect(quiz.locator('[data-results-heading]')).toContainText('6 / 8');
     const results = page.locator('#domain-results');
     await expect(results.locator('.dom-row')).toHaveCount(2);

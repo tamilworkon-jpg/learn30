@@ -32,10 +32,35 @@ async function goTo(page: Page, i: number) {
   }
 }
 
-/** The whole-quiz submit lives on the last question only (learner feedback 2026-11-03). */
+const submitBtn = (page: Page) => quiz(page).locator('[data-submit-quiz]');
+/** Questions that need an answer before "Submit quiz" (an untouched ordering question already counts). */
+const needAnswer = qs.filter((q) => q.type !== 'ordering').length;
+
+/** The only submit: "Submit quiz" on the last question, enabled once every question is answered. */
 async function submitQuiz(page: Page) {
   await goTo(page, qs.length - 1);
-  await quiz(page).locator('[data-submit-quiz]').click();
+  await expect(submitBtn(page)).toBeEnabled();
+  await submitBtn(page).click();
+}
+
+/** Answer every question not in `skip` with a WRONG answer (ordering questions are left as shown — also wrong). */
+async function answerRestWrong(page: Page, skip: number[]) {
+  for (const [i, q] of qs.entries()) {
+    if (skip.includes(i) || q.type === 'ordering') continue;
+    await goTo(page, i);
+    const key = q.type === 'matching' ? [] : (q.answer as string[]);
+    if (q.type === 'single') {
+      await quiz(page).locator('label.opt').filter({ hasText: q.options.find((o) => !key.includes(o.id))!.text }).click();
+    } else if (q.type === 'multi') {
+      const pick = [...q.options.filter((o) => !key.includes(o.id)), ...q.options.filter((o) => key.includes(o.id))].slice(0, key.length);
+      for (const o of pick) await quiz(page).locator('label.opt').filter({ hasText: o.text }).click();
+    } else {
+      // matching: every prompt → the same target (at least one is then wrong)
+      const target = Object.values(q.answer as Record<string, string>)[0];
+      const wrongTarget = Object.values(q.answer as Record<string, string>).find((t) => t !== target) ?? target;
+      for (const o of q.options) await quiz(page).locator(`#${q.id}-${o.id}`).selectOption(wrongTarget);
+    }
+  }
 }
 
 /** Reorder with the ↑ buttons until the list equals the key (mouse only). */
@@ -58,52 +83,36 @@ test.describe('daily quiz (T050) @visual', () => {
     await openQuiz(page);
     await expect(quiz(page)).toContainText('Question 1 of 20');
 
-    // single (correct)
+    // single (correct): visible radios + requirement pill; no per-question submit
     const s = qs[idx('single')];
     await goTo(page, idx('single'));
-    const submitAnswer = quiz(page).locator('[data-submit-answer]');
     await expect(quiz(page).locator('.q-req')).toHaveText(/Single answer · choose 1/);
     await expect(quiz(page).locator('input.opt-input[type="radio"]')).toHaveCount(s.options.length);
     await expect(quiz(page).locator('input.opt-input[type="radio"]').first()).toBeVisible();
-    await expect(submitAnswer).toBeDisabled();
+    await expect(quiz(page).locator('[data-submit-answer], [data-feedback]')).toHaveCount(0);
     await quiz(page).locator('label.opt').filter({ hasText: s.options.find((o) => o.id === (s.answer as string[])[0])!.text }).click();
     await expect(quiz(page).locator('label.opt-selected')).toHaveCount(1);
-    await expect(submitAnswer).toBeEnabled();
+    await expect(quiz(page).locator('[data-feedback], .opt-correct')).toHaveCount(0); // nothing revealed before the end
     await shotEl(quiz(page), 'quiz-single');
-    // practice: submitting one answer reveals it and locks the question
-    await submitAnswer.click();
-    await expect(quiz(page).locator('[data-feedback]')).toHaveAttribute('data-correct', 'true');
-    await expect(quiz(page).locator('[data-feedback]')).toContainText('Correct');
-    await expect(quiz(page).locator('input.opt-input[type="radio"]:disabled')).toHaveCount(s.options.length);
-    await expect(quiz(page).locator('label.opt-correct')).toHaveCount(1);
-    await expect(quiz(page).getByRole('button', { name: 'Next question →' })).toBeVisible();
-    await shotEl(quiz(page), 'quiz-single-checked');
 
-    // multi (correct)
+    // multi (correct): choose-N limit
     const m = qs[idx('multi')];
     await goTo(page, idx('multi'));
     const need = (m.answer as string[]).length;
     await expect(quiz(page).locator('.q-hint')).toContainText(`Select ${['', 'ONE', 'TWO', 'THREE'][need]}`);
     await expect(quiz(page).locator('.q-req')).toHaveText(new RegExp(`Multiple answers · choose ${need}`));
     await expect(quiz(page).locator('input.opt-input[type="checkbox"]').first()).toBeVisible();
-    await expect(submitAnswer).toBeDisabled();
     await shotEl(quiz(page), 'quiz-multi');
     const optLabel = (id: string) => quiz(page).locator('label.opt').filter({ hasText: m.options.find((o) => o.id === id)!.text });
-    for (const [k, id] of (m.answer as string[]).entries()) {
-      if (k === need - 1) await expect(submitAnswer).toBeDisabled(); // one short of the requirement
-      await optLabel(id).click();
-    }
+    for (const id of m.answer as string[]) await optLabel(id).click();
     await expect(quiz(page).locator('.q-hint')).toContainText(`${need} selected`);
-    await expect(submitAnswer).toBeEnabled();
     // at the limit the other options are disabled until one is unticked
     await expect(quiz(page).locator('[data-limit]')).toContainText(`You've chosen ${need} of ${need}`);
     await expect(quiz(page).locator('input.opt-input[type="checkbox"]:disabled')).toHaveCount(m.options.length - need);
     await shotEl(quiz(page), 'quiz-multi-limit');
     await optLabel((m.answer as string[])[0]).click();
     await expect(quiz(page).locator('input.opt-input[type="checkbox"]:disabled')).toHaveCount(0);
-    await expect(submitAnswer).toBeDisabled();
     await optLabel((m.answer as string[])[0]).click();
-    await expect(submitAnswer).toBeEnabled();
 
     // ordering (correct)
     const o = qs[idx('ordering')];
@@ -120,17 +129,20 @@ test.describe('daily quiz (T050) @visual', () => {
     await expect(quiz(page).locator('.q-hint')).toContainText(`${mt.options.length} of ${mt.options.length} matched`);
     await shotEl(quiz(page), 'quiz-matching');
 
-    // Q-E2 submit (last question only) with 16 unanswered → confirmation, "go to first unanswered" cancels
+    // Q-E2 "Submit quiz" only on the last question, disabled until every question is answered;
+    // "Go to first unanswered" jumps to the first one still missing
     await expect(quiz(page).getByRole('button', { name: 'Submit now' })).toHaveCount(0);
-    await expect(quiz(page).locator('[data-submit-quiz]')).toHaveCount(0); // not on this (non-last) question
+    await expect(submitBtn(page)).toHaveCount(0); // not on this (non-last) question
+    const done = [idx('single'), idx('multi'), idx('ordering'), idx('matching')];
+    await goTo(page, qs.length - 1);
+    await expect(submitBtn(page)).toBeDisabled();
+    const missing = needAnswer - 3; // single, multi and matching are answered (ordering always counts)
+    await expect(quiz(page).locator('[data-pending]')).toHaveText(`${missing} questions unanswered`);
+    await quiz(page).locator('[data-first-unanswered]').click();
+    const firstMissing = qs.findIndex((q, i) => !done.includes(i) && q.type !== 'ordering');
+    await expect(quiz(page)).toContainText(`Question ${firstMissing + 1} of 20`);
+    await answerRestWrong(page, done);
     await submitQuiz(page);
-    const dialog = quiz(page).getByRole('alertdialog');
-    await expect(dialog).toContainText('Submit with 16 unanswered questions?');
-    await dialog.getByRole('button', { name: 'Go to first unanswered' }).click();
-    await expect(dialog).toBeHidden();
-    await expect(quiz(page)).toContainText(`Question ${qs.findIndex((_, i) => ![idx('single'), idx('multi'), idx('ordering'), idx('matching')].includes(i)) + 1} of 20`);
-    await submitQuiz(page);
-    await quiz(page).getByRole('alertdialog').getByRole('button', { name: 'Submit anyway' }).click();
 
     // Q-E3 results
     const results = quiz(page).locator('.quiz-results');
@@ -139,29 +151,25 @@ test.describe('daily quiz (T050) @visual', () => {
     await expect(results.locator('.review-item')).toHaveCount(20);
     await expect(results.locator('.review-item[data-correct="true"]')).toHaveCount(4);
     const wrong = results.locator('.review-item[data-correct="false"]').first();
-    await expect(wrong).toContainText('Your answer: Not answered');
+    await expect(wrong).toContainText('Your answer:');
     await expect(wrong).toContainText('Correct answer:');
     await wrong.locator('details.opt-explain summary').click();
-    const wq = qs.find((q) => wrong && q.stem && !([idx('single'), idx('multi'), idx('ordering'), idx('matching')].map((i) => qs[i].id).includes(q.id)))!;
+    const wq = qs.find((q) => !done.map((i) => qs[i].id).includes(q.id))!;
     for (const op of wq.options) await expect(wrong).toContainText(op.explanation);
     await expect(wrong.getByRole('link', { name: 'Review in lesson →' })).toHaveAttribute('href', `/day/02#${wq.lessonRef.split('#')[1]}`);
     await noHorizontalScroll(page);
     await shotEl(results, 'quiz-results');
+
+    // Q-E5 retake from results starts empty at question 1
+    await quiz(page).getByRole('button', { name: /Retake quiz/ }).click();
+    await expect(quiz(page)).toContainText('Question 1 of 20');
+    await expect(quiz(page)).toContainText('0 / 20 answered');
 
     // Q-E4 best score survives reload; in-progress answers were cleared by submit
     await page.reload();
     await page.locator('.quiz-slot').scrollIntoViewIfNeeded();
     await expect(quiz(page)).toHaveAttribute('data-ready', 'true');
     await expect(quiz(page)).toContainText('Best score: 20%');
-    await expect(quiz(page)).toContainText('0 / 20 answered');
-
-    // Q-E5 retake from results starts empty at question 1
-    await submitQuiz(page);
-    await quiz(page).getByRole('alertdialog').getByRole('button', { name: 'Submit anyway' }).click();
-    await expect(quiz(page).locator('.quiz-results')).toContainText('0 / 20');
-    await expect(quiz(page).locator('.quiz-results')).toContainText('Best score: 20%');
-    await quiz(page).getByRole('button', { name: /Retake quiz/ }).click();
-    await expect(quiz(page)).toContainText('Question 1 of 20');
     await expect(quiz(page)).toContainText('0 / 20 answered');
     expect(problems, problems.join('\n')).toEqual([]);
   });
@@ -219,20 +227,18 @@ test.describe('daily quiz (T050) @visual', () => {
     await expect(quiz(page).locator('.q-hint')).toContainText(`1 of ${qs[idx('matching')].options.length} matched`);
   });
 
-  test('Q-P1 a reload keeps answers, submitted (locked) questions and the current question; arrows; submit on the last question only', async ({ page }) => {
+  test('Q-P1 a reload keeps answers and the current question; arrows; no per-question submit; Submit quiz on the last question only', async ({ page }) => {
     await openQuiz(page);
-    // ‹ › arrows on the card: Previous disabled on question 1; no Submit now / Submit quiz there
+    // ‹ › arrows on the card: Previous disabled on question 1; no submit of any kind there
     await expect(quiz(page).getByRole('button', { name: 'Previous question', exact: true })).toBeDisabled();
     await expect(quiz(page).getByRole('button', { name: 'Submit now' })).toHaveCount(0);
-    await expect(quiz(page).locator('[data-submit-quiz]')).toHaveCount(0);
+    await expect(quiz(page).locator('[data-submit-quiz], [data-submit-answer]')).toHaveCount(0);
     await expect(quiz(page).locator('.quiz-nav')).toHaveCount(0);
 
-    // answer + submit the single question, answer the multi question without submitting
+    // answer the single question, partly answer the multi question
     const s1 = qs[idx('single')];
     await goTo(page, idx('single'));
     await quiz(page).locator('label.opt').filter({ hasText: s1.options.find((o) => o.id === (s1.answer as string[])[0])!.text }).click();
-    await quiz(page).locator('[data-submit-answer]').click();
-    await expect(quiz(page).locator('[data-feedback]')).toHaveAttribute('data-correct', 'true');
     const m = qs[idx('multi')];
     await goTo(page, idx('multi'));
     await quiz(page).locator('label.opt').filter({ hasText: m.options[0].text }).click();
@@ -241,20 +247,19 @@ test.describe('daily quiz (T050) @visual', () => {
     await page.reload();
     await page.locator('.quiz-slot').scrollIntoViewIfNeeded();
     await expect(quiz(page)).toHaveAttribute('data-ready', 'true');
-    // reopens on the same question with its partial answer
+    // reopens on the same question with its partial answer; the single answer is kept and still editable
     await expect(quiz(page)).toContainText(`Question ${idx('multi') + 1} of 20`);
     await expect(quiz(page).locator('input[type="checkbox"]:checked')).toHaveCount(1);
     await expect(quiz(page)).toContainText('2 / 20 answered');
-    // the submitted question is still locked with its feedback
     await goTo(page, idx('single'));
-    await expect(quiz(page).locator('[data-feedback]')).toHaveAttribute('data-correct', 'true');
-    await expect(quiz(page).locator('input[type="radio"]').first()).toBeDisabled();
-    await expect(quiz(page).locator('[data-submit-answer]')).toHaveCount(0);
+    await expect(quiz(page).locator('input[type="radio"]:checked')).toHaveCount(1);
+    await expect(quiz(page).locator('input[type="radio"]').first()).toBeEnabled();
 
-    // the last question offers the final submit; Next is disabled there
+    // the last question offers the final submit (disabled: questions still unanswered); Next is disabled there
     await goTo(page, qs.length - 1);
     await expect(quiz(page).getByRole('button', { name: 'Next question', exact: true })).toBeDisabled();
-    await expect(quiz(page).locator('[data-submit-quiz]')).toBeVisible();
+    await expect(submitBtn(page)).toBeVisible();
+    await expect(submitBtn(page)).toBeDisabled();
     await shotEl(quiz(page), 'quiz-last-question');
   });
 });

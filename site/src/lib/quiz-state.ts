@@ -24,8 +24,9 @@ export function requirement(q: Question): { kind: Question['type']; need: number
 }
 
 /**
- * Whether the per-question "Submit answer" may be pressed: single → one choice; multi → exactly the
- * required number; ordering → always (the shown order is an answer); matching → every item matched.
+ * Whether a question meets its requirement: single → one choice; multi → exactly the required number;
+ * ordering → always (the shown order is an answer); matching → every item matched. "Submit quiz" (last
+ * question only) is enabled once every question meets it.
  */
 export function canSubmitAnswer(q: Question, a: Answer | undefined): boolean {
   if (q.type === 'ordering') return true;
@@ -35,6 +36,9 @@ export function canSubmitAnswer(q: Question, a: Answer | undefined): boolean {
 }
 
 export const unanswered = (questions: Question[], answers: Record<string, Answer>) => questions.filter((q) => !isAnswered(q, answers[q.id]));
+
+/** Questions that do not yet meet their requirement (blocks "Submit quiz"). */
+export const incomplete = (questions: Question[], answers: Record<string, Answer>) => questions.filter((q) => !canSubmitAnswer(q, answers[q.id]));
 
 // Small deterministic PRNG seeded from the question id, so SSR and client agree on the order.
 function seeded(id: string) {
@@ -65,11 +69,11 @@ export function createQuizSession(store: Store, assessmentId: string, questions:
   const saved = store.get().inProgress[assessmentId];
   let answers: Record<string, Answer> = Object.fromEntries(Object.entries(saved?.answers ?? {}).filter(([id]) => known.has(id)));
   let startedAt = saved?.startedAt ?? new Date().toISOString();
-  // Submitted (locked) questions and the current question survive a reload / another device.
-  let checked: string[] = (saved?.checked ?? []).filter((id) => known.has(id));
+  // The current question survives a reload / another device. (Older saves may carry `checked` from the
+  // former per-question submit; it is ignored.)
   let index = Math.max(0, Math.min(questions.length - 1, saved?.index ?? 0));
 
-  const persist = () => store.saveInProgress(assessmentId, { answers, flagged: [], checked, index });
+  const persist = () => store.saveInProgress(assessmentId, { answers, flagged: [], index });
   const dayKey = /^day-(\d{2})$/.exec(assessmentId)?.[1];
 
   return {
@@ -83,23 +87,18 @@ export function createQuizSession(store: Store, assessmentId: string, questions:
       persist();
     },
     unanswered: () => unanswered(questions, answers),
-    checked: () => checked,
+    incomplete: () => incomplete(questions, answers),
     index: () => index,
-    /** Lock a question's answer (practice "Submit answer"); an ordering question left as shown is answered with that order. */
-    check(questionId: string, value?: Answer) {
-      if (!known.has(questionId) || checked.includes(questionId)) return;
-      if (value !== undefined && answers[questionId] === undefined) answers = { ...answers, [questionId]: value };
-      checked = [...checked, questionId];
-      persist();
-    },
     setIndex(i: number) {
       const next = Math.max(0, Math.min(questions.length - 1, i));
       if (next === index) return;
       index = next;
       // Only worth saving once the learner has started (avoids creating an empty in-progress entry).
-      if (Object.keys(answers).length || checked.length || store.get().inProgress[assessmentId]) persist();
+      if (Object.keys(answers).length || store.get().inProgress[assessmentId]) persist();
     },
     submit(autoSubmitted = false): Attempt {
+      // An ordering question left as shown is answered with the order shown.
+      for (const q of questions) if (q.type === 'ordering' && answers[q.id] === undefined) answers = { ...answers, [q.id]: displayOrder(q) };
       const attempt = store.recordAttempt({
         assessmentId,
         kind,
@@ -111,7 +110,6 @@ export function createQuizSession(store: Store, assessmentId: string, questions:
         autoSubmitted,
       });
       answers = {};
-      checked = [];
       index = 0;
       startedAt = new Date().toISOString();
       return attempt;

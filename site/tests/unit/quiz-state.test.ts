@@ -42,42 +42,38 @@ describe('quiz state (T049)', () => {
     expect(again.answers()).toEqual({ 'q-day-02-001': ['b'], 'q-day-02-002': ['a', 'c'] });
   });
 
-  it('Q-S1b submitted (locked) questions and the current question persist and are restored (learner feedback 2026-11-03)', () => {
+  it('Q-S1b the current question persists and is restored; submit answers an untouched ordering question with the order shown (learner feedback 2026-11-03)', () => {
     const store = createStore();
     const s = createQuizSession(store, 'day-02', questions);
     s.answer('q-day-02-001', ['b']);
-    s.check('q-day-02-001');
-    s.check('q-day-02-003', ['d', 'c', 'b', 'a']); // untouched ordering: answered with the shown order
-    s.check('q-day-02-001'); // idempotent
-    s.check('q-nope'); // unknown ids ignored
     s.setIndex(2);
     s.setIndex(99); // clamped to the last question
     const saved = store.get().inProgress['day-02'];
-    expect(saved.checked).toEqual(['q-day-02-001', 'q-day-02-003']);
     expect(saved.index).toBe(3);
-    expect(saved.answers['q-day-02-003']).toEqual(['d', 'c', 'b', 'a']);
+    expect(saved.checked).toBeUndefined(); // the per-question submit is gone
     expect(validateProgress(store.get())).toBe(true);
 
     const again = createQuizSession(store, 'day-02', questions);
-    expect(again.checked()).toEqual(['q-day-02-001', 'q-day-02-003']);
     expect(again.index()).toBe(3);
+    expect(again.incomplete().map((q) => q.id)).toEqual(['q-day-02-002', 'q-day-02-004']); // ordering always meets its requirement
 
-    // submitting clears them for the next attempt
-    again.submit();
+    // submitting records the shown order for the untouched ordering question and clears the in-progress entry
+    const a = again.submit();
+    expect(a.answers['q-day-02-003']).toEqual(displayOrder(questions[2]));
     expect(store.get().inProgress['day-02']).toBeUndefined();
     const fresh = createQuizSession(store, 'day-02', questions);
-    expect([fresh.checked(), fresh.index(), fresh.attemptCount()]).toEqual([[], 0, 1]);
+    expect([fresh.index(), fresh.attemptCount()]).toEqual([0, 1]);
   });
 
-  it('Q-S1c moving between questions before answering does not create an in-progress entry; older saves without checked/index stay valid', () => {
+  it('Q-S1c moving between questions before answering does not create an in-progress entry; older saves (with or without checked/index) stay valid', () => {
     const store = createStore();
     const s = createQuizSession(store, 'day-02', questions);
     s.setIndex(1);
     expect(store.get().inProgress['day-02']).toBeUndefined();
-    store.saveInProgress('day-02', { answers: { 'q-day-02-001': ['b'] }, flagged: [] });
+    store.saveInProgress('day-02', { answers: { 'q-day-02-001': ['b'] }, flagged: [], checked: ['q-day-02-001'] });
     expect(validateProgress(store.get())).toBe(true);
     const old = createQuizSession(store, 'day-02', questions);
-    expect([old.checked(), old.index()]).toEqual([[], 0]);
+    expect([old.answers(), old.index()]).toEqual([{ 'q-day-02-001': ['b'] }, 0]);
   });
 
   it('answers to unknown questions are ignored; clearing removes the answer', () => {
@@ -156,7 +152,7 @@ describe('quiz state (T049)', () => {
     expect(validateProgress(store.get())).toBe(true);
   });
 
-  it('requirement pill + per-question submit gating (learner feedback)', () => {
+  it('requirement pill + what counts as meeting it (gates Submit quiz)', () => {
     const [single, multi, ordering, matching] = questions;
     expect(requirement(single).label).toBe('Single answer · choose 1');
     expect(requirement(multi)).toMatchObject({ need: 2, label: 'Multiple answers · choose 2' });

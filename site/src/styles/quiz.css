@@ -146,10 +146,6 @@
   cursor: pointer;
   font: inherit;
 }
-.quiz-confirm {
-  margin-top: 16px;
-  border: 2px solid var(--accent);
-}
 .results-head {
   display: flex;
   flex-wrap: wrap;
@@ -295,10 +291,6 @@ html[data-theme='dark'] .opt-input {
   border-color: var(--d4);
   background: color-mix(in srgb, var(--d4) 10%, var(--panel));
 }
-.opt-wrong {
-  border-color: var(--d5);
-  background: color-mix(in srgb, var(--d5) 10%, var(--panel));
-}
 .q-limit {
   color: var(--text);
   font-weight: 500;
@@ -314,39 +306,11 @@ html[data-theme='dark'] .opt-input {
   opacity: 0.45;
   cursor: not-allowed;
 }
-.q-feedback {
-  margin-top: 16px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 2px solid var(--border);
-  background: var(--panel);
-}
-.q-feedback.is-correct {
-  border-color: var(--d4);
-}
-.q-feedback.is-wrong {
-  border-color: var(--d5);
-}
-.q-feedback-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.q-feedback .ok {
-  background: var(--d4);
-  color: #fff;
-}
-.q-feedback .bad {
-  background: var(--d5);
-  color: #fff;
-}
 
 /* Learner feedback 2026-11-03 (round 2): ‹ › arrows on the question card's edges replace the bottom
    Previous / Next bar; inside the card so they never collide with the slide deck's own arrows. */
 .card.quiz-card {
   position: relative;
-  padding-left: 64px;
-  padding-right: 64px;
 }
 .quiz-arrow {
   position: absolute;
@@ -368,10 +332,10 @@ html[data-theme='dark'] .opt-input {
   z-index: 1;
 }
 .quiz-arrow-prev {
-  left: 12px;
+  left: -20px;
 }
 .quiz-arrow-next {
-  right: 12px;
+  right: -20px;
 }
 .quiz-arrow:hover:not(:disabled) {
   background: var(--brand-purple);
@@ -393,17 +357,15 @@ html[data-theme='dark'] .opt-input {
   background: var(--brand-orange);
   color: #1f1a3a;
 }
-.q-submit-quiz {
-  margin-left: auto;
-}
 .quiz-count {
   text-align: center;
   margin: 12px 0 0;
 }
-@media (max-width: 640px) {
+@media (max-width: 899px) {
+  /* Narrow windows / phones: no room outside the card, so the arrows sit just inside it. */
   .card.quiz-card {
-    padding-left: 44px;
-    padding-right: 44px;
+    padding-left: 40px;
+    padding-right: 40px;
   }
   .quiz-arrow {
     width: 32px;
@@ -412,9 +374,136 @@ html[data-theme='dark'] .opt-input {
     font-size: 22px;
   }
   .quiz-arrow-prev {
-    left: 6px;
+    left: 4px;
   }
   .quiz-arrow-next {
-    right: 6px;
+    right: 4px;
+  }
+}
+
+/* Learner feedback 2026-11-03 (round 3): density for short screens (Windows 150 % scaling gives the
+   page ~1280×550). The question, its options and Submit answer should fit without scrolling the card. */
+.quiz-q-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin-top: 4px;
+}
+.quiz-q-row .quiz-qno {
+  font-size: 17px;
+}
+.quiz-q-row .quiz-progress {
+  flex: 1 1 140px;
+  height: 6px;
+  min-width: 100px;
+}
+.card.quiz-card {
+  margin-top: 12px;
+  padding: 16px 20px;
+}
+.q-stem {
+  font-size: 15px;
+  line-height: 1.5;
+}
+/* Requirement pill and the hint share one line. */
+.q-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin: 6px 0 2px;
+}
+.q-meta .q-req,
+.q-meta .q-hint {
+  margin: 0;
+}
+.opt,
+.order-item,
+.match-row {
+  gap: 10px;
+  padding: 7px 12px;
+  margin-top: 8px;
+  border-radius: 12px;
+}
+.opt {
+  min-height: 44px;
+}
+.opt .num-icon,
+.order-item .num-icon,
+.match-row .num-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.opt-input {
+  width: 18px;
+  height: 18px;
+}
+.q-submit-row {
+  margin-top: 12px;
+  gap: 10px;
+}
+.quiz-count {
+  margin: 8px 0 0;
+}
+@media (max-height: 760px) {
+  .quiz-q-row .quiz-qno {
+    font-size: 16px;
+  }
+  .card.quiz-card {
+    margin-top: 8px;
+    padding: 12px 18px;
+  }
+  .q-stem {
+    line-height: 1.45;
+  }
+  .opt,
+  .order-item,
+  .match-row {
+    padding: 5px 12px;
+    margin-top: 6px;
+  }
+  .q-submit-row {
+    margin-top: 10px;
+  }
+  .quiz-count {
+    margin-top: 6px;
+  }
+}
+/* Short and wide (e.g. 1280×550 at 150 % scaling): answer options in two columns. */
+@media (max-height: 760px) and (min-width: 1000px) {
+  .q-opts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 10px;
+  }
+}
+@media (max-width: 899px) {
+  .card.quiz-card {
+    padding: 12px 40px;
+  }
+}
+
+/* Phones: the side arrows would squeeze the question into a narrow column, so they sit together in the
+   card's top-right corner and the card keeps its full width. */
+@media (max-width: 640px) {
+  .card.quiz-card {
+    padding: 12px 14px;
+  }
+  .quiz-arrow {
+    top: 10px;
+    margin-top: 0;
+  }
+  .quiz-arrow-prev {
+    left: auto;
+    right: 50px;
+  }
+  .quiz-arrow-next {
+    right: 10px;
+  }
+  .quiz-card .q-stem {
+    padding-right: 80px;
   }
 }

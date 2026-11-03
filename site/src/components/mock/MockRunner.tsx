@@ -9,7 +9,7 @@ import {
   type MockSession,
 } from '../../lib/mock';
 import { getStore } from '../../lib/progress/store';
-import { canSubmitAnswer, displayOrder, isAnswered } from '../../lib/quiz-state';
+import { isAnswered } from '../../lib/quiz-state';
 import { domainRows } from '../../lib/review';
 import type { Answer, Attempt, Question } from '../../lib/types';
 import QuestionMatching from '../quiz/QuestionMatching';
@@ -101,13 +101,6 @@ export default function MockRunner({
   const setAnswer = (v: Answer) => {
     session?.answer(q.id, v);
     if (session) sync(session);
-  };
-  // Exam simulation: the gated button saves (answers already autosave) and moves on — never reveals the key.
-  const saveAndNext = () => {
-    if (!canSubmitAnswer(q, answers[q.id])) return;
-    if (q.type === 'ordering' && !answers[q.id]) setAnswer(displayOrder(q));
-    if (index < questions.length - 1) go(index + 1);
-    else setPhase('review');
   };
   const toggleFlag = () => {
     session?.toggleFlag(q.id);
@@ -213,27 +206,6 @@ export default function MockRunner({
                     value={answers[q.id] as Record<string, string>}
                     onChange={setAnswer}
                   />
-                )}
-              </div>
-              <div class="q-submit-row">
-                <button
-                  type="button"
-                  class="btn"
-                  data-save-answer
-                  disabled={!canSubmitAnswer(q, answers[q.id])}
-                  aria-describedby={canSubmitAnswer(q, answers[q.id]) ? undefined : `${q.id}-gate`}
-                  onClick={saveAndNext}
-                >
-                  {index < questions.length - 1 ? 'Save answer & next question →' : 'Save answer & review →'}
-                </button>
-                {!canSubmitAnswer(q, answers[q.id]) && (
-                  <span class="muted text-sm" id={`${q.id}-gate`}>
-                    {q.type === 'multi'
-                      ? `Choose ${(q.answer as string[]).length} answers to save`
-                      : q.type === 'matching'
-                        ? 'Match every item to save'
-                        : 'Choose an answer to save'}
-                  </span>
                 )}
               </div>
               <div class="mock-actions">

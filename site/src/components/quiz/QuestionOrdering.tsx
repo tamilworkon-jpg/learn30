@@ -43,8 +43,10 @@ export default function QuestionOrdering({ q, value, onChange, locked = false }:
   return (
     <fieldset class="q-fieldset">
       <legend class="q-stem" tabIndex={-1}>{q.stem}</legend>
-      <Requirement q={q} />
-      <p class="q-hint">Put the items in order using the arrow buttons (top = first).{value ? '' : ' The order shown is recorded when you submit or move an item.'}</p>
+      <div class="q-meta">
+        <Requirement q={q} />
+        <p class="q-hint">Put the items in order using the arrow buttons (top = first).{value ? '' : ' The order shown is recorded when you submit or move an item.'}</p>
+      </div>
       <ol class="order-list" ref={list}>
         {order.map((id, i) => (
           <li key={id} class="order-item" data-item={id}>

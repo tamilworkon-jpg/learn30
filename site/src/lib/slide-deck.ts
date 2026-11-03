@@ -67,6 +67,26 @@ export function initSlideDeck(deck: HTMLElement) {
   const progress = bar.querySelector<HTMLProgressElement>('.deck-progress')!;
   const live = deck.querySelector<HTMLElement>('.deck-live')!;
   const viewBtns = [...bar.querySelectorAll<HTMLButtonElement>('[data-view]')];
+  // The Slides / Full page toggle sits in the top bar beside the search box on desktop (learner request);
+  // on phones the top bar is too narrow, so it stays in the lesson bar.
+  const toggle = bar.querySelector<HTMLElement>('.view-toggle');
+  const search = document.querySelector<HTMLElement>('.topbar .search-pill');
+  const wide = window.matchMedia('(min-width: 761px)');
+  const placeToggle = () => {
+    if (!toggle) return;
+    if (wide.matches && search) {
+      if (toggle.previousElementSibling !== search) search.after(toggle);
+      toggle.classList.add('in-topbar');
+    } else if (toggle.parentElement !== bar) {
+      bar.querySelector('.deck-title')?.after(toggle);
+      toggle.classList.remove('in-topbar');
+    }
+  };
+  placeToggle();
+  wide.addEventListener('change', () => {
+    placeToggle();
+    later(0);
+  });
   const root = document.documentElement;
   const day = Number(article.dataset.lessonDay);
 
@@ -317,7 +337,7 @@ export function initSlideDeck(deck: HTMLElement) {
   const stageHeight = () => {
     const vh = window.innerHeight - bottomBar();
     const docTop = article.getBoundingClientRect().top + window.scrollY;
-    const fromTop = Math.floor(vh - docTop - 12);
+    const fromTop = Math.floor(vh - docTop - 20); // a little slack: borders/padding vary with the compact tier
     const above = article.getBoundingClientRect().top - deck.getBoundingClientRect().top;
     const h = fromTop >= MIN_STAGE ? fromTop : Math.max(MIN_STAGE, Math.floor(vh - above - 16));
     article.style.height = `${h}px`;
@@ -339,7 +359,7 @@ export function initSlideDeck(deck: HTMLElement) {
     const deckTop = deck.getBoundingClientRect().top + window.scrollY;
     window.scrollTo({ top: Math.max(0, deckTop - 8), behavior: 'instant' });
     const above = article.getBoundingClientRect().top - deck.getBoundingClientRect().top;
-    const h = Math.max(MIN_STAGE, Math.floor(window.innerHeight - bottomBar() - 8 - above - 12));
+    const h = Math.max(MIN_STAGE, Math.floor(window.innerHeight - bottomBar() - 8 - above - 20));
     article.style.height = `${h}px`;
     placeArrows();
   }

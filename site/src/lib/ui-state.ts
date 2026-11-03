@@ -92,7 +92,7 @@ export function createUiState({ signedIn, initial = null, storage = null, fetchI
     setCollapsed(bar: Bar, collapsed: boolean) {
       state = { ...state, [bar]: collapsed ? 'collapsed' : 'expanded' };
       if (sync) changed();
-      else local.set(UI_KEYS[bar], collapsed ? 'collapsed' : null);
+      else local.set(UI_KEYS[bar], collapsed ? 'collapsed' : 'expanded'); // explicit, so a narrow-screen default never overrides a choice
     },
     slide(day: number): SlidePos | null {
       if (!validDay(day)) return null;

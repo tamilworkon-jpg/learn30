@@ -104,7 +104,9 @@ export const test = base.extend<Options & Fixtures>({
       trackSaves(page);
       if (signedIn) {
         await signUp(page.request, account);
-        if (lessonView) await putUi(page.request, { lessonView });
+        // Test accounts choose "Today's sections" expanded: the desktop project is 1280 px wide, where a learner
+        // with no choice gets it collapsed (narrow-window default, covered by tests/unit/before-paint.test.ts).
+        await putUi(page.request, lessonView ? { lessonView, sections: 'expanded' } : { sections: 'expanded' });
       }
       await use();
     },

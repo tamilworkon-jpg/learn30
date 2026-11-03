@@ -1,4 +1,4 @@
-/* global localStorage, sessionStorage, document */
+/* global localStorage, sessionStorage, document, window */
 // T187/T189 — applied before first paint on every page (same-origin file, so the strict CSP allows it).
 // Loaded at the very start of <body>: the server's #aip-bootstrap JSON sits at the end of <head>, so it
 // is parsed by now. Signed in → the account's theme (progress.settings) and UiState; signed out → this
@@ -40,5 +40,8 @@
   }
   if (theme === 'dark') r.dataset.theme = 'dark';
   if (sidebar === 'collapsed') r.dataset.sidebar = 'collapsed';
-  if (sections === 'collapsed') r.dataset.sections = 'collapsed';
+  // No choice yet: on narrower windows (e.g. a 1920 px laptop at 150 % scaling = 1280 CSS px) the lesson
+  // needs the room, so "Today's sections" starts collapsed. An explicit expand/collapse always wins.
+  var narrow = window.innerWidth < 1440;
+  if (sections === 'collapsed' || (!sections && narrow)) r.dataset.sections = 'collapsed';
 })();

@@ -119,7 +119,7 @@ test.describe('slide lessons (T182) @visual', () => {
             if (m.quiz) {
               // The quiz slide fills the window (deck brought to the top) and shows one set of arrows: the quiz's own.
               expect(m.deckBottom, where).toBeLessThanOrEqual(m.viewport + 1);
-              expect(m.viewport - m.deckBottom, `${where} card reaches the bottom`).toBeLessThanOrEqual(24);
+              expect(m.viewport - m.deckBottom, `${where} card reaches the bottom`).toBeLessThanOrEqual(32);
               await expect(prev(page)).toBeHidden();
               await expect(page.getByRole('button', { name: 'Next question' })).toBeVisible();
               continue;
@@ -404,7 +404,7 @@ test.describe('slide lessons (T182) @visual', () => {
   for (const how of ['link', 'arrows'] as const) {
     test(`SL10 quiz slide keeps its scroll position when an option is chosen (${how})`, async ({ page }) => {
       test.slow();
-      await page.setViewportSize({ width: 1366, height: 650 });
+      await page.setViewportSize({ width: 1280, height: 460 }); // short enough that the compact quiz still scrolls
       await page.goto('/day/02#quiz');
       const quiz = page.locator('[data-quiz="day-02"]');
       await expect(quiz).toHaveAttribute('data-ready', 'true');

@@ -103,7 +103,7 @@ describe('signed out', () => {
     ui.setSlide(4, { sectionId: 'quiz', block: 0 });
     expect(localStorage.getItem('aip-ui:lesson-view')).toBe('slides');
     expect(localStorage.getItem('aip-ui:sidebar')).toBe('collapsed');
-    expect(localStorage.getItem('aip-ui:sections')).toBeNull();
+    expect(localStorage.getItem('aip-ui:sections')).toBe('expanded'); // explicit: a narrow-window default must not override it
     expect(JSON.parse(localStorage.getItem('aip-ui:slide:4')!)).toEqual({ sectionId: 'quiz', block: 0 });
     expect(createUiState({ signedIn: false, storage: localStorage }).slide(4)).toEqual({ sectionId: 'quiz', block: 0 });
     await vi.advanceTimersByTimeAsync(2000);

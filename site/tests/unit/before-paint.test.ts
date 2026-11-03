@@ -49,6 +49,25 @@ describe('ui-prefs.js', () => {
     expect(html.dataset.sections).toBe('collapsed');
     expect(html.dataset.sidebar).toBeUndefined();
   });
+  it('no choice yet: "Today\'s sections" starts collapsed below 1440 px wide, expanded on wide windows; a choice wins', () => {
+    const w = window.innerWidth;
+    try {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1280 });
+      run('ui-prefs.js');
+      expect(html.dataset.sections).toBe('collapsed');
+      delete html.dataset.sections;
+      localStorage.setItem('aip-ui:sections', 'expanded');
+      run('ui-prefs.js');
+      expect(html.dataset.sections).toBeUndefined();
+      localStorage.removeItem('aip-ui:sections');
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1600 });
+      run('ui-prefs.js');
+      expect(html.dataset.sections).toBeUndefined();
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: w });
+    }
+  });
+
   it('no bootstrap at all (static preview) = signed out; garbage JSON never throws', () => {
     run('ui-prefs.js');
     expect(html.dataset.auth).toBe('out');
