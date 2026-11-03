@@ -37,7 +37,9 @@ export default defineConfig({
   webServer: {
     command: 'npm run build && npx tsx server/index.ts',
     url: `http://localhost:${port}/login`,
-    env: { PORT: String(port), AIP_DB: db },
+    // Test-only server settings: every test signs up a fresh user from localhost, so lift the sign-up caps and use a
+    // cheaper scrypt cost (production defaults: 5 sign-ups/IP/hour, 50 users, N=2^17).
+    env: { PORT: String(port), AIP_DB: db, AIP_SIGNUPS_PER_HOUR: '100000', AIP_MAX_USERS: '100000', AIP_SCRYPT_N: '16384' },
     // A stale server on the port must never be reused silently (it would hold another database).
     reuseExistingServer: false,
     timeout: 240_000,
