@@ -1,14 +1,16 @@
 ---
 // T093 — mock-day launch card (`<MockLaunch n={1} />` in kind: mock MDX): format, start link, last attempt (client).
-import { getCollection } from 'astro:content';
-import { examGuide } from '../../lib/data';
+import { questionsOf } from '../../lib/course-content';
+import { courseOf } from '../../lib/course-locals';
+import { courseHref } from '../../lib/routes';
 
 interface Props {
   n: number;
   optional?: boolean;
 }
 const { n, optional = false } = Astro.props;
-const count = (await getCollection('questions', (q) => q.data.set === `mock-${n}`)).length;
+const { examGuide, meta } = courseOf(Astro);
+const count = (await questionsOf(meta.id)).filter((q) => q.data.set === `mock-${n}`).length;
 const f = examGuide.format;
 ---
 
@@ -20,7 +22,7 @@ const f = examGuide.format;
   </div>
   <p class="muted m-0 mt-1 text-sm">{f.totalQuestions} questions · {f.minutes} minutes · pass {f.passScaled} on a {f.scaleMin}–{f.scaleMax} scale</p>
   <p class="m-0 mt-2 text-sm" data-mock-last={n} hidden></p>
-  <a class="btn mt-3" href={`/mock/${n}`}>Start mock {n} →</a>
+  <a class="btn mt-3" href={courseHref(meta.id, 'mock', n)}>Start mock {n} →</a>
 </div>
 
 <script>

@@ -22,7 +22,7 @@ test.describe('courses catalogue', () => {
     await expect(card(page)).toContainText('30 days · ~1 h/day · weekdays');
     await expect(card(page).locator('[data-course-progress]')).toContainText('2 of 30 days');
     await expect(card(page).locator('[data-course-progress]')).toContainText('7%');
-    await expect(card(page).getByRole('link', { name: 'Continue Day 3 →' })).toHaveAttribute('href', '/day/03');
+    await expect(card(page).getByRole('link', { name: 'Continue Day 3 →' })).toHaveAttribute('href', '/course/aws-ai-practitioner/day/03');
     await expect(card(page).getByRole('link', { name: 'Course outline' })).toHaveAttribute('href', '/outline');
     await noHorizontalScroll(page);
     // The dashboard (inside the course) names the course it belongs to; the sidebar groups the course's pages.

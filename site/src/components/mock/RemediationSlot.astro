@@ -1,8 +1,8 @@
 ---
 // `<Remediation mock={N} />` in kind: mock MDX → hydrated Remediation island with the mock's question refs.
-import { getCollection } from 'astro:content';
 import Remediation from './Remediation';
-import { course, examGuide } from '../../lib/data';
+import { questionsOf } from '../../lib/course-content';
+import { courseOf } from '../../lib/course-locals';
 import { summaryByDomain } from '../../lib/review';
 import '../../styles/review.css';
 
@@ -10,16 +10,19 @@ interface Props {
   mock: number;
 }
 const { mock } = Astro.props;
-const questions = (await getCollection('questions', (q) => q.data.set === `mock-${mock}`)).map(({ data: { id, domain, lessonRef, type, answer } }) => ({
+const { course, examGuide, meta } = courseOf(Astro);
+const questions = (await questionsOf(meta.id)).filter((q) => q.data.set === `mock-${mock}`).map(({ data: { id, domain, lessonRef, type, answer } }) => ({
   id,
   domain,
   lessonRef,
   type,
   answer,
 }));
+// Lesson days before the first mock day teach the domains (AWS course: day 29).
+const firstMockDay = Math.min(...Object.keys(courseOf(Astro).rules.mockLaunches).map(Number));
 const domainNames = Object.fromEntries(examGuide.domains.map((d) => [d.id, d.name]));
 const dayTitles = Object.fromEntries(course.days.map((d) => [String(d.day), d.title]));
-const domainDays = Object.fromEntries(summaryByDomain(course, examGuide, 29).map((g) => [g.id, g.days.map((d) => d.day)]));
+const domainDays = Object.fromEntries(summaryByDomain(course, examGuide, firstMockDay).map((g) => [g.id, g.days.map((d) => d.day)]));
 ---
 
-<Remediation client:visible mock={mock} questions={questions} domainNames={domainNames} dayTitles={dayTitles} domainDays={domainDays} />
+<Remediation client:visible mock={mock} questions={questions} domainNames={domainNames} dayTitles={dayTitles} domainDays={domainDays} courseId={meta.id} />

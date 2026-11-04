@@ -1,4 +1,6 @@
 // T057 — results: score ring, per-question review with every option's explanation, lesson links, retake.
+import { lessonHref } from '../../lib/next-steps';
+import { DEFAULT_COURSE_ID } from '../../lib/routes';
 import { scoreQuestion } from '../../lib/scoring';
 import type { Attempt, Question } from '../../lib/types';
 
@@ -9,15 +11,13 @@ interface Props {
   onRetake: () => void;
   /** The "What's next" panel above already offers Retake. */
   hideRetake?: boolean;
+  /** Course the questions belong to (lesson links). */
+  courseId?: string;
 }
 
 const R = 50;
 const CIRC = 2 * Math.PI * R;
 
-function lessonHref(ref: string) {
-  const [day, anchor] = ref.split('#');
-  return `/${day.replace('-', '/')}#${anchor}`;
-}
 
 function describe(q: Question, a: Attempt['answers'][string] | undefined): string {
   const text = (id: string) => q.options.find((o) => o.id === id)?.text ?? id;
@@ -30,7 +30,7 @@ function describe(q: Question, a: Attempt['answers'][string] | undefined): strin
   return q.type === 'ordering' ? ids.map((id, i) => `${i + 1}. ${text(id)}`).join('  ') : ids.map(text).join(', ');
 }
 
-export default function Results({ questions, attempt, best, onRetake, hideRetake = false }: Props) {
+export default function Results({ questions, attempt, best, onRetake, hideRetake = false, courseId }: Props) {
   const { correct, total, percent } = attempt.score;
   const pct = Math.round(percent);
   const good = pct >= 80;
@@ -74,13 +74,13 @@ export default function Results({ questions, attempt, best, onRetake, hideRetake
       <h3 class="h2 mt-8" tabIndex={-1} data-review-heading>
         Review your answers
       </h3>
-      <AnswerReview questions={questions} answers={attempt.answers} />
+      <AnswerReview questions={questions} answers={attempt.answers} courseId={courseId} />
     </div>
   );
 }
 
 /** Per-question review: your answer, the key, every option's explanation and a link to the lesson section. */
-export function AnswerReview({ questions, answers }: { questions: Question[]; answers: Attempt['answers'] }) {
+export function AnswerReview({ questions, answers, courseId = DEFAULT_COURSE_ID }: { questions: Question[]; answers: Attempt['answers']; courseId?: string }) {
   return (
     <ol class="review-list">
       {questions.map((q, i) => {
@@ -116,7 +116,7 @@ export function AnswerReview({ questions, answers }: { questions: Question[]; an
                   ))}
                 </ul>
               </details>
-              <a class="text-sm" href={lessonHref(q.lessonRef)}>
+              <a class="text-sm" href={lessonHref(q.lessonRef, courseId)}>
                 Review in lesson →
               </a>
             </div>

@@ -1,4 +1,5 @@
 // US3 — pure helpers behind the dashboard islands (no DOM, no storage).
+import { courseHref, DEFAULT_COURSE_ID } from './routes';
 import type { CoursePlan, PlanDay } from './course-plan';
 import type { DayState, Progress } from './types';
 
@@ -38,17 +39,18 @@ export interface ContinueTarget {
   resumed: boolean;
 }
 
-const dayHref = (day: number, sectionId?: string) => `/day/${String(day).padStart(2, '0')}${sectionId ? `#${sectionId}` : ''}`;
+/** Link to a day (optionally a section) of a course — pass `plan.courseId`. */
+const dayHref = (day: number, sectionId?: string, courseId: string = DEFAULT_COURSE_ID) => courseHref(courseId, 'day', day, sectionId);
 
 /** T072 — lastPosition (unless that day is already complete) → else next incomplete day → else Day 1. */
 export function continueTarget(p: Progress, plan: CoursePlan): ContinueTarget {
   const lp = p.lastPosition;
   if (lp && plan.days.some((d) => d.day === lp.day) && dayStatus(p, lp.day) !== 'completed') {
-    return { day: lp.day, sectionId: lp.sectionId, href: dayHref(lp.day, lp.sectionId), resumed: true };
+    return { day: lp.day, sectionId: lp.sectionId, href: dayHref(lp.day, lp.sectionId, plan.courseId), resumed: true };
   }
   const next = plan.days.find((d) => dayStatus(p, d.day) !== 'completed');
   const day = next?.day ?? plan.days[0].day;
-  return { day, href: dayHref(day), resumed: false };
+  return { day, href: dayHref(day, undefined, plan.courseId), resumed: false };
 }
 
 /** The days after `day`, for the "up next" cards. */

@@ -3,7 +3,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import MockRunner from './MockRunner';
 import AttemptHistory from '../quiz/AttemptHistory';
-import { course, examGuide, pad } from '../../lib/data';
+import { courseOf } from '../../lib/course-locals';
+import { courseHref } from '../../lib/routes';
 import type { Question } from '../../lib/types';
 import '../../styles/quiz.css';
 import '../../styles/review.css';
@@ -14,22 +15,24 @@ interface Props {
   heading?: string;
 }
 const { n, questions, heading = `Mock exam ${n}${n === 3 ? ' (optional final retake)' : ''}` } = Astro.props;
+const { course, examGuide, meta, rules } = courseOf(Astro);
 const domainNames = Object.fromEntries(examGuide.domains.map((d) => [d.id, d.name]));
 const dayTitles = Object.fromEntries(course.days.map((d) => [String(d.day), d.title]));
-const backDay = n === 1 ? 29 : 30;
+// The day that launches this mock (rules.mockLaunches), for the breadcrumb.
+const backDay = Number(Object.entries(rules.mockLaunches).find(([, ns]) => ns.includes(n))?.[0] ?? course.days.length);
 ---
 
-<BaseLayout active="outline" title={heading}>
+<BaseLayout active="outline" title={heading} course={meta.id}>
   <p class="muted text-sm m-0">
-    <a href={`/day/${pad(backDay)}`}>Day {backDay}</a> › Mock exam {n}
+    <a href={courseHref(meta.id, 'day', backDay)}>Day {backDay}</a> › Mock exam {n}
   </p>
   <h1 class="h1">{heading}</h1>
   {
     questions.length > 0 ? (
       <>
-        <MockRunner client:load assessmentId={`mock-${n}`} n={n} questions={questions} domainNames={domainNames} dayTitles={dayTitles} />
+        <MockRunner client:load assessmentId={`mock-${n}`} n={n} questions={questions} domainNames={domainNames} dayTitles={dayTitles} minutes={rules.mock.minutes} courseId={meta.id} />
         {/* Every past attempt, numbered, with a read-only review; "Retake" reloads to the start screen. */}
-        <AttemptHistory client:load assessmentId={`mock-${n}`} kind="mock" questions={questions}/> {/* the runner above already offers "Start a new attempt" */}
+        <AttemptHistory client:load assessmentId={`mock-${n}`} kind="mock" questions={questions} courseId={meta.id} /> {/* the runner above already offers "Start a new attempt" */}
       </>
     ) : (
       <div class="card mt-4" data-coming-soon="mock">

@@ -1,0 +1,28 @@
+---
+// T075/T205/L020 — a course dashboard at /course/<id> (/ is the course catalogue) (Phase 0 design: src/pages/design/dashboard.astro). Progress is client-side, so the
+// Dashboard island renders a fresh-learner view at build time and the learner's state after mount.
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Dashboard from '../../../components/dashboard/Dashboard';
+import { buildPlan } from '../../../lib/course-plan';
+import { availableCourseIds, getCourse } from '../../../lib/course-data';
+import { lessonsOf } from '../../../lib/course-content';
+import '../../../styles/dashboard.css';
+
+export function getStaticPaths() {
+  return availableCourseIds().map((course) => ({ params: { course } }));
+}
+const courseId = Astro.params.course!;
+Astro.locals.courseId = courseId;
+const { course, examGuide, meta } = getCourse(courseId);
+const lessons = await lessonsOf(courseId);
+const plan = buildPlan(
+  course,
+  examGuide.domains,
+  lessons.map((l) => ({ day: l.data.day, body: l.body })),
+  courseId,
+);
+---
+
+<BaseLayout title={`${meta.shortTitle} · Dashboard`} active="home" course={courseId}>
+  <Dashboard client:load plan={plan} />
+</BaseLayout>

@@ -1,0 +1,69 @@
+---
+// Learn30 L021 — /course/<id>/search: Pagefind over that course only (pages carry
+// data-pagefind-filter="course:<id>"; the UI is created with that filter fixed).
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { availableCourseIds, getCourse } from '../../../lib/course-data';
+import { courseHref } from '../../../lib/routes';
+import '../../../styles/lookup.css';
+
+export function getStaticPaths() {
+  return availableCourseIds().map((course) => ({ params: { course } }));
+}
+const courseId = Astro.params.course!;
+Astro.locals.courseId = courseId;
+const { meta } = getCourse(courseId);
+
+// Pagefind compiles its index reader to WebAssembly; allow wasm compilation on this page only (no eval for JS).
+Astro.csp.insertScriptResource("'wasm-unsafe-eval'");
+---
+
+<BaseLayout title={`Search · ${meta.shortTitle}`} active="search" course={courseId} description={`Search the ${meta.title} lessons, glossary and cheat sheets.`}>
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <h1 class="h1">Search</h1>
+  <p class="muted lookup-intro">
+    Search every lesson of <strong>{meta.shortTitle}</strong>, its <a href={courseHref(courseId, 'glossary')}>glossary</a> and the <a href={courseHref(courseId, 'cheatsheet', 'services')}>services</a> and <a
+      href={courseHref(courseId, 'cheatsheet', 'metrics')}>metrics</a
+    > cheat sheets. Works offline — the index ships with the site.
+  </p>
+  <div id="search" class="search-host" data-testid="search" data-course={courseId}></div>
+  <p class="card mt-4" id="search-unavailable" hidden>
+    The search index has not been built. Run <code>npm run build</code> (which runs Pagefind) and open the preview server to search.
+  </p>
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+</BaseLayout>
+
+<script>
+  type PagefindUIType = new (opts: Record<string, unknown>) => { triggerSearch(term: string): void; triggerFilters(f: Record<string, string[]>): void };
+  const PagefindUI = (window as unknown as { PagefindUI?: PagefindUIType }).PagefindUI;
+  const host = document.getElementById('search')!;
+  if (!PagefindUI) {
+    document.getElementById('search-unavailable')!.hidden = false;
+  } else {
+    const ui = new PagefindUI({
+      element: '#search',
+      showSubResults: true,
+      showImages: false,
+      pageSize: 10,
+      autofocus: true,
+      resetStyles: false,
+      showEmptyFilters: false,
+      translations: { placeholder: 'Search the course' },
+    });
+    // Only this course's pages: the course filter is fixed by the page (its panel is hidden by CSS).
+    ui.triggerFilters({ course: [host.dataset.course!] });
+    // Pagefind's input only has a placeholder; give it a real accessible name.
+    const label = () => document.querySelector('#search input')?.setAttribute('aria-label', 'Search the course');
+    label();
+    new MutationObserver(label).observe(host, { childList: true, subtree: true });
+    const q = new URLSearchParams(location.search).get('q');
+    if (q) ui.triggerSearch(q);
+  }
+</script>
+
+<style>
+  /* The course is fixed by the URL; Pagefind's filter panel would only offer that one course. */
+  .search-host :global(.pagefind-ui__filter-panel) {
+    display: none;
+  }
+</style>
+

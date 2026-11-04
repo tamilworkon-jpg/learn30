@@ -26,7 +26,7 @@ describe('dashboard helpers', () => {
   it('fresh learner: 0%, continue → Day 1', () => {
     const p = defaultProgress();
     expect(percentComplete(p, plan)).toBe(0);
-    expect(continueTarget(p, plan)).toMatchObject({ day: 1, href: '/day/01', resumed: false });
+    expect(continueTarget(p, plan)).toMatchObject({ day: 1, href: '/course/aws-ai-practitioner/day/01', resumed: false });
   });
 
   it('R5 Days 1–2 complete + Day 3 hands-on → 2/30 (7%), continue /day/03#hands-on', () => {
@@ -35,7 +35,7 @@ describe('dashboard helpers', () => {
     p.lastPosition = { day: 3, sectionId: 'hands-on', updatedAt: '2026-11-02T10:00:00Z' };
     expect(completedCount(p, plan)).toBe(2);
     expect(percentComplete(p, plan)).toBe(7);
-    expect(continueTarget(p, plan)).toMatchObject({ day: 3, href: '/day/03#hands-on', resumed: true });
+    expect(continueTarget(p, plan)).toMatchObject({ day: 3, href: '/course/aws-ai-practitioner/day/03#hands-on', resumed: true });
     expect(minutesLeft(p, plan.days[2])).toBe(20);
     expect(sectionProgress(p, plan.days[2])).toBe(67);
     expect(minutesLeft(p, plan.days[3])).toBe(60);
@@ -46,7 +46,7 @@ describe('dashboard helpers', () => {
     const p = defaultProgress();
     p.days = { '1': { status: 'completed', sectionsViewed: [] } };
     p.lastPosition = { day: 1, sectionId: 'summary', updatedAt: '2026-11-02T10:00:00Z' };
-    expect(continueTarget(p, plan)).toMatchObject({ day: 2, href: '/day/02' });
+    expect(continueTarget(p, plan)).toMatchObject({ day: 2, href: '/course/aws-ai-practitioner/day/02' });
   });
 
   it('everything complete → Day 1', () => {

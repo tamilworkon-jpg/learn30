@@ -17,7 +17,8 @@ import SlideDeck from '../components/lesson/SlideDeck.astro';
 import MarkComplete from '../components/lesson/MarkComplete';
 import { weeksFromCourse } from '../lib/badges';
 import '../styles/dashboard.css';
-import { course, examGuide, pad } from '../lib/data';
+import { courseOf } from '../lib/course-locals';
+import { courseHref } from '../lib/routes';
 import { coreMinutes, getPrevNext } from '../lib/lesson-utils';
 import { parseLesson } from '../lib/lesson-parse';
 
@@ -25,6 +26,8 @@ interface Props {
   entry: CollectionEntry<'lessons'>;
 }
 const { entry } = Astro.props;
+const { course, examGuide, meta } = courseOf(Astro);
+const courseId = meta.id;
 const d = entry.data;
 const { Content } = await render(entry);
 const sections = parseLesson(entry.body ?? '').sections;
@@ -35,7 +38,7 @@ const week = course.weeks.find((w) => d.day >= w.days[0] && d.day <= w.days[1])!
 const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.name ?? id;
 ---
 
-<BaseLayout active="outline" title={`Day ${d.day}: ${d.title}`}>
+<BaseLayout active="outline" title={`Day ${d.day}: ${d.title}`} course={courseId}>
   <p class="muted text-sm m-0 lesson-crumbs">Week {studyWeekOf(d.day)} · Module {week.number}: {week.title} › Day {d.day}</p>
   <h1 class="h1">{d.title}</h1>
   <PlannedDate day={d.day} />
@@ -45,7 +48,7 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
   </div>
   <div class="lesson">
     <SlideDeck>
-    <article data-pagefind-body data-lesson-day={d.day}>
+    <article data-pagefind-body data-pagefind-filter={`course:${courseId}`} data-lesson-day={d.day}>
       <div class="flex flex-wrap items-center gap-2 mb-2">
         {d.domains.map((id) => <span class={`chip chip-${id}`}>{id} · {domainName(id)}</span>)}
         <span class="pill pill-accent">⏱ {core} min core</span>
@@ -59,10 +62,10 @@ const domainName = (id: string) => examGuide.domains.find((x) => x.id === id)?.n
         )
       }
       <Content components={{ Section, Diagram, Callout, HandsOnLab, Recap, Orientation, Objectives, QuizSlot }} />
-      <MarkComplete client:visible day={d.day} nextHref={next ? `/day/${pad(next)}` : undefined} weeks={weeksFromCourse(course)} totalDays={course.days.length} />
+      <MarkComplete client:visible day={d.day} nextHref={next ? courseHref(courseId, 'day', next) : undefined} weeks={weeksFromCourse(course)} totalDays={course.days.length} />
       <nav class="prevnext" aria-label="Day navigation">
-        {prev ? <a class="btn btn-ghost" href={`/day/${pad(prev)}`}>← Previous: Day {prev}</a> : <span />}
-        {next && <a class="btn" href={`/day/${pad(next)}`}>Next: Day {next} →</a>}
+        {prev ? <a class="btn btn-ghost" href={courseHref(courseId, 'day', prev)}>← Previous: Day {prev}</a> : <span />}
+        {next && <a class="btn" href={courseHref(courseId, 'day', next)}>Next: Day {next} →</a>}
       </nav>
     </article>
     </SlideDeck>

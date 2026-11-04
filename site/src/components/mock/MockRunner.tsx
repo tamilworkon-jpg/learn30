@@ -29,6 +29,8 @@ interface Props {
   domainNames: Record<string, string>;
   dayTitles: Record<string, string>;
   minutes?: number;
+  /** Course the mock belongs to (revisit / lesson links). */
+  courseId?: string;
 }
 
 type Phase = 'loading' | 'intro' | 'exam' | 'review' | 'results';
@@ -40,6 +42,7 @@ export default function MockRunner({
   domainNames,
   dayTitles,
   minutes = MOCK_MINUTES,
+  courseId,
 }: Props) {
   const [session, setSession] = useState<MockSession | null>(null);
   const [phase, setPhase] = useState<Phase>('loading');
@@ -265,6 +268,7 @@ export default function MockRunner({
           domainNames={domainNames}
           dayTitles={dayTitles}
           onRestart={start}
+          courseId={courseId}
         />
       )}
     </div>
@@ -277,12 +281,14 @@ function MockResults({
   domainNames,
   dayTitles,
   onRestart,
+  courseId,
 }: {
   attempt: Attempt;
   questions: Question[];
   domainNames: Record<string, string>;
   dayTitles: Record<string, string>;
   onRestart: () => void;
+  courseId?: string;
 }) {
   const scaled = attempt.score.scaled ?? 100;
   const pass = scaled >= PASS_SCALED;
@@ -323,11 +329,12 @@ function MockResults({
           rows={domainRows(attempt, questions)}
           domainNames={domainNames}
           dayTitles={dayTitles}
+          courseId={courseId}
         />
       </div>
       <details class="mt-6 mock-answers">
         <summary class="h2">Review every answer ({questions.length})</summary>
-        <AnswerReview questions={questions} answers={attempt.answers} />
+        <AnswerReview questions={questions} answers={attempt.answers} courseId={courseId} />
       </details>
       <button type="button" class="btn mt-6" onClick={onRestart}>
         ↻ Start a new attempt

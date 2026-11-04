@@ -1,13 +1,15 @@
 ---
-import { getCollection } from 'astro:content';
 import { getRecapData } from '../../lib/lesson-utils';
-import { pad } from '../../lib/data';
+import { lessonsOf } from '../../lib/course-content';
+import { courseOf } from '../../lib/course-locals';
+import { courseHref } from '../../lib/routes';
 
 interface Props {
   day: number;
 }
 const { day } = Astro.props;
-const lessons = (await getCollection('lessons')).map((e) => e.data);
+const courseId = courseOf(Astro).meta.id;
+const lessons = (await lessonsOf(courseId)).map((e) => e.data);
 const r = getRecapData(day, lessons);
 ---
 
@@ -15,7 +17,7 @@ const r = getRecapData(day, lessons);
   r.kind === 'recap' && (
     <div class="card recap-card">
       <p class="m-0 font-semibold">
-        Yesterday — <a href={`/day/${pad(r.day)}`}>Day {r.day}: {r.title}</a>
+        Yesterday — <a href={courseHref(courseId, 'day', r.day)}>Day {r.day}: {r.title}</a>
       </p>
       <ul class="mt-2 mb-0">
         {r.keyPoints.map((k) => <li>{k}</li>)}

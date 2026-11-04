@@ -16,11 +16,13 @@ interface Props {
   refreshKey?: number;
   /** Where "Retake" goes when there is no onRetake callback (e.g. from an Astro page). */
   retakeHref?: string;
+  /** Course the questions belong to (lesson links in the review). */
+  courseId?: string;
 }
 
 const noun = (kind: Attempt['kind']) => (kind === 'mock' ? 'exam' : kind === 'weekly' ? 'test' : 'quiz');
 
-export default function AttemptHistory({ assessmentId, questions, kind, onRetake, refreshKey = 0, retakeHref }: Props) {
+export default function AttemptHistory({ assessmentId, questions, kind, onRetake, refreshKey = 0, retakeHref, courseId }: Props) {
   const [history, setHistory] = useState<History | null>(null);
   const [open, setOpen] = useState<number | null>(null);
   const [running, setRunning] = useState(false);
@@ -126,7 +128,7 @@ export default function AttemptHistory({ assessmentId, questions, kind, onRetake
               <h4 class="h2 mt-6" data-review-heading>
                 Attempt #{shown.number} · {shown.correct} / {shown.total} ({shown.percent}%) · {formatWhen(shown.attempt.submittedAt)}
               </h4>
-              <AnswerReview questions={questions} answers={shown.attempt.answers} />
+              <AnswerReview questions={questions} answers={shown.attempt.answers} courseId={courseId} />
             </>
           )}
         </div>

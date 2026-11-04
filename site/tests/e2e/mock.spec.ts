@@ -228,7 +228,7 @@ test.describe('mock exam (T086) @visual', () => {
     await noHorizontalScroll(page);
     await expect(
       page.locator('[data-mock-launch="1"]').getByRole('link', { name: 'Start mock 1 →' }),
-    ).toHaveAttribute('href', '/mock/1');
+    ).toHaveAttribute('href', '/course/aws-ai-practitioner/mock/1');
     await expect(page.locator('[data-mock-last="1"]')).toHaveText(/In progress/);
     await page.goto('/day/30');
     await expect(page.locator('[data-mock-launch]')).toHaveCount(2);
@@ -248,7 +248,7 @@ test.describe('mock days (T093, M11–M12) @visual', () => {
   }) => {
     const problems = trackConsole(page);
     await page.goto('/design/fixture-mock-day-29');
-    await expect(page.locator('#launch [data-mock-launch="1"] a')).toHaveAttribute('href', '/mock/1');
+    await expect(page.locator('#launch [data-mock-launch="1"] a')).toHaveAttribute('href', '/course/aws-ai-practitioner/mock/1');
     await expect(page.locator('[data-remediation="mock-1"]')).toContainText('Take Mock exam 1 first');
     expect(
       await page
@@ -297,8 +297,8 @@ test.describe('mock days (T093, M11–M12) @visual', () => {
   }) => {
     const problems = trackConsole(page);
     await page.goto('/design/fixture-mock-day-30');
-    await expect(page.locator('[data-mock-launch="2"] a')).toHaveAttribute('href', '/mock/2');
-    await expect(page.locator('[data-mock-launch="3"] a')).toHaveAttribute('href', '/mock/3');
+    await expect(page.locator('[data-mock-launch="2"] a')).toHaveAttribute('href', '/course/aws-ai-practitioner/mock/2');
+    await expect(page.locator('[data-mock-launch="3"] a')).toHaveAttribute('href', '/course/aws-ai-practitioner/mock/3');
     await expect(page.locator('[data-mock-launch="3"]')).toContainText('Optional final retake');
     const strategy = page.locator('#exam-strategy');
     for (const t of [

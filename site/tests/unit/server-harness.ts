@@ -17,6 +17,11 @@ export const FAKE_DIST: Record<string, string> = {
   'login/index.html': page('Login'),
   'signup/index.html': page('Signup'),
   'glossary/index.html': page('Glossary'),
+  // Learn30: course pages live under /course/<id>/… (old root pages above are 301 legacy addresses).
+  'course/aws-ai-practitioner/index.html': page('Course dashboard'),
+  'course/aws-ai-practitioner/glossary/index.html': page('Course glossary'),
+  'course/aws-ai-practitioner/day/01/index.html': page('Course day 1'),
+  'course/aws-ai-practitioner/mock/1/index.html': page('Course mock 1'),
   '404.html': page('Not found'),
   '_astro/app.abc123.css': 'body{color:red}',
   'scripts/ui-prefs.js': 'void 0;',

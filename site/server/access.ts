@@ -1,4 +1,5 @@
-/** Page access rules (contract §6). Everything not listed as protected is public. */
+/** Page access rules (contract §6; Learn30 spec 002 contracts/routes.md). Everything not listed as protected is public. */
+import { legacyCoursePath } from '../src/lib/routes';
 
 /** Canonical route for access checks: lower-case, no trailing `/index.html` or `/`. */
 export function routeOf(path: string): string {
@@ -8,14 +9,21 @@ export function routeOf(path: string): string {
   return r || '/';
 }
 
-/** `/` is the public course catalogue; a course's dashboard (`/course/<id>`), Settings and mock exams need an account. */
+const COURSE_DASHBOARD = /^\/course\/[a-z0-9-]+$/;
+const COURSE_MOCK = /^\/course\/[a-z0-9-]+\/mock(\/.*)?$/;
+
+/**
+ * `/` is the public course catalogue. An account is needed for Settings, a course's dashboard
+ * (`/course/<id>`) and its mock exams (`/course/<id>/mock/*`); lessons, outline, glossary, cheat
+ * sheets, coverage and search stay public.
+ */
 export function requiresSignIn(route: string): boolean {
-  return route === '/settings' || route === '/mock' || route.startsWith('/mock/') || route === '/course' || route.startsWith('/course/');
+  return route === '/settings' || COURSE_DASHBOARD.test(route) || COURSE_MOCK.test(route);
 }
 
-/** Old addresses kept working: the catalogue used to live at /courses. */
+/** Old addresses keep working (301): /courses → /, and the first course's pre-Learn30 root pages → /course/<id>/…. */
 export function legacyRedirect(route: string): string | null {
-  return route === '/courses' ? '/' : null;
+  return legacyCoursePath(route);
 }
 
 export function isAuthPage(route: string): boolean {

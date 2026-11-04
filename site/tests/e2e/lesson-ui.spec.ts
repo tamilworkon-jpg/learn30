@@ -40,8 +40,8 @@ test.describe('lesson UI (T036) @visual', () => {
     await expect(deep.locator('summary')).toContainText(/Architect Deep Dive · .+\d+ min/);
     await deep.locator('summary').click();
     await expect(deep).toHaveAttribute('open', '');
-    await expect(page.getByRole('link', { name: /Previous: Day 1/ })).toHaveAttribute('href', '/day/01');
-    await expect(page.getByRole('link', { name: /Next: Day 3/ })).toHaveAttribute('href', '/day/03');
+    await expect(page.getByRole('link', { name: /Previous: Day 1/ })).toHaveAttribute('href', '/course/aws-ai-practitioner/day/01');
+    await expect(page.getByRole('link', { name: /Next: Day 3/ })).toHaveAttribute('href', '/course/aws-ai-practitioner/day/03');
     await noHorizontalScroll(page);
     await shot(page, 'lesson-deepdive-open');
     expect(problems, problems.join('\n')).toEqual([]);

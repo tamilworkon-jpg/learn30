@@ -1,8 +1,8 @@
 ---
 // T058 — daily quiz section: loads `set: day-NN` questions and hydrates the QuizRunner island.
-import { getCollection } from 'astro:content';
 import QuizRunner from './QuizRunner';
-import { pad } from '../../lib/data';
+import { lessonsOf, questionsOf } from '../../lib/course-content';
+import { courseOf } from '../../lib/course-locals';
 import { nextStepsContext } from '../../lib/next-steps-context';
 import type { Question } from '../../lib/types';
 import '../../styles/quiz.css';
@@ -11,15 +11,17 @@ interface Props {
   day: number;
 }
 const { day } = Astro.props;
-const set = `day-${pad(day)}`;
-const questions = (await getCollection('questions', (q) => q.data.set === set)).map((q) => q.data as Question).sort((a, b) => a.id.localeCompare(b.id));
-const lessons = (await getCollection('lessons')).map((l) => ({ day: l.data.day as number, body: l.body }));
-const next = nextStepsContext(day, questions, lessons);
+const ctx = courseOf(Astro);
+const courseId = ctx.meta.id;
+const set = `day-${String(day).padStart(2, '0')}`;
+const questions = (await questionsOf(courseId)).filter((q) => q.data.set === set).map((q) => q.data as Question).sort((a, b) => a.id.localeCompare(b.id));
+const lessons = (await lessonsOf(courseId)).map((l) => ({ day: l.data.day as number, body: l.body }));
+const next = nextStepsContext(ctx.course, courseId, day, questions, lessons);
 ---
 
 <div class="quiz-slot" data-quiz-set={set}>
   <p class="muted mt-0">
     {questions.length} exam-style questions. Answer every question, submit on the last one and read the explanations — aim for 80%+ before moving on. Your answers are saved as you go.
   </p>
-  <QuizRunner client:visible assessmentId={set} title={`Day ${day} · Daily quiz`} questions={questions} next={next} />
+  <QuizRunner client:visible assessmentId={set} title={`Day ${day} · Daily quiz`} questions={questions} next={next} courseId={courseId} />
 </div>

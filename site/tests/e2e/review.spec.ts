@@ -46,7 +46,7 @@ test.describe('weekly review (T079) @visual', () => {
     for (const n of [1, 2, 3, 4, 5, 6])
       await expect(d1.getByRole('link', { name: new RegExp(`^Day ${n}:`) })).toHaveAttribute(
         'href',
-        `/day/0${n}`,
+        `/course/aws-ai-practitioner/day/0${n}`,
       );
     await expect(d4.getByRole('link')).toHaveCount(1);
     await expect(d4.getByRole('link')).toContainText('Day 2:');
@@ -66,7 +66,7 @@ test.describe('weekly review (T079) @visual', () => {
     const days = await page
       .locator('.review-domain a')
       .evaluateAll((as) =>
-        [...new Set(as.map((a) => Number(a.getAttribute('href')!.slice(5))))].sort((x, y) => x - y),
+        [...new Set(as.map((a) => Number(a.getAttribute('href')!.split('/day/')[1])))].sort((x, y) => x - y),
       );
     expect(days).toEqual([1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13]);
     expect(problems, problems.join('\n')).toEqual([]);
@@ -125,7 +125,7 @@ test.describe('weekly review (T079) @visual', () => {
     await expect(results.locator('[data-domain="D4"] .dom-weak')).toHaveText('Needs review');
     await expect(
       results.locator('[data-domain="D4"]').getByRole('link', { name: 'Revisit Day 2' }),
-    ).toHaveAttribute('href', '/day/02');
+    ).toHaveAttribute('href', '/course/aws-ai-practitioner/day/02');
     await expect(results.locator('progress.dom-bar-D1')).toHaveAttribute('value', '100');
     const attempt = (await stored(page)).attempts.at(-1);
     expect(attempt).toMatchObject({

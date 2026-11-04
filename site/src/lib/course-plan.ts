@@ -1,5 +1,6 @@
 // US3 — serialisable course plan (weeks → days → sections) built at build time from course.yaml
 // plus whichever lesson files exist, and passed to client islands as props.
+import { DEFAULT_COURSE_ID } from './routes';
 import { parseLesson } from './lesson-parse';
 import { coreMinutes, sectionTypeLabel } from './lesson-utils';
 import type { Course, DayKind, Domain, DomainId } from './types';
@@ -29,6 +30,8 @@ export interface PlanWeek {
   days: number[];
 }
 export interface CoursePlan {
+  /** The course this plan belongs to (links are built with courseHref(courseId, …)). */
+  courseId: string;
   weeks: PlanWeek[];
   days: PlanDay[];
   domains: Domain[];
@@ -36,7 +39,7 @@ export interface CoursePlan {
 
 const DEFAULT_MINUTES = 60;
 
-export function buildPlan(course: Course, domains: Domain[], lessons: { day: number; body?: string }[]): CoursePlan {
+export function buildPlan(course: Course, domains: Domain[], lessons: { day: number; body?: string }[], courseId: string = DEFAULT_COURSE_ID): CoursePlan {
   const domainOf = (ts: string) => domains.find((d) => d.tasks.some((t) => t.id === ts))?.id;
   const weekOf = (day: number) => course.weeks.find((w) => day >= w.days[0] && day <= w.days[1])!.number;
   const days = course.days.map((cd): PlanDay => {
@@ -55,6 +58,7 @@ export function buildPlan(course: Course, domains: Domain[], lessons: { day: num
     };
   });
   return {
+    courseId,
     weeks: course.weeks.map((w) => ({ number: w.number, title: w.title, badge: w.badge, days: days.filter((d) => d.week === w.number).map((d) => d.day) })),
     days,
     // Objectives text isn't needed client-side; keep the island props small.

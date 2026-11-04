@@ -130,7 +130,7 @@ test.describe('lookup (T096) @visual', () => {
     const rows = page.locator('[data-testid="coverage-table"] tbody tr');
     await expect(rows).toHaveCount(14);
     await expect(page.locator('tr[data-ts="1.1"]')).toContainText('Day 1');
-    await expect(page.locator('tr[data-ts="1.1"] .day-link.written').first()).toHaveAttribute('href', '/day/01');
+    await expect(page.locator('tr[data-ts="1.1"] .day-link.written').first()).toHaveAttribute('href', '/course/aws-ai-practitioner/day/01');
     await expect(page.locator('tr[data-ts="5.2"]')).toContainText('Day 27');
     await expect(page.locator('tr[data-ts="5.2"]')).toContainText(/Needs questions|Covered/);
     await expect(page.getByTestId('coverage-summary')).toContainText('14 task statements');

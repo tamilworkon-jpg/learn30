@@ -25,7 +25,7 @@ function expectSecurityHeaders(r: Res) {
 
 describe('SV5 static serving (T188)', () => {
   it('serves HTML with directory index, no-store and security headers', async () => {
-    for (const p of ['/day/1', '/day/1/', '/day/1/index.html', '/glossary']) {
+    for (const p of ['/day/1', '/day/1/', '/day/1/index.html', '/course/aws-ai-practitioner/glossary']) {
       const r = await h.req('GET', p);
       expect(r.status, p).toBe(200);
       expect(r.headers['content-type']).toBe('text/html; charset=utf-8');
@@ -134,7 +134,7 @@ describe('SV6 bootstrap injection + escaping (T188)', () => {
     const res = await h.api('POST', '/api/auth/signup', { username: 'mallory2', password: 'password123', displayName: full.slice(0, 30) });
     expect(res.status).toBe(201);
     const cookie = res.headers['set-cookie']![0].split(';')[0];
-    const r = await h.req('GET', '/glossary', { cookie });
+    const r = await h.req('GET', '/course/aws-ai-practitioner/glossary', { cookie });
     expect(r.text).not.toContain(full.slice(0, 30));
     expect((bootstrapOf(r) as { user: { displayName: string } }).user.displayName).toBe(full.slice(0, 30));
   });
@@ -150,7 +150,7 @@ describe('SV7 page access (T188)', () => {
       '/settings': '/login?next=%2Fsettings',
       '/settings/': '/login?next=%2Fsettings%2F',
       '/SETTINGS': '/login?next=%2FSETTINGS',
-      '/mock/1?x=1': '/login?next=%2Fmock%2F1%3Fx%3D1',
+      '/course/aws-ai-practitioner/mock/1?x=1': '/login?next=%2Fcourse%2Faws-ai-practitioner%2Fmock%2F1%3Fx%3D1',
     };
     for (const [p, loc] of Object.entries(cases)) {
       const r = await h.req('GET', p);
@@ -161,7 +161,7 @@ describe('SV7 page access (T188)', () => {
   });
 
   it('public pages are served signed out', async () => {
-    for (const p of ['/day/1', '/glossary', '/login', '/signup']) expect((await h.req('GET', p)).status, p).toBe(200);
+    for (const p of ['/day/1', '/course/aws-ai-practitioner/glossary', '/course/aws-ai-practitioner/day/01', '/login', '/signup']) expect((await h.req('GET', p)).status, p).toBe(200);
   });
 
   it('signed in: protected pages served; /login and /signup → / or a safe next', async () => {
@@ -170,7 +170,8 @@ describe('SV7 page access (T188)', () => {
     expect(home.status).toBe(200);
     expect(home.text).toContain('<h1>Dashboard</h1>');
     expect((await h.req('GET', '/settings', { cookie })).status).toBe(200);
-    expect((await h.req('GET', '/mock/1', { cookie })).status).toBe(200);
+    expect((await h.req('GET', '/course/aws-ai-practitioner/mock/1', { cookie })).status).toBe(200);
+    expect((await h.req('GET', '/course/aws-ai-practitioner', { cookie })).status).toBe(200);
     const cases: Record<string, string> = {
       '/login': '/',
       '/signup': '/',
@@ -212,7 +213,7 @@ describe('T192 hardening — redirects and paths', () => {
     for (const [p, loc] of [
       ['//settings', '/login?next=%2Fsettings'],
       ['///settings/', '/login?next=%2Fsettings%2F'],
-      ['/mock//1', '/login?next=%2Fmock%2F1'],
+      ['/course/aws-ai-practitioner/mock//1', '/login?next=%2Fcourse%2Faws-ai-practitioner%2Fmock%2F1'],
       ['//course//aws-ai-practitioner', '/login?next=%2Fcourse%2Faws-ai-practitioner'],
     ]) {
       const r = await h.req('GET', p);
@@ -228,6 +229,29 @@ describe('T192 hardening — redirects and paths', () => {
     expect(r.status).toBe(301);
     expect(r.headers.location).toBe('/?x=1');
     expect((await h.req('GET', '/Courses/')).headers.location).toBe('/');
+  });
+
+  it('Learn30: pre-Learn30 root pages 301 into the first course (query kept); lessons stay public', async () => {
+    const cases: Record<string, string> = {
+      '/day/02': '/course/aws-ai-practitioner/day/02',
+      '/day/02/': '/course/aws-ai-practitioner/day/02',
+      '/outline?x=1': '/course/aws-ai-practitioner/outline?x=1',
+      '/mock/1': '/course/aws-ai-practitioner/mock/1',
+      '/glossary': '/course/aws-ai-practitioner/glossary',
+      '/cheatsheet/services': '/course/aws-ai-practitioner/cheatsheet/services',
+      '/cheatsheet/metrics': '/course/aws-ai-practitioner/cheatsheet/metrics',
+      '/coverage': '/course/aws-ai-practitioner/coverage',
+      '/search?q=bedrock': '/course/aws-ai-practitioner/search?q=bedrock',
+    };
+    for (const [p, loc] of Object.entries(cases)) {
+      const r = await h.req('GET', p);
+      expect(r.status, p).toBe(301);
+      expect(r.headers.location, p).toBe(loc);
+    }
+    // Course pages other than the dashboard and mocks are public.
+    const { requiresSignIn } = await import('../../server/access');
+    for (const r of ['/course/x/day/01', '/course/x/outline', '/course/x/glossary', '/course/x/cheatsheet/services', '/course/x/coverage', '/course/x/search', '/']) expect(requiresSignIn(r), r).toBe(false);
+    for (const r of ['/course/x', '/course/x/mock', '/course/x/mock/2', '/settings']) expect(requiresSignIn(r), r).toBe(true);
   });
 
   it('L5: Windows device names are rejected in any segment', async () => {

@@ -1,21 +1,28 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import LessonLinks from '../components/lookup/LessonLinks.astro';
-import { examGuide } from '../lib/data';
-import { searchText } from '../lib/lookup';
-import { slugify } from '../schemas/lookup';
-import '../styles/lookup.css';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import LessonLinks from '../../../components/lookup/LessonLinks.astro';
+import { availableCourseIds, getCourse } from '../../../lib/course-data';
+import { glossaryOf } from '../../../lib/course-content';
+import { courseHref } from '../../../lib/routes';
+import { searchText } from '../../../lib/lookup';
+import { slugify } from '../../../schemas/lookup';
+import '../../../styles/lookup.css';
 
-const terms = (await getCollection('glossary')).map((e) => ({ ...e.data, id: e.id })).sort((a, b) => a.term.localeCompare(b.term, 'en', { sensitivity: 'base' }));
+export function getStaticPaths() {
+  return availableCourseIds().map((course) => ({ params: { course } }));
+}
+const courseId = Astro.params.course!;
+Astro.locals.courseId = courseId;
+const { examGuide, meta } = getCourse(courseId);
+const terms = (await glossaryOf(courseId)).map((e) => ({ ...e.data, id: (e as { localId?: string }).localId ?? e.id })).sort((a, b) => a.term.localeCompare(b.term, 'en', { sensitivity: 'base' }));
 const letterOf = (t: string) => (/[a-z]/i.test(t[0]) ? t[0].toUpperCase() : '#');
 const groups = new Map<string, typeof terms>();
 for (const t of terms) groups.set(letterOf(t.term), [...(groups.get(letterOf(t.term)) ?? []), t]);
 const alphabet = ['#', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].filter((l) => l !== '#' || groups.has('#'));
 ---
 
-<BaseLayout title="Glossary" active="glossary" description="Plain-English glossary of AWS AI Practitioner (AIF-C01) exam terms with exam cues.">
-  <div id="glossary-root" data-pagefind-body>
+<BaseLayout title="Glossary" active="glossary" course={courseId} description={`Plain-English glossary of ${meta.title} (${meta.examCode}) terms with exam cues.`}>
+  <div id="glossary-root" data-pagefind-body data-pagefind-filter={`course:${courseId}`}>
     <h1 class="h1">Glossary</h1>
     <p class="muted lookup-intro">
       {terms.length} exam terms in plain English. Each has an <strong>exam cue</strong> — the wording that tells you the term is the answer — and a link to the day that teaches it.
@@ -43,7 +50,7 @@ const alphabet = ['#', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].filter((l) => l !== '#' 
       </ul>
     </nav>
 
-    <p class="card empty-state" data-empty hidden>No terms match. Clear the filter or try the <a href="/search">full-text search</a>.</p>
+    <p class="card empty-state" data-empty hidden>No terms match. Clear the filter or try the <a href={courseHref(courseId, 'search')}>full-text search</a>.</p>
 
     {
       [...groups].map(([letter, list]) => (
@@ -88,6 +95,6 @@ const alphabet = ['#', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].filter((l) => l !== '#' 
 </BaseLayout>
 
 <script>
-  import { setupFilter } from '../lib/lookup-filter';
+  import { setupFilter } from '../../../lib/lookup-filter';
   setupFilter(document.getElementById('glossary-root')!, ['term', 'terms']);
 </script>
