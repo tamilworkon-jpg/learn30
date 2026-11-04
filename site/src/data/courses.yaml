@@ -1,5 +1,5 @@
-# Course catalogue (home page `/`). The AWS Certified AI Practitioner course is course #1: its dashboard is
-# /course/aws-ai-practitioner; its other pages keep their routes (/day/NN, /outline, /mock/N, …).
+# Learn30 course registry (home page `/`). Each course's pages live under /course/<id>/… (links are built with
+# courseHref() in src/lib/routes.ts); its content lives in its own folders (spec 002 contracts/course-folder.md).
 - id: aws-ai-practitioner
   title: 'AWS Certified AI Practitioner'
   shortTitle: 'AWS AI Practitioner'
@@ -10,7 +10,5 @@
   hoursPerDay: 1
   level: 'Foundational'
   status: available
-  entryHref: '/course/aws-ai-practitioner'
-  outlineHref: '/outline'
   accent: '#503e9d'
   illustration: '/illustrations/orientation.svg'

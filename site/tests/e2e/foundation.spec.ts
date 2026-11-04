@@ -8,7 +8,7 @@ test.describe('foundation (T018) @visual', () => {
     for (const label of ['Courses', 'Dashboard', 'Outline', 'Search', 'Glossary', 'Cheat sheets', 'Settings']) {
       await expect(page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: label })).toBeVisible();
     }
-    await expect(page.locator('footer')).toContainText('Exam guide v1.2 · last verified 2026-11-02');
+    await expect(page.locator('footer')).toContainText('exam guide v1.2 · last verified 2026-11-02');
     const csp = await page.locator('meta[http-equiv="content-security-policy" i]').getAttribute('content');
     expect(csp).toContain("default-src 'self'");
     await noHorizontalScroll(page);
