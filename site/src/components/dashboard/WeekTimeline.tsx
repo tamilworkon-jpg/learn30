@@ -1,7 +1,7 @@
 // T073 — the learner's current study week (five lesson days, Mon–Fri) as tiles with status.
 import type { CoursePlan, PlanDay } from '../../lib/course-plan';
 import { dayHref, dayStatus, type Status } from '../../lib/dashboard';
-import { STUDY_WEEKS, formatDate, plannedDate, studyWeekDays, studyWeekOf } from '../../lib/schedule';
+import { formatDate, plannedDate, studyWeekDays, studyWeekOf, studyWeeks } from '../../lib/schedule';
 import type { Progress } from '../../lib/types';
 import { courseHref, DEFAULT_COURSE_ID } from '../../lib/routes';
 
@@ -24,7 +24,7 @@ export default function WeekTimeline({ plan, progress, currentDay, courseId = DE
   const start = new Date(progress.startedAt);
   const studyWeek = studyWeekOf(currentDay);
   // Only days the course has (a course may be shorter than six full weeks).
-  const days = studyWeekDays(studyWeek).filter((n) => plan.days.some((x) => x.day === n));
+  const days = studyWeekDays(studyWeek, plan.days.length).filter((n) => plan.days.some((x) => x.day === n));
   const first = plannedDate(start, days[0]);
   const last = plannedDate(start, days[days.length - 1]);
   const range = `${formatDate(first).replace(/,? \d{4}$/, '')} – ${formatDate(last)}`;
@@ -32,7 +32,7 @@ export default function WeekTimeline({ plan, progress, currentDay, courseId = DE
     <section aria-labelledby="this-week-h" data-week-timeline={studyWeek}>
       <div class="flex items-center justify-between mt-8 gap-3">
         <h2 class="h2 m-0" id="this-week-h">
-          This week <span class="muted text-sm font-normal">· Week {studyWeek} of {STUDY_WEEKS} · Mon–Fri · {range}</span>
+          This week <span class="muted text-sm font-normal">· Week {studyWeek} of {studyWeeks(plan.days.length)} · Mon–Fri · {range}</span>
         </h2>
         <a class="icon-btn" href={courseHref(courseId, 'outline')} aria-label="Open course outline">
           →

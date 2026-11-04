@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { examGuide, course } from '../../src/lib/data';
 import { lessonRefResolves, readLookupContent, validateLookup } from '../../src/lib/validate-lookup';
-import { metricGroups } from '../../src/data/metrics';
+import { metricGroups } from '../../src/courses/aws-ai-practitioner/metrics';
 import type { GlossaryTerm, ServiceCard } from '../../src/schemas/lookup';
 
 const contentDir = resolve(__dirname, '../../src/content');

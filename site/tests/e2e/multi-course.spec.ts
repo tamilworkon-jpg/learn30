@@ -91,10 +91,11 @@ test.describe('multi-course platform (spec 002) @sanity', () => {
       await page.goto(path);
       await expect(page).toHaveTitle(/Learn30/);
       const text = await page.locator('body').innerText();
-      // The catalogue card may name the course; nothing else on a global page should.
+      // Course names are expected only where the learner picks a course: the catalogue cards, the sidebar's
+      // "My courses" list and the settings course picker. Nothing else on a global page may name one.
       const outsideCards = await page.evaluate(() => {
         const clone = document.body.cloneNode(true) as HTMLElement;
-        clone.querySelectorAll('[data-course]').forEach((n) => n.remove());
+        clone.querySelectorAll('[data-course], [data-my-courses], [data-course-picker], [data-settings-course]').forEach((n) => n.remove());
         return clone.innerText;
       });
       expect(text.length).toBeGreaterThan(0);

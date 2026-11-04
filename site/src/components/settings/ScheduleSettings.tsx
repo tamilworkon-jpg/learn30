@@ -1,13 +1,15 @@
 // T183 — the signed-in learner's course start date (moved out of the removed LearnerSettings in T189).
 import { useEffect, useState } from 'preact/hooks';
 import { useChosenStore } from './course-choice';
-import { COURSE_DAYS, finishDate, formatDate, fromDateInput, toDateInput } from '../../lib/schedule';
+import { allCourses } from '../../lib/course-data';
+import { finishDate, formatDate, fromDateInput, studyWeeks, toDateInput } from '../../lib/schedule';
 import '../../styles/profiles.css';
 import '../../styles/account.css';
 
 /** The chosen course's start date (Learn30: each course has its own schedule). */
 export default function ScheduleSettings({ courseIds }: { courseIds: string[] }) {
-  const { store } = useChosenStore(courseIds);
+  const { courseId, store } = useChosenStore(courseIds);
+  const days = allCourses().find((c) => c.id === courseId)?.lengthDays ?? 30;
   const [start, setStart] = useState('');
   const [ready, setReady] = useState(false);
   const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
@@ -25,7 +27,7 @@ export default function ScheduleSettings({ courseIds }: { courseIds: string[] })
 
   let finishPreview = '';
   try {
-    finishPreview = start ? formatDate(finishDate(fromDateInput(start))) : '';
+    finishPreview = start ? formatDate(finishDate(fromDateInput(start), days)) : '';
   } catch {
     finishPreview = '';
   }
@@ -36,7 +38,7 @@ export default function ScheduleSettings({ courseIds }: { courseIds: string[] })
         Your schedule
       </h2>
       <p class="muted mt-0 text-sm">
-        Lessons are planned on weekdays only (Monday–Friday). Day 1 is your start date (or the Monday after, if you pick a weekend) and each later day is the next weekday, so the {COURSE_DAYS}-day plan takes six weeks. Dates use this device's calendar.
+        Lessons are planned on weekdays only (Monday–Friday). Day 1 is your start date (or the Monday after, if you pick a weekend) and each later day is the next weekday, so the {days}-day plan takes {studyWeeks(days)} week{studyWeeks(days) === 1 ? '' : 's'}. Dates use this device's calendar.
       </p>
       <form
         class="flex gap-2 flex-wrap items-end"

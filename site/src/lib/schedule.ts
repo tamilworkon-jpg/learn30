@@ -1,6 +1,8 @@
-// T183 — the learner's 30-day plan in the browser's local time zone. Study days are weekdays only
-// (Mon–Fri): Day 1 is the start date (or the Monday after, if it falls on a weekend) and each later
-// day is the next weekday, so 30 days take six calendar weeks. No lesson is dropped; only dates move.
+// T183 — the learner's plan in the browser's local time zone. Study days are weekdays only (Mon–Fri):
+// Day 1 is the start date (or the Monday after, if it falls on a weekend) and each later day is the next
+// weekday. Learn30: the plan length is the course's `lengthDays` — every function takes it as `days`
+// (default 30 = the AWS course, so existing callers keep their behaviour).
+/** Default plan length (the first course, AWS AI Practitioner). Pass the course's lengthDays instead. */
 export const COURSE_DAYS = 30;
 
 /** Local midnight of the date's calendar day. */
@@ -47,7 +49,7 @@ export function plannedDate(start: Date, day: number): Date {
   return d;
 }
 
-export const finishDate = (start: Date) => plannedDate(start, COURSE_DAYS);
+export const finishDate = (start: Date, days: number = COURSE_DAYS) => plannedDate(start, days);
 
 /**
  * Which plan day `today` is (1 = first study day). On a weekend it is the day planned for the coming
@@ -68,9 +70,9 @@ export interface ScheduleStatus {
 }
 
 /** Compares completed days with the days that should be finished before today. */
-export function scheduleStatus(start: Date, today: Date, completed: number): ScheduleStatus {
+export function scheduleStatus(start: Date, today: Date, completed: number, days: number = COURSE_DAYS): ScheduleStatus {
   const planDay = planDayOn(start, today);
-  const expectedDone = Math.max(0, Math.min(COURSE_DAYS, planDay - 1));
+  const expectedDone = Math.max(0, Math.min(days, planDay - 1));
   const delta = completed - expectedDone;
   const state = planDay < 1 && completed === 0 ? 'not-started' : delta > 0 ? 'ahead' : delta < 0 ? 'behind' : 'on-track';
   return { planDay, expectedDone, delta, state };
@@ -96,20 +98,23 @@ export const formatDate = (date: Date, locale?: string) => date.toLocaleDateStri
  * ahead pulls it one weekday earlier. Before the start it is the original finish; once all 30 days are
  * done it is null (finished).
  */
-export function projectedFinish(start: Date, today: Date, completed: number): Date | null {
-  if (completed >= COURSE_DAYS) return null;
-  const { delta, state } = scheduleStatus(start, today, completed);
-  if (state === 'not-started') return finishDate(start);
-  return plannedDate(start, COURSE_DAYS - delta);
+export function projectedFinish(start: Date, today: Date, completed: number, days: number = COURSE_DAYS): Date | null {
+  if (completed >= days) return null;
+  const { delta, state } = scheduleStatus(start, today, completed, days);
+  if (state === 'not-started') return finishDate(start, days);
+  return plannedDate(start, days - delta);
 }
 
 
 /** Study weeks: five lesson days (Mon–Fri) each, so the 30 days make six weeks. The course's topic
  *  groups (course.yaml `weeks`) are shown as "Modules" so a week never lists seven days. */
 export const STUDY_WEEK_DAYS = 5;
-export const STUDY_WEEKS = Math.ceil(COURSE_DAYS / STUDY_WEEK_DAYS);
+/** Study weeks in a plan of `days` lesson days. */
+export const studyWeeks = (days: number = COURSE_DAYS) => Math.ceil(days / STUDY_WEEK_DAYS);
+/** @deprecated the AWS course's 6 weeks — use studyWeeks(lengthDays). */
+export const STUDY_WEEKS = studyWeeks(COURSE_DAYS);
 export const studyWeekOf = (day: number) => Math.floor((day - 1) / STUDY_WEEK_DAYS) + 1;
-export function studyWeekDays(week: number): number[] {
+export function studyWeekDays(week: number, days: number = COURSE_DAYS): number[] {
   const first = (week - 1) * STUDY_WEEK_DAYS + 1;
-  return Array.from({ length: STUDY_WEEK_DAYS }, (_, i) => first + i).filter((n) => n <= COURSE_DAYS);
+  return Array.from({ length: STUDY_WEEK_DAYS }, (_, i) => first + i).filter((n) => n <= days);
 }

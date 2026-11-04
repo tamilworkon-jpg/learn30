@@ -5,10 +5,11 @@ interface Props {
 import { courseOf } from '../../lib/course-locals';
 import { courseHref } from '../../lib/routes';
 const { current } = Astro.props;
-const { meta } = courseOf(Astro);
+const { meta, metrics } = courseOf(Astro);
 const tabs = [
   { key: 'services', href: courseHref(meta.id, 'cheatsheet', 'services'), label: `${meta.provider} services` },
-  { key: 'metrics', href: courseHref(meta.id, 'cheatsheet', 'metrics'), label: 'Evaluation metrics' },
+  // Only courses with metric cheat-sheet data have that page (src/courses/<id>/metrics.ts).
+  ...(metrics?.length ? [{ key: 'metrics', href: courseHref(meta.id, 'cheatsheet', 'metrics'), label: 'Evaluation metrics' }] : []),
   { key: 'coverage', href: courseHref(meta.id, 'coverage'), label: 'Exam coverage' },
 ];
 ---

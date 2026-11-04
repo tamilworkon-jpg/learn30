@@ -17,7 +17,8 @@ const ICON = 'M4 19.5A2.5 2.5 0 016.5 17H20V3H6.5A2.5 2.5 0 004 5.5zM4 19.5A2.5 
 export default function MyCourses({ courses }: { courses: Item[] }) {
   const [summary, setSummary] = useState<Summary | null>(null);
   useEffect(() => setSummary(readSummary()), []);
-  const mine = summary ? courses.filter((c) => summary[c.id]) : [];
+  // Started = a day done or a lesson opened (a progress record alone is created on first visit).
+  const mine = summary ? courses.filter((c) => summary[c.id] && (summary[c.id].completed > 0 || !!summary[c.id].lastPosition)) : [];
   if (!mine.length) return null;
   return (
     <div class="nav-group" role="group" aria-labelledby="nav-mine-h" data-my-courses>

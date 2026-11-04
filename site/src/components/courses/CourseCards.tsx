@@ -27,18 +27,19 @@ export default function CourseCards({ courses, plans }: Props) {
     setSignedIn(inn);
     if (!inn) return;
     const s = readSummary();
-    if (s) return setSummary(s);
-    // Fallback (no summary yet): the store's progress belongs to the first course.
+    // The page's own course store (the first course on global pages) is live: progress imported or saved
+    // on this page (e.g. the legacy-import offer) must show without a reload.
     const plan = plans[DEFAULT_COURSE_ID];
-    if (!plan) return;
-    const store = getStore();
-    const toSummary = (): Summary => {
+    const store = plan ? getStore(DEFAULT_COURSE_ID) : null;
+    const live = (): Summary => {
+      if (!store || !plan) return {};
       const p = store.get();
-      const started = Object.keys(p.days).length > 0 || p.attempts.length > 0;
+      const started = Object.keys(p.days).length > 0 || p.attempts.length > 0 || !!p.lastPosition;
       return started ? { [DEFAULT_COURSE_ID]: { completed: completedCount(p, plan), startedAt: p.startedAt, lastPosition: p.lastPosition } } : {};
     };
-    setSummary(toSummary());
-    return store.subscribe(() => setSummary(toSummary()));
+    const merge = () => setSummary({ ...(s ?? {}), ...live() });
+    merge();
+    return store?.subscribe(merge);
   }, []);
 
   return (
@@ -47,10 +48,11 @@ export default function CourseCards({ courses, plans }: Props) {
         const s: CourseSummary | undefined = signedIn ? summary[c.id] : undefined;
         const done = s?.completed ?? 0;
         const pct = Math.round((100 * done) / c.lengthDays);
-        const started = !!s;
+        // A progress record alone (created on first visit) is not a start: a day done or a lesson opened is.
+        const started = !!s && (done > 0 || !!s.lastPosition);
         const finished = done >= c.lengthDays;
         const next = s ? nextDayOf(s, c.lengthDays) : 1;
-        const finish = s && !finished ? projectedFinish(new Date(s.startedAt), new Date(), done) : null;
+        const finish = s && !finished ? projectedFinish(new Date(s.startedAt), new Date(), done, c.lengthDays) : null;
         const dashboard = courseHref(c.id);
         return (
           // The strict CSP blocks style attributes in the HTML: the accent is applied through the CSSOM after mount.

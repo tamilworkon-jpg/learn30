@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COURSE_DAYS, finishDate, projectedFinish, isStudyDay, localDay, nextStudyDay, planDayOn, plannedDate, scheduleStatus, toDateInput, fromDateInput } from '../../src/lib/schedule';
+import { COURSE_DAYS, finishDate, projectedFinish, studyWeekDays, studyWeeks, isStudyDay, localDay, nextStudyDay, planDayOn, plannedDate, scheduleStatus, toDateInput, fromDateInput } from '../../src/lib/schedule';
 
 // T183 SD1 — schedule maths in the browser's local time zone.
 const d = (y: number, m: number, day: number, h = 12) => new Date(y, m - 1, day, h);
@@ -64,6 +64,20 @@ describe('schedule (T183, weekdays only)', () => {
     expect(localDay(projectedFinish(start, fri, 5)!)).toEqual(localDay(d(2026, 12, 10))); // 1 ahead → Thu
     expect(localDay(projectedFinish(start, d(2026, 10, 30), 0)!)).toEqual(localDay(d(2026, 12, 11))); // not started
     expect(projectedFinish(start, fri, 30)).toBeNull();
+  });
+
+  it('Learn30: a 3-day course finishes on its 3rd weekday, in one study week (per-course length)', () => {
+    const mon = d(2026, 11, 2);
+    expect(localDay(finishDate(mon, 3))).toEqual(localDay(d(2026, 11, 4))); // Wed
+    expect(localDay(finishDate(d(2026, 11, 5), 3))).toEqual(localDay(d(2026, 11, 9))); // Thu start → Mon
+    expect(studyWeeks(3)).toBe(1);
+    expect(studyWeeks()).toBe(6); // AWS default unchanged
+    expect(studyWeekDays(1, 3)).toEqual([1, 2, 3]);
+    expect(studyWeekDays(1)).toEqual([1, 2, 3, 4, 5]);
+    // Day 3 of 3 done → finished; 1 done on Wed (Day 3 planned) → 1 behind → finish Thu
+    expect(projectedFinish(mon, d(2026, 11, 4), 3, 3)).toBeNull();
+    expect(localDay(projectedFinish(mon, d(2026, 11, 4), 1, 3)!)).toEqual(localDay(d(2026, 11, 5)));
+    expect(scheduleStatus(mon, d(2026, 11, 20), 0, 3)).toMatchObject({ expectedDone: 3, state: 'behind' });
   });
 
   it('date input helpers round-trip local dates', () => {

@@ -1,6 +1,6 @@
 // T075 — dashboard island: reads progress from the store after mount (static page) and lays out
 // the Phase 0 dashboard: continue cards + this week (main), progress ring + streak, focus areas, badges (side).
-import { STUDY_WEEKS, studyWeekOf } from '../../lib/schedule';
+import { studyWeekOf, studyWeeks } from '../../lib/schedule';
 import { useEffect, useState } from 'preact/hooks';
 import { earnedBadges } from '../../lib/badges';
 import type { CoursePlan } from '../../lib/course-plan';
@@ -57,9 +57,9 @@ export default function Dashboard({ plan, courseId = DEFAULT_COURSE_ID }: Props)
         </p>
         <h1 class="h1">{started ? 'Welcome back 👋' : 'Welcome 👋'}</h1>
         <p class="muted mt-0">
-          Day {day.day} of {plan.days.length} · Week {studyWeekOf(day.day)} of {STUDY_WEEKS} · Module {week.number} — {week.title}
+          Day {day.day} of {plan.days.length} · Week {studyWeekOf(day.day)} of {studyWeeks(plan.days.length)} · Module {week.number} — {week.title}
         </p>
-        {ready && <ScheduleCard startedAt={progress.startedAt} completed={completedCount(progress, plan)} />}
+        {ready && <ScheduleCard startedAt={progress.startedAt} completed={completedCount(progress, plan)} days={plan.days.length} />}
 
         <h2 class="h2 mt-6">{target.resumed ? 'Continue where you left off' : started ? 'Up next' : 'Start here'}</h2>
         <ContinueCard plan={plan} progress={progress} />
