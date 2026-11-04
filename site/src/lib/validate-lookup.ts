@@ -100,9 +100,14 @@ const readDir = <T>(dir: string): LookupFile<T>[] =>
         .map((file) => ({ file, items: (load(readFileSync(join(dir, file), 'utf8')) as T[]) ?? [] }))
     : [];
 
-/** Reads `<contentDir>`/{glossary,services}/*.yaml and the section ids of existing lessons from disk. */
-export function readLookupContent(contentDir: string) {
-  const lessonDir = join(contentDir, 'lessons');
+/**
+ * Reads `<contentDir>`/{glossary,services}/*.yaml and the section ids of existing lessons from disk.
+ * With `courseId` (Learn30): `<contentDir>/<collection>/<courseId>/…` (src/content); without it the
+ * collections sit directly under contentDir (fixture course folders: tests/fixtures/courses/<id>/content).
+ */
+export function readLookupContent(contentDir: string, courseId?: string) {
+  const col = (c: string) => (courseId ? join(contentDir, c, courseId) : join(contentDir, c));
+  const lessonDir = col('lessons');
   const sectionsByDay = new Map<number, Set<string>>();
   if (existsSync(lessonDir)) {
     for (const f of readdirSync(lessonDir).filter((x) => x.endsWith('.mdx'))) {
@@ -111,8 +116,8 @@ export function readLookupContent(contentDir: string) {
     }
   }
   return {
-    glossary: readDir<GlossaryTerm>(join(contentDir, 'glossary')),
-    services: readDir<ServiceCard>(join(contentDir, 'services')),
+    glossary: readDir<GlossaryTerm>(col('glossary')),
+    services: readDir<ServiceCard>(col('services')),
     sectionsByDay,
   };
 }

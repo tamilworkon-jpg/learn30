@@ -1,6 +1,7 @@
 import { errorText, validateLesson, validateQuestion } from '../schemas';
 import { parseLesson, type ParsedLesson, type ParsedSection } from './lesson-parse';
 import type { Course, ExamGuide, Question } from './types';
+import type { CourseRules } from './course-data';
 
 export { parseLesson, type ParsedLesson, type ParsedSection };
 
@@ -16,6 +17,16 @@ export const REVIEW_MIN_FACTS = 20;
 export const REVIEW_MIN_TRAPS = 5;
 export const MOCK_SECTION_ORDER: Record<number, string[]> = { 29: ['launch', 'remediation'], 30: ['launch', 'remediation', 'finalRevision', 'examStrategy'] };
 export const MOCK_LAUNCHES: Record<number, number[]> = { 29: [1], 30: [2, 3] };
+/** AIF-C01 defaults (src/courses/aws-ai-practitioner/rules.yaml); every course passes its own CourseRules. */
+export const DEFAULT_RULES: CourseRules = {
+  mock: { questions: 65, minutes: 90, passScaled: 700, count: 3 },
+  mockSplit: MOCK_SPLIT,
+  mockLaunches: MOCK_LAUNCHES,
+  mockSectionOrder: MOCK_SECTION_ORDER,
+  minQuestions: 900,
+  dailyQuestions: [15, 20],
+  moduleQuestions: [55, 60],
+};
 export const STRATEGY_TOPICS: [string, RegExp][] = [
   ['registration', /regist/i],
   ['delivery options (Pearson VUE test centre or online proctoring)', /Pearson VUE/i],
@@ -28,9 +39,9 @@ const ALLOWED_COMPONENTS: Record<string, string[]> = { review: ['Section', 'Diag
 const countItems = (text: string, numbered: boolean) => (text.match(numbered ? /^\s*\d+\.\s+\S/gm : /^\s*(?:[-*]|\d+\.)\s+\S/gm) ?? []).length;
 
 /** Structure errors for a review/mock day (sections exactly in order, allowed components, required content). */
-export function checkReviewOrMockDay(lesson: ParsedLesson, kind: 'review' | 'mock', day: number): string[] {
+export function checkReviewOrMockDay(lesson: ParsedLesson, kind: 'review' | 'mock', day: number, rules: CourseRules = DEFAULT_RULES): string[] {
   const errors: string[] = [];
-  const required = kind === 'review' ? REVIEW_SECTION_ORDER : (MOCK_SECTION_ORDER[day] ?? []);
+  const required = kind === 'review' ? REVIEW_SECTION_ORDER : ((rules.mockSectionOrder ?? MOCK_SECTION_ORDER)[day] ?? []);
   const types = lesson.sections.map((s) => s.type);
   if (types.join() !== required.join()) errors.push(`sections must be exactly ${required.join(' → ')} (found ${types.join(' → ') || 'none'})`);
   const ids = lesson.sections.map((s) => s.id);
@@ -53,7 +64,7 @@ export function checkReviewOrMockDay(lesson: ParsedLesson, kind: 'review' | 'moc
   } else {
     const launch = sec('launch');
     const launched = launch ? [...launch.content.matchAll(/<MockLaunch\s+n=\{(\d)\}/g)].map((m) => Number(m[1])) : [];
-    const want = MOCK_LAUNCHES[day] ?? [];
+    const want = rules.mockLaunches[day] ?? [];
     if (launched.join() !== want.join()) errors.push(`launch section must contain <MockLaunch n={…} /> for mock ${want.join(' and ')} (found ${launched.join(', ') || 'none'})`);
     const rem = sec('remediation');
     if (rem && !/<Remediation\s+mock=\{\d\}/.test(rem.content)) errors.push('remediation section must contain <Remediation mock={N} />');
@@ -91,6 +102,8 @@ export interface ValidateInput {
   guide: ExamGuide;
   course: Course;
   final?: boolean;
+  /** The course's rules (src/courses/<id>/rules.yaml); defaults to AIF-C01. */
+  rules?: CourseRules;
 }
 
 export interface ValidateResult {
@@ -101,10 +114,10 @@ export interface ValidateResult {
   totalQuestions: number;
 }
 
-const setRule = (set: string): [number, number] | null => {
-  if (set.startsWith('day-')) return [15, 20];
-  if (set.startsWith('week-')) return [55, 60];
-  if (set.startsWith('mock-')) return [65, 65];
+const setRule = (set: string, rules: CourseRules): [number, number] | null => {
+  if (set.startsWith('day-')) return rules.dailyQuestions;
+  if (set.startsWith('week-')) return rules.moduleQuestions;
+  if (set.startsWith('mock-')) return [rules.mock.questions, rules.mock.questions];
   return null;
 };
 
@@ -124,6 +137,7 @@ export const hasExamFraming = (text: string) => EXAM_FRAMING.test(text);
 
 export function validateContent(input: ValidateInput): ValidateResult {
   const { guide, course, final } = input;
+  const rules = input.rules ?? DEFAULT_RULES;
   const errors: string[] = [];
   const warnings: string[] = [];
   const taskIds = guide.domains.flatMap((d) => d.tasks.map((t) => t.id));
@@ -191,7 +205,7 @@ export function validateContent(input: ValidateInput): ValidateResult {
       const declared = fm.estimatedMinutes!;
       if (Math.abs(est - declared) / declared > 0.15) errors.push(`${where}: estimated ${est} min is >15% off declared ${declared}`);
     } else if (fm.kind === 'review' || fm.kind === 'mock') {
-      for (const e of checkReviewOrMockDay(lesson, fm.kind, day)) errors.push(`${where}: ${e}`);
+      for (const e of checkReviewOrMockDay(lesson, fm.kind, day, rules)) errors.push(`${where}: ${e}`);
     }
   }
 
@@ -203,15 +217,15 @@ export function validateContent(input: ValidateInput): ValidateResult {
   const stems = new Map<string, string>();
   let total = 0;
   for (const { set, questions } of input.questionSets) {
-    const rule = setRule(set);
+    const rule = setRule(set, rules);
     if (rule && (questions.length < rule[0] || questions.length > rule[1])) {
       errors.push(`${set} has ${questions.length} questions (expected ${rule[0]}–${rule[1]})`);
     }
     if (set.startsWith('mock-')) {
       const split: Record<string, number> = {};
       for (const q of questions) split[q.domain] = (split[q.domain] ?? 0) + 1;
-      if (Object.keys(MOCK_SPLIT).some((d) => (split[d] ?? 0) !== MOCK_SPLIT[d])) {
-        errors.push(`${set} domain split ${JSON.stringify(split)} must be ${JSON.stringify(MOCK_SPLIT)}`);
+      if (Object.keys(rules.mockSplit).some((d) => (split[d] ?? 0) !== rules.mockSplit[d])) {
+        errors.push(`${set} domain split ${JSON.stringify(split)} must be ${JSON.stringify(rules.mockSplit)}`);
       }
     }
     for (const q of questions) {
@@ -249,7 +263,7 @@ export function validateContent(input: ValidateInput): ValidateResult {
 
   if (final) {
     for (const [ts, c] of Object.entries(coverage)) if (c.questions < 3) errors.push(`Task statement ${ts} has fewer than 3 questions`);
-    if (total < 900) errors.push(`Question bank has ${total} questions (need ≥ 900)`);
+    if (total < rules.minQuestions) errors.push(`Question bank has ${total} questions (need ≥ ${rules.minQuestions})`);
   }
 
   return { errors, warnings, pending, coverage, totalQuestions: total };
