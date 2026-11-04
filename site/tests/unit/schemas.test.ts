@@ -56,7 +56,9 @@ const { sources: _s, deepDiveMinutes: _d, ...reviewBase } = baseLesson;
 
 const lessonCases: [string, unknown, boolean][] = [
   ['lesson valid', baseLesson, true],
-  ['lesson 80 minutes', { ...baseLesson, estimatedMinutes: 80 }, false],
+  // The 50–70 core-minute range is a course rule now (rules.yaml lessonMinutes, checked in validate.ts);
+  // the shared schema only bounds 10–120.
+  ['lesson 130 minutes', { ...baseLesson, estimatedMinutes: 130 }, false],
   ['lesson without sources', { ...baseLesson, sources: [] }, false],
   ['lesson 2 objectives', { ...baseLesson, objectives: ['a', 'b'] }, false],
   ['review 40 minutes', { ...reviewBase, kind: 'review', estimatedMinutes: 40 }, true],

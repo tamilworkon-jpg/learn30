@@ -26,6 +26,7 @@ export const DEFAULT_RULES: CourseRules = {
   minQuestions: 900,
   dailyQuestions: [15, 20],
   moduleQuestions: [55, 60],
+  lessonMinutes: [50, 70],
 };
 export const STRATEGY_TOPICS: [string, RegExp][] = [
   ['registration', /regist/i],
