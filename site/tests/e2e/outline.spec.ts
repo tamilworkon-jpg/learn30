@@ -34,7 +34,7 @@ test.describe('outline (T067) @visual', () => {
     await expect(d3).toHaveAttribute('data-status', 'in-progress');
     await expect(d3.locator('[data-section="recap"]')).toHaveAttribute('data-viewed', 'true');
     await expect(d3.locator('[data-section="hands-on"]')).toHaveAttribute('data-viewed', 'false');
-    await expect(d3.locator('[data-section="hands-on"] a')).toHaveAttribute('href', '/day/03#hands-on');
+    await expect(d3.locator('[data-section="hands-on"] a')).toHaveAttribute('href', '/course/aws-ai-practitioner/day/03#hands-on');
     await expect(root.locator('[data-day-row="4"]')).toHaveAttribute('data-status', 'not-started');
     if (pendingLesson) await expect(root.locator(`[data-day-row="${pendingLesson.day}"]`)).toContainText('Coming soon');
     else await expect(root.getByText('Coming soon')).toHaveCount(0);

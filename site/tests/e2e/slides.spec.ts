@@ -149,8 +149,11 @@ test.describe('slide lessons (T182) @visual', () => {
           await page.keyboard.press('ArrowLeft');
           const back = await measure(page);
           expect(back.deckBottom).toBeLessThanOrEqual(back.viewport + 1);
+          // Learn30: the lesson now lives at /course/<id>/day/NN, so this old address is a fresh load through
+          // the 301 (no longer a same-page hash change) — wait for the deck to settle before measuring.
           await page.goto(`${path}#slide-3`);
           await expect.poll(() => slideNo(page)).toBe(3);
+          await expect.poll(async () => { const d = await measure(page); return d.deckBottom - d.viewport; }).toBeLessThanOrEqual(1);
           const deep = await measure(page);
           expect(deep.contentBottom).toBeLessThanOrEqual(deep.navTop + 0.5);
           expect(deep.deckBottom).toBeLessThanOrEqual(deep.viewport + 1);

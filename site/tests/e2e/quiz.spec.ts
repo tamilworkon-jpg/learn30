@@ -151,7 +151,7 @@ test.describe('daily quiz (T050) @visual', () => {
     await expect(next.getByRole('heading')).toHaveText('Score 20% — aim for 80%');
     const revisit = next.locator('[data-revisit] a');
     expect(await revisit.count()).toBeGreaterThan(0);
-    for (const href of await revisit.evaluateAll((as) => as.map((a) => a.getAttribute('href')))) expect(href).toMatch(/^\/day\/\d{2}#[a-z0-9-]+$/);
+    for (const href of await revisit.evaluateAll((as) => as.map((a) => a.getAttribute('href')))) expect(href).toMatch(/^\/course\/aws-ai-practitioner\/day\/\d{2}#[a-z0-9-]+$/);
     await expect(revisit.first()).toHaveText(/^Day \d+ · .+/);
     await expect(next.locator('[data-next-primary]')).toHaveText(/Retake quiz/);
     await expect(next.locator('[data-next-anyway]')).toHaveText('Mark complete & continue to Day 3 anyway');
@@ -169,7 +169,7 @@ test.describe('daily quiz (T050) @visual', () => {
     await wrong.locator('details.opt-explain summary').click();
     const wq = qs.find((q) => !done.map((i) => qs[i].id).includes(q.id))!;
     for (const op of wq.options) await expect(wrong).toContainText(op.explanation);
-    await expect(wrong.getByRole('link', { name: 'Review in lesson →' })).toHaveAttribute('href', `/day/02#${wq.lessonRef.split('#')[1]}`);
+    await expect(wrong.getByRole('link', { name: 'Review in lesson →' })).toHaveAttribute('href', `/course/aws-ai-practitioner/day/02#${wq.lessonRef.split('#')[1]}`);
     await noHorizontalScroll(page);
     await shotEl(results, 'quiz-results');
 

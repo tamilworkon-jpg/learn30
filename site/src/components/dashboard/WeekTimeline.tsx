@@ -23,7 +23,8 @@ function pill(d: PlanDay, s: Status, current: boolean) {
 export default function WeekTimeline({ plan, progress, currentDay, courseId = DEFAULT_COURSE_ID }: Props) {
   const start = new Date(progress.startedAt);
   const studyWeek = studyWeekOf(currentDay);
-  const days = studyWeekDays(studyWeek);
+  // Only days the course has (a course may be shorter than six full weeks).
+  const days = studyWeekDays(studyWeek).filter((n) => plan.days.some((x) => x.day === n));
   const first = plannedDate(start, days[0]);
   const last = plannedDate(start, days[days.length - 1]);
   const range = `${formatDate(first).replace(/,? \d{4}$/, '')} – ${formatDate(last)}`;

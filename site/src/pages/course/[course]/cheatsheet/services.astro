@@ -1,14 +1,21 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import LessonLinks from '../../components/lookup/LessonLinks.astro';
-import LookupTabs from '../../components/lookup/LookupTabs.astro';
-import { examGuide } from '../../lib/data';
-import { searchText } from '../../lib/lookup';
-import { SERVICE_CATEGORIES } from '../../schemas/lookup';
-import '../../styles/lookup.css';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import LessonLinks from '../../../../components/lookup/LessonLinks.astro';
+import LookupTabs from '../../../../components/lookup/LookupTabs.astro';
+import { availableCourseIds, getCourse } from '../../../../lib/course-data';
+import { servicesOf } from '../../../../lib/course-content';
+import { courseHref } from '../../../../lib/routes';
+import { searchText } from '../../../../lib/lookup';
+import { SERVICE_CATEGORIES } from '../../../../schemas/lookup';
+import '../../../../styles/lookup.css';
 
-const cards = (await getCollection('services')).map((e) => ({ ...e.data, id: `svc-${e.id}` })).sort((a, b) => a.name.localeCompare(b.name));
+export function getStaticPaths() {
+  return availableCourseIds().map((course) => ({ params: { course } }));
+}
+const courseId = Astro.params.course!;
+Astro.locals.courseId = courseId;
+const { examGuide, meta } = getCourse(courseId);
+const cards = (await servicesOf(courseId)).map((e) => ({ ...e.data, id: `svc-${(e as { localId?: string }).localId ?? e.id}` })).sort((a, b) => a.name.localeCompare(b.name));
 const outOfScope = new Set(examGuide.outOfScopeServices);
 const scopeLabel = (c: (typeof cards)[number]) => (c.inScope ? `In scope · v${examGuide.version}` : outOfScope.has(c.name) ? 'Out of scope' : 'Not listed');
 const sections = [
@@ -18,10 +25,10 @@ const sections = [
 const inCount = cards.filter((c) => c.inScope).length;
 ---
 
-<BaseLayout title="AWS services cheat sheet" active="cheatsheet" description="AIF-C01 v1.2 AWS services: what each is for, when to choose it, and what it is not.">
+<BaseLayout title={`${meta.provider} services cheat sheet`} active="cheatsheet" course={courseId} description={`${meta.examCode} v${examGuide.version} ${meta.provider} services: what each is for, when to choose it, and what it is not.`}>
   <LookupTabs current="services" />
-  <div id="services-root" data-pagefind-body>
-    <h1 class="h1">AWS services cheat sheet</h1>
+  <div id="services-root" data-pagefind-body data-pagefind-filter={`course:${courseId}`}>
+    <h1 class="h1">{meta.provider} services cheat sheet</h1>
     <p class="muted lookup-intro">
       {inCount} services named in exam guide v{examGuide.version}, plus {cards.length - inCount} trap cards for services that appear as distractors but are out of scope or not listed. Each card says what the service is for,
       when to choose it, and what it is <em>not</em>.
@@ -38,7 +45,7 @@ const inCount = cards.filter((c) => c.inScope).length;
       <span class="filter-count" aria-live="polite" data-filter-count>{cards.length} services</span>
     </div>
 
-    <p class="card empty-state" data-empty hidden>No services match. Clear the filter or try the <a href="/search">full-text search</a>.</p>
+    <p class="card empty-state" data-empty hidden>No services match. Clear the filter or try the <a href={courseHref(courseId, 'search')}>full-text search</a>.</p>
 
     {
       sections.map((s) => (
@@ -84,6 +91,6 @@ const inCount = cards.filter((c) => c.inScope).length;
 </BaseLayout>
 
 <script>
-  import { setupFilter } from '../../lib/lookup-filter';
+  import { setupFilter } from '../../../../lib/lookup-filter';
   setupFilter(document.getElementById('services-root')!, ['service', 'services']);
 </script>

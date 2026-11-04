@@ -8,10 +8,11 @@ import ReviewSummary from '../components/review/ReviewSummary.astro';
 import DomainResults from '../components/review/DomainResults';
 import RatingPrompt from '../components/review/RatingPrompt';
 import QuizRunner from '../components/quiz/QuizRunner';
-import { course, examGuide, pad } from '../lib/data';
+import { courseOf } from '../lib/course-locals';
+import { lessonsOf } from '../lib/course-content';
+import { courseHref } from '../lib/routes';
 import { getPrevNext } from '../lib/lesson-utils';
 import { nextStepsContext } from '../lib/next-steps-context';
-import { getCollection } from 'astro:content';
 import { weekOfDay } from '../lib/review';
 import type { CourseDay, Question } from '../lib/types';
 import '../styles/quiz.css';
@@ -25,8 +26,10 @@ interface Props {
   title?: string;
 }
 const { cd, questions, hasContent, title = cd.title } = Astro.props;
+const { course, examGuide, meta } = courseOf(Astro);
+const courseId = meta.id;
 const week = weekOfDay(course, cd.day)!;
-const nextSteps = nextStepsContext(cd.day, questions, (await getCollection('lessons')).map((l) => ({ day: l.data.day as number, body: l.body })));
+const nextSteps = nextStepsContext(course, courseId, cd.day, questions, (await lessonsOf(courseId)).map((l) => ({ day: l.data.day as number, body: l.body })));
 const set = `week-${week.number}`;
 const { prev, next } = getPrevNext(cd.day, course);
 const domainIds = [...new Set(cd.taskStatements.map((ts) => examGuide.domains.find((d) => d.tasks.some((t) => t.id === ts))!.id))].sort();
@@ -35,7 +38,7 @@ const dayTitles = Object.fromEntries(course.days.map((d) => [String(d.day), d.ti
 const slim = questions.map(({ id, domain, lessonRef, type, answer }) => ({ id, domain, lessonRef, type, answer }));
 ---
 
-<BaseLayout active="outline" title={`Day ${cd.day}: ${title}`}>
+<BaseLayout active="outline" title={`Day ${cd.day}: ${title}`} course={courseId}>
   <p class="muted text-sm m-0">Week {studyWeekOf(cd.day)} · Module {week.number}: {week.title} › Day {cd.day}</p>
   <h1 class="h1">{title}</h1>
   <PlannedDate day={cd.day} />
@@ -49,7 +52,7 @@ const slim = questions.map(({ id, domain, lessonRef, type, answer }) => ({ id, d
 
     {
       hasContent ? (
-        <article class="review-body" data-pagefind-body>
+        <article class="review-body" data-pagefind-body data-pagefind-filter={`course:${courseId}`}>
           <slot />
         </article>
       ) : (
@@ -69,12 +72,12 @@ const slim = questions.map(({ id, domain, lessonRef, type, answer }) => ({ id, d
           </p>
         )
       }
-      <QuizRunner client:visible assessmentId={set} kind="weekly" title={`Module ${week.number} · Cumulative test`} questions={questions} next={nextSteps} />
+      <QuizRunner client:visible assessmentId={set} kind="weekly" title={`Module ${week.number} · Cumulative test`} questions={questions} next={nextSteps} courseId={courseId} />
     </section>
 
     <section class="review-section" id="domain-results" data-section-type="results" aria-labelledby="domain-results-h">
       <h2 class="h2 sec-head" id="domain-results-h">Results by domain</h2>
-      <DomainResults client:visible assessmentId={set} questions={slim} domainNames={domainNames} dayTitles={dayTitles} />
+      <DomainResults client:visible assessmentId={set} questions={slim} domainNames={domainNames} dayTitles={dayTitles} courseId={courseId} />
     </section>
 
     <section class="review-section" id="rating" data-section-type="rating" aria-labelledby="rating-h">
@@ -83,8 +86,8 @@ const slim = questions.map(({ id, domain, lessonRef, type, answer }) => ({ id, d
     </section>
 
     <nav class="prevnext" aria-label="Day navigation">
-      {prev ? <a class="btn btn-ghost" href={`/day/${pad(prev)}`}>← Previous: Day {prev}</a> : <span />}
-      {next && <a class="btn" href={`/day/${pad(next)}`}>Next: Day {next} →</a>}
+      {prev ? <a class="btn btn-ghost" href={courseHref(courseId, 'day', prev)}>← Previous: Day {prev}</a> : <span />}
+      {next && <a class="btn" href={courseHref(courseId, 'day', next)}>Next: Day {next} →</a>}
     </nav>
   </div>
 </BaseLayout>

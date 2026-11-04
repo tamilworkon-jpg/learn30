@@ -22,7 +22,7 @@ test.describe('resume & dashboard (T065) @visual', () => {
     const problems = trackConsole(page);
     await openDashboard(page);
     await expect(dash(page)).toContainText('0 of 30 days complete');
-    await expect(page.getByRole('link', { name: /Continue: Day 1/ })).toHaveAttribute('href', '/day/01');
+    await expect(page.getByRole('link', { name: /Continue: Day 1/ })).toHaveAttribute('href', '/course/aws-ai-practitioner/day/01');
     // Weekday plan: "This week" lists the lessons planned Mon–Fri of the current calendar week (1–5).
     const tiles = await page.locator('.week-tile').count();
     expect(tiles).toBeGreaterThanOrEqual(1);
@@ -79,7 +79,7 @@ test.describe('resume & dashboard (T065) @visual', () => {
     await expect(mc).toHaveAttribute('data-ready', 'true');
     await mc.getByRole('button', { name: 'Mark Day 1 complete' }).click();
     await expect(mc).toContainText('Day 1 completed');
-    await expect(mc.getByRole('link', { name: 'Go to Day 2 →' })).toHaveAttribute('href', '/day/02');
+    await expect(mc.getByRole('link', { name: 'Go to Day 2 →' })).toHaveAttribute('href', '/course/aws-ai-practitioner/day/02');
     await openDashboard(page);
     await expect(dash(page)).toContainText('1 of 30 days complete');
     await expect(page.getByRole('link', { name: /Continue: Day 2/ })).toBeVisible();
@@ -111,7 +111,7 @@ test.describe('resume & dashboard (T065) @visual', () => {
     await expect(weak.locator('[data-domain]')).toHaveCount(2);
     await expect(weak.locator('[data-domain]').nth(0)).toContainText('D4 · 20%');
     await expect(weak.locator('[data-domain]').nth(1)).toContainText('D1 · 60%');
-    await expect(weak.getByRole('link', { name: /Day 2/ }).first()).toHaveAttribute('href', '/day/02');
+    await expect(weak.getByRole('link', { name: /Day 2/ }).first()).toHaveAttribute('href', '/course/aws-ai-practitioner/day/02');
     await expect(weak).not.toContainText('D3');
   });
 });

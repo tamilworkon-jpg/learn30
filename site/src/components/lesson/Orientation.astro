@@ -1,5 +1,6 @@
 ---
-import { examGuide } from '../../lib/data';
+import { courseOf } from '../../lib/course-locals';
+const { examGuide } = courseOf(Astro);
 const f = examGuide.format;
 ---
 

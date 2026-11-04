@@ -22,6 +22,8 @@ interface Props {
   kind?: Attempt['kind'];
   /** Day / next day / badge data for the "What's next" panel on the results (omitted → no panel). */
   next?: NextStepsContext;
+  /** Course the quiz belongs to (lesson links in the review / history). */
+  courseId?: string;
 }
 
 // In slide view the quiz slide hides the deck's ‹ › (one set of arrows): past the first/last question
@@ -29,7 +31,7 @@ interface Props {
 const inDeck = () => typeof document !== 'undefined' && document.documentElement.dataset.lessonView === 'slides' && !!document.querySelector('.slide-deck .quiz-slot, .slide-deck [data-section-type="quiz"]');
 const deckNav = (dir: 'prev' | 'next') => document.dispatchEvent(new CustomEvent('deck-nav', { detail: dir }));
 
-export default function QuizRunner({ assessmentId, title, questions, kind = 'daily', next }: Props) {
+export default function QuizRunner({ assessmentId, title, questions, kind = 'daily', next, courseId }: Props) {
   const [session, setSession] = useState<QuizSession | null>(null);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [index, setIndex] = useState(0);
@@ -115,9 +117,9 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
       {attempt ? (
         <>
           {next && <NextSteps kind={kind} attempt={attempt} questions={questions} {...next} onRetake={retake} onReview={review} />}
-          <Results questions={questions} attempt={attempt} best={best} onRetake={retake} hideRetake={!!next} />
+          <Results questions={questions} attempt={attempt} best={best} onRetake={retake} hideRetake={!!next} courseId={courseId ?? next?.courseId} />
           {/* Results already has its own Retake button, so the history below it doesn't repeat one. */}
-          <AttemptHistory assessmentId={assessmentId} questions={questions} kind={kind} refreshKey={attempts} />
+          <AttemptHistory assessmentId={assessmentId} questions={questions} kind={kind} refreshKey={attempts} courseId={courseId ?? next?.courseId} />
         </>
       ) : (
         <>
@@ -138,7 +140,7 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
             </div>
           </div>
           {attempts > 0 && index === 0 && answeredCount === 0 && (
-            <AttemptHistory assessmentId={assessmentId} questions={questions} kind={kind} refreshKey={attempts} />
+            <AttemptHistory assessmentId={assessmentId} questions={questions} kind={kind} refreshKey={attempts} courseId={courseId ?? next?.courseId} />
           )}
 
           <div class="card quiz-card" key={q.id}>

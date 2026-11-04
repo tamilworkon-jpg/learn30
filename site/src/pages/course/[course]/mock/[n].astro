@@ -1,0 +1,22 @@
+---
+// Learn30 L020 — /course/<id>/mock/N (N = 1…rules.mock.count).
+import MockExam from '../../../../components/mock/MockExam.astro';
+import { availableCourseIds, getCourse } from '../../../../lib/course-data';
+import { questionsOf } from '../../../../lib/course-content';
+import type { Question } from '../../../../lib/types';
+
+export function getStaticPaths() {
+  return availableCourseIds().flatMap((course) =>
+    Array.from({ length: getCourse(course).rules.mock.count }, (_, i) => ({ params: { course, n: String(i + 1) }, props: { n: i + 1 } })),
+  );
+}
+const courseId = Astro.params.course!;
+Astro.locals.courseId = courseId;
+const { n } = Astro.props;
+const questions = (await questionsOf(courseId))
+  .filter((q) => q.data.set === `mock-${n}`)
+  .map((q) => q.data as Question)
+  .sort((a, b) => a.id.localeCompare(b.id));
+---
+
+<MockExam n={n} questions={questions} />

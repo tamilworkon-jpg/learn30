@@ -1,21 +1,28 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import LookupTabs from '../components/lookup/LookupTabs.astro';
-import { computeCoverage, coverageSummary, MIN_QUESTIONS_PER_TS } from '../lib/coverage';
-import { course, examGuide, pad } from '../lib/data';
-import '../styles/lookup.css';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import LookupTabs from '../../../components/lookup/LookupTabs.astro';
+import { computeCoverage, coverageSummary, MIN_QUESTIONS_PER_TS } from '../../../lib/coverage';
+import { availableCourseIds, getCourse } from '../../../lib/course-data';
+import { glossaryOf, lessonsOf, questionsOf } from '../../../lib/course-content';
+import { courseHref } from '../../../lib/routes';
+import '../../../styles/lookup.css';
 
-const lessons = (await getCollection('lessons')).map((l) => l.data);
-const questions = (await getCollection('questions')).map((q) => q.data);
-const glossary = (await getCollection('glossary')).map((g) => g.data);
+export function getStaticPaths() {
+  return availableCourseIds().map((course) => ({ params: { course } }));
+}
+const courseId = Astro.params.course!;
+Astro.locals.courseId = courseId;
+const { course, examGuide } = getCourse(courseId);
+const lessons = (await lessonsOf(courseId)).map((l) => l.data);
+const questions = (await questionsOf(courseId)).map((q) => q.data);
+const glossary = (await glossaryOf(courseId)).map((g) => g.data);
 const rows = computeCoverage({ guide: examGuide, course, lessons, questions, glossary });
 const summary = coverageSummary(rows);
 const written = new Set(lessons.map((l) => l.day));
 const domainName = Object.fromEntries(examGuide.domains.map((d) => [d.id, `${d.name} (${d.weight}%)`]));
 ---
 
-<BaseLayout title="Exam coverage" active="cheatsheet" description="How the course covers each AIF-C01 v1.2 task statement: lesson days, questions and glossary terms.">
+<BaseLayout title="Exam coverage" active="cheatsheet" course={courseId} description={`How the course covers each ${examGuide.examCode} v${examGuide.version} task statement: lesson days, questions and glossary terms.`}>
   <LookupTabs current="coverage" />
   <h1 class="h1">Exam coverage</h1>
   <p class="muted lookup-intro">
@@ -52,7 +59,7 @@ const domainName = Object.fromEntries(examGuide.domains.map((d) => [d.id, `${d.n
             </td>
             <td data-label="Days">
               {r.plannedDays.map((d) => (
-                <a class={`day-link ${written.has(d) ? 'written' : ''}`} href={`/day/${pad(d)}`} title={`${course.days.find((x) => x.day === d)?.title}${written.has(d) ? '' : ' (coming soon)'}`}>
+                <a class={`day-link ${written.has(d) ? 'written' : ''}`} href={courseHref(courseId, 'day', d)} title={`${course.days.find((x) => x.day === d)?.title}${written.has(d) ? '' : ' (coming soon)'}`}>
                   Day {d}
                   {!written.has(d) && <span class="sr-only"> (coming soon)</span>}
                 </a>

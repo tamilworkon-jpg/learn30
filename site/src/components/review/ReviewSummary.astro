@@ -1,13 +1,15 @@
 ---
 // T080 — review-day summary: every prior lesson day grouped by exam domain, with the learner's quiz average per domain
 // (filled in on the client from saved best scores).
-import { course, examGuide, pad } from '../../lib/data';
+import { courseOf } from '../../lib/course-locals';
+import { courseHref } from '../../lib/routes';
 import { summaryByDomain } from '../../lib/review';
 
 interface Props {
   day: number;
 }
 const { day } = Astro.props;
+const { course, examGuide, meta } = courseOf(Astro);
 const groups = summaryByDomain(course, examGuide, day);
 const weight = (id: string) => examGuide.domains.find((d) => d.id === id)?.weight ?? 0;
 ---
@@ -27,7 +29,7 @@ const weight = (id: string) => examGuide.domains.find((d) => d.id === id)?.weigh
           <ul class="review-days">
             {g.days.map((d) => (
               <li>
-                <a href={`/day/${pad(d.day)}`}>
+                <a href={courseHref(meta.id, 'day', d.day)}>
                   Day {d.day}: {d.title}
                 </a>{' '}
                 <span class="muted text-sm">({d.taskStatements.join(', ')})</span>

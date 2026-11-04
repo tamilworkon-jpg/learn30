@@ -14,8 +14,9 @@ describe('next steps after a quiz', () => {
   });
 
   it('lesson refs become day links', () => {
-    expect(lessonHref('day-02#explanation')).toBe('/day/02#explanation');
-    expect(lessonHref('day-15')).toBe('/day/15');
+    expect(lessonHref('day-02#explanation')).toBe('/course/aws-ai-practitioner/day/02#explanation');
+    expect(lessonHref('day-02#explanation', 'demo-course')).toBe('/course/demo-course/day/02#explanation');
+    expect(lessonHref('day-15')).toBe('/course/aws-ai-practitioner/day/15');
   });
 
   it('revisit = unique sections behind wrong answers, in question order, with miss counts and titles', () => {
@@ -23,8 +24,8 @@ describe('next steps after a quiz', () => {
     const answers = { '1': ['b'], '2': ['a'], '3': ['a'] }; // 1 wrong, 2 right, 3 wrong, 4 unanswered (wrong)
     const links = revisitLinks(qs, answers, { 'day-02#examples': 'Day 2 · Examples: which fits?' });
     expect(links.map((l) => [l.href, l.title, l.misses])).toEqual([
-      ['/day/02#examples', 'Day 2 · Examples: which fits?', 2],
-      ['/day/01#recap', 'Day 1 · Recap', 1],
+      ['/course/aws-ai-practitioner/day/02#examples', 'Day 2 · Examples: which fits?', 2],
+      ['/course/aws-ai-practitioner/day/01#recap', 'Day 1 · Recap', 1],
     ]);
     expect(revisitLinks(qs, { '1': ['a'], '2': ['a'], '3': ['b'], '4': ['a'] })).toEqual([]);
   });

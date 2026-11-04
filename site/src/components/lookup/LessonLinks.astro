@@ -1,10 +1,12 @@
 ---
 import { lessonLink } from '../../lib/lookup';
+import { courseOf } from '../../lib/course-locals';
 
 interface Props {
   refs: string[];
 }
-const links = Astro.props.refs.map(lessonLink);
+const { course, meta } = courseOf(Astro);
+const links = Astro.props.refs.map((r) => lessonLink(r, course, meta.id));
 ---
 
 <p class="entry-links" data-pagefind-ignore>

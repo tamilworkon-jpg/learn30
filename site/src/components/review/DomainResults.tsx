@@ -1,4 +1,5 @@
 // T081 — per-domain score of a weekly test / mock attempt with "Revisit Day N" links for missed topics.
+import { courseHref, DEFAULT_COURSE_ID } from '../../lib/routes';
 import { useEffect, useState } from 'preact/hooks';
 import { getStore } from '../../lib/progress/store';
 import { domainRows, type DomainRow } from '../../lib/review';
@@ -10,10 +11,11 @@ interface BreakdownProps {
   rows: DomainRow[];
   domainNames: Record<string, string>;
   dayTitles: Record<string, string>;
+  courseId?: string;
 }
 
 /** Pure view: one bar per domain; weak domains (< 70%) get a pill and revisit links first. */
-export function DomainBreakdown({ rows, domainNames, dayTitles }: BreakdownProps) {
+export function DomainBreakdown({ rows, domainNames, dayTitles, courseId = DEFAULT_COURSE_ID }: BreakdownProps) {
   return (
     <ul class="dom-results">
       {rows.map((r) => (
@@ -35,7 +37,7 @@ export function DomainBreakdown({ rows, domainNames, dayTitles }: BreakdownProps
           {r.revisit.length > 0 && (
             <p class="m-0 mt-1 text-sm dom-revisit">
               {r.revisit.map((d) => (
-                <a key={d} href={`/day/${String(d).padStart(2, '0')}`} title={dayTitles[String(d)]}>
+                <a key={d} href={courseHref(courseId, 'day', d)} title={dayTitles[String(d)]}>
                   Revisit Day {d}
                 </a>
               ))}
@@ -52,10 +54,11 @@ interface Props {
   questions: SlimQuestion[];
   domainNames: Record<string, string>;
   dayTitles: Record<string, string>;
+  courseId?: string;
 }
 
 /** Store-connected: shows the latest attempt for `assessmentId` and updates when a new one is submitted. */
-export default function DomainResults({ assessmentId, questions, domainNames, dayTitles }: Props) {
+export default function DomainResults({ assessmentId, questions, domainNames, dayTitles, courseId }: Props) {
   const [attempt, setAttempt] = useState<Attempt | undefined>(undefined);
   const [ready, setReady] = useState(false);
   useEffect(() => {
@@ -88,6 +91,7 @@ export default function DomainResults({ assessmentId, questions, domainNames, da
             rows={domainRows(attempt, questions)}
             domainNames={domainNames}
             dayTitles={dayTitles}
+            courseId={courseId}
           />
         </>
       ) : (

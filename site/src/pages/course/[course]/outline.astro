@@ -1,31 +1,42 @@
 ---
-import '../styles/profiles.css';
+import '../../../styles/profiles.css';
 // T076 — course outline: weeks → days → sections, rendered at build time; a small script adds the
 // learner's status icons from the progress store.
-import { getCollection } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { buildPlan } from '../lib/course-plan';
-import { course, examGuide, pad } from '../lib/data';
-import { STUDY_WEEKS, studyWeekDays } from '../lib/schedule';
-import '../styles/dashboard.css';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { buildPlan } from '../../../lib/course-plan';
+import { availableCourseIds, getCourse } from '../../../lib/course-data';
+import { lessonsOf } from '../../../lib/course-content';
+import { courseHref } from '../../../lib/routes';
+import { STUDY_WEEK_DAYS } from '../../../lib/schedule';
+import '../../../styles/dashboard.css';
 
-const lessons = await getCollection('lessons');
+export function getStaticPaths() {
+  return availableCourseIds().map((course) => ({ params: { course } }));
+}
+const courseId = Astro.params.course!;
+Astro.locals.courseId = courseId;
+const { course, examGuide } = getCourse(courseId);
+const lessons = await lessonsOf(courseId);
 const plan = buildPlan(
   course,
   examGuide.domains,
   lessons.map((l) => ({ day: l.data.day, body: l.body })),
+  courseId,
 );
 const domainName = (id: string) => examGuide.domains.find((d) => d.id === id)?.name ?? id;
 // Study weeks of five lesson days (Mon–Fri); each lists the modules (topic groups) it covers.
+// Weeks follow this course's length (a course may be shorter or longer than 30 days).
+const totalDays = course.days.length;
+const STUDY_WEEKS = Math.ceil(totalDays / STUDY_WEEK_DAYS);
 const studyWeeks = Array.from({ length: STUDY_WEEKS }, (_, i) => {
-  const days = studyWeekDays(i + 1);
+  const days = Array.from({ length: STUDY_WEEK_DAYS }, (_, j) => i * STUDY_WEEK_DAYS + j + 1).filter((n) => n <= totalDays);
   const modules = plan.weeks.filter((w) => w.days.some((n) => days.includes(n)));
   return { number: i + 1, days, modules };
 });
 const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as const;
 ---
 
-<BaseLayout title="Course outline" active="outline">
+<BaseLayout title="Course outline" active="outline" course={courseId}>
   <div data-outline>
     <h1 class="h1">Course outline</h1>
     <p class="muted mt-0">
@@ -54,7 +65,7 @@ const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as 
                       ○
                     </span>
                     <span class="num-icon">{n}</span>
-                    <a class="outline-day-title" href={`/day/${pad(n)}`}>
+                    <a class="outline-day-title" href={courseHref(courseId, 'day', n)}>
                       {d.title}
                     </a>
                     <span class="outline-date muted text-sm" data-plan-date></span>
@@ -79,7 +90,7 @@ const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as 
                             <span class="sec-icon" role="img" aria-label="Not viewed">
                               ○
                             </span>
-                            <a href={`/day/${pad(n)}#${s.id}`}>{s.title}</a>
+                            <a href={courseHref(courseId, 'day', n, s.id)}>{s.title}</a>
                             <span class="muted text-sm">{s.optional ? 'optional' : `${s.minutes} min`}</span>
                           </li>
                         ))}
@@ -97,8 +108,8 @@ const kindLabel = { lesson: '', review: 'Review & test', mock: 'Mock exam' } as 
 </BaseLayout>
 
 <script>
-  import { getStore } from '../lib/progress/store';
-  import { formatDate, isStudyDay, planDayOn, plannedDate } from '../lib/schedule';
+  import { getStore } from '../../../lib/progress/store';
+  import { formatDate, isStudyDay, planDayOn, plannedDate } from '../../../lib/schedule';
 
   const ICON = { completed: ['✓', 'Completed'], 'in-progress': ['◐', 'In progress'], 'not-started': ['○', 'Not started'] } as const;
   const root = document.querySelector<HTMLElement>('[data-outline]')!;

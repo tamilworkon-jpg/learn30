@@ -181,7 +181,7 @@ test.describe('accounts (T190) @visual', () => {
     await expect(page).toHaveURL(/\/$/);
     await expect(page.locator('[data-course="aws-ai-practitioner"]')).toContainText('Sign in to track your progress');
     await page.goto('/mock/1');
-    await expect(page).toHaveURL(loginUrl('/mock/1'));
+    await expect(page).toHaveURL(loginUrl('/course/aws-ai-practitioner/mock/1')); // /mock/1 → 301 into the course, then sign-in
     expect((await page.request.get('/api/me')).status()).toBe(401);
   });
 

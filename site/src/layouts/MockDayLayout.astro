@@ -5,9 +5,9 @@ import { studyWeekOf } from '../lib/schedule';
 import BaseLayout from './BaseLayout.astro';
 import PlannedDate from '../components/schedule/PlannedDate.astro';
 import MockLaunch from '../components/mock/MockLaunch.astro';
-import { course, examGuide, pad } from '../lib/data';
+import { courseOf } from '../lib/course-locals';
+import { courseHref } from '../lib/routes';
 import { getPrevNext } from '../lib/lesson-utils';
-import { MOCK_LAUNCHES } from '../lib/validate';
 import { weekOfDay } from '../lib/review';
 import type { CourseDay } from '../lib/types';
 import '../styles/review.css';
@@ -18,11 +18,13 @@ interface Props {
   title?: string;
 }
 const { cd, hasContent, title = cd.title } = Astro.props;
+const { course, examGuide, meta, rules } = courseOf(Astro);
+const courseId = meta.id;
 const week = weekOfDay(course, cd.day)!;
 const { prev, next } = getPrevNext(cd.day, course);
 ---
 
-<BaseLayout active="outline" title={`Day ${cd.day}: ${title}`}>
+<BaseLayout active="outline" title={`Day ${cd.day}: ${title}`} course={courseId}>
   <p class="muted text-sm m-0">Week {studyWeekOf(cd.day)} · Module {week.number}: {week.title} › Day {cd.day}</p>
   <h1 class="h1">{title}</h1>
   <PlannedDate day={cd.day} />
@@ -33,24 +35,24 @@ const { prev, next } = getPrevNext(cd.day, course);
   <div class="mockday" data-mock-day={cd.day}>
     {
       hasContent ? (
-        <article class="mockday-body" data-pagefind-body>
+        <article class="mockday-body" data-pagefind-body data-pagefind-filter={`course:${courseId}`}>
           <slot />
         </article>
       ) : (
         <>
           <div class="card mt-4" data-coming-soon="mock-day">
             <p class="m-0 font-semibold">🚧 Remediation plan and exam-day guide coming soon</p>
-            <p class="m-0 muted">You can already launch the mock {(MOCK_LAUNCHES[cd.day] ?? []).length > 1 ? 'exams' : 'exam'} below.</p>
+            <p class="m-0 muted">You can already launch the mock {(rules.mockLaunches[cd.day] ?? []).length > 1 ? 'exams' : 'exam'} below.</p>
           </div>
-          {(MOCK_LAUNCHES[cd.day] ?? []).map((n) => (
-            <MockLaunch n={n} optional={n === 3} />
+          {(rules.mockLaunches[cd.day] ?? []).map((n: number) => (
+            <MockLaunch n={n} optional={n === rules.mock.count && n > 1} />
           ))}
         </>
       )
     }
     <nav class="prevnext" aria-label="Day navigation">
-      {prev ? <a class="btn btn-ghost" href={`/day/${pad(prev)}`}>← Previous: Day {prev}</a> : <span />}
-      {next && <a class="btn" href={`/day/${pad(next)}`}>Next: Day {next} →</a>}
+      {prev ? <a class="btn btn-ghost" href={courseHref(courseId, 'day', prev)}>← Previous: Day {prev}</a> : <span />}
+      {next && <a class="btn" href={courseHref(courseId, 'day', next)}>Next: Day {next} →</a>}
     </nav>
   </div>
 </BaseLayout>

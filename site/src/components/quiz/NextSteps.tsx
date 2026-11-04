@@ -1,16 +1,16 @@
 // "What's next" at the top of the quiz results (learner feedback 2026-11-03: after submitting it was not
 // clear what to click). Pass → mark the day complete and start the next one; below the pass mark → the
 // lesson sections behind the wrong answers, then retake (or continue anyway).
-import { DASHBOARD_HREF } from '../../lib/routes';
+import { courseHref, DEFAULT_COURSE_ID } from '../../lib/routes';
 import { useState } from 'preact/hooks';
 import type { BadgeWeek } from '../../lib/badges';
 import { completeDay, isDayComplete } from '../../lib/day-complete';
 import { passed, PASS_MARK, revisitLinks } from '../../lib/next-steps';
 import type { Attempt, Question } from '../../lib/types';
 
-const pad = (n: number) => String(n).padStart(2, '0');
-
 export interface NextStepsContext {
+  /** The course (links); defaults to the first course for old callers. */
+  courseId?: string;
   /** The course day this quiz belongs to (lesson day, or the review day for a cumulative test). */
   day: number;
   /** The following course day, or null after the last day. */
@@ -29,14 +29,14 @@ interface Props extends NextStepsContext {
   onReview: () => void;
 }
 
-export default function NextSteps({ kind, attempt, questions, day, nextDay, weeks, totalDays, sectionTitles, onRetake, onReview }: Props) {
+export default function NextSteps({ kind, attempt, questions, courseId = DEFAULT_COURSE_ID, day, nextDay, weeks, totalDays, sectionTitles, onRetake, onReview }: Props) {
   const pct = Math.round(attempt.score.percent);
   const ok = passed(pct);
   const [done, setDone] = useState(() => isDayComplete(day));
   const what = kind === 'weekly' ? `Day ${day} cumulative test` : `Day ${day} quiz`;
-  const nextHref = nextDay ? `/day/${pad(nextDay)}` : DASHBOARD_HREF;
+  const nextHref = nextDay ? courseHref(courseId, 'day', nextDay) : courseHref(courseId);
   const nextLabel = nextDay ? `Day ${nextDay}` : 'your dashboard';
-  const revisit = ok ? [] : revisitLinks(questions, attempt.answers, sectionTitles);
+  const revisit = ok ? [] : revisitLinks(questions, attempt.answers, sectionTitles, courseId);
 
   const goOn = () => {
     if (!isDayComplete(day)) completeDay(day, weeks, totalDays);
