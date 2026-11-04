@@ -1,32 +1,33 @@
 <!--
 Sync Impact Report
-- Version change: 2.0.0 → 3.0.0 (MAJOR: Principle IV redefined — the full end-to-end suite is no
-  longer the default gate; added Principle VIII)
+- Version change: 3.0.0 → 4.0.0 (MAJOR: Principles I and VII redefined for a multi-course platform)
 - Modified principles:
-  - IV. Visual & End-to-End Verification: default gate = sanity suite (every page once, one
-    viewport screenshot, desktop) + unit/static checks; full e2e/visual suite only when the learner
-    explicitly asks for "all" (reason: the full run takes ~9 min; requested by learner 2026-11-03)
-- Added principles: VIII. Parallel-First Planning & Delivery
-- Modified sections: Development Workflow & Quality Gates (step 4, phase checkpoints); Governance
-  (compliance review)
-- Removed sections: none
+  - I. Exam-Guide Fidelity → Course-Guide Fidelity: every course maps to ITS OWN official guide
+    (src/courses/<id>/exam-guide.yaml); AIF-C01 v1.2 is now course #1, not the project (learner request
+    2026-11-04: platform "Learn30", courses as the outer layer)
+  - VII. Simplicity, Privacy & Security: reflects the accepted Phase 13 architecture (small Node server,
+    SQLite, login) instead of "static site, no backend, no login"; data per user and per course
+- Added: Content & Quality Standards apply per course (each course's rules.yaml)
+- Renamed: "AWS AI Practitioner Course Constitution" → "Learn30 Constitution"
 - Templates requiring updates: none (read at runtime)
-- Feature artifacts updated: specs/001-aws-ai-practitioner-course/tasks.md Quality Gate;
-  site/tests/e2e/sanity.spec.ts + `npm run test:sanity`; README testing section
+- Feature artifacts updated: specs/002-learn30-platform/{spec,plan,tasks}.md + contracts
 - Deferred TODOs: none
 -->
 
-# AWS AI Practitioner Course Constitution
+# Learn30 Constitution
 
 ## Core Principles
 
-### I. Exam-Guide Fidelity
+### I. Course-Guide Fidelity
 
-- All learning content MUST map to a task statement in the current official AWS Certified AI
-  Practitioner exam guide (currently AIF-C01 v1.2, published 2026-10-29).
-- Exam facts (format, domains, weights, in-scope/out-of-scope services) MUST be verified against the
-  live AWS documentation before authoring and again before release; each lesson MUST carry a
-  `lastVerified` date and the exam guide version.
+- Learn30 hosts several courses. Each course follows ITS OWN official guide
+  (`src/courses/<id>/exam-guide.yaml`; course #1: AWS Certified AI Practitioner, AIF-C01 v1.2,
+  published 2026-10-29), and all of that course's content MUST map to a task statement of that guide.
+- A course's guide facts (format, domains, weights, in-scope/out-of-scope services) MUST be verified
+  against the provider's live documentation before authoring and again before release; each lesson
+  MUST carry a `lastVerified` date and its guide version.
+- Platform-level pages and branding MUST NOT assume a particular course; course facts appear only on
+  that course's pages.
 - Services that are discontinued or out of scope MUST NOT be taught as exam content; they MAY appear
   only as clearly labelled "Exam Trap" or "Beyond the exam" notes.
 - Study time and question counts MUST be proportional to official domain weights.
@@ -106,10 +107,10 @@ Rationale: learning material must be usable by everyone, on any device.
 
 ### VII. Simplicity, Privacy & Security
 
-- Prefer the simplest architecture that meets the spec: a static site, no backend, no login, no
-  runtime calls to external services or CDNs.
-- Learner data stays on the learner's device; imports MUST be size-limited, parsed as data only and
-  schema-validated before use.
+- Prefer the simplest architecture that meets the spec: a static site served by one small Node server
+  with built-in SQLite and session login (Phase 13); no runtime calls to external services or CDNs.
+- Learner data is stored per account and per course on that server (never sent elsewhere); imports
+  MUST be size-limited, parsed as data only and schema-validated before use.
 - Untrusted data MUST never be rendered as HTML; a restrictive Content Security Policy MUST be set.
 - Hands-on activities MUST NOT require an AWS account, credentials or spend.
 - New dependencies or complexity MUST be justified in the plan's Complexity Tracking.
@@ -131,6 +132,10 @@ Rationale: tasks are planned and implemented quickly; waiting on one stream at a
 learner's time.
 
 ## Content & Quality Standards
+
+These apply to every course, using that course's own `rules.yaml` (question counts, mock format,
+domain split).
+
 
 - Question bank: every question MUST have a domain, task statement, lesson reference, the correct
   answer and an explanation for every option; question ids MUST be unique and mock exams MUST NOT
@@ -169,4 +174,4 @@ scenarios pass.
   of Principle IV) are re-run; the full suite runs on the learner's request; before release the swarm
   review (Principle III) is performed and logged.
 
-**Version**: 3.0.0 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-03
+**Version**: 4.0.0 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-04
