@@ -683,3 +683,15 @@
     font-size: 16px;
   }
 }
+
+/* Learn30 — the brand mark holds three characters ("L30"). */
+.brand-mark {
+  font-size: 12px;
+  letter-spacing: -0.02em;
+}
+/* "My courses" (platform pages) is a sidebar shortcut; the phone tab bar keeps only Courses + Settings. */
+@media (max-width: 760px) {
+  [data-my-courses] {
+    display: none !important;
+  }
+}

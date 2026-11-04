@@ -7,6 +7,8 @@ import type { CoursePlan } from '../../lib/course-plan';
 import { completedCount, continueTarget, percentComplete } from '../../lib/dashboard';
 import { defaultProgress, getStore } from '../../lib/progress/store';
 import type { Progress } from '../../lib/types';
+import { courses } from '../../lib/courses-data';
+import { CATALOGUE_HREF, DEFAULT_COURSE_ID } from '../../lib/routes';
 import Badges from './Badges';
 import ContinueCard from './ContinueCard';
 import ProgressRing from './ProgressRing';
@@ -20,9 +22,12 @@ import WeekTimeline from './WeekTimeline';
 
 interface Props {
   plan: CoursePlan;
+  /** Learn30: which course this dashboard belongs to (the page passes it). */
+  courseId?: string;
 }
 
-export default function Dashboard({ plan }: Props) {
+export default function Dashboard({ plan, courseId = DEFAULT_COURSE_ID }: Props) {
+  const meta = courses.find((c) => c.id === courseId);
   const [progress, setProgress] = useState<Progress>(() => defaultProgress());
   const [ready, setReady] = useState(false);
 
@@ -48,7 +53,7 @@ export default function Dashboard({ plan }: Props) {
     <div class="dash" data-dashboard data-ready={ready ? 'true' : undefined}>
       <section>
         <p class="course-crumb muted" data-course-crumb>
-          <a href="/">Courses</a> › AWS Certified AI Practitioner
+          <a href={CATALOGUE_HREF}>Courses</a> › {meta?.title ?? courseId}
         </p>
         <h1 class="h1">{started ? 'Welcome back 👋' : 'Welcome 👋'}</h1>
         <p class="muted mt-0">
@@ -58,7 +63,7 @@ export default function Dashboard({ plan }: Props) {
 
         <h2 class="h2 mt-6">{target.resumed ? 'Continue where you left off' : started ? 'Up next' : 'Start here'}</h2>
         <ContinueCard plan={plan} progress={progress} />
-        <WeekTimeline plan={plan} progress={progress} currentDay={day.day} />
+        <WeekTimeline plan={plan} progress={progress} currentDay={day.day} courseId={courseId} />
       </section>
 
       <aside class="side" aria-label="Your progress">

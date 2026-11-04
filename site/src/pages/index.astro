@@ -1,23 +1,27 @@
 ---
-// T205 — home = the course catalogue (the outer layer; each course has its own dashboard). Public page; signed-in learners see their progress on each course.
-import { getCollection } from 'astro:content';
+// Learn30 home = the course catalogue (the outer layer; each course lives under /course/<id>). Public page;
+// signed-in learners see their progress on each course.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CourseCards from '../components/courses/CourseCards';
-import { buildPlan } from '../lib/course-plan';
-import { courses } from '../lib/courses-data';
-import { course, examGuide } from '../lib/data';
+import { buildPlan, type CoursePlan } from '../lib/course-plan';
+import { allCourses, availableCourseIds, getCourse } from '../lib/course-data';
+import { lessonsOf } from '../lib/course-content';
 import '../styles/dashboard.css';
 
-const lessons = await getCollection('lessons');
-const plan = buildPlan(
-  course,
-  examGuide.domains,
-  lessons.map((l) => ({ day: l.data.day, body: l.body })),
-);
+const plans: Record<string, CoursePlan> = {};
+for (const id of availableCourseIds()) {
+  const ctx = getCourse(id);
+  const lessons = await lessonsOf(id);
+  plans[id] = buildPlan(
+    ctx.course,
+    ctx.examGuide.domains,
+    lessons.map((l) => ({ day: l.data.day, body: l.body })),
+  );
+}
 ---
 
-<BaseLayout title="Courses" active="courses">
+<BaseLayout title="Courses" active="courses" description="Learn30 — 30-day, one-hour-a-day courses with slide lessons, daily quizzes and mock exams.">
   <h1 class="h1">Courses</h1>
-  <p class="muted mt-0">Pick a course and study about an hour a day. Your progress is saved to your account.</p>
-  <CourseCards client:load courses={courses} plan={plan} />
+  <p class="muted mt-0">Pick a course and study about an hour a day. Your progress is saved to your account, separately for each course.</p>
+  <CourseCards client:load courses={allCourses()} plans={plans} />
 </BaseLayout>

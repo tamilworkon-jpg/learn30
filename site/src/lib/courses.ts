@@ -1,6 +1,6 @@
-// Course catalogue (src/data/courses.yaml) for the Courses page. Course #1 is the AWS Certified AI
-// Practitioner course whose pages live at the site's existing routes. Pure (no Vite ?raw import) so
-// scripts/validate-content.ts can use it; the loaded list is in courses-data.ts.
+// Learn30 course registry (src/data/courses.yaml). Links to a course are derived with courseHref() — the
+// registry holds no URLs. Pure (no Vite ?raw import) so scripts/validate-content.ts can use it; the loaded
+// list is in courses-data.ts.
 
 export interface CourseCard {
   id: string;
@@ -13,13 +13,11 @@ export interface CourseCard {
   hoursPerDay: number;
   level: string;
   status: 'available' | 'coming-soon';
-  entryHref: string;
-  outlineHref: string;
   accent: string;
   illustration: string;
 }
 
-const STRING_FIELDS = ['id', 'title', 'shortTitle', 'provider', 'examCode', 'description', 'level', 'entryHref', 'outlineHref', 'accent', 'illustration'] as const;
+const STRING_FIELDS = ['id', 'title', 'shortTitle', 'provider', 'examCode', 'description', 'level', 'accent', 'illustration'] as const;
 
 /** Validates the catalogue; returns problems (empty when valid). */
 export function validateCourses(raw: unknown): string[] {
@@ -38,7 +36,7 @@ export function validateCourses(raw: unknown): string[] {
     if (!Number.isInteger(c.lengthDays) || (c.lengthDays as number) < 1) errors.push(`${at}.lengthDays: positive integer`);
     if (typeof c.hoursPerDay !== 'number' || c.hoursPerDay <= 0) errors.push(`${at}.hoursPerDay: positive number`);
     if (c.status !== 'available' && c.status !== 'coming-soon') errors.push(`${at}.status: available | coming-soon`);
-    for (const f of ['entryHref', 'outlineHref', 'illustration'] as const) if (typeof c[f] === 'string' && !(c[f] as string).startsWith('/')) errors.push(`${at}.${f}: site-relative path`);
+    for (const f of ['illustration'] as const) if (typeof c[f] === 'string' && !(c[f] as string).startsWith('/')) errors.push(`${at}.${f}: site-relative path`);
     if (typeof c.accent === 'string' && !/^#[0-9a-f]{6}$/i.test(c.accent)) errors.push(`${at}.accent: #rrggbb`);
   });
   return errors;
