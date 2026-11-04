@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 import Ajv from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
-import { expect, test, type Page } from './fixtures';
+import { DASH, expect, test, type Page } from './fixtures';
 import { noHorizontalScroll, shot, shotEl, trackConsole } from './helpers';
 import { done, progress, readProgress, seed } from './progress-fixtures';
 
@@ -84,7 +84,7 @@ test.describe('settings (T066) @visual', () => {
     await io(page).getByRole('button', { name: 'Yes, delete all progress' }).click();
     await expect(io(page).getByRole('status')).toContainText('Progress reset');
     await expect.poll(async () => (await readProgress(page))!.days).toEqual({});
-    await page.goto('/');
+    await page.goto(DASH);
     await expect(page.locator('[data-dashboard]')).toContainText('0 of 30 days complete');
   });
 });

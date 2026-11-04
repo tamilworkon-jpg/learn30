@@ -1,6 +1,7 @@
 // "What's next" at the top of the quiz results (learner feedback 2026-11-03: after submitting it was not
 // clear what to click). Pass → mark the day complete and start the next one; below the pass mark → the
 // lesson sections behind the wrong answers, then retake (or continue anyway).
+import { DASHBOARD_HREF } from '../../lib/routes';
 import { useState } from 'preact/hooks';
 import type { BadgeWeek } from '../../lib/badges';
 import { completeDay, isDayComplete } from '../../lib/day-complete';
@@ -33,7 +34,7 @@ export default function NextSteps({ kind, attempt, questions, day, nextDay, week
   const ok = passed(pct);
   const [done, setDone] = useState(() => isDayComplete(day));
   const what = kind === 'weekly' ? `Day ${day} cumulative test` : `Day ${day} quiz`;
-  const nextHref = nextDay ? `/day/${pad(nextDay)}` : '/';
+  const nextHref = nextDay ? `/day/${pad(nextDay)}` : DASHBOARD_HREF;
   const nextLabel = nextDay ? `Day ${nextDay}` : 'your dashboard';
   const revisit = ok ? [] : revisitLinks(questions, attempt.answers, sectionTitles);
 

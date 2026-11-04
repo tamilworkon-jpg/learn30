@@ -140,6 +140,34 @@
   flex-direction: column;
   gap: 4px;
 }
+/* T205 — the current course's pages sit in an indented group under "Courses". */
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 6px 0 2px;
+}
+.nav-group-h {
+  margin: 4px 0 2px;
+  padding: 0 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--shell-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-group a {
+  padding-left: 28px;
+}
+.nav-sep {
+  display: block;
+  height: 1px;
+  margin: 8px 24px 8px 16px;
+  background: rgb(255 255 255 / 0.18);
+}
 .nav a {
   display: flex;
   align-items: center;
@@ -494,6 +522,17 @@
     justify-content: center;
     padding: 12px 0;
   }
+  /* Rail: icons only — the course heading becomes a thin divider (its name stays the group's label). */
+  [data-sidebar='collapsed'] .nav-group-h {
+    height: 1px;
+    margin: 6px 12px 6px 0;
+    padding: 0;
+    font-size: 0;
+    background: rgb(255 255 255 / 0.18);
+  }
+  [data-sidebar='collapsed'] .nav-sep {
+    margin: 6px 12px 6px 0;
+  }
   [data-sidebar='collapsed'] .support-card {
     display: none;
   }
@@ -523,6 +562,17 @@
     flex-direction: row;
     justify-content: space-around;
     width: 100%;
+  }
+  /* Bottom tab bar: one row of tabs; the course grouping is implicit. */
+  .nav-group {
+    display: contents;
+  }
+  .nav-group-h,
+  .nav-sep {
+    display: none;
+  }
+  .nav-group a {
+    padding-left: 4px;
   }
   .nav a {
     flex-direction: column;
@@ -598,6 +648,15 @@
     padding: 8px 14px;
     font-size: 14px;
     min-height: 38px;
+  }
+  .nav-group a {
+    padding-left: 24px;
+  }
+  .nav-group-h {
+    padding: 0 14px;
+  }
+  .nav-sep {
+    margin: 4px 20px 4px 14px;
   }
   .nav svg {
     width: 18px;

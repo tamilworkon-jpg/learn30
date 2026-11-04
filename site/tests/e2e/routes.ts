@@ -3,7 +3,7 @@ import { progress, seed } from './progress-fixtures';
 
 // Every learner-facing route (T174–T177). Day pages cover each kind: lesson (01, 02), review (07), mock day (29).
 export const ROUTES = [
-  { name: 'dashboard', path: '/' },
+  { name: 'dashboard', path: '/course/aws-ai-practitioner' },
   { name: 'outline', path: '/outline' },
   { name: 'day-01', path: '/day/01' },
   { name: 'day-02', path: '/day/02' },

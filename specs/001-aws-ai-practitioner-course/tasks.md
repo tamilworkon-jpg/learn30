@@ -580,5 +580,5 @@ Gate per Constitution v3.0.0: unit + static + `npm run test:sanity` (+ the specs
 - [x] T201 [P] Fit for 150 % Windows scaling / short windows (≤ 760 px tall): compact shell, slide chrome and quiz; "Today's sections" collapsed by default below 1440 px wide; Slides/Full page toggle beside the search box
 - [x] T202 [P] Quiz results "What's next": pass → mark day complete & start the next day; below 80 % → revisit the missed sections, retake, or continue anyway (daily + weekly)
 - [x] T203 [P] Courses catalogue: `/courses` page + "Courses" nav, course registry with this AIF-C01 course as #1 (progress, continue, outline); dashboard breadcrumb; existing URLs unchanged
-- [ ] T205 Information architecture: Courses is the outer layer — `/` = course catalogue; sidebar = Courses › <course> (Dashboard, Outline, Search, Glossary, Cheat sheets) + account Settings; course dashboard at `/course/aws-ai-practitioner`; lesson/outline/mock URLs unchanged
+- [x] T205 Information architecture: Courses is the outer layer — `/` = course catalogue; sidebar = Courses › <course> (Dashboard, Outline, Search, Glossary, Cheat sheets) + account Settings; course dashboard at `/course/aws-ai-practitioner`; lesson/outline/mock URLs unchanged
 - [ ] T204 REVIEW Phase 14; log

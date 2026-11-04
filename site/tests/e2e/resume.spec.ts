@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from './fixtures';
+import { DASH, expect, test, type Page } from './fixtures';
 import { noHorizontalScroll, shot, trackConsole } from './helpers';
 import { attempt, done, progress, readProgress, seed } from './progress-fixtures';
 
@@ -7,7 +7,7 @@ import { attempt, done, progress, readProgress, seed } from './progress-fixtures
 const dash = (page: Page) => page.locator('[data-dashboard]');
 
 async function openDashboard(page: Page) {
-  await page.goto('/');
+  await page.goto(DASH);
   await expect(dash(page)).toHaveAttribute('data-ready', 'true');
 }
 

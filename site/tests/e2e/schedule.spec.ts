@@ -1,4 +1,4 @@
-import { expect, test } from './fixtures';
+import { DASH, expect, test } from './fixtures';
 import { shot, shotEl } from './helpers';
 import { done, progress, readProgress, seed } from './progress-fixtures';
 
@@ -14,7 +14,7 @@ test.describe('schedule dates (T183) @visual', () => {
   });
 
   test('SD2 dashboard shows start (weekdays only), finish, today and behind/ahead from the browser date', async ({ page }) => {
-    await page.goto('/');
+    await page.goto(DASH);
     const card = page.locator('[data-schedule]');
     await expect(card.locator('[data-sched-start]')).toHaveText(/Nov 2, 2026/);
     await expect(card.locator('[data-sched-finish]')).toHaveText(/Dec 11, 2026/);
@@ -52,7 +52,7 @@ test.describe('schedule dates (T183) @visual', () => {
     await expect(page.getByRole('status').filter({ hasText: 'Start date saved' })).toBeVisible();
     await shotEl(s, 'schedule-settings');
 
-    await page.goto('/');
+    await page.goto(DASH);
     const card = page.locator('[data-schedule]');
     await expect(card.locator('[data-sched-today]')).toHaveText('Day 2 of your plan');
     await expect(card.locator('[data-sched-finish]')).toHaveText(/Dec 16, 2026/);
@@ -67,7 +67,7 @@ test.describe('schedule dates (T183) @visual', () => {
 
   test('SD4 weekends are free: dashboard and outline point at Monday', async ({ page }) => {
     await page.clock.setFixedTime(new Date(2026, 10, 7, 10, 0, 0)); // Sat 7 Nov 2026
-    await page.goto('/');
+    await page.goto(DASH);
     const card = page.locator('[data-schedule]');
     await expect(card.locator('[data-sched-today]')).toHaveText(/^Weekend · Day 6 on .*Nov 9, 2026/);
     await expect(card.locator('[data-sched-status]')).toHaveText('3 days behind');

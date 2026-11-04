@@ -8,8 +8,14 @@ export function routeOf(path: string): string {
   return r || '/';
 }
 
+/** `/` is the public course catalogue; a course's dashboard (`/course/<id>`), Settings and mock exams need an account. */
 export function requiresSignIn(route: string): boolean {
-  return route === '/' || route === '/settings' || route === '/mock' || route.startsWith('/mock/');
+  return route === '/settings' || route === '/mock' || route.startsWith('/mock/') || route === '/course' || route.startsWith('/course/');
+}
+
+/** Old addresses kept working: the catalogue used to live at /courses. */
+export function legacyRedirect(route: string): string | null {
+  return route === '/courses' ? '/' : null;
 }
 
 export function isAuthPage(route: string): boolean {

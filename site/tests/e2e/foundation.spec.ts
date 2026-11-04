@@ -1,11 +1,11 @@
-import { expect, test } from './fixtures';
+import { DASH, expect, test } from './fixtures';
 import { noHorizontalScroll, shot, trackConsole } from './helpers';
 
 test.describe('foundation (T018) @visual', () => {
   test('F37–F40 home shell, nav, theme toggle, footer, CSP', async ({ page }) => {
     const problems = trackConsole(page);
-    await page.goto('/');
-    for (const label of ['Dashboard', 'Outline', 'Search', 'Glossary', 'Cheat sheets', 'Settings']) {
+    await page.goto(DASH);
+    for (const label of ['Courses', 'Dashboard', 'Outline', 'Search', 'Glossary', 'Cheat sheets', 'Settings']) {
       await expect(page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: label })).toBeVisible();
     }
     await expect(page.locator('footer')).toContainText('Exam guide v1.2 · last verified 2026-11-02');

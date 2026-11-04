@@ -74,7 +74,7 @@ export default function CourseCards({ courses, plan }: Props) {
             {c.status === 'available' && (
               <p class="course-actions m-0">
                 {signedIn === false ? (
-                  <a class="btn" href="/login?next=%2F">
+                  <a class="btn" href={`/login?next=${encodeURIComponent(c.entryHref)}`}>
                     Sign in to start →
                   </a>
                 ) : (

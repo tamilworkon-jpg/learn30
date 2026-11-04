@@ -1,0 +1,21 @@
+---
+// T075/T205 — the AWS AI Practitioner course dashboard (was /; / is now the course catalogue) (Phase 0 design: src/pages/design/dashboard.astro). Progress is client-side, so the
+// Dashboard island renders a fresh-learner view at build time and the learner's state after mount.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Dashboard from '../../components/dashboard/Dashboard';
+import { buildPlan } from '../../lib/course-plan';
+import { course, examGuide } from '../../lib/data';
+import '../../styles/dashboard.css';
+
+const lessons = await getCollection('lessons');
+const plan = buildPlan(
+  course,
+  examGuide.domains,
+  lessons.map((l) => ({ day: l.data.day, body: l.body })),
+);
+---
+
+<BaseLayout title="Dashboard" active="home">
+  <Dashboard client:load plan={plan} />
+</BaseLayout>

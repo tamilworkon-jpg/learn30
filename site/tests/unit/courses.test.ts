@@ -9,7 +9,7 @@ const raw = load(readFileSync('src/data/courses.yaml', 'utf8')) as Record<string
 describe('course catalogue', () => {
   it('C1 the catalogue is valid and course #1 is the AWS AI Practitioner course at the existing routes', () => {
     expect(validateCourses(raw)).toEqual([]);
-    expect(raw[0]).toMatchObject({ id: 'aws-ai-practitioner', examCode: 'AIF-C01', status: 'available', entryHref: '/', outlineHref: '/outline', lengthDays: 30 });
+    expect(raw[0]).toMatchObject({ id: 'aws-ai-practitioner', examCode: 'AIF-C01', status: 'available', entryHref: '/course/aws-ai-practitioner', outlineHref: '/outline', lengthDays: 30 });
   });
 
   it('C2 validation reports missing fields, bad ids, duplicates, status, paths and colours', () => {

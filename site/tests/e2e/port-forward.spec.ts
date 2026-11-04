@@ -1,4 +1,4 @@
-import { expect, test } from './fixtures';
+import { DASH, expect, test } from './fixtures';
 import { shot } from './helpers';
 import { done, progress, seed } from './progress-fixtures';
 
@@ -12,21 +12,21 @@ test.describe('port forwarding (T179) @visual', () => {
     const local = new URL(baseURL!);
     expect(local.hostname).toBe('localhost');
     await seed(page, progress({ days: { '1': done(), '2': done() } }));
-    await page.goto('/');
+    await page.goto(DASH);
     await expect(page.locator('[data-dashboard]')).toContainText('2 of 30 days complete');
 
     // Second origin (no cookie there yet), same server — like the forwarded URL.
     const other = `${local.protocol}//127.0.0.1:${local.port}`;
     const ctx = await browser.newContext({ baseURL: other, viewport: page.viewportSize() ?? undefined });
     const remote = await ctx.newPage();
-    await remote.goto('/');
-    await expect(remote).toHaveURL(/\/login\?next=(%2F|\/)$/);
+    await remote.goto(DASH);
+    await expect(remote).toHaveURL(/\/login\?next=(%2Fcourse%2Faws-ai-practitioner|\/course\/aws-ai-practitioner)$/);
 
     const form = remote.locator('[data-login-form]');
     await form.getByLabel('Username').fill(account.username);
     await form.getByLabel('Password').fill(account.password);
     await form.getByRole('button', { name: 'Sign in' }).click();
-    await expect(remote).toHaveURL(`${other}/`);
+    await expect(remote).toHaveURL(`${other}${DASH}`);
     await expect(remote.locator('[data-dashboard]')).toHaveAttribute('data-ready', 'true');
     await expect(remote.locator('[data-dashboard]')).toContainText('2 of 30 days complete');
     await shot(remote, 'port-forward');

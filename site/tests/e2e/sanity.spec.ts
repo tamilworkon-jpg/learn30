@@ -6,8 +6,8 @@ import { trackConsole } from './helpers';
 // (`npm run test:e2e`) runs only when the learner asks for "all".
 // Screenshots: tests/e2e/__screenshots__/sanity/<name>.png (git-ignored) — open and inspect them.
 const PAGES: [name: string, path: string][] = [
-  ['courses', '/courses'],
-  ['dashboard', '/'],
+  ['courses', '/'],
+  ['dashboard', '/course/aws-ai-practitioner'],
   ['outline', '/outline'],
   ['day-01-slides', '/day/01'],
   ['day-02-slides', '/day/02'],
@@ -39,6 +39,6 @@ test.describe('sanity (signed in) @sanity', () => {
 
 test.describe('sanity (signed out) @sanity', () => {
   test.use({ signedIn: false });
-  for (const [name, path] of [['login', '/login'], ['signup', '/signup'], ['courses-signed-out', '/courses'], ['day-02-signed-out', '/day/02']] as const)
+  for (const [name, path] of [['login', '/login'], ['signup', '/signup'], ['courses-signed-out', '/'], ['day-02-signed-out', '/day/02']] as const)
     test(name, async ({ page }) => capture(page, name, path));
 });

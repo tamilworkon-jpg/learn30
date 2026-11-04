@@ -143,8 +143,10 @@ describe('SV6 bootstrap injection + escaping (T188)', () => {
 describe('SV7 page access (T188)', () => {
   it('protected pages redirect signed-out visitors to /login?next=<path>', async () => {
     const cases: Record<string, string> = {
-      '/': '/login?next=%2F',
-      '/index.html': '/login?next=%2Findex.html',
+      // T205: `/` is the public course catalogue; the course dashboard is protected.
+      '/course/aws-ai-practitioner': '/login?next=%2Fcourse%2Faws-ai-practitioner',
+      '/course/aws-ai-practitioner/index.html': '/login?next=%2Fcourse%2Faws-ai-practitioner%2Findex.html',
+      '/COURSE/aws-ai-practitioner/': '/login?next=%2FCOURSE%2Faws-ai-practitioner%2F',
       '/settings': '/login?next=%2Fsettings',
       '/settings/': '/login?next=%2Fsettings%2F',
       '/SETTINGS': '/login?next=%2FSETTINGS',
@@ -211,13 +213,21 @@ describe('T192 hardening — redirects and paths', () => {
       ['//settings', '/login?next=%2Fsettings'],
       ['///settings/', '/login?next=%2Fsettings%2F'],
       ['/mock//1', '/login?next=%2Fmock%2F1'],
-      ['//', '/login?next=%2F'],
+      ['//course//aws-ai-practitioner', '/login?next=%2Fcourse%2Faws-ai-practitioner'],
     ]) {
       const r = await h.req('GET', p);
       expect(r.status, p).toBe(302);
       expect(r.headers.location, p).toBe(loc);
     }
     expect((await h.req('GET', '//day//1')).status).toBe(200);
+  });
+
+  it('T205: the catalogue (/) is public; the old /courses address redirects there (301, query kept)', async () => {
+    expect((await h.req('GET', '/')).status).not.toBe(302);
+    const r = await h.req('GET', '/courses?x=1');
+    expect(r.status).toBe(301);
+    expect(r.headers.location).toBe('/?x=1');
+    expect((await h.req('GET', '/Courses/')).headers.location).toBe('/');
   });
 
   it('L5: Windows device names are rejected in any segment', async () => {

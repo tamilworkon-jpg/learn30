@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 import { load } from 'js-yaml';
-import { expect, test, type Page } from './fixtures';
+import { DASH, expect, test, type Page } from './fixtures';
 import type { Course } from '../../src/lib/types';
 import { noHorizontalScroll, shot, trackConsole } from './helpers';
 import { done, editProgress, progress, readProgress, seed } from './progress-fixtures';
@@ -29,7 +29,7 @@ test.describe('engagement (T107) @visual', () => {
   test('E5 seeded progress shows streak 7 + Module 1 badge', async ({ page }) => {
     const problems = trackConsole(page);
     await seed(page, progress({ days: week1(), streak: { current: 7, longest: 7, lastStudyDate: today() } }));
-    await page.goto('/');
+    await page.goto(DASH);
     await expect(dash(page)).toHaveAttribute('data-ready', 'true');
     await expect(page.locator('[data-streak]')).toContainText('7-day streak');
     const badges = page.locator('[data-badges]');
@@ -48,7 +48,7 @@ test.describe('engagement (T107) @visual', () => {
 
   test('W4 module ratings show on the dashboard (hidden until a week is rated)', async ({ page }) => {
     await seed(page, progress());
-    await page.goto('/');
+    await page.goto(DASH);
     const dash = page.locator('[data-dashboard]');
     await expect(dash).toHaveAttribute('data-ready', 'true');
     await expect(dash.locator('[data-ratings]')).toHaveCount(0);
@@ -66,14 +66,14 @@ test.describe('engagement (T107) @visual', () => {
 
   test('E5 dark theme badges', async ({ page }) => {
     await seed(page, progress({ settings: { theme: 'dark' }, days: week1(), streak: { current: 7, longest: 7, lastStudyDate: today() } }));
-    await page.goto('/');
+    await page.goto(DASH);
     await expect(dash(page)).toHaveAttribute('data-ready', 'true');
     await shot(page, 'dashboard-badges-dark');
   });
 
   test('a lapsed streak shows 0 but keeps the longest', async ({ page }) => {
     await seed(page, progress({ days: { '1': done() }, streak: { current: 4, longest: 4, lastStudyDate: '2026-01-01' } }));
-    await page.goto('/');
+    await page.goto(DASH);
     await expect(dash(page)).toHaveAttribute('data-ready', 'true');
     await expect(page.locator('[data-streak]')).toContainText('No streak yet today');
     await expect(page.locator('[data-streak]')).toContainText('Longest: 4 days');
@@ -111,7 +111,7 @@ test.describe('engagement (T107) @visual', () => {
     test.skip(info.project.name !== 'mobile', 'mobile-only check');
     test.setTimeout(180_000);
     await seed(page, progress({ days: week1(), streak: { current: 7, longest: 7, lastStudyDate: today() } }));
-    const routes = ['/', '/outline', '/settings', ...course.days.map((d) => `/day/${pad(d.day)}`)];
+    const routes = ['/', DASH, '/outline', '/settings', ...course.days.map((d) => `/day/${pad(d.day)}`)];
     for (const r of routes) {
       await page.goto(r);
       await page.waitForLoadState('load');

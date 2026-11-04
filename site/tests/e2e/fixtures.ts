@@ -5,6 +5,9 @@ import type { Progress } from '../../src/lib/types';
 // so tests are isolated under parallel workers. `page.request` shares the browser context's cookie jar, so the
 // session cookie set by sign-up is used by the page's navigations too.
 
+/** T205 — the AWS AI Practitioner course dashboard (`/` is the public course catalogue). */
+export const DASH = '/course/aws-ai-practitioner';
+
 export type LessonView = 'full' | 'slides' | null;
 export interface UiState {
   lessonView?: 'slides' | 'full';

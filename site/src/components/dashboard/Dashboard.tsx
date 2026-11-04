@@ -48,7 +48,7 @@ export default function Dashboard({ plan }: Props) {
     <div class="dash" data-dashboard data-ready={ready ? 'true' : undefined}>
       <section>
         <p class="course-crumb muted" data-course-crumb>
-          <a href="/courses">Courses</a> › AWS Certified AI Practitioner
+          <a href="/">Courses</a> › AWS Certified AI Practitioner
         </p>
         <h1 class="h1">{started ? 'Welcome back 👋' : 'Welcome 👋'}</h1>
         <p class="muted mt-0">

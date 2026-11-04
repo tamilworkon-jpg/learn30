@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { API_HEADERS, expect, getProgress, getUi, newAccount, putUi, settleSaves, signUp, signedInContext, test, type Page } from './fixtures';
+import { DASH, API_HEADERS, expect, getProgress, getUi, newAccount, putUi, settleSaves, signUp, signedInContext, test, type Page } from './fixtures';
 import { shot, shotEl, trackConsole } from './helpers';
 import { done, progress } from './progress-fixtures';
 
@@ -44,7 +44,10 @@ test.describe('accounts (T190) @visual', () => {
       await form.getByLabel('Password').fill(account.password);
       await shot(page, 'signup');
       await form.getByRole('button', { name: 'Create account' }).click();
+      // No `next`: sign-up lands on the course catalogue (home), which starts the course.
       await expect(page).toHaveURL(/\/$/);
+      await expect(page.locator('[data-course="aws-ai-practitioner"]').getByRole('link', { name: 'Start course →' })).toHaveAttribute('href', DASH);
+      await page.goto(DASH);
       await expect(dash(page)).toHaveAttribute('data-ready', 'true');
       await expect(dash(page)).toContainText('0 of 30 days complete');
       await expect(menu(page)).toContainText('AL');
@@ -134,11 +137,12 @@ test.describe('accounts (T190) @visual', () => {
       await expect(offer).toContainText(/Import progress saved in this browser/i);
       await shotEl(offer, 'import-offer');
       await offer.getByRole('button', { name: /Import/ }).click();
-      await expect(dash(page)).toContainText('3 of 30 days complete');
+      // Sign-up lands on the course catalogue (T205): the course card picks the imported progress up.
+      await expect(page.locator('[data-course="aws-ai-practitioner"] [data-course-progress]')).toContainText('3 of 30 days');
       await settleSaves(page);
       expect(Object.keys((await getProgress(page.request))!.days).sort()).toEqual(['1', '2', '3']);
 
-      await page.reload();
+      await page.goto(DASH);
       await expect(dash(page)).toHaveAttribute('data-ready', 'true');
       await expect(dash(page)).toContainText('3 of 30 days complete');
       await expect(offer).toHaveCount(0);
@@ -162,8 +166,8 @@ test.describe('accounts (T190) @visual', () => {
     }
   });
 
-  test('AU2 log out → protected / redirects to /login?next=/', async ({ page }) => {
-    await page.goto('/');
+  test('AU2 log out → the course dashboard redirects to /login?next=…; the catalogue (/) stays public', async ({ page }) => {
+    await page.goto(DASH);
     await expect(dash(page)).toHaveAttribute('data-ready', 'true');
     await openMenu(page);
     await shotEl(menu(page), 'account-menu');
@@ -171,8 +175,11 @@ test.describe('accounts (T190) @visual', () => {
     await menu(page).getByRole('button', { name: 'Log out' }).click();
     await expect(page).toHaveURL(/\/login(\?|$)/);
     expect(await sessionCookie(page)).toBeUndefined();
-    await page.goto('/');
-    await expect(page).toHaveURL(loginUrl('/'));
+    await page.goto(DASH);
+    await expect(page).toHaveURL(loginUrl(DASH));
+    expect((await page.goto('/'))?.status()).toBe(200);
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.locator('[data-course="aws-ai-practitioner"]')).toContainText('Sign in to track your progress');
     await page.goto('/mock/1');
     await expect(page).toHaveURL(loginUrl('/mock/1'));
     expect((await page.request.get('/api/me')).status()).toBe(401);
@@ -200,7 +207,7 @@ test.describe('accounts (T190) @visual', () => {
     expect((await getProgress(page.request))?.days['1']?.status).toBe('completed');
     expect((await getUi(page.request))?.slides?.['2']).toBeTruthy();
 
-    await page.goto('/');
+    await page.goto(DASH);
     await expect(dash(page)).toContainText('1 of 30 days complete');
     await page.reload();
     await expect(dash(page)).toContainText('1 of 30 days complete');
@@ -211,7 +218,7 @@ test.describe('accounts (T190) @visual', () => {
     // another browser: fresh cookies + storage, same learner
     const ctx = await signedInContext(browser, account, { baseURL: baseURL!, viewport: page.viewportSize() });
     const other = await ctx.newPage();
-    await other.goto('/');
+    await other.goto(DASH);
     await expect(dash(other)).toHaveAttribute('data-ready', 'true');
     await expect(dash(other)).toContainText('1 of 30 days complete');
     await other.goto('/day/02');

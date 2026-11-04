@@ -88,8 +88,9 @@ JSON-escaped so it cannot break out of the element (`<` → `<`, `>` → `>`, `&
 
 ## 6. Page access
 
-- Public (signed out OK): `/login`, `/signup`, `/day/*`, `/glossary`, `/cheatsheet/*`, `/search`, `/coverage`, `/outline`, static assets (`/_astro/*`, `/diagrams/*`, `/illustrations/*`, `/pagefind/*`, `/scripts/*`, fonts, favicon), `/design/*` (fixtures/mockups).
-- Requires sign-in (server 302 → `/login?next=<path>` when signed out): `/`, `/settings`, `/mock/*`.
+- Public (signed out OK): `/` (course catalogue, T205), `/login`, `/signup`, `/day/*`, `/glossary`, `/cheatsheet/*`, `/search`, `/coverage`, `/outline`, static assets (`/_astro/*`, `/diagrams/*`, `/illustrations/*`, `/pagefind/*`, `/scripts/*`, fonts, favicon), `/design/*` (fixtures/mockups).
+- Requires sign-in (server 302 → `/login?next=<path>` when signed out): `/course/*` (course dashboards, e.g. `/course/aws-ai-practitioner`), `/settings`, `/mock/*`.
+- Moved: `/courses` → 301 `/` (query kept).
 - Signed-in user visiting `/login` or `/signup` → 302 to `/` (or `next`).
 - Signed out on public pages: lessons/quizzes work in memory only, with a banner "Sign in to save your progress" (link to `/login?next=…`); nothing is written to localStorage.
 

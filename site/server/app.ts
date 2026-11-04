@@ -1,7 +1,7 @@
 import type { IncomingMessage, RequestListener, ServerResponse } from 'node:http';
 import { join, resolve } from 'node:path';
 import { existsSync } from 'node:fs';
-import { isAuthPage, requiresSignIn, routeOf, safeNext } from './access';
+import { isAuthPage, legacyRedirect, requiresSignIn, routeOf, safeNext } from './access';
 import { getProgress, getUi, handleApi, sendJson } from './api';
 import { clientOf, DEFAULT_LIMITS, getSession, publicUser, purgeExpiredSessions, RateLimiter, SCRYPT_N, type Limits, type Session } from './auth';
 import { openDb } from './db';
@@ -99,6 +99,12 @@ export function createApp(opts: AppOptions): App {
       return;
     }
 
+    const moved = legacyRedirect(route);
+    if (moved) {
+      res.writeHead(301, { Location: moved + search, 'Cache-Control': 'no-store' });
+      res.end();
+      return;
+    }
     // HTML (or 404): resolve the session for access rules + bootstrap.
     const session = getSession(db, req, now());
     const refresh = session?.refreshCookie ?? null;
