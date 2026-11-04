@@ -52,12 +52,12 @@ test.describe('weekly review (T079) @visual', () => {
     await expect(d4.getByRole('link')).toContainText('Day 2:');
     await expect(d1.locator('.review-avg')).toHaveText('Daily quiz average 80% (2 of 6 days taken)');
     // Day 7 MDX and week-1.yaml: real content when authored, otherwise both parts say "coming soon".
-    if (existsSync('src/content/lessons/day-07.mdx')) {
+    if (existsSync('src/content/lessons/aws-ai-practitioner/day-07.mdx')) {
       await expect(page.locator('[data-coming-soon="review-content"]')).toHaveCount(0);
       await expect(page.locator('#concept-map figure.diagram img')).toHaveCount(1);
       expect(await page.locator('#top-facts ol > li').count()).toBeGreaterThanOrEqual(20);
     } else await expect(page.locator('[data-coming-soon="review-content"]')).toBeVisible();
-    if (existsSync('src/content/questions/week-1.yaml')) await expect(page.locator('#weekly-test [data-quiz="week-1"]')).toBeAttached();
+    if (existsSync('src/content/questions/aws-ai-practitioner/week-1.yaml')) await expect(page.locator('#weekly-test [data-quiz="week-1"]')).toBeAttached();
     else await expect(page.locator('#weekly-test')).toContainText('coming soon');
     await noHorizontalScroll(page);
     await shotEl(page.locator('#summary'), 'review-summary');

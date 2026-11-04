@@ -4,9 +4,9 @@ import { parseLesson } from '../../src/lib/lesson-parse';
 import { noHorizontalScroll, shot, trackConsole } from './helpers';
 
 // TC-L: one test per authored lesson day.
-const lessons = readdirSync('src/content/lessons')
+const lessons = readdirSync('src/content/lessons/aws-ai-practitioner')
   .filter((f) => f.endsWith('.mdx'))
-  .map((f) => parseLesson(readFileSync(`src/content/lessons/${f}`, 'utf8')))
+  .map((f) => parseLesson(readFileSync(`src/content/lessons/aws-ai-practitioner/${f}`, 'utf8')))
   .filter((l) => l.frontmatter.kind === 'lesson');
 
 const order = (day: number) => [day === 1 ? 'orientation' : 'recap', 'objectives', 'explanation', 'diagram', 'examples', 'realWorld', 'handsOn', 'examTips', 'summary', 'quiz', 'deepDive'];

@@ -1,0 +1,144 @@
+---
+day: 2
+kind: lesson
+title: 'Spaced repetition & focus blocks'
+summary: 'Space your reviews out so memories last, plan sessions as short focus blocks with breaks, and keep notes that are easy to review.'
+domains: [D1, D2]
+taskStatements: ['1.2', '2.1', '2.2']
+sources:
+  - { provider: skillbuilder, title: 'Learn30 demo fixture (original text)' }
+objectives:
+  - Explain the forgetting curve and why spaced reviews beat cramming
+  - Schedule reviews at growing intervals
+  - Plan a session as focus blocks with short breaks
+  - Write notes with a question and a one-line summary
+estimatedMinutes: 20
+deepDiveMinutes: 5
+lastVerified: '2026-11-04'
+keyPoints:
+  - 'Memories fade fast at first and more slowly later; each review resets the curve at a higher level.'
+  - 'Space reviews at growing intervals: one day, three days, a week, two weeks.'
+  - 'A focus block is a fixed stretch of single-task work followed by a short break.'
+  - 'Good notes have a question, the idea in your own words and a one-line summary.'
+---
+
+<Section id="recap" type="recap" title="Recap of Day 1" minutes={1}>
+
+Yesterday you learned that recalling an idea from memory strengthens it far more than re-reading, that notes work best as questions, and that every missed answer goes on a list for the next session.
+
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="Spacing, focus and notes" minutes={6}>
+
+### The forgetting curve
+
+After you learn something new, you forget a large part of it within a day or two, and then the loss slows down. Drawn on a chart, this is the forgetting curve: a steep drop followed by a long, gentle slope. A review at the right moment lifts the memory back up, and after each review the curve becomes flatter, so the memory lasts longer before it needs attention again.
+
+### Spaced repetition
+
+Spaced repetition uses that pattern on purpose. Instead of reviewing a topic five times in one evening, you review it once on each of five different days, with the gaps getting longer: the next day, three days later, a week later, two weeks later. Each review is a recall test, not a re-read. If you answer easily, the next gap grows. If you struggle, the gap shrinks and the idea comes back sooner.
+
+Cramming feels productive because the material is fresh during the session. But most of it is gone a few days later. Spacing the same amount of effort over several days gives memories that last for weeks.
+
+### Focus blocks
+
+Spacing tells you when to review; focus blocks shape how each session runs. A focus block is a fixed stretch of single-task work — for example 25 minutes — followed by a short break of about five minutes. After three or four blocks you take a longer break.
+
+- **Decide the task first.** Write down what the block is for, such as "answer the chapter 2 questions".
+- **Remove distractions.** Silence notifications and close unrelated tabs before the timer starts.
+- **Stop when the timer ends.** A break keeps the next block sharp, even if you feel you could keep going.
+
+### Notes that are easy to review
+
+Notes are only useful if you can review them quickly. A simple layout works well: a question in the margin, the idea in your own words next to it, and a one-line summary at the bottom of the page. Review new notes on the same day, while gaps are still easy to fill, and then let the spaced schedule bring them back.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={1}>
+
+<Diagram
+  caption="Spaced reviews at growing intervals: day 1, day 2, day 5, day 12 and day 26"
+  code={`flowchart LR
+  D1["Learn on day 1"] --> D2["Review day 2"]
+  D2 --> D5["Review day 5"]
+  D5 --> D12["Review day 12"]
+  D12 --> D26["Review day 26"]`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={2}>
+
+| Situation | Better approach |
+|-----------|-----------------|
+| Reviewing a topic four times on Sunday night | One recall test on each of four days with growing gaps |
+| Studying for two hours with the phone nearby | Four 25-minute focus blocks with the phone in another room |
+| Copying a slide word for word | A question, the idea in your own words and a one-line summary |
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={1}>
+
+<Callout type="realWorld" title="A nurse keeps procedures fresh">
+Sam works night shifts and must remember rarely used procedures. Sam keeps a deck of recall cards and reviews only the cards due each day, which takes ten minutes. Cards answered easily come back after longer gaps; difficult ones return the next day. Months later the rare procedures are still clear.
+</Callout>
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: plan a week of spaced reviews" minutes={3}>
+
+<HandsOnLab
+  goal="Plan the next reviews for yesterday's questions and run one focus block."
+  asOf="November 2026"
+  steps={[
+    { text: 'Take the questions you wrote yesterday and note today as review 1.', screen: { service: 'Planner', path: ['This week'], fields: [{ label: 'Questions', value: '6' }, { label: 'Review 1', value: 'Today' }] } },
+    { text: 'Add review 2 three days from now and review 3 one week from now.', screen: { service: 'Planner', path: ['This week', 'Reviews'], fields: [{ label: 'Review 2', value: '+3 days' }, { label: 'Review 3', value: '+1 week' }] } },
+    { text: 'Start a 25-minute focus block for today’s review with notifications silenced.', screen: { service: 'Timer', path: ['Focus block'], fields: [{ label: 'Length', value: '25 min' }], highlight: 'Start' } },
+  ]}
+  expectedOutcome="Your questions have three review dates and you have finished one focus block."
+  checks={[
+    { q: 'An answer came easily today. What happens to its next gap?', a: 'It grows, so the idea comes back later.' },
+    { q: 'What do you do when the focus timer ends?', a: 'Take a short break before the next block.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="tips" type="examTips" title="Tips & traps" minutes={1}>
+
+<Callout type="examTrap" title="One long session is not spacing">
+Reviewing the same topic several times in one evening is still cramming. Spacing means different days with growing gaps.
+</Callout>
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+Memories fade quickly at first; each spaced review lifts them back up and flattens the curve. Review with recall tests at growing intervals instead of cramming. Run sessions as focus blocks with breaks and no distractions, and keep notes with a question, your own words and a summary. Tomorrow you take a short practice test and plan what to revisit.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={5}>
+<QuizSlot day={2} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Scheduling reviews with a card system" minutes={5} optional>
+
+A box-based card system automates spacing: cards start in box 1 and move up a box after each correct answer, and back to box 1 after a miss. Each box has a longer review gap than the one before.
+
+<Diagram
+  caption="Card boxes: a correct answer moves a card up to a box with a longer gap; a miss sends it back to box 1"
+  code={`flowchart LR
+  B1["Box 1: daily"] -->|correct| B2["Box 2: every 3 days"]
+  B2 -->|correct| B3["Box 3: weekly"]
+  B3 -->|correct| B4["Box 4: every 2 weeks"]
+  B2 -->|missed| B1
+  B3 -->|missed| B1
+  B4 -->|missed| B1`}
+/>
+
+</Section>

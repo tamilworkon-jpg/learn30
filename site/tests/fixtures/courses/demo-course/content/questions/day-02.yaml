@@ -1,0 +1,80 @@
+- id: q-day-02-001
+  set: day-02
+  type: single
+  stem: "According to the forgetting curve, when is most newly learned material lost?"
+  options:
+    - { id: a, text: "Within the first day or two", explanation: "Correct: the curve drops steeply at first and then flattens." }
+    - { id: b, text: "Evenly over the following year", explanation: "Wrong: the loss is fastest at the start, not even." }
+    - { id: c, text: "Only after several months", explanation: "Wrong: most of the loss happens soon after learning." }
+    - { id: d, text: "Never, once it has been read once", explanation: "Wrong: a single read leaves memories that fade quickly." }
+  answer: [a]
+  explanation: "The forgetting curve falls steeply in the first day or two and then slowly; each review lifts the memory and flattens the curve."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-02#explanation
+  difficulty: easy
+
+- id: q-day-02-002
+  set: day-02
+  type: single
+  stem: "Which review schedule BEST applies spaced repetition to a new topic?"
+  options:
+    - { id: a, text: "Four reviews on the same evening", explanation: "Wrong: several reviews in one sitting is cramming." }
+    - { id: b, text: "One review the next day, then after three days, a week and two weeks", explanation: "Correct: reviews on different days with growing gaps are spaced repetition." }
+    - { id: c, text: "One review a month later only", explanation: "Wrong: by then most of the material has faded." }
+    - { id: d, text: "A review every hour for one day", explanation: "Wrong: the gaps do not grow and all reviews fall on one day." }
+  answer: [b]
+  explanation: "Spaced repetition places recall tests on different days with gaps that grow after each successful review."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-02#explanation
+  difficulty: easy
+
+- id: q-day-02-003
+  set: day-02
+  type: single
+  stem: "A card was answered easily at today's review. In a spaced system, what should happen to it?"
+  options:
+    - { id: a, text: "It comes back tomorrow", explanation: "Wrong: tomorrow is for cards that were hard to answer." }
+    - { id: b, text: "It is removed for good", explanation: "Wrong: even well-known ideas need occasional reviews to last." }
+    - { id: c, text: "Its next review gap grows", explanation: "Correct: an easy answer means the memory is strong enough to wait longer." }
+    - { id: d, text: "It moves back to the first box", explanation: "Wrong: only missed cards go back to the first box." }
+  answer: [c]
+  explanation: "Easy answers lengthen the next gap; difficult or missed answers shorten it so the idea returns sooner."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-02#deep-dive
+  difficulty: medium
+
+- id: q-day-02-004
+  set: day-02
+  type: multi
+  stem: "Which steps prepare a good focus block? (Select TWO.)"
+  options:
+    - { id: a, text: "Write down the one task the block is for", explanation: "Correct: a single, named task keeps the block focused." }
+    - { id: b, text: "Silence notifications before the timer starts", explanation: "Correct: removing distractions first protects the whole block." }
+    - { id: c, text: "Keep messages open to answer them during the block", explanation: "Wrong: switching to messages breaks single-task work." }
+    - { id: d, text: "Skip breaks to finish faster", explanation: "Wrong: short breaks keep the following blocks sharp." }
+    - { id: e, text: "Plan three different tasks for the same block", explanation: "Wrong: a focus block is for one task." }
+  answer: [a, b]
+  explanation: "A focus block is a fixed stretch of single-task work: decide the task, remove distractions, then take a short break when the timer ends."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-02#explanation
+  difficulty: easy
+
+- id: q-day-02-005
+  set: day-02
+  type: single
+  stem: "Which note layout is EASIEST to review quickly?"
+  options:
+    - { id: a, text: "A slide copied word for word", explanation: "Wrong: copied text has no question and is slow to review." }
+    - { id: b, text: "A question, the idea in your own words and a one-line summary", explanation: "Correct: the question drives recall and the summary gives a quick check." }
+    - { id: c, text: "A page of highlighted printouts", explanation: "Wrong: highlights must be re-read and give nothing to answer." }
+    - { id: d, text: "A list of page numbers to look up later", explanation: "Wrong: page numbers hold no ideas to recall." }
+  answer: [b]
+  explanation: "Notes with a question, your own words and a one-line summary are quick to review and support recall."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-02#explanation
+  difficulty: easy

@@ -1,0 +1,23 @@
+# Demo Course glossary (test fixture).
+- term: Active recall
+  definition: "Retrieving an idea from memory without looking at the source, for example answering a question with the notes covered. It strengthens memory more than re-reading."
+  examCue: "Clue: 'answer before you look' or 'test yourself' means active recall."
+  domain: D1
+  taskStatements: ['1.1']
+  related: [Spaced repetition]
+  lessonRefs: ['day-01#explanation']
+
+- term: Focus block
+  definition: "A fixed stretch of single-task work, such as 25 minutes, followed by a short break. Distractions are removed before the block starts."
+  examCue: "Clue: a timer, one task and a short break describe a focus block."
+  domain: D2
+  taskStatements: ['2.1']
+  lessonRefs: ['day-02#explanation']
+
+- term: Spaced repetition
+  definition: "Reviewing an idea on different days with gaps that grow after each successful recall, so memories last for weeks instead of fading after a cram session."
+  examCue: "Clue: reviews on day 1, day 3, a week and two weeks later describe spaced repetition."
+  domain: D1
+  taskStatements: ['1.2']
+  related: [Active recall]
+  lessonRefs: ['day-02#explanation']

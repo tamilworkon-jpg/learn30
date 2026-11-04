@@ -6,8 +6,8 @@ import { noHorizontalScroll, shot, trackConsole } from './helpers';
 import { done, progress, seed } from './progress-fixtures';
 
 // Lesson days whose MDX doesn't exist yet are shown as "Coming soon" (none once all content is authored).
-const course = load(readFileSync('src/data/course.yaml', 'utf8')) as { days: { day: number; kind: string }[] };
-const pendingLesson = course.days.find((d) => d.kind === 'lesson' && !existsSync(`src/content/lessons/day-${String(d.day).padStart(2, '0')}.mdx`));
+const course = load(readFileSync('src/courses/aws-ai-practitioner/course.yaml', 'utf8')) as { days: { day: number; kind: string }[] };
+const pendingLesson = course.days.find((d) => d.kind === 'lesson' && !existsSync(`src/content/lessons/aws-ai-practitioner/day-${String(d.day).padStart(2, '0')}.mdx`));
 
 // T067 — R12 weeks → days → sections with status icons + domain chips; pending days "Coming soon".
 test.describe('outline (T067) @visual', () => {

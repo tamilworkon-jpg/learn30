@@ -1,0 +1,159 @@
+- id: q-mock-1-001
+  set: mock-1
+  type: single
+  stem: "Which activity is an example of active recall?"
+  options:
+    - { id: a, text: "Answering a flashcard before turning it over", explanation: "Correct: you produce the answer from memory before seeing it." }
+    - { id: b, text: "Reading a summary sheet twice", explanation: "Wrong: reading is recognition, not retrieval." }
+    - { id: c, text: "Highlighting definitions in yellow", explanation: "Wrong: highlighting adds no retrieval." }
+    - { id: d, text: "Watching a lecture at double speed", explanation: "Wrong: watching is passive input." }
+  answer: [a]
+  explanation: "Active recall means producing an answer from memory before checking it, as with a flashcard answered before it is turned over."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: medium
+
+- id: q-mock-1-002
+  set: mock-1
+  type: single
+  stem: "Why does a short self-test usually beat a long re-read of the same pages?"
+  options:
+    - { id: a, text: "Retrieving ideas strengthens the path back to them", explanation: "Correct: each successful retrieval makes the next one easier." }
+    - { id: b, text: "A self-test covers more pages per minute", explanation: "Wrong: the benefit comes from retrieval, not from speed." }
+    - { id: c, text: "Re-reading makes ideas harder to recognise", explanation: "Wrong: re-reading makes ideas feel more familiar." }
+    - { id: d, text: "A self-test needs no checking afterwards", explanation: "Wrong: answers must be checked so mistakes are corrected." }
+  answer: [a]
+  explanation: "Retrieval practice strengthens memory: each time an idea is pulled out successfully, it becomes easier to find again."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: medium
+
+- id: q-mock-1-003
+  set: mock-1
+  type: single
+  stem: "What does each well-timed review do to the forgetting curve?"
+  options:
+    - { id: a, text: "Lifts the memory back up and makes the curve flatter", explanation: "Correct: after a review the memory lasts longer before fading." }
+    - { id: b, text: "Makes the curve drop faster", explanation: "Wrong: reviews slow forgetting." }
+    - { id: c, text: "Has no effect after the first day", explanation: "Wrong: spaced reviews keep helping for weeks." }
+    - { id: d, text: "Removes the need for any later review", explanation: "Wrong: reviews continue at growing intervals." }
+  answer: [a]
+  explanation: "A review at the right moment restores the memory and flattens the curve, so the next review can wait longer."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-mock-1-004
+  set: mock-1
+  type: single
+  stem: "A learner reviews a topic five times in one evening before a test. What is this called?"
+  options:
+    - { id: a, text: "Cramming", explanation: "Correct: many reviews in one sitting is cramming, which fades quickly." }
+    - { id: b, text: "Spaced repetition", explanation: "Wrong: spacing needs reviews on different days." }
+    - { id: c, text: "Active recall on growing intervals", explanation: "Wrong: the reviews are not spread over growing intervals." }
+    - { id: d, text: "A focus block routine", explanation: "Wrong: focus blocks shape a session, they do not space reviews." }
+  answer: [a]
+  explanation: "Cramming packs reviews into one sitting; the same effort spread over several days with growing gaps lasts much longer."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-mock-1-005
+  set: mock-1
+  type: single
+  stem: "In a box-based card system, what happens to a card that is answered wrongly in box 3?"
+  options:
+    - { id: a, text: "It goes back to box 1", explanation: "Correct: a miss sends the card back to the box with the shortest gap." }
+    - { id: b, text: "It moves up to box 4", explanation: "Wrong: only correct answers move a card up." }
+    - { id: c, text: "It stays in box 3 for good", explanation: "Wrong: missed cards return to box 1." }
+    - { id: d, text: "It is removed from the deck", explanation: "Wrong: missed cards need more practice, not less." }
+  answer: [a]
+  explanation: "Correct answers move a card up to a box with a longer gap; a miss sends it back to box 1 so it returns daily."
+  domain: D1
+  taskStatement: "1.2"
+  lessonRef: day-02#deep-dive
+  difficulty: medium
+
+- id: q-mock-1-006
+  set: mock-1
+  type: single
+  stem: "What should a learner do when a focus block timer ends but they feel they could keep going?"
+  options:
+    - { id: a, text: "Take the short break anyway", explanation: "Correct: breaks keep the next block sharp." }
+    - { id: b, text: "Skip the break and double the block", explanation: "Wrong: skipping breaks wears focus down." }
+    - { id: c, text: "Switch to checking messages instead of resting", explanation: "Wrong: messages are not a rest and pull attention away." }
+    - { id: d, text: "End the session for the day", explanation: "Wrong: the plan continues with the next block after the break." }
+  answer: [a]
+  explanation: "A focus block ends with a short break even when it is going well; after three or four blocks comes a longer break."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-mock-1-007
+  set: mock-1
+  type: single
+  stem: "Which change MOST improves a two-hour session where the learner's phone keeps buzzing?"
+  options:
+    - { id: a, text: "Run focus blocks with the phone silenced in another room", explanation: "Correct: removing the distraction before each block protects focus." }
+    - { id: b, text: "Study for three hours instead", explanation: "Wrong: a longer distracted session is still distracted." }
+    - { id: c, text: "Answer each message quickly and continue", explanation: "Wrong: every switch breaks single-task work." }
+    - { id: d, text: "Move to a louder place", explanation: "Wrong: more noise adds distraction." }
+  answer: [a]
+  explanation: "Focus blocks work best when distractions are removed before the timer starts, so each block is single-task work."
+  domain: D2
+  taskStatement: "2.1"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-mock-1-008
+  set: mock-1
+  type: single
+  stem: "When is the BEST time to review a page of new notes for the first time?"
+  options:
+    - { id: a, text: "The same day they were written", explanation: "Correct: gaps are still easy to fill while the session is fresh." }
+    - { id: b, text: "The night before they are needed", explanation: "Wrong: by then much of the detail has faded." }
+    - { id: c, text: "Only when the notebook is full", explanation: "Wrong: waiting lets memories fade." }
+    - { id: d, text: "Never, writing them is enough", explanation: "Wrong: notes need reviews to be useful." }
+  answer: [a]
+  explanation: "Reviewing notes the same day fills gaps while they are easy to spot; the spaced schedule then brings them back."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-02#explanation
+  difficulty: medium
+
+- id: q-mock-1-009
+  set: mock-1
+  type: single
+  stem: "A learner copies a slide word for word. Which improvement makes the note MOST useful?"
+  options:
+    - { id: a, text: "Rewrite it as a question, the idea in their own words and a summary", explanation: "Correct: this layout supports recall and quick review." }
+    - { id: b, text: "Copy it again in neater handwriting", explanation: "Wrong: neater copying still gives nothing to answer." }
+    - { id: c, text: "Add more highlighting", explanation: "Wrong: highlights only help re-reading." }
+    - { id: d, text: "Print the slide and file it", explanation: "Wrong: a printout is not a note you can test yourself on." }
+  answer: [a]
+  explanation: "Notes in your own words with a question and a one-line summary are faster to review than copied text."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-02#examples
+  difficulty: medium
+
+- id: q-mock-1-010
+  set: mock-1
+  type: single
+  stem: "Which part of a note gives the quickest check that the idea was understood?"
+  options:
+    - { id: a, text: "A one-line summary at the bottom of the page", explanation: "Correct: the summary is a quick check of the main point." }
+    - { id: b, text: "The page number in the textbook", explanation: "Wrong: a page number holds no idea." }
+    - { id: c, text: "The date the note was written", explanation: "Wrong: the date helps scheduling, not understanding." }
+    - { id: d, text: "Underlined headings", explanation: "Wrong: headings name topics but do not state the idea." }
+  answer: [a]
+  explanation: "A one-line summary states the main idea in your own words, so it is a quick check during reviews."
+  domain: D2
+  taskStatement: "2.2"
+  lessonRef: day-02#summary
+  difficulty: medium
