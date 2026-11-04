@@ -9,3 +9,4 @@ mockSectionOrder: { 29: [launch, remediation], 30: [launch, remediation, finalRe
 minQuestions: 900
 dailyQuestions: [15, 20]
 moduleQuestions: [55, 60]
+lessonMinutes: [50, 70]

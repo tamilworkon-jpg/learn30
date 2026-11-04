@@ -201,7 +201,9 @@ export function validateContent(input: ValidateInput): ValidateResult {
       const dupes = idList.filter((id, i) => idList.indexOf(id) !== i);
       if (dupes.length) errors.push(`${where}: duplicate section ids ${[...new Set(dupes)].join(', ')}`);
       const est = estimateMinutes(lesson, quizCount.get(day) ?? 20);
-      if (est < 50 || est > 70) errors.push(`${where}: estimated core minutes ${est} outside 50–70`);
+      const [lo, hi] = rules.lessonMinutes ?? [50, 70];
+      if (est < lo || est > hi) errors.push(`${where}: estimated core minutes ${est} outside ${lo}–${hi}`);
+      if (fm.estimatedMinutes! < lo || fm.estimatedMinutes! > hi) errors.push(`${where}: estimatedMinutes ${fm.estimatedMinutes} outside ${lo}–${hi}`);
       const declared = fm.estimatedMinutes!;
       if (Math.abs(est - declared) / declared > 0.15) errors.push(`${where}: estimated ${est} min is >15% off declared ${declared}`);
     } else if (fm.kind === 'review' || fm.kind === 'mock') {

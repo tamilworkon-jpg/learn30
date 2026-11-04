@@ -6,3 +6,4 @@ mockSectionOrder: { 3: [launch, remediation] }
 minQuestions: 20
 dailyQuestions: [3, 5]
 moduleQuestions: [5, 10]
+lessonMinutes: [10, 30]

@@ -25,6 +25,8 @@ export interface CourseRules {
   dailyQuestions: [number, number];
   /** Weekly / module cumulative test size range. */
   moduleQuestions: [number, number];
+  /** Core minutes per lesson day (default [50, 70] — a one-hour day). */
+  lessonMinutes?: [number, number];
 }
 
 /** Cheat-sheet metric groups (optional src/courses/<id>/metrics.ts `metricGroups`). */

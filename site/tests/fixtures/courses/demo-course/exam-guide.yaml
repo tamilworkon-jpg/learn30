@@ -46,6 +46,6 @@ domains:
         objectives:
           - Write notes in your own words with a question and a summary
           - Review notes the same day
-inScopeServices: []
+inScopeServices: ['Recall card deck', 'Focus timer']
 outOfScopeServices: []
 notListed: []
