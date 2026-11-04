@@ -10,6 +10,8 @@ import RatingPrompt from '../components/review/RatingPrompt';
 import QuizRunner from '../components/quiz/QuizRunner';
 import { course, examGuide, pad } from '../lib/data';
 import { getPrevNext } from '../lib/lesson-utils';
+import { nextStepsContext } from '../lib/next-steps-context';
+import { getCollection } from 'astro:content';
 import { weekOfDay } from '../lib/review';
 import type { CourseDay, Question } from '../lib/types';
 import '../styles/quiz.css';
@@ -24,6 +26,7 @@ interface Props {
 }
 const { cd, questions, hasContent, title = cd.title } = Astro.props;
 const week = weekOfDay(course, cd.day)!;
+const nextSteps = nextStepsContext(cd.day, questions, (await getCollection('lessons')).map((l) => ({ day: l.data.day as number, body: l.body })));
 const set = `week-${week.number}`;
 const { prev, next } = getPrevNext(cd.day, course);
 const domainIds = [...new Set(cd.taskStatements.map((ts) => examGuide.domains.find((d) => d.tasks.some((t) => t.id === ts))!.id))].sort();
@@ -66,7 +69,7 @@ const slim = questions.map(({ id, domain, lessonRef, type, answer }) => ({ id, d
           </p>
         )
       }
-      <QuizRunner client:visible assessmentId={set} kind="weekly" title={`Module ${week.number} · Cumulative test`} questions={questions} />
+      <QuizRunner client:visible assessmentId={set} kind="weekly" title={`Module ${week.number} · Cumulative test`} questions={questions} next={nextSteps} />
     </section>
 
     <section class="review-section" id="domain-results" data-section-type="results" aria-labelledby="domain-results-h">

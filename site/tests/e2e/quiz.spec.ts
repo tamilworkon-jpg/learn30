@@ -3,6 +3,7 @@ import { load } from 'js-yaml';
 import { expect, settleSaves, test, type Page } from './fixtures';
 import type { Question } from '../../src/lib/types';
 import { noHorizontalScroll, shotEl, trackConsole } from './helpers';
+import { progress, readProgress, seed } from './progress-fixtures';
 
 // T050 — daily quiz on Day 2 (has all four question types).
 const qs = (load(readFileSync('src/content/questions/day-02.yaml', 'utf8')) as Question[]).sort((a, b) => a.id.localeCompare(b.id));
@@ -144,6 +145,18 @@ test.describe('daily quiz (T050) @visual', () => {
     await answerRestWrong(page, done);
     await submitQuiz(page);
 
+    // Q-N2 "What's next" (below the pass mark): revisit the sections behind the wrong answers, Retake first
+    const next = quiz(page).locator('[data-next-steps]');
+    await expect(next).toHaveAttribute('data-next-steps', 'retry');
+    await expect(next.getByRole('heading')).toHaveText('Score 20% — aim for 80%');
+    const revisit = next.locator('[data-revisit] a');
+    expect(await revisit.count()).toBeGreaterThan(0);
+    for (const href of await revisit.evaluateAll((as) => as.map((a) => a.getAttribute('href')))) expect(href).toMatch(/^\/day\/\d{2}#[a-z0-9-]+$/);
+    await expect(revisit.first()).toHaveText(/^Day \d+ · .+/);
+    await expect(next.locator('[data-next-primary]')).toHaveText(/Retake quiz/);
+    await expect(next.locator('[data-next-anyway]')).toHaveText('Mark complete & continue to Day 3 anyway');
+    await expect(next).toBeInViewport();
+
     // Q-E3 results
     const results = quiz(page).locator('.quiz-results');
     await expect(results.getByRole('img', { name: 'Score 20 percent' })).toBeVisible();
@@ -262,4 +275,24 @@ test.describe('daily quiz (T050) @visual', () => {
     await expect(submitBtn(page)).toBeDisabled();
     await shotEl(quiz(page), 'quiz-last-question');
   });
+
+  test('Q-N1 passing quiz: "What\'s next" marks the day complete and opens the next day', async ({ page }) => {
+    // Every question answered correctly and saved, reopened on the last question (no per-question clicks).
+    const answers = Object.fromEntries(qs.map((q) => [q.id, q.answer]));
+    await seed(page, progress({ inProgress: { 'day-02': { answers, flagged: [], startedAt: '2026-10-21T09:00:00.000Z', index: qs.length - 1 } } }));
+    await openQuiz(page);
+    await expect(quiz(page)).toContainText(`Question ${qs.length} of ${qs.length}`);
+    await submitQuiz(page);
+    const next = quiz(page).locator('[data-next-steps]');
+    await expect(next).toHaveAttribute('data-next-steps', 'pass');
+    await expect(next.getByRole('heading')).toHaveText('Nice work — Day 2 quiz passed');
+    await expect(next).toBeInViewport();
+    await expect(next.getByRole('button', { name: 'Review answers' })).toBeVisible();
+    await expect(next.getByRole('button', { name: /Retake quiz/ })).toBeVisible();
+    await shotEl(next, 'quiz-next-pass');
+    await next.locator('[data-next-primary]').filter({ hasText: 'Mark Day 2 complete & start Day 3 →' }).click();
+    await expect(page).toHaveURL(/\/day\/03(#.*)?$/);
+    expect((await readProgress(page))?.days['2']?.status).toBe('completed');
+  });
 });
+

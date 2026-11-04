@@ -1,9 +1,9 @@
 // T070 — mark the day complete (or undo). Navigation to any day stays free (FR-018).
 // T112 — completing a day updates the streak (store) and badges, and shows a celebration.
 import { useCallback, useEffect, useState } from 'preact/hooks';
-import { earnedBadges, newBadges, type BadgeWeek } from '../../lib/badges';
+import type { BadgeWeek } from '../../lib/badges';
+import { completeDay } from '../../lib/day-complete';
 import { getStore } from '../../lib/progress/store';
-import { currentStreak, localDate } from '../../lib/streak';
 import type { DayState } from '../../lib/types';
 import Celebrate from '../common/Celebrate';
 
@@ -35,14 +35,7 @@ export default function MarkComplete({ day, nextHref, weeks, totalDays }: Props)
     };
   }, [day]);
 
-  const complete = () => {
-    const store = getStore();
-    const before = [...store.get().badges];
-    store.markDayComplete(day);
-    const earned = earnedBadges(store.get(), weeks, totalDays);
-    store.awardBadges(earned);
-    setParty({ streak: currentStreak(store.get().streak, localDate()), badges: newBadges(before, earned) });
-  };
+  const complete = () => setParty(completeDay(day, weeks, totalDays));
   const close = useCallback(() => setParty(null), []);
 
   const done = state?.status === 'completed';

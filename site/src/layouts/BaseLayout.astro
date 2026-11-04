@@ -8,7 +8,7 @@ import { loginHref } from '../lib/auth';
 
 interface Props {
   title: string;
-  active?: 'home' | 'outline' | 'search' | 'glossary' | 'cheatsheet' | 'settings' | 'none';
+  active?: 'courses' | 'home' | 'outline' | 'search' | 'glossary' | 'cheatsheet' | 'settings' | 'none';
   description?: string;
   /** false on /login and /signup: no signed-out banner / import offer there. */
   accountUi?: boolean;
@@ -17,6 +17,7 @@ const { title, active = 'none', description = 'A 30-day, one-hour-a-day course f
 const signInHref = loginHref(Astro.url.pathname.replace(/\/$/, '') || '/');
 
 const icons: Record<string, string> = {
+  courses: 'M4 5a2 2 0 012-2h5v18H6a2 2 0 01-2-2zM13 3h5a2 2 0 012 2v14a2 2 0 01-2 2h-5zM7 7h2M15 7h2M15 11h2',
   home: 'M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z',
   outline: 'M4 6h16M4 12h16M4 18h10',
   search: 'M11 4a7 7 0 105.3 11.6L21 20M11 4a7 7 0 010 14',
@@ -25,6 +26,7 @@ const icons: Record<string, string> = {
   settings: 'M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z',
 };
 const nav = [
+  { key: 'courses', href: '/courses', label: 'Courses' },
   { key: 'home', href: '/', label: 'Dashboard' },
   { key: 'outline', href: '/outline', label: 'Outline' },
   { key: 'search', href: '/search', label: 'Search' },

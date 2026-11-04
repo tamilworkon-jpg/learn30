@@ -125,7 +125,7 @@ site/
     data/           exam-guide.yaml, course.yaml (30-day calendar)
     components/     lesson/, quiz/, mock/, review/, dashboard/, account/, settings/, lookup/
     layouts/        BaseLayout, LessonLayout, ReviewLayout, MockDayLayout
-    pages/          / · /login · /signup · /day/[day] · /mock/[n] · /outline · /search · /glossary · /cheatsheet/* · /coverage · /settings · /design/* (mockups + test fixtures)
+    pages/          /courses (catalogue; course #1 = this course, data in src/data/courses.yaml) · / · /login · /signup · /day/[day] · /mock/[n] · /outline · /search · /glossary · /cheatsheet/* · /coverage · /settings · /design/* (mockups + test fixtures)
     lib/            scoring, quiz-state, mock, schedule, ui-state, progress/ (store, io, legacy import, section-tracker), validate
     schemas/        JSON Schemas (Ajv, compiled at build) + Zod collection schemas
     styles/         theme.css (design tokens), feature CSS

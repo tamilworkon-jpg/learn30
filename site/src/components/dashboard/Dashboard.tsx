@@ -13,6 +13,7 @@ import ProgressRing from './ProgressRing';
 import Ratings from './Ratings';
 import ScheduleCard from './ScheduleCard';
 import '../../styles/profiles.css';
+import '../../styles/courses.css';
 import Streak from './Streak';
 import WeakDomains from './WeakDomains';
 import WeekTimeline from './WeekTimeline';
@@ -46,6 +47,9 @@ export default function Dashboard({ plan }: Props) {
   return (
     <div class="dash" data-dashboard data-ready={ready ? 'true' : undefined}>
       <section>
+        <p class="course-crumb muted" data-course-crumb>
+          <a href="/courses">Courses</a> › AWS Certified AI Practitioner
+        </p>
         <h1 class="h1">{started ? 'Welcome back 👋' : 'Welcome 👋'}</h1>
         <p class="muted mt-0">
           Day {day.day} of {plan.days.length} · Week {studyWeekOf(day.day)} of {STUDY_WEEKS} · Module {week.number} — {week.title}

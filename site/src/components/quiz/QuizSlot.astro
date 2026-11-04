@@ -3,6 +3,7 @@
 import { getCollection } from 'astro:content';
 import QuizRunner from './QuizRunner';
 import { pad } from '../../lib/data';
+import { nextStepsContext } from '../../lib/next-steps-context';
 import type { Question } from '../../lib/types';
 import '../../styles/quiz.css';
 
@@ -12,11 +13,13 @@ interface Props {
 const { day } = Astro.props;
 const set = `day-${pad(day)}`;
 const questions = (await getCollection('questions', (q) => q.data.set === set)).map((q) => q.data as Question).sort((a, b) => a.id.localeCompare(b.id));
+const lessons = (await getCollection('lessons')).map((l) => ({ day: l.data.day as number, body: l.body }));
+const next = nextStepsContext(day, questions, lessons);
 ---
 
 <div class="quiz-slot" data-quiz-set={set}>
   <p class="muted mt-0">
-    {questions.length} exam-style questions. Answer, submit and read every explanation — aim for 80%+ before moving on. Your answers are saved as you go.
+    {questions.length} exam-style questions. Answer every question, submit on the last one and read the explanations — aim for 80%+ before moving on. Your answers are saved as you go.
   </p>
-  <QuizRunner client:visible assessmentId={set} title={`Day ${day} · Daily quiz`} questions={questions} />
+  <QuizRunner client:visible assessmentId={set} title={`Day ${day} · Daily quiz`} questions={questions} next={next} />
 </div>

@@ -565,3 +565,20 @@ flowchart LR
 - Constraints from data-model.md are quoted in task TCs; do not relax them.
 - Screenshots are always opened and inspected, never only diffed.
 - Reviewer model per perspective is recorded in every review-log entry.
+
+## Phase 14: Learner feedback round 3 — schedule, quiz UX, fit, courses (learner requests, 2026-11-03)
+
+Gate per Constitution v3.0.0: unit + static + `npm run test:sanity` (+ the specs that cover the change); full e2e only on request. Independent tasks run in parallel (Principle VIII).
+
+- [x] T194 [P] Typography: lesson text at the glossary/cheat-sheet scale (14 px / 15 px sub-headings), compact shell type
+- [x] T195 [P] Weekday-only plan (Mon–Fri): 6 study weeks × 5 days; course topic groups renamed Modules 1–5 everywhere (UI, lessons, questions); outline grouped by week with dates
+- [x] T196 Original + updated finish date on the dashboard (original moved by the lag in weekdays, recomputed on load)
+- [x] T197 [P] Slide navigation: ‹ › arrows on the card edges replace the Previous/Next bar; quiz slide shows one set (question arrows hand over to the deck)
+- [x] T198 [P] Content audit: no questions or concept text about the exam itself (format, scope, guide wording); validator guards on stems, options and explanations
+- [x] T199 Quiz UX: visible radio/checkbox, "choose N" pill + limit, saved across refresh (answers + current question), attempt history with numbered attempts, read-only review and retake; one final "Submit quiz" on the last question, enabled when every question meets its requirement
+- [x] T200 Fixes: quiz slide re-page loop (closed dropdowns, reset scroll); scroll kept on same-slide re-page
+- [x] T201 [P] Fit for 150 % Windows scaling / short windows (≤ 760 px tall): compact shell, slide chrome and quiz; "Today's sections" collapsed by default below 1440 px wide; Slides/Full page toggle beside the search box
+- [x] T202 [P] Quiz results "What's next": pass → mark day complete & start the next day; below 80 % → revisit the missed sections, retake, or continue anyway (daily + weekly)
+- [x] T203 [P] Courses catalogue: `/courses` page + "Courses" nav, course registry with this AIF-C01 course as #1 (progress, continue, outline); dashboard breadcrumb; existing URLs unchanged
+- [ ] T205 Information architecture: Courses is the outer layer — `/` = course catalogue; sidebar = Courses › <course> (Dashboard, Outline, Search, Glossary, Cheat sheets) + account Settings; course dashboard at `/course/aws-ai-practitioner`; lesson/outline/mock URLs unchanged
+- [ ] T204 REVIEW Phase 14; log

@@ -7,6 +7,8 @@ interface Props {
   attempt: Attempt;
   best?: number;
   onRetake: () => void;
+  /** The "What's next" panel above already offers Retake. */
+  hideRetake?: boolean;
 }
 
 const R = 50;
@@ -28,7 +30,7 @@ function describe(q: Question, a: Attempt['answers'][string] | undefined): strin
   return q.type === 'ordering' ? ids.map((id, i) => `${i + 1}. ${text(id)}`).join('  ') : ids.map(text).join(', ');
 }
 
-export default function Results({ questions, attempt, best, onRetake }: Props) {
+export default function Results({ questions, attempt, best, onRetake, hideRetake = false }: Props) {
   const { correct, total, percent } = attempt.score;
   const pct = Math.round(percent);
   const good = pct >= 80;
@@ -61,13 +63,17 @@ export default function Results({ questions, attempt, best, onRetake }: Props) {
             {isBest ? 'Your best score for this quiz' : best !== undefined ? `Best score: ${best}%` : ''}
             {good ? '' : ' · Aim for 80% — review the explanations below, then retake.'}
           </p>
-          <button type="button" class="btn mt-3" onClick={onRetake}>
-            ↻ Retake quiz
-          </button>
+          {!hideRetake && (
+            <button type="button" class="btn mt-3" onClick={onRetake}>
+              ↻ Retake quiz
+            </button>
+          )}
         </div>
       </div>
 
-      <h3 class="h2 mt-8">Review your answers</h3>
+      <h3 class="h2 mt-8" tabIndex={-1} data-review-heading>
+        Review your answers
+      </h3>
       <AnswerReview questions={questions} answers={attempt.answers} />
     </div>
   );

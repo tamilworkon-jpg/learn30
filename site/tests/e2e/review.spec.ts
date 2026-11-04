@@ -110,6 +110,13 @@ test.describe('weekly review (T079) @visual', () => {
     await expect(quiz.locator('[data-submit-quiz]')).toBeEnabled();
     await quiz.locator('[data-submit-quiz]').click();
     await expect(quiz.locator('[data-results-heading]')).toContainText('6 / 8');
+    // "What's next" for the cumulative test: 75 % → revisit the sections behind the 2 misses, retake first.
+    const next = quiz.locator('[data-next-steps]');
+    await expect(next).toHaveAttribute('data-next-steps', 'retry');
+    await expect(next.getByRole('heading')).toHaveText('Score 75% — aim for 80%');
+    expect(await next.locator('[data-revisit] a').count()).toBeGreaterThan(0);
+    await expect(next.locator('[data-next-primary]')).toHaveText(/Retake test/);
+    await expect(next.locator('[data-next-anyway]')).toHaveText('Mark complete & continue to Day 8 anyway');
     const results = page.locator('#domain-results');
     await expect(results.locator('.dom-row')).toHaveCount(2);
     await expect(results.locator('[data-domain="D1"] .dom-score')).toHaveText('6 / 6 · 100%');

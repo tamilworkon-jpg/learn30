@@ -11,6 +11,7 @@ import QuestionMulti from './QuestionMulti';
 import QuestionOrdering from './QuestionOrdering';
 import QuestionSingle from './QuestionSingle';
 import AttemptHistory from './AttemptHistory';
+import NextSteps, { type NextStepsContext } from './NextSteps';
 import Results from './Results';
 
 interface Props {
@@ -19,6 +20,8 @@ interface Props {
   questions: Question[];
   /** 'weekly' on review days (`week-N`); defaults to the daily quiz. */
   kind?: Attempt['kind'];
+  /** Day / next day / badge data for the "What's next" panel on the results (omitted → no panel). */
+  next?: NextStepsContext;
 }
 
 // In slide view the quiz slide hides the deck's ‹ › (one set of arrows): past the first/last question
@@ -26,7 +29,7 @@ interface Props {
 const inDeck = () => typeof document !== 'undefined' && document.documentElement.dataset.lessonView === 'slides' && !!document.querySelector('.slide-deck .quiz-slot, .slide-deck [data-section-type="quiz"]');
 const deckNav = (dir: 'prev' | 'next') => document.dispatchEvent(new CustomEvent('deck-nav', { detail: dir }));
 
-export default function QuizRunner({ assessmentId, title, questions, kind = 'daily' }: Props) {
+export default function QuizRunner({ assessmentId, title, questions, kind = 'daily', next }: Props) {
   const [session, setSession] = useState<QuizSession | null>(null);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [index, setIndex] = useState(0);
@@ -58,7 +61,7 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
   // Move focus to the new question / results for keyboard and screen-reader users (not on first render).
   useEffect(() => {
     if (!moved.current) return;
-    root.current?.querySelector<HTMLElement>(attempt ? '[data-results-heading]' : '.q-stem')?.focus();
+    root.current?.querySelector<HTMLElement>(attempt ? '[data-next-heading], [data-results-heading]' : '.q-stem')?.focus();
   }, [index, attempt]);
 
   const q = questions[index];
@@ -84,7 +87,18 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
     setIndex(0);
     setBest(session.best());
     setAttempts(session.attemptCount());
-    root.current?.scrollIntoView({ block: 'start' });
+    // The "What's next" panel is at the top of the results: bring it into view (in slide view the quiz
+    // slide's card scrolls, so reset it too).
+    requestAnimationFrame(() => {
+      const card = root.current?.closest<HTMLElement>('.slide-deck article');
+      if (card) card.scrollTop = 0;
+      root.current?.scrollIntoView({ block: 'nearest' });
+    });
+  };
+  const review = () => {
+    const h = root.current?.querySelector<HTMLElement>('[data-review-heading]');
+    h?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    h?.focus({ preventScroll: true });
   };
   const retake = () => {
     moved.current = true;
@@ -100,7 +114,8 @@ export default function QuizRunner({ assessmentId, title, questions, kind = 'dai
     <div class="quiz" ref={root} data-ready={session ? 'true' : undefined} data-quiz={assessmentId}>
       {attempt ? (
         <>
-          <Results questions={questions} attempt={attempt} best={best} onRetake={retake} />
+          {next && <NextSteps kind={kind} attempt={attempt} questions={questions} {...next} onRetake={retake} onReview={review} />}
+          <Results questions={questions} attempt={attempt} best={best} onRetake={retake} hideRetake={!!next} />
           {/* Results already has its own Retake button, so the history below it doesn't repeat one. */}
           <AttemptHistory assessmentId={assessmentId} questions={questions} kind={kind} refreshKey={attempts} />
         </>
