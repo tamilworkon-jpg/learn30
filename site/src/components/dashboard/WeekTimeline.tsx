@@ -3,11 +3,13 @@ import type { CoursePlan, PlanDay } from '../../lib/course-plan';
 import { dayHref, dayStatus, type Status } from '../../lib/dashboard';
 import { STUDY_WEEKS, formatDate, plannedDate, studyWeekDays, studyWeekOf } from '../../lib/schedule';
 import type { Progress } from '../../lib/types';
+import { courseHref, DEFAULT_COURSE_ID } from '../../lib/routes';
 
 interface Props {
   plan: CoursePlan;
   progress: Progress;
   currentDay: number;
+  courseId?: string;
 }
 
 function pill(d: PlanDay, s: Status, current: boolean) {
@@ -18,10 +20,11 @@ function pill(d: PlanDay, s: Status, current: boolean) {
   return `${d.minutes} min`;
 }
 
-export default function WeekTimeline({ plan, progress, currentDay }: Props) {
+export default function WeekTimeline({ plan, progress, currentDay, courseId = DEFAULT_COURSE_ID }: Props) {
   const start = new Date(progress.startedAt);
   const studyWeek = studyWeekOf(currentDay);
-  const days = studyWeekDays(studyWeek);
+  // Only days the course has (a course may be shorter than six full weeks).
+  const days = studyWeekDays(studyWeek).filter((n) => plan.days.some((x) => x.day === n));
   const first = plannedDate(start, days[0]);
   const last = plannedDate(start, days[days.length - 1]);
   const range = `${formatDate(first).replace(/,? \d{4}$/, '')} – ${formatDate(last)}`;
@@ -31,7 +34,7 @@ export default function WeekTimeline({ plan, progress, currentDay }: Props) {
         <h2 class="h2 m-0" id="this-week-h">
           This week <span class="muted text-sm font-normal">· Week {studyWeek} of {STUDY_WEEKS} · Mon–Fri · {range}</span>
         </h2>
-        <a class="icon-btn" href="/outline" aria-label="Open course outline">
+        <a class="icon-btn" href={courseHref(courseId, 'outline')} aria-label="Open course outline">
           →
         </a>
       </div>

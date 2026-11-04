@@ -30,7 +30,7 @@ describe('SV4 progress + ui (T188)', () => {
 
   it('invalid progress → 400 with an error message, nothing stored', async () => {
     const before = (await h.api('GET', '/api/progress', undefined, cookie)).json();
-    for (const bad of [{ hello: 'world' }, { ...defaultProgress(h.clock.t), schemaVersion: 2 }, [], 'x', null]) {
+    for (const bad of [{ hello: 'world' }, { ...defaultProgress(h.clock.t), schemaVersion: 3 }, [], 'x', null]) {
       const r = await h.api('PUT', '/api/progress', bad, cookie);
       expect(r.status, JSON.stringify(bad)).toBe(400);
       expect(typeof (r.json() as { error: string }).error).toBe('string');
@@ -66,7 +66,8 @@ describe('SV4 progress + ui (T188)', () => {
       { lessonView: 'grid' },
       { sidebar: true },
       { extra: 1 },
-      { slides: { '31': { sectionId: 'a', block: 0 } } },
+      { slides: { '100': { sectionId: 'a', block: 0 } } },
+      { slides: { 'Bad_Course:2': { sectionId: 'a', block: 0 } } },
       { slides: { '0': { sectionId: 'a', block: 0 } } },
       { slides: { '1': { sectionId: 'a', block: -1 } } },
       { slides: { '1': { sectionId: 'a', block: 1.5 } } },

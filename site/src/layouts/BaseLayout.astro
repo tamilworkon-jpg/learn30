@@ -1,12 +1,12 @@
 ---
 import AccountMenu from '../components/account/AccountMenu';
 import ImportOffer from '../components/account/ImportOffer';
+import MyCourses from '../components/courses/MyCourses';
 import '../styles/theme.css';
 import '../styles/account.css';
-import { examGuide } from '../lib/data';
 import { loginHref } from '../lib/auth';
-import { courses } from '../lib/courses-data';
-import { CATALOGUE_HREF, COURSE_ID, DASHBOARD_HREF } from '../lib/routes';
+import { allCourses, getCourse } from '../lib/course-data';
+import { CATALOGUE_HREF, SETTINGS_HREF, courseHref, courseIdFromPath, DEFAULT_COURSE_ID, legacyCoursePath } from '../lib/routes';
 
 interface Props {
   title: string;
@@ -14,11 +14,18 @@ interface Props {
   description?: string;
   /** false on /login and /signup: no signed-out banner / import offer there. */
   accountUi?: boolean;
-  /** Learn30: id of the course this page belongs to (course pages); omitted on global pages. */
+  /**
+   * Learn30: the course this page belongs to (course pages pass it). Absent on platform pages (catalogue,
+   * settings, login/signup): no course group, no course facts. Falls back to the URL (/course/<id>/…, or a
+   * pre-Learn30 root course URL) so pages that have not been migrated yet still get their course menu.
+   */
   course?: string;
 }
-const { title, active = 'none', description = 'A 30-day, one-hour-a-day course for the AWS Certified AI Practitioner (AIF-C01) exam.', accountUi = true } = Astro.props;
-const signInHref = loginHref(Astro.url.pathname.replace(/\/$/, '') || '/');
+const { title, active = 'none', description = 'Learn30 — 30-day, one-hour-a-day courses with slide lessons, daily quizzes and mock exams.', accountUi = true } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const courseId = Astro.props.course ?? courseIdFromPath(path) ?? (legacyCoursePath(path) && path !== '/courses' ? DEFAULT_COURSE_ID : null);
+const ctx = courseId ? getCourse(courseId) : null;
+const signInHref = loginHref(path);
 
 const icons: Record<string, string> = {
   courses: 'M4 5a2 2 0 012-2h5v18H6a2 2 0 01-2-2zM13 3h5a2 2 0 012 2v14a2 2 0 01-2 2h-5zM7 7h2M15 7h2M15 11h2',
@@ -29,27 +36,30 @@ const icons: Record<string, string> = {
   cheatsheet: 'M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6',
   settings: 'M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z',
 };
-// T205 — two levels: the course catalogue (outer layer), the current course's pages, then the account.
-const courseNav = [
-  { key: 'home', href: DASHBOARD_HREF, label: 'Dashboard' },
-  { key: 'outline', href: '/outline', label: 'Outline' },
-  { key: 'search', href: '/search', label: 'Search' },
-  { key: 'glossary', href: '/glossary', label: 'Glossary' },
-  { key: 'cheatsheet', href: '/cheatsheet/services', label: 'Cheat sheets' },
-];
+// Learn30 menu: the platform (Courses) · the current course's pages (only on course pages) · the account.
+const courseNav = ctx
+  ? [
+      { key: 'home', href: courseHref(ctx.meta.id), label: 'Dashboard' },
+      { key: 'outline', href: courseHref(ctx.meta.id, 'outline'), label: 'Outline' },
+      { key: 'search', href: courseHref(ctx.meta.id, 'search'), label: 'Search' },
+      { key: 'glossary', href: courseHref(ctx.meta.id, 'glossary'), label: 'Glossary' },
+      { key: 'cheatsheet', href: courseHref(ctx.meta.id, 'cheatsheet', 'services'), label: 'Cheat sheets' },
+    ]
+  : [];
 const topNav = { key: 'courses', href: CATALOGUE_HREF, label: 'Courses' };
-const accountNav = { key: 'settings', href: '/settings', label: 'Settings' };
-const currentCourse = courses.find((c) => c.id === COURSE_ID)!;
+const accountNav = { key: 'settings', href: SETTINGS_HREF, label: 'Settings' };
+const guide = ctx?.examGuide;
+const mock = ctx?.rules.mock;
 ---
 
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" data-course={ctx?.meta.id}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>{title} · AIP 30</title>
+    <title>{title} · Learn30</title>
   </head>
   <body>
     <!-- Before paint, after the bootstrap JSON has been parsed: theme, collapsed bars, html[data-auth]. -->
@@ -58,7 +68,7 @@ const currentCourse = courses.find((c) => c.id === COURSE_ID)!;
     <div class="app">
       <aside class="sidebar" aria-label="Primary">
         <div class="brand-row">
-          <a class="brand" href={CATALOGUE_HREF}><span class="brand-mark" aria-hidden="true">AI</span> <span class="brand-text">AIP · 30</span></a>
+          <a class="brand" href={CATALOGUE_HREF}><span class="brand-mark" aria-hidden="true">L30</span> <span class="brand-text">Learn30</span></a>
           <button class="rail-toggle" type="button" id="rail-toggle" aria-controls="primary-nav" aria-expanded="true" aria-label="Collapse navigation" title="Collapse navigation">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
           </button>
@@ -70,19 +80,25 @@ const currentCourse = courses.find((c) => c.id === COURSE_ID)!;
             </svg>
             <span class="nav-label">{topNav.label}</span>
           </a>
-          <div class="nav-group" role="group" aria-labelledby="nav-course-h">
-            <p class="nav-group-h" id="nav-course-h" title={currentCourse.title}>{currentCourse.shortTitle}</p>
-            {
-              courseNav.map((n) => (
-                <a href={n.href} aria-current={active === n.key ? 'page' : undefined} title={`${n.label} · ${currentCourse.shortTitle}`}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d={icons[n.key]} />
-                  </svg>
-                  <span class="nav-label">{n.label}</span>
-                </a>
-              ))
-            }
-          </div>
+          {
+            ctx ? (
+              <div class="nav-group" role="group" aria-labelledby="nav-course-h" data-nav-course={ctx.meta.id}>
+                <p class="nav-group-h" id="nav-course-h" title={ctx.meta.title}>
+                  {ctx.meta.shortTitle}
+                </p>
+                {courseNav.map((n) => (
+                  <a href={n.href} aria-current={active === n.key ? 'page' : undefined} title={n.label}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d={icons[n.key]} />
+                    </svg>
+                    <span class="nav-label">{n.label}</span>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <MyCourses client:idle courses={allCourses().map((c) => ({ id: c.id, shortTitle: c.shortTitle, title: c.title, lengthDays: c.lengthDays, href: courseHref(c.id) }))} />
+            )
+          }
           <span class="nav-sep" aria-hidden="true"></span>
           <a href={accountNav.href} aria-current={active === accountNav.key ? 'page' : undefined} title={accountNav.label}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -91,17 +107,29 @@ const currentCourse = courses.find((c) => c.id === COURSE_ID)!;
             <span class="nav-label">{accountNav.label}</span>
           </a>
         </nav>
-        <div class="support-card">
-          <strong>{examGuide.examCode} · v{examGuide.version}</strong>
-          <p class="m-0 mt-1">65 questions · 90 min · pass 700</p>
-        </div>
+        {
+          ctx && guide && mock && (
+            <div class="support-card" data-course-card>
+              <strong>
+                {guide.examCode} · v{guide.version}
+              </strong>
+              <p class="m-0 mt-1">
+                {mock.questions} questions · {mock.minutes} min · pass {mock.passScaled}
+              </p>
+            </div>
+          )
+        }
       </aside>
       <main class="panel" id="main">
         <div class="topbar">
-          <a class="search-pill" href="/search" data-testid="search-pill">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d={icons.search} /></svg>
-            <span class="hidden sm:inline">Search lessons, terms, services…</span><span class="sm:hidden">Search…</span>
-          </a>
+          {
+            ctx && (
+              <a class="search-pill" href={courseHref(ctx.meta.id, 'search')} data-testid="search-pill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d={icons.search} /></svg>
+                <span class="hidden sm:inline">Search lessons, terms, services…</span><span class="sm:hidden">Search…</span>
+              </a>
+            )
+          }
           <span class="flex-1"></span>
           <p class="save-status" data-save-status role="status"></p>
           <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch to dark theme" title="Toggle theme">
@@ -120,7 +148,15 @@ const currentCourse = courses.find((c) => c.id === COURSE_ID)!;
         {accountUi && <ImportOffer client:idle />}
         <slot />
         <footer class="site-footer">
-          Exam guide v{examGuide.version} · last verified {examGuide.lastVerified} · {examGuide.examCode}. Independent study aid — not affiliated with AWS.
+          {
+            ctx && guide ? (
+              <>
+                {ctx.meta.title}: exam guide v{guide.version} · last verified {guide.lastVerified} · {guide.examCode}. Learn30 is an independent study aid — not affiliated with {ctx.meta.provider}.
+              </>
+            ) : (
+              <>Learn30 — independent study aid.</>
+            )
+          }
         </footer>
       </main>
     </div>

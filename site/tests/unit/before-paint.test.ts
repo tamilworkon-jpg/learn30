@@ -30,7 +30,7 @@ describe('ui-prefs.js', () => {
   });
   it('signed in: a pagehide hand-off from the previous page wins over a stale bootstrap', () => {
     sessionStorage.setItem('aip-handoff:ui:7', JSON.stringify({ sidebar: 'collapsed' }));
-    sessionStorage.setItem('aip-handoff:progress:7', JSON.stringify({ settings: { theme: 'dark' } }));
+    sessionStorage.setItem('aip-handoff:progress:7:aws-ai-practitioner', JSON.stringify({ settings: { theme: 'dark' } }));
     setBootstrap({ user: USER, progress: { settings: {} }, ui: {} });
     run('ui-prefs.js');
     expect(html.dataset.sidebar).toBe('collapsed');

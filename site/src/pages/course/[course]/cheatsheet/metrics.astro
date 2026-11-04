@@ -2,16 +2,20 @@
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import LessonLinks from '../../../../components/lookup/LessonLinks.astro';
 import LookupTabs from '../../../../components/lookup/LookupTabs.astro';
-import { metricGroups } from '../../../../data/metrics';
-import { availableCourseIds } from '../../../../lib/course-data';
+import type { MetricGroup } from '../../../../courses/aws-ai-practitioner/metrics';
+import { availableCourseIds, getCourse } from '../../../../lib/course-data';
 import { slugify } from '../../../../schemas/lookup';
 import '../../../../styles/lookup.css';
 
+// Only courses that ship cheat-sheet metrics (src/courses/<id>/metrics.ts) get this page.
 export function getStaticPaths() {
-  return availableCourseIds().map((course) => ({ params: { course } }));
+  return availableCourseIds()
+    .filter((course) => getCourse(course).metrics?.length)
+    .map((course) => ({ params: { course } }));
 }
 const courseId = Astro.params.course!;
 Astro.locals.courseId = courseId;
+const metricGroups = getCourse(courseId).metrics as unknown as MetricGroup[];
 ---
 
 <BaseLayout title="Evaluation metrics cheat sheet" active="cheatsheet" course={courseId} description="ML and GenAI evaluation metrics: accuracy, precision, recall, F1, AUC, RMSE, ROUGE, BLEU, BERTScore and business metrics.">

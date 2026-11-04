@@ -6,7 +6,7 @@ import { noHorizontalScroll, shotEl, trackConsole } from './helpers';
 import { progress, readProgress, seed } from './progress-fixtures';
 
 // T050 — daily quiz on Day 2 (has all four question types).
-const qs = (load(readFileSync('src/content/questions/day-02.yaml', 'utf8')) as Question[]).sort((a, b) => a.id.localeCompare(b.id));
+const qs = (load(readFileSync('src/content/questions/aws-ai-practitioner/day-02.yaml', 'utf8')) as Question[]).sort((a, b) => a.id.localeCompare(b.id));
 const idx = (type: Question['type']) => qs.findIndex((q) => q.type === type);
 const quiz = (page: Page) => page.locator('[data-quiz="day-02"]');
 

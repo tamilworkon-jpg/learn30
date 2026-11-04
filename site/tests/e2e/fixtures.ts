@@ -1,12 +1,18 @@
 import { test as base, expect, type APIRequestContext, type Browser, type BrowserContext, type Page, type Request } from '@playwright/test';
+import { courseHref } from '../../src/lib/routes';
 import type { Progress } from '../../src/lib/types';
 
 // Phase 13 (contracts/server-api.md §8): every test runs against the Node server with a fresh, random account,
 // so tests are isolated under parallel workers. `page.request` shares the browser context's cookie jar, so the
 // session cookie set by sign-up is used by the page's navigations too.
 
-/** T205 — the AWS AI Practitioner course dashboard (`/` is the public course catalogue). */
-export const DASH = '/course/aws-ai-practitioner';
+/** Learn30 courses used by the tests: the real AWS course and the test-only fixture course
+ *  (tests/fixtures/courses/demo-course, built when AIP_FIXTURE_COURSES=1 — see playwright.config.ts). */
+export const COURSE = 'aws-ai-practitioner';
+export const DEMO = 'demo-course';
+/** The AWS course dashboard (`/` is the public course catalogue). Build other course links with courseHref(). */
+export const DASH = courseHref(COURSE);
+export { courseHref };
 
 export type LessonView = 'full' | 'slides' | null;
 export interface UiState {
@@ -63,6 +69,17 @@ export async function getProgress(request: APIRequestContext): Promise<Progress 
   return r.status() === 200 ? ((await r.json()) as Progress) : null;
 }
 
+/** Progress of one course (spec 002 contracts/progress-api-v2.md). `/api/progress` is the AWS-course alias. */
+export async function putCourseProgress(request: APIRequestContext, courseId: string, p: Progress) {
+  const r = await request.put(`/api/courses/${courseId}/progress`, { headers: API_HEADERS, data: p });
+  expect(r.status(), `PUT /api/courses/${courseId}/progress: ${await r.text()}`).toBe(204);
+}
+
+export async function getCourseProgress(request: APIRequestContext, courseId: string): Promise<Progress | null> {
+  const r = await request.get(`/api/courses/${courseId}/progress`);
+  return r.status() === 200 ? ((await r.json()) as Progress) : null;
+}
+
 /** A second, independent browser context (own cookies + storage) logged in as `a` — "another browser". */
 export async function signedInContext(browser: Browser, a: Account, opts: { baseURL: string; viewport?: { width: number; height: number } | null }): Promise<BrowserContext> {
   const ctx = await browser.newContext({ baseURL: opts.baseURL, viewport: opts.viewport ?? undefined });
@@ -72,7 +89,7 @@ export async function signedInContext(browser: Browser, a: Account, opts: { base
 
 // In-flight client saves (PUT /api/progress | /api/ui) per page, so readers can wait for the debounced save.
 const pending = new WeakMap<Page, Set<Request>>();
-const isSave = (r: Request) => r.method() === 'PUT' && /\/api\/(progress|ui)$/.test(new URL(r.url()).pathname);
+const isSave = (r: Request) => r.method() === 'PUT' && /\/api\/(progress|ui|courses\/[a-z0-9-]+\/progress)$/.test(new URL(r.url()).pathname);
 export function trackSaves(page: Page) {
   if (pending.has(page)) return;
   const set = new Set<Request>();

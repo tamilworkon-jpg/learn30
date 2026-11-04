@@ -8,9 +8,9 @@ Gate (Constitution v4.0.0): unit + static + content validation + `npm run test:s
 - [x] L003 Spec, plan, contracts (routes, progress-api-v2, course-folder); constitution v4.0.0
 
 ## W1 Content & validation [P]
-- [ ] L010 Move data to `src/courses/aws-ai-practitioner/{course,exam-guide,rules}.yaml` (+ metrics.ts); content to `src/content/<collection>/aws-ai-practitioner/…`; course-prefixed collection ids + `courseId`
-- [ ] L011 Implement getCourse()/course-content helpers over the folders; retire `src/lib/data.ts` globals (keep a thin shim only if needed)
-- [ ] L012 Per-course validation (`validate.ts` takes CourseRules; `scripts/validate-content.ts` loops courses); fixture-course inclusion via `AIP_FIXTURE_COURSES=1`
+- [x] L010 Move data to `src/courses/aws-ai-practitioner/{course,exam-guide,rules}.yaml` (+ metrics.ts); content to `src/content/<collection>/aws-ai-practitioner/…`; course-prefixed collection ids + `courseId`
+- [x] L011 Implement getCourse()/course-content helpers over the folders; retire `src/lib/data.ts` globals (keep a thin shim only if needed)
+- [x] L012 Per-course validation (`validate.ts` takes CourseRules; `scripts/validate-content.ts` loops courses); fixture-course inclusion via `AIP_FIXTURE_COURSES=1`
 
 ## W2 Routes & pages [P]
 - [ ] L020 `src/pages/course/[course]/…` (index, day/[day], mock/[n], outline, glossary, cheatsheet/[sheet], coverage, search) via getCourse/course-content; remove root pages

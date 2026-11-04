@@ -34,7 +34,7 @@ describe('#aip-bootstrap', () => {
   });
   it('missing, unreadable, or {user:null} → signed out', () => {
     setBootstrap(null);
-    expect(parseBootstrap()).toEqual({ user: null, progress: null, ui: null });
+    expect(parseBootstrap()).toEqual({ user: null, progress: null, ui: null, course: null, summary: null });
     setBootstrap('{"user":');
     expect(parseBootstrap().user).toBeNull();
     setBootstrap({ user: null, progress: null, ui: null });
@@ -110,7 +110,7 @@ describe('createSyncedStore', () => {
     await vi.advanceTimersByTimeAsync(1);
     expect(f.calls).toHaveLength(1);
     const c = f.calls[0];
-    expect(c.url).toBe('/api/progress');
+    expect(c.url).toBe('/api/courses/aws-ai-practitioner/progress'); // Learn30: per course (default: the first course)
     expect(c.init.method).toBe('PUT');
     expect(c.init.headers).toMatchObject({ 'Content-Type': 'application/json', 'X-AIP-Request': '1' });
     expect(c.init.keepalive).toBeFalsy();

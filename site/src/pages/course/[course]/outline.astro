@@ -7,7 +7,7 @@ import { buildPlan } from '../../../lib/course-plan';
 import { availableCourseIds, getCourse } from '../../../lib/course-data';
 import { lessonsOf } from '../../../lib/course-content';
 import { courseHref } from '../../../lib/routes';
-import { STUDY_WEEKS, studyWeekDays } from '../../../lib/schedule';
+import { STUDY_WEEK_DAYS } from '../../../lib/schedule';
 import '../../../styles/dashboard.css';
 
 export function getStaticPaths() {
@@ -25,8 +25,11 @@ const plan = buildPlan(
 );
 const domainName = (id: string) => examGuide.domains.find((d) => d.id === id)?.name ?? id;
 // Study weeks of five lesson days (Mon–Fri); each lists the modules (topic groups) it covers.
+// Weeks follow this course's length (a course may be shorter or longer than 30 days).
+const totalDays = course.days.length;
+const STUDY_WEEKS = Math.ceil(totalDays / STUDY_WEEK_DAYS);
 const studyWeeks = Array.from({ length: STUDY_WEEKS }, (_, i) => {
-  const days = studyWeekDays(i + 1);
+  const days = Array.from({ length: STUDY_WEEK_DAYS }, (_, j) => i * STUDY_WEEK_DAYS + j + 1).filter((n) => n <= totalDays);
   const modules = plan.weeks.filter((w) => w.days.some((n) => days.includes(n)));
   return { number: i + 1, days, modules };
 });

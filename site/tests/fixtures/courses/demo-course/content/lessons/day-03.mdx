@@ -1,0 +1,30 @@
+---
+day: 3
+kind: mock
+title: 'Practice test & review'
+summary: 'Take a ten-question practice test on recall, spacing, focus blocks and notes, then turn every topic you missed into a short review list.'
+domains: [D1, D2]
+taskStatements: ['1.1', '1.2', '2.1', '2.2']
+objectives:
+  - 'Complete the practice test in one sitting'
+  - 'Read your score and your result for each topic'
+  - 'List the sections to revisit for each missed topic'
+estimatedMinutes: 30
+lastVerified: '2026-11-04'
+---
+
+<Section id="launch" type="launch" title="Practice test" minutes={15}>
+
+The practice test has ten questions, five on remembering what you learn and five on planning focused work. Take it in one sitting with your notes closed, and answer every question.
+
+<MockLaunch n={1} />
+
+</Section>
+
+<Section id="remediation" type="remediation" title="Review plan" minutes={15}>
+
+After you submit, any topic under 70% appears below with links to the lesson sections behind the questions you missed.
+
+<Remediation mock={1} />
+
+</Section>

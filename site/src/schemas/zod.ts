@@ -41,7 +41,7 @@ export const lessonZod = z
       .array(z.object({ provider: z.enum(['udemy', 'skillbuilder', 'aws-docs']), title: z.string(), url: z.string().url().optional() }))
       .optional(),
     objectives: z.array(z.string()).min(3).max(7),
-    estimatedMinutes: z.number().int().min(30).max(120),
+    estimatedMinutes: z.number().int().min(10).max(120), // per-course range: rules.yaml lessonMinutes (validate.ts)
     deepDiveMinutes: z.number().int().min(0).optional(),
     lastVerified: z
       .string()
@@ -58,5 +58,4 @@ export const lessonZod = z
     const fail = (message: string) => ctx.addIssue({ code: z.ZodIssueCode.custom, message });
     if (!l.sources || l.sources.length < 1) fail('lesson needs sources');
     if (l.deepDiveMinutes === undefined) fail('lesson needs deepDiveMinutes');
-    if (l.estimatedMinutes < 50 || l.estimatedMinutes > 70) fail('lesson estimatedMinutes 50-70');
   });

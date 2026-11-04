@@ -23,13 +23,20 @@ test.describe('courses catalogue', () => {
     await expect(card(page).locator('[data-course-progress]')).toContainText('2 of 30 days');
     await expect(card(page).locator('[data-course-progress]')).toContainText('7%');
     await expect(card(page).getByRole('link', { name: 'Continue Day 3 →' })).toHaveAttribute('href', '/course/aws-ai-practitioner/day/03');
-    await expect(card(page).getByRole('link', { name: 'Course outline' })).toHaveAttribute('href', '/outline');
+    await expect(card(page).getByRole('link', { name: 'Course outline' })).toHaveAttribute('href', '/course/aws-ai-practitioner/outline');
+    // Learn30: platform pages carry no course group and no course facts.
+    await expect(page.locator('#nav-course-h')).toHaveCount(0);
+    await expect(page.locator('[data-course-card]')).toHaveCount(0);
+    await expect(page.locator('footer')).toHaveText(/Learn30 — independent study aid/);
+    await expect(page).toHaveTitle(/· Learn30$/);
     await noHorizontalScroll(page);
     // The dashboard (inside the course) names the course it belongs to; the sidebar groups the course's pages.
     await page.goto(DASH);
     await expect(page.locator('#nav-course-h')).toHaveText('AWS AI Practitioner');
     await expect(page.getByRole('group', { name: 'AWS AI Practitioner' }).getByRole('link', { name: 'Dashboard' })).toHaveAttribute('aria-current', 'page');
     await expect(page.locator('[data-course-crumb]')).toContainText('AWS Certified AI Practitioner');
+    await expect(page.locator('html')).toHaveAttribute('data-course', 'aws-ai-practitioner');
+    await expect(page.locator('[data-course-card]')).toContainText('AIF-C01 · v1.2');
     await expect(page.locator('[data-course-crumb]').getByRole('link', { name: 'Courses' })).toHaveAttribute('href', '/');
     expect(problems, problems.join('\n')).toEqual([]);
   });

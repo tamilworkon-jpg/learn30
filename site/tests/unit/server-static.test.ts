@@ -63,7 +63,7 @@ describe('SV5 static serving (T188)', () => {
     const r = await h.req('GET', '/does/not/exist');
     expect(r.status).toBe(404);
     expect(r.text).toContain('<h1>Not found</h1>');
-    expect(bootstrapOf(r)).toEqual({ user: null, progress: null, ui: null });
+    expect(bootstrapOf(r)).toEqual({ user: null, progress: null, ui: null, course: null, summary: null });
     expectSecurityHeaders(r);
   });
 
@@ -104,9 +104,9 @@ describe('SV5 static serving (T188)', () => {
 });
 
 describe('SV6 bootstrap injection + escaping (T188)', () => {
-  it('signed out → {user:null,progress:null,ui:null} immediately before </head>', async () => {
+  it('signed out → {user:null,progress:null,ui:null,course:null,summary:null} immediately before </head>', async () => {
     const r = await h.req('GET', '/day/1');
-    expect(r.text).toContain('<script type="application/json" id="aip-bootstrap">{"user":null,"progress":null,"ui":null}</script></head>');
+    expect(r.text).toContain('<script type="application/json" id="aip-bootstrap">{"user":null,"progress":null,"ui":null,"course":null,"summary":null}</script></head>');
   });
 
   it('signed in → user, progress and ui; a hostile display name cannot break out of the element', async () => {

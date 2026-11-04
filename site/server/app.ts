@@ -2,9 +2,11 @@ import type { IncomingMessage, RequestListener, ServerResponse } from 'node:http
 import { join, resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import { isAuthPage, legacyRedirect, requiresSignIn, routeOf, safeNext } from './access';
-import { getProgress, getUi, handleApi, sendJson } from './api';
+import { ensureProgress, getSummary, getUi, handleApi, sendJson } from './api';
+import { courseIdFromPath } from '../src/lib/routes';
+import { loadCourseIds } from './courses';
 import { clientOf, DEFAULT_LIMITS, getSession, publicUser, purgeExpiredSessions, RateLimiter, SCRYPT_N, type Limits, type Session } from './auth';
-import { openDb } from './db';
+import { DEFAULT_COURSE_ID, openDb } from './db';
 import { findFile, safePath, sendAsset, sendHtml } from './static';
 
 export interface AppOptions {
@@ -20,6 +22,8 @@ export interface AppOptions {
   trustProxy?: boolean;
   /** scrypt cost for new hashes (default 2^17; tests use less). */
   scryptN?: number;
+  /** Known course ids (default: the registry, see server/courses.ts). */
+  courseIds?: string[];
 }
 
 export const DEFAULT_MAX_USERS = 50;
@@ -54,12 +58,29 @@ export function createApp(opts: AppOptions): App {
   const maxUsers = opts.maxUsers ?? DEFAULT_MAX_USERS;
   const scryptN = opts.scryptN ?? SCRYPT_N;
   const trustProxy = opts.trustProxy ?? false;
+  const courseIds = opts.courseIds ?? loadCourseIds();
   purgeExpiredSessions(db, now());
   let lastPurge = now();
 
-  function bootstrap(session: Session | null) {
-    if (!session) return { user: null, progress: null, ui: null };
-    return { user: publicUser(session.user), progress: getProgress(db, session.user.id), ui: getUi(db, session.user.id) };
+  /**
+   * Per-page bootstrap (spec 002 progress-api-v2): `course` on /course/<id>/… pages, `summary` on global
+   * pages. `progress` (= the page's course, or the first course on global pages) stays for clients that
+   * predate Learn30.
+   */
+  function bootstrap(session: Session | null, path: string) {
+    if (!session) return { user: null, progress: null, ui: null, course: null, summary: null };
+    const uid = session.user.id;
+    const fromPath = courseIdFromPath(path);
+    const id = fromPath && courseIds.includes(fromPath) ? fromPath : null;
+    // The page's course (first course on global / pre-Learn30 pages) — created on first visit.
+    const progress = ensureProgress(db, uid, id ?? DEFAULT_COURSE_ID, now());
+    return {
+      user: publicUser(session.user),
+      ui: getUi(db, uid),
+      progress,
+      course: id ? { id, progress } : null,
+      summary: id ? null : getSummary(db, uid),
+    };
   }
 
   async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
@@ -76,7 +97,7 @@ export function createApp(opts: AppOptions): App {
 
     if (rawPath === '/api' || rawPath.startsWith('/api/')) {
       const session = getSession(db, req, now());
-      await handleApi(req, res, rawPath, { db, limiter, now, session, client: clientOf(req, trustProxy), scryptN, maxUsers });
+      await handleApi(req, res, rawPath, { db, limiter, now, session, client: clientOf(req, trustProxy), scryptN, maxUsers, courseIds });
       return;
     }
 
@@ -118,11 +139,11 @@ export function createApp(opts: AppOptions): App {
       return;
     }
     if (file) {
-      sendHtml(req, res, 200, file.path, bootstrap(session));
+      sendHtml(req, res, 200, file.path, bootstrap(session, path));
       return;
     }
     const page404 = join(dist, '404.html');
-    if (existsSync(page404)) sendHtml(req, res, 404, page404, bootstrap(session));
+    if (existsSync(page404)) sendHtml(req, res, 404, page404, bootstrap(session, path));
     else notFoundText(res);
   }
 

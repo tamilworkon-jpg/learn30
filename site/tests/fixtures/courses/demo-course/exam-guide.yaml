@@ -1,0 +1,51 @@
+# Demo Course guide (test fixture) — same shape as a real course's exam-guide.yaml.
+examCode: DEMO-01
+name: Demo Course for Tests
+version: '1.0'
+publishedOn: '2026-11-04'
+lastVerified: '2026-11-04'
+sourceUrl: https://example.com/learn30/demo-course
+format:
+  totalQuestions: 10
+  scored: 10
+  minutes: 15
+  passScaled: 700
+  scaleMin: 100
+  scaleMax: 1000
+questionTypes:
+  - Multiple choice (1 correct of 4)
+  - Multiple response (2+ correct of 5+)
+domains:
+  - id: D1
+    name: Remembering what you learn
+    weight: 50
+    color: '#0F766E'
+    tasks:
+      - id: '1.1'
+        title: Use active recall
+        objectives:
+          - Explain why retrieving an idea strengthens memory more than re-reading it
+          - Turn notes into questions and answer them from memory
+      - id: '1.2'
+        title: Use spaced repetition
+        objectives:
+          - Explain the forgetting curve and why reviews are spaced out
+          - Schedule reviews at growing intervals
+  - id: D2
+    name: Planning focused work
+    weight: 50
+    color: '#B45309'
+    tasks:
+      - id: '2.1'
+        title: Work in focus blocks
+        objectives:
+          - Plan a session as short focus blocks with breaks
+          - Remove distractions before a block starts
+      - id: '2.2'
+        title: Take useful notes
+        objectives:
+          - Write notes in your own words with a question and a summary
+          - Review notes the same day
+inScopeServices: ['Recall card deck', 'Focus timer']
+outOfScopeServices: []
+notListed: []

@@ -1,12 +1,21 @@
-# AIP 30 — AWS Certified AI Practitioner in 30 days
+# Learn30 — 30-day courses, one hour a day
 
-A free, offline-friendly study website for the **AWS Certified AI Practitioner (AIF-C01, exam guide v1.2)** exam: 30 one-hour days of lessons shown as screen-sized slides, daily quizzes, module reviews, three full 65-question mock exams, a glossary and cheat sheets. A small Node server serves the site and keeps each learner's progress in a local SQLite file: one login = one learner, and your progress follows you to any browser or device that signs in.
+**Learn30** is a free, offline-friendly study platform: each course is a 30-day plan of one-hour lessons shown as screen-sized slides, with daily quizzes, module reviews, mock exams, a glossary and cheat sheets. A small Node server serves the site and keeps each learner's progress in a local SQLite file — one login = one learner, with **separate progress per course**, following you to any browser or device that signs in.
+
+The home page (`/`) is the course catalogue; every course lives under `/course/<id>/…` (pre-Learn30 links such as `/day/02` redirect into the first course).
+
+**Courses**
+
+| Course | Code | Content |
+|---|---|---|
+| [AWS Certified AI Practitioner](specs/001-aws-ai-practitioner-course/) (`aws-ai-practitioner`) | AIF-C01, exam guide v1.2 | 24 lesson days · 4 module review days · 2 mock-exam days · 903 exam-style questions · 166 glossary terms · 75 service cards |
+
+Adding a course = one registry entry in `site/src/data/courses.yaml` + one content folder ([`specs/002-learn30-platform/contracts/course-folder.md`](specs/002-learn30-platform/contracts/course-folder.md)).
 
 | | |
 |---|---|
-| Content | 24 lesson days · 4 module review days · 2 mock-exam days · 903 exam-style questions · 166 glossary terms · 75 service cards |
 | Stack | Astro 5 (static build) + MDX · Preact islands · Tailwind CSS v4 · build-time Mermaid SVG · Pagefind search · Node 22 server (`node:http` + built-in `node:sqlite`, no extra runtime dependencies) · Vitest · Playwright + axe |
-| Spec | [`specs/001-aws-ai-practitioner-course/`](specs/001-aws-ai-practitioner-course/) — spec, plan, tasks, contracts, review log |
+| Specs | [`specs/002-learn30-platform/`](specs/002-learn30-platform/) — platform (courses, routes, per-course progress) · [`specs/001-aws-ai-practitioner-course/`](specs/001-aws-ai-practitioner-course/) — course #1 |
 
 ---
 

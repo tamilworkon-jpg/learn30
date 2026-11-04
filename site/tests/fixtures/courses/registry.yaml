@@ -1,0 +1,15 @@
+# Appended to the course registry only in fixture builds (AIP_FIXTURE_COURSES=1).
+- id: demo-course
+  title: 'Demo Course for Tests'
+  shortTitle: 'Demo Course'
+  provider: 'Learn30'
+  examCode: 'DEMO-01'
+  description: 'A three-day sample course used by the automated tests: active recall, spaced repetition and focused study blocks.'
+  lengthDays: 3
+  hoursPerDay: 0.5
+  level: 'Test'
+  status: available
+  entryHref: '/course/demo-course'
+  outlineHref: '/course/demo-course/outline'
+  accent: '#0f766e'
+  illustration: '/illustrations/summary.svg'

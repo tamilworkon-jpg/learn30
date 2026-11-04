@@ -1,0 +1,9 @@
+# CourseRules for the Demo Course (test fixture). Shape: src/lib/course-data.ts CourseRules.
+mock: { questions: 10, minutes: 15, passScaled: 700, count: 1 }
+mockSplit: { D1: 5, D2: 5 }
+mockLaunches: { 3: [1] }
+mockSectionOrder: { 3: [launch, remediation] }
+minQuestions: 20
+dailyQuestions: [3, 5]
+moduleQuestions: [5, 10]
+lessonMinutes: [10, 30]

@@ -1,10 +1,11 @@
-import { load } from 'js-yaml';
-import courseRaw from '../data/course.yaml?raw';
-import guideRaw from '../data/exam-guide.yaml?raw';
-import type { Course, ExamGuide } from './types';
+// @deprecated (Learn30 spec 002) — module-level single-course globals. Use getCourse(id) from
+// ./course-data instead; kept only while pages migrate (W2). Re-exports the default course.
+import { getCourse } from './course-data';
+import { DEFAULT_COURSE_ID } from './routes';
 
-export const examGuide = load(guideRaw) as ExamGuide;
-export const course = load(courseRaw) as Course;
+const ctx = getCourse(DEFAULT_COURSE_ID);
+export const examGuide = ctx.examGuide;
+export const course = ctx.course;
 
 export const taskStatementIds = examGuide.domains.flatMap((d) => d.tasks.map((t) => t.id));
 

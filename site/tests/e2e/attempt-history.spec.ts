@@ -5,8 +5,8 @@ import { attempt, progress, seed } from './progress-fixtures';
 import type { Question } from '../../src/lib/types';
 
 // Attempt history: every attempt numbered, with score and a read-only review; retake from the history.
-const day2 = (load(readFileSync('src/content/questions/day-02.yaml', 'utf8')) as Question[]).sort((a, b) => a.id.localeCompare(b.id));
-const mock1 = load(readFileSync('src/content/questions/mock-1.yaml', 'utf8')) as Question[];
+const day2 = (load(readFileSync('src/content/questions/aws-ai-practitioner/day-02.yaml', 'utf8')) as Question[]).sort((a, b) => a.id.localeCompare(b.id));
+const mock1 = load(readFileSync('src/content/questions/aws-ai-practitioner/mock-1.yaml', 'utf8')) as Question[];
 const shots = process.env.HISTORY_SHOTS;
 
 test.describe('attempt history @visual', () => {

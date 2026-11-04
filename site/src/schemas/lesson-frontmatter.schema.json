@@ -24,7 +24,7 @@
       }
     },
     "objectives": { "type": "array", "minItems": 3, "maxItems": 7, "items": { "type": "string" } },
-    "estimatedMinutes": { "type": "integer", "minimum": 30, "maximum": 120 },
+    "estimatedMinutes": { "type": "integer", "minimum": 10, "maximum": 120 },
     "deepDiveMinutes": { "type": "integer", "minimum": 0 },
     "lastVerified": { "type": "string", "format": "date" },
     "examTraps": { "type": "array", "items": { "type": "string" } },
@@ -35,7 +35,7 @@
       "if": { "properties": { "kind": { "const": "lesson" } } },
       "then": {
         "required": ["sources", "deepDiveMinutes"],
-        "properties": { "estimatedMinutes": { "minimum": 50, "maximum": 70 }, "sources": { "minItems": 1 } }
+        "properties": { "sources": { "minItems": 1 } }
       }
     }
   ],

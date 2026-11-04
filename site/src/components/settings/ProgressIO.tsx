@@ -1,7 +1,8 @@
 // T077 — export / import / reset progress. Import and reset both need a second, explicit confirmation.
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { downloadProgress, MAX_IMPORT_BYTES, prepareImport, type ImportResult } from '../../lib/progress/io';
-import { getStore } from '../../lib/progress/store';
+import type { Store } from '../../lib/progress/store';
+import { useChosenStore } from './course-choice';
 import type { Progress } from '../../lib/types';
 
 type Pending = Extract<ImportResult, { ok: true }>;
@@ -10,7 +11,9 @@ const completed = (p: Progress) => Object.values(p.days).filter((d) => d.status 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
 const fmtDate = (iso: string) => new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
 
-export default function ProgressIO() {
+/** Export / import / reset for the course chosen in the settings course picker (Learn30: per course). */
+export default function ProgressIO({ courseIds }: { courseIds: string[] }) {
+  const { store, error: loadError } = useChosenStore(courseIds);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [recovered, setRecovered] = useState(false);
   const [status, setStatus] = useState('');
@@ -21,14 +24,16 @@ export default function ProgressIO() {
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const store = getStore();
+    setProgress(null);
+    if (!store) return;
     setProgress({ ...store.get() });
     setRecovered(store.recovered);
     const off = store.subscribe((p) => setProgress({ ...p }));
     return () => {
       off();
     };
-  }, []);
+  }, [store]);
+  const current = (): Store | null => store;
 
   // Move focus into a confirmation panel when it opens.
   useEffect(() => {
@@ -42,7 +47,9 @@ export default function ProgressIO() {
 
   const onExport = () => {
     clear();
-    downloadProgress(getStore().get());
+    const s = current();
+    if (!s) return;
+    downloadProgress(s.get());
     setStatus('Progress exported. Keep the file somewhere safe — you can import it on another device or address.');
   };
 
@@ -64,15 +71,16 @@ export default function ProgressIO() {
   };
 
   const confirmImport = () => {
-    if (!pending) return;
-    pending.confirm(getStore());
+    const s = current();
+    if (!pending || !s) return;
+    pending.confirm(s);
     setPending(null);
     setStatus(`Progress imported: ${plural(pending.summary.daysCompleted, 'day')} completed, ${plural(pending.summary.attempts, 'quiz attempt')}.`);
     fileRef.current?.focus();
   };
 
   const doReset = () => {
-    getStore().reset();
+    current()?.reset();
     setConfirmReset(false);
     setStatus('Progress reset. Your dashboard now starts again from Day 1.');
   };
@@ -85,8 +93,8 @@ export default function ProgressIO() {
         </p>
       )}
 
-      <p class={`io-status ${status ? 'has-status' : ''}`} role="status">
-        {status}
+      <p class={`io-status ${status || loadError ? 'has-status' : ''}`} role="status">
+        {loadError || status}
       </p>
 
       <section class="card" aria-labelledby="io-export-h">

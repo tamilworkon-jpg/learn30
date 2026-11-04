@@ -1,0 +1,151 @@
+---
+day: 1
+kind: lesson
+title: 'Active recall'
+summary: 'Learn why pulling an idea out of memory makes it stick far better than reading it again, and turn your notes into questions you answer without looking.'
+domains: [D1]
+taskStatements: ['1.1']
+sources:
+  - { provider: skillbuilder, title: 'Learn30 demo fixture (original text)' }
+objectives:
+  - Explain the difference between recognising an idea and recalling it
+  - Describe why retrieval practice strengthens memory
+  - Turn a page of notes into recall questions
+  - Check answers honestly and mark what to revisit
+estimatedMinutes: 20
+deepDiveMinutes: 5
+lastVerified: '2026-11-04'
+keyPoints:
+  - 'Recognising an answer when you see it is not the same as recalling it from memory.'
+  - 'Every successful retrieval makes the next one easier; that effort is the point.'
+  - 'Write questions, not highlights: a question forces you to produce the answer.'
+  - 'Check answers right away and mark the ones you missed for tomorrow.'
+---
+
+<Section id="orientation" type="orientation" title="Welcome to the demo course" minutes={2}>
+
+This short course has three days. Day 1 is about active recall, Day 2 about spacing your reviews and working in focus blocks, and Day 3 is a practice test with a review plan. Each day follows the same rhythm as every Learn30 course: objectives, an explanation, diagrams, examples, a real-world story, a hands-on walk-through, tips, a summary and a short quiz.
+
+</Section>
+
+<Section id="objectives" type="objectives" title="Today's objectives" minutes={1}>
+<Objectives items={frontmatter.objectives} />
+</Section>
+
+<Section id="explanation" type="explanation" title="Recall beats re-reading" minutes={6}>
+
+### Recognition is not recall
+
+When you read a page for the second time, everything feels familiar. That feeling is recognition: your brain says "I have seen this before". Recognition is cheap and it fools you. It tells you nothing about whether you could explain the idea to a friend tomorrow with the book closed.
+
+Recall is different. To recall an idea you have to rebuild it from memory, with no page in front of you. That takes effort, and the effort is exactly what makes the memory stronger. Each time you pull an idea out successfully, the path back to it gets easier to find.
+
+### Why retrieval works
+
+Memory is not a filing cabinet that stores a perfect copy. It is closer to a network of paths. Using a path makes it wider; ignoring it lets it fade. Re-reading walks you past the path without using it. Answering a question from memory forces you to walk it. This is why a short self-test usually beats a long re-read of the same material, even when the self-test feels harder and less pleasant.
+
+Struggle is useful here. If an answer comes slowly, or only partly, the attempt still helps — as long as you check the answer afterwards and correct any mistake. Guessing and then seeing the right answer is better than never guessing at all.
+
+### Turning notes into questions
+
+The simplest way to practise recall is to change how you write notes. Instead of highlighting sentences, write a question in the margin for each idea, and cover the answer when you review.
+
+- A definition becomes "What does this term mean, in my own words?"
+- A process becomes "What are the steps, in order?"
+- A comparison becomes "How is A different from B, and when would I choose each?"
+- A cause becomes "Why does this happen?"
+
+Keep questions short and specific. "Explain chapter 3" is too vague to check; "Name the three causes described in chapter 3" is easy to mark right or wrong.
+
+### Checking honestly
+
+Recall only helps if you are honest with yourself. Answer out loud or on paper before you look. Then compare with the source and mark each answer: right, partly right, or missed. Missed answers go on a short list for your next session. Over time that list shows you exactly where your understanding is weak, which is far more useful than a vague feeling of having read everything.
+
+</Section>
+
+<Section id="diagram" type="diagram" title="Diagrams" minutes={1}>
+
+<Diagram
+  caption="The active recall loop: ask, answer from memory, check, then mark what to revisit"
+  code={`flowchart LR
+  Q["Ask a question"] --> A["Answer from memory"]
+  A --> C["Check against the source"]
+  C -->|Right| N["Next question"]
+  C -->|Missed| R["Add to tomorrow's list"]
+  R --> N`}
+/>
+
+</Section>
+
+<Section id="examples" type="examples" title="Examples" minutes={2}>
+
+| Note style | Recall version |
+|------------|----------------|
+| Highlighted definition of "photosynthesis" | "In one sentence, what does photosynthesis produce and from what?" |
+| A list of five dates in a history chapter | "Which event came first, and why did it lead to the next one?" |
+| Steps for solving an equation | "Solve a new equation of the same kind without looking at the worked example." |
+
+In each case the recall version makes you produce something you can check.
+
+</Section>
+
+<Section id="real-world" type="realWorld" title="Real world" minutes={1}>
+
+<Callout type="realWorld" title="A language learner swaps re-reading for flashcards">
+Priya spent evenings re-reading her vocabulary list and still forgot words in conversation. She switched to flashcards with the word on one side and an example sentence on the other, saying each answer aloud before flipping the card. After two weeks she remembered more words while spending less time, because every card made her retrieve the word instead of just seeing it.
+</Callout>
+
+</Section>
+
+<Section id="hands-on" type="handsOn" title="Hands-on: turn a page of notes into questions" minutes={3}>
+
+<HandsOnLab
+  goal="Convert one page of notes into recall questions and run a first self-test."
+  asOf="November 2026"
+  steps={[
+    { text: 'Open a page of notes from any subject. Read it once, then close it.', screen: { service: 'Notebook', path: ['Notes', 'Chapter 1'], fields: [{ label: 'Ideas on the page', value: '6' }] } },
+    { text: 'Write one short question for each idea in the margin or on a card.', screen: { service: 'Notebook', path: ['Notes', 'Chapter 1', 'Questions'], fields: [{ label: 'Questions written', value: '6' }], note: 'One idea, one question' } },
+    { text: 'Cover the notes and answer every question from memory, out loud or on paper.', screen: { service: 'Notebook', path: ['Self-test'], fields: [{ label: 'Answered', value: '6 of 6' }] } },
+    { text: 'Check each answer and mark it right, partly right or missed. Copy the missed ones to tomorrow’s list.', screen: { service: 'Notebook', path: ['Self-test', 'Results'], fields: [{ label: 'Missed', value: '2' }], highlight: 'Tomorrow' } },
+  ]}
+  expectedOutcome="You have a set of recall questions and a short list of ideas to revisit tomorrow."
+  checks={[
+    { q: 'Why cover the notes before answering?', a: 'So you recall the answer instead of recognising it on the page.' },
+    { q: 'What happens to a missed answer?', a: 'It goes on the list for the next session.' },
+  ]}
+/>
+
+</Section>
+
+<Section id="tips" type="examTips" title="Tips & traps" minutes={1}>
+
+<Callout type="examTrap" title="Familiar is not the same as learned">
+If a page feels easy on the second read, test yourself before moving on. The feeling of familiarity comes from recognition, not recall.
+</Callout>
+
+</Section>
+
+<Section id="summary" type="summary" title="Summary" minutes={1}>
+
+Recognition tells you that you have seen an idea; recall shows that you can rebuild it. Answering questions from memory strengthens the path back to an idea, even when it feels slow. Write a question for every idea, answer before you look, check honestly and keep a list of what you missed. Tomorrow you will space those reviews out over time.
+
+</Section>
+
+<Section id="quiz" type="quiz" title="Daily quiz" minutes={5}>
+<QuizSlot day={1} />
+</Section>
+
+<Section id="deep-dive" type="deepDive" title="Recall in a weekly routine" minutes={5} optional>
+
+A weekly routine can combine recall with other habits: learn new material early in the week, test yourself on it the next day, and run a mixed self-test at the end of the week that draws questions from every topic.
+
+<Diagram
+  caption="A weekly routine: learn, recall the next day, then a mixed self-test at the end of the week"
+  code={`flowchart LR
+  L["Learn new topic"] --> D["Recall it next day"]
+  D --> W["Mixed self-test at week end"]
+  W --> F["List of weak ideas"]
+  F --> L`}
+/>
+
+</Section>

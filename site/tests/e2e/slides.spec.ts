@@ -348,7 +348,7 @@ test.describe('slide lessons (T182) @visual', () => {
     expect(await slideNo(page)).toBe(6);
     const section = await article(page).getAttribute('data-slide-section');
     await settleSaves(page);
-    expect((await getUi(page.request))?.slides?.['2']).toMatchObject({ sectionId: section });
+    expect((await getUi(page.request))?.slides?.['aws-ai-practitioner:2']).toMatchObject({ sectionId: section }); // Learn30: <course>:<day>
 
     // reload without the #slide-n hash: the saved position is restored
     await openDeck(page, '/day/02');
