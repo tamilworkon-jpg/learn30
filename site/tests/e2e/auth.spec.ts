@@ -205,7 +205,7 @@ test.describe('accounts (T190) @visual', () => {
     await expect(article(page)).toHaveAttribute('data-slide-index', '5');
     await settleSaves(page);
     expect((await getProgress(page.request))?.days['1']?.status).toBe('completed');
-    expect((await getUi(page.request))?.slides?.['2']).toBeTruthy();
+    expect((await getUi(page.request))?.slides?.['aws-ai-practitioner:2']).toBeTruthy(); // Learn30: <course>:<day>
 
     await page.goto(DASH);
     await expect(dash(page)).toContainText('1 of 30 days complete');

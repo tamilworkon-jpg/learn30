@@ -1,5 +1,6 @@
-// T189 — per-page bootstrap written by the Node server immediately before </head> (contract §5):
-// <script type="application/json" id="aip-bootstrap">{"user":…|null,"progress":…|null,"ui":…|null}</script>
+// T189 — per-page bootstrap written by the Node server immediately before </head> (contract §5; Learn30:
+// spec 002 progress-api-v2): {"user","ui","course":{"id","progress"}|null,"summary"|null,"progress"}.
+// `progress` = the page's course (first course on global pages), kept for older readers.
 // Never executed (CSP-safe); read once per page. Missing / unreadable → signed out.
 import type { Progress } from './types';
 
@@ -11,20 +12,34 @@ export interface User {
 }
 
 export interface UiState {
+  /** Learn30: the theme is an account-wide UI setting (was progress.settings.theme). */
+  theme?: 'light' | 'dark';
   lessonView?: 'slides' | 'full';
   sidebar?: 'expanded' | 'collapsed';
   sections?: 'expanded' | 'collapsed';
+  /** Keyed `<courseId>:<day>` (a bare day = a pre-Learn30 key of the first course). */
   slides?: Record<string, { sectionId: string; block: number }>;
+}
+
+export interface CourseSummary {
+  completed: number;
+  startedAt: string | null;
+  lastPosition: { day: number; sectionId: string; updatedAt: string } | null;
+  updatedAt: string;
 }
 
 export interface Bootstrap {
   user: User | null;
   progress: Progress | null;
   ui: UiState | null;
+  /** Set on /course/<id>/… pages. */
+  course: { id: string; progress: Progress | null } | null;
+  /** Per-course summary on global pages (catalogue, settings). */
+  summary: { courses: Record<string, CourseSummary> } | null;
 }
 
 export const BOOTSTRAP_ID = 'aip-bootstrap';
-const SIGNED_OUT: Bootstrap = { user: null, progress: null, ui: null };
+const SIGNED_OUT: Bootstrap = { user: null, progress: null, ui: null, course: null, summary: null };
 
 const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const isUser = (u: unknown): u is User => isObj(u) && typeof u.id === 'number' && typeof u.username === 'string' && typeof u.displayName === 'string';
@@ -39,6 +54,11 @@ export function parseBootstrap(doc: Document = document): Bootstrap {
       user: data.user,
       progress: isObj(data.progress) ? (data.progress as unknown as Progress) : null,
       ui: isObj(data.ui) ? (data.ui as UiState) : null,
+      course:
+        isObj(data.course) && typeof data.course.id === 'string'
+          ? { id: data.course.id, progress: isObj(data.course.progress) ? (data.course.progress as unknown as Progress) : null }
+          : null,
+      summary: isObj(data.summary) && isObj(data.summary.courses) ? (data.summary as Bootstrap['summary']) : null,
     };
   } catch {
     return { ...SIGNED_OUT };

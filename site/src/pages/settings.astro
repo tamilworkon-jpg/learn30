@@ -4,16 +4,25 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ProgressIO from '../components/settings/ProgressIO';
 import ScheduleSettings from '../components/settings/ScheduleSettings';
 import AccountSettings from '../components/account/AccountSettings';
+import CoursePicker from '../components/settings/CoursePicker';
+import { allCourses } from '../lib/course-data';
 import '../styles/dashboard.css';
+
+// Learn30: progress and schedule are per course; the theme and account are global.
+const courseOptions = allCourses()
+  .filter((c) => c.status === 'available')
+  .map((c) => ({ id: c.id, title: c.title }));
+const courseIds = courseOptions.map((c) => c.id);
 ---
 
 <BaseLayout title="Settings" active="settings">
   <h1 class="h1">Settings</h1>
   <p class="muted mt-0 max-w-3xl">
-    Your progress is saved to your account on the course server, so it follows you to any browser or device you sign in on. Export a copy to keep a backup, or import one you saved
+    Your progress is saved to your account for each course, so it follows you to any browser or device you sign in on. Export a copy to keep a backup, or import one you saved
     earlier.
   </p>
-  <ProgressIO client:load />
-  <ScheduleSettings client:load />
+  <CoursePicker client:load courses={courseOptions} />
+  <ProgressIO client:load courseIds={courseIds} />
+  <ScheduleSettings client:load courseIds={courseIds} />
   <AccountSettings client:load />
 </BaseLayout>

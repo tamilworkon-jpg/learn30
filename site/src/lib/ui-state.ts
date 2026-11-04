@@ -3,6 +3,8 @@
 // Signed out → the old per-browser localStorage keys (aip-ui:*), the only thing still stored locally.
 import { createSync, takeHandoff, type Sync } from './api';
 import { getBootstrap, type UiState } from './bootstrap';
+import { currentCourseId } from './current-course';
+import { DEFAULT_COURSE_ID } from './routes';
 import { reportSaveStatus } from './save-status';
 
 export type { UiState };
@@ -13,9 +15,19 @@ export interface SlidePos {
   block: number;
 }
 
-export const UI_KEYS = { lessonView: 'aip-ui:lesson-view', sidebar: 'aip-ui:sidebar', sections: 'aip-ui:sections', slide: (day: number) => `aip-ui:slide:${day}` } as const;
+// Learn30: slide positions are per course — UiState.slides["<courseId>:<day>"], signed out
+// `aip-ui:slide:<courseId>:<day>`. Pre-Learn30 bare-day keys belong to the first course (read only).
+export const UI_KEYS = {
+  lessonView: 'aip-ui:lesson-view',
+  sidebar: 'aip-ui:sidebar',
+  sections: 'aip-ui:sections',
+  slide: (day: number, courseId: string = DEFAULT_COURSE_ID) => `aip-ui:slide:${courseId}:${day}`,
+  legacySlide: (day: number) => `aip-ui:slide:${day}`,
+} as const;
+export const slideKey = (courseId: string, day: number) => `${courseId}:${day}`;
+const SLIDE_KEY = /^(?:[a-z0-9-]{1,60}:)?[1-9]\d?$/;
 
-const validDay = (d: number | string) => /^([1-9]|[12]\d|30)$/.test(String(d));
+const validDay = (d: number | string) => /^[1-9]\d?$/.test(String(d));
 const isPos = (v: unknown): v is SlidePos =>
   !!v && typeof v === 'object' && typeof (v as SlidePos).sectionId === 'string' && Number.isInteger((v as SlidePos).block) && (v as SlidePos).block >= 0;
 
@@ -24,12 +36,13 @@ export function sanitizeUiState(raw: unknown): UiState {
   const out: UiState = {};
   if (!raw || typeof raw !== 'object') return out;
   const r = raw as Record<string, unknown>;
+  if (r.theme === 'light' || r.theme === 'dark') out.theme = r.theme;
   if (r.lessonView === 'slides' || r.lessonView === 'full') out.lessonView = r.lessonView;
   if (r.sidebar === 'expanded' || r.sidebar === 'collapsed') out.sidebar = r.sidebar;
   if (r.sections === 'expanded' || r.sections === 'collapsed') out.sections = r.sections;
   if (r.slides && typeof r.slides === 'object') {
     const slides: Record<string, SlidePos> = {};
-    for (const [d, v] of Object.entries(r.slides as Record<string, unknown>)) if (validDay(d) && isPos(v)) slides[d] = { sectionId: v.sectionId, block: v.block };
+    for (const [d, v] of Object.entries(r.slides as Record<string, unknown>)) if (SLIDE_KEY.test(d) && isPos(v)) slides[d] = { sectionId: v.sectionId, block: v.block };
     if (Object.keys(slides).length) out.slides = slides;
   }
   return out;
@@ -94,23 +107,37 @@ export function createUiState({ signedIn, initial = null, storage = null, fetchI
       if (sync) changed();
       else local.set(UI_KEYS[bar], collapsed ? 'collapsed' : 'expanded'); // explicit, so a narrow-screen default never overrides a choice
     },
-    slide(day: number): SlidePos | null {
+    /** Account-wide theme (Learn30; signed out: this browser's aip-ui:theme). */
+    theme: (): 'light' | 'dark' | undefined => state.theme,
+    setTheme(theme: 'light' | 'dark') {
+      state = { ...state, theme };
+      if (sync) changed();
+      else writeLocalTheme(theme, storage);
+    },
+    /** The saved slide of a day in a course (default: this page's course). */
+    slide(day: number, courseId: string = currentCourseId()): SlidePos | null {
       if (!validDay(day)) return null;
-      if (sync) return state.slides?.[String(day)] ?? null;
+      const legacy = courseId === DEFAULT_COURSE_ID;
+      if (sync) return state.slides?.[slideKey(courseId, day)] ?? (legacy ? state.slides?.[String(day)] : undefined) ?? null;
       try {
-        const v = JSON.parse(local.get(UI_KEYS.slide(day)) ?? 'null') as unknown;
+        const raw = local.get(UI_KEYS.slide(day, courseId)) ?? (legacy ? local.get(UI_KEYS.legacySlide(day)) : null);
+        const v = JSON.parse(raw ?? 'null') as unknown;
         return isPos(v) ? v : null;
       } catch {
         return null;
       }
     },
-    setSlide(day: number, pos: SlidePos) {
+    setSlide(day: number, pos: SlidePos, courseId: string = currentCourseId()) {
       if (!validDay(day) || !isPos(pos)) return;
-      const prev = state.slides?.[String(day)];
+      const key = slideKey(courseId, day);
+      const bare = courseId === DEFAULT_COURSE_ID ? String(day) : null; // pre-Learn30 key of the first course
+      const prev = state.slides?.[key] ?? (bare ? state.slides?.[bare] : undefined);
       if (prev && prev.sectionId === pos.sectionId && prev.block === pos.block) return;
-      state = { ...state, slides: { ...state.slides, [String(day)]: { sectionId: pos.sectionId, block: pos.block } } };
+      const slides = { ...state.slides, [key]: { sectionId: pos.sectionId, block: pos.block } };
+      if (bare) delete slides[bare];
+      state = { ...state, slides };
       if (sync) changed();
-      else local.set(UI_KEYS.slide(day), JSON.stringify({ sectionId: pos.sectionId, block: pos.block }));
+      else local.set(UI_KEYS.slide(day, courseId), JSON.stringify({ sectionId: pos.sectionId, block: pos.block }));
     },
   };
 }
@@ -151,7 +178,7 @@ export function resetUiStateSingleton() {
   singleton = null;
 }
 
-/** Signed-out theme fallback (signed in, the theme lives in progress.settings). */
+/** Signed-out theme fallback (signed in, the theme lives in UiState.theme since Learn30). */
 export const THEME_KEY = 'aip-ui:theme';
 export function readLocalTheme(storage: Storage | null = browserStorage()): 'light' | 'dark' {
   try {

@@ -18,7 +18,7 @@ describe('progress export/import (T017)', () => {
     expect(prepareImport('{oops').ok).toBe(false);
     expect(prepareImport('{"hello":1}').ok).toBe(false);
     const s = createStore();
-    const bad = { ...s.get(), schemaVersion: 2 };
+    const bad = { ...s.get(), schemaVersion: 3 };
     const r = prepareImport(JSON.stringify(bad));
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error.length).toBeGreaterThan(5);
