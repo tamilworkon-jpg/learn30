@@ -41,7 +41,7 @@ describe('signed in', () => {
     expect(f.calls[0].url).toBe('/api/ui');
     expect(f.calls[0].init.method).toBe('PUT');
     expect(f.calls[0].init.headers).toMatchObject({ 'Content-Type': 'application/json', 'X-AIP-Request': '1' });
-    expect(f.calls[0].body).toEqual({ sidebar: 'collapsed', lessonView: 'full', sections: 'collapsed', slides: { '5': { sectionId: 'objectives', block: 1 } } });
+    expect(f.calls[0].body).toEqual({ sidebar: 'collapsed', lessonView: 'full', sections: 'collapsed', slides: { 'aws-ai-practitioner:5': { sectionId: 'objectives', block: 1 } } });
     expect(localStorage.length).toBe(0);
   });
 
@@ -79,7 +79,7 @@ describe('signed in', () => {
 
   it('rejects invalid days / positions', () => {
     const ui = createUiState({ signedIn: true, fetchImpl: mockFetch().fn });
-    ui.setSlide(31, { sectionId: 'x', block: 0 });
+    ui.setSlide(100, { sectionId: 'x', block: 0 });
     ui.setSlide(0, { sectionId: 'x', block: 0 });
     ui.setSlide(3, { sectionId: 'x', block: -1 });
     expect(ui.get()).toEqual({});
@@ -104,7 +104,7 @@ describe('signed out', () => {
     expect(localStorage.getItem('aip-ui:lesson-view')).toBe('slides');
     expect(localStorage.getItem('aip-ui:sidebar')).toBe('collapsed');
     expect(localStorage.getItem('aip-ui:sections')).toBe('expanded'); // explicit: a narrow-window default must not override it
-    expect(JSON.parse(localStorage.getItem('aip-ui:slide:4')!)).toEqual({ sectionId: 'quiz', block: 0 });
+    expect(JSON.parse(localStorage.getItem('aip-ui:slide:aws-ai-practitioner:4')!)).toEqual({ sectionId: 'quiz', block: 0 });
     expect(createUiState({ signedIn: false, storage: localStorage }).slide(4)).toEqual({ sectionId: 'quiz', block: 0 });
     await vi.advanceTimersByTimeAsync(2000);
     expect(f.calls).toHaveLength(0);
@@ -128,9 +128,10 @@ describe('signed out', () => {
 
 describe('sanitizeUiState', () => {
   it('keeps only the contract shape', () => {
-    expect(sanitizeUiState({ lessonView: 'grid', sidebar: 'collapsed', extra: 1, slides: { '2': { sectionId: 'a', block: 1 }, '40': { sectionId: 'b', block: 0 }, '3': { sectionId: 5, block: 0 } } })).toEqual({
+    expect(sanitizeUiState({ lessonView: 'grid', sidebar: 'collapsed', extra: 1, slides: { '2': { sectionId: 'a', block: 1 }, 'demo-course:3': { sectionId: 'c', block: 0 }, '100': { sectionId: 'b', block: 0 }, '3': { sectionId: 5, block: 0 } }, theme: 'dark' })).toEqual({
+      theme: 'dark',
       sidebar: 'collapsed',
-      slides: { '2': { sectionId: 'a', block: 1 } },
+      slides: { '2': { sectionId: 'a', block: 1 }, 'demo-course:3': { sectionId: 'c', block: 0 } },
     });
     expect(sanitizeUiState(null)).toEqual({});
   });

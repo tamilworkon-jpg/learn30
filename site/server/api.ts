@@ -4,7 +4,7 @@ import type { ErrorObject } from 'ajv';
 import validateProgress from '../src/schemas/generated/validate-progress';
 import { EXAM_GUIDE_VERSION } from '../src/lib/constants';
 import type { Progress } from '../src/lib/types';
-import { tx } from './db';
+import { DEFAULT_COURSE_ID, tx } from './db';
 import {
   checkDisplayName,
   checkPassword,
@@ -39,6 +39,8 @@ export interface ApiContext {
   scryptN: number;
   /** Total accounts allowed on this server (contract §3, AIP_MAX_USERS). */
   maxUsers: number;
+  /** Course ids accepted by /api/courses/<id>/progress (registry; spec 002). */
+  courseIds: readonly string[];
 }
 
 class HttpError extends Error {
@@ -141,11 +143,13 @@ export function defaultProgress(now: number): Progress {
 
 // ---------- UiState (contract §4) ----------
 const UI_ENUMS: Record<string, readonly string[]> = {
+  theme: ['light', 'dark'],
   lessonView: ['slides', 'full'],
   sidebar: ['expanded', 'collapsed'],
   sections: ['expanded', 'collapsed'],
 };
-const DAY_KEY = /^([1-9]|[12][0-9]|30)$/;
+// Learn30: `<courseId>:<day>`; a bare day number is a pre-Learn30 key of the first course.
+const DAY_KEY = /^(?:[a-z0-9-]{1,60}:)?[1-9][0-9]?$/;
 
 /** Returns an error message, or null when `v` is a valid UiState. */
 export function uiStateError(v: unknown): string | null {
@@ -176,9 +180,51 @@ function ajvText(errors: ErrorObject[] | null | undefined): string {
 }
 
 // ---------- Data access ----------
-export function getProgress(db: DatabaseSync, userId: number): unknown {
-  const row = db.prepare('SELECT doc FROM progress WHERE user_id = ?').get(userId) as { doc: string } | undefined;
+/** One course's saved progress (null when the learner has not saved any for it yet). */
+export function getProgress(db: DatabaseSync, userId: number, courseId: string = DEFAULT_COURSE_ID): unknown {
+  const row = db.prepare('SELECT doc FROM progress WHERE user_id = ? AND course_id = ?').get(userId, courseId) as { doc: string } | undefined;
   return row ? JSON.parse(row.doc) : null;
+}
+
+/**
+ * A course's progress, created with today's start date the first time the learner opens the course
+ * (page bootstrap or GET): the schedule then starts on that day instead of moving until a first save.
+ */
+export function ensureProgress(db: DatabaseSync, userId: number, courseId: string, now: number): unknown {
+  const have = getProgress(db, userId, courseId);
+  if (have) return have;
+  const doc = defaultProgress(now);
+  db.prepare('INSERT OR IGNORE INTO progress (user_id, course_id, doc, updated_at) VALUES (?, ?, ?, ?)').run(userId, courseId, JSON.stringify(doc), new Date(now).toISOString());
+  return getProgress(db, userId, courseId) ?? doc;
+}
+
+export interface CourseSummary {
+  completed: number;
+  startedAt: string | null;
+  lastPosition: unknown;
+  updatedAt: string;
+}
+
+/** Per-course summary for the catalogue (GET /api/progress/summary, bootstrap on global pages). */
+export function getSummary(db: DatabaseSync, userId: number): { courses: Record<string, CourseSummary> } {
+  const rows = db.prepare('SELECT course_id, doc, updated_at FROM progress WHERE user_id = ? ORDER BY course_id').all(userId) as { course_id: string; doc: string; updated_at: string }[];
+  const courses: Record<string, CourseSummary> = {};
+  for (const r of rows) {
+    let doc: Partial<Progress> = {};
+    try {
+      doc = JSON.parse(r.doc) as Partial<Progress>;
+    } catch {
+      /* keep the empty summary */
+    }
+    const days = doc.days && typeof doc.days === 'object' ? Object.values(doc.days) : [];
+    courses[r.course_id] = {
+      completed: days.filter((d) => d && (d as { status?: string }).status === 'completed').length,
+      startedAt: typeof doc.startedAt === 'string' ? doc.startedAt : null,
+      lastPosition: doc.lastPosition ?? null,
+      updatedAt: r.updated_at,
+    };
+  }
+  return { courses };
 }
 
 export function getUi(db: DatabaseSync, userId: number): unknown {
@@ -251,7 +297,7 @@ async function signup(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
           .prepare('INSERT INTO users (username, display_name, pass_hash, created_at) VALUES (?, ?, ?, ?)')
           .run(username, displayName, passHash, iso);
         const id = Number(r.lastInsertRowid);
-        ctx.db.prepare('INSERT INTO progress (user_id, doc, updated_at) VALUES (?, ?, ?)').run(id, JSON.stringify(defaultProgress(now)), iso);
+        // No progress rows yet: each course's progress is created on its first save (GET returns the default).
         return { id, username, display_name: displayName, pass_hash: passHash, created_at: iso };
       });
     } catch (e) {
@@ -341,13 +387,26 @@ async function deleteMe(req: IncomingMessage, ctx: ApiContext): Promise<Result> 
   return { status: 204, body: null, cookie: clearCookie(isHttps(req)) };
 }
 
-async function putProgress(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
+function knownCourse(ctx: ApiContext, courseId: string): string {
+  if (!ctx.courseIds.includes(courseId)) throw err(404, 'Unknown course.');
+  return courseId;
+}
+
+const readProgress = (ctx: ApiContext, courseId: string): Result => {
   const s = requireSession(ctx);
+  return { status: 200, body: ensureProgress(ctx.db, s.user.id, knownCourse(ctx, courseId), ctx.now()) };
+};
+
+async function writeProgress(req: IncomingMessage, ctx: ApiContext, courseId: string): Promise<Result> {
+  const s = requireSession(ctx);
+  knownCourse(ctx, courseId);
   const doc = await readJson(req);
   if (!validateProgress(doc)) throw err(400, `Invalid progress: ${ajvText(validateProgress.errors)}`);
   ctx.db
-    .prepare('INSERT INTO progress (user_id, doc, updated_at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET doc = excluded.doc, updated_at = excluded.updated_at')
-    .run(s.user.id, JSON.stringify(doc), new Date(ctx.now()).toISOString());
+    .prepare(
+      'INSERT INTO progress (user_id, course_id, doc, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(user_id, course_id) DO UPDATE SET doc = excluded.doc, updated_at = excluded.updated_at',
+    )
+    .run(s.user.id, courseId, JSON.stringify(doc), new Date(ctx.now()).toISOString());
   return { status: 204, body: null };
 }
 
@@ -375,9 +434,13 @@ const ROUTES: Record<string, Partial<Record<string, Handler>>> = {
     PATCH: patchMe,
     DELETE: deleteMe,
   },
+  // Pre-Learn30 alias of the first course (one release; spec 002 progress-api-v2).
   '/api/progress': {
-    GET: (_req, ctx) => ({ status: 200, body: getProgress(ctx.db, requireSession(ctx).user.id) ?? defaultProgress(ctx.now()) }),
-    PUT: putProgress,
+    GET: (_req, ctx) => readProgress(ctx, DEFAULT_COURSE_ID),
+    PUT: (req, ctx) => writeProgress(req, ctx, DEFAULT_COURSE_ID),
+  },
+  '/api/progress/summary': {
+    GET: (_req, ctx) => ({ status: 200, body: getSummary(ctx.db, requireSession(ctx).user.id) }),
   },
   '/api/ui': {
     GET: (_req, ctx) => ({ status: 200, body: getUi(ctx.db, requireSession(ctx).user.id) }),
@@ -389,7 +452,11 @@ export async function handleApi(req: IncomingMessage, res: ServerResponse, path:
   const cookies: string[] = [];
   if (ctx.session?.refreshCookie) cookies.push(ctx.session.refreshCookie);
   try {
-    const route = ROUTES[path.length > 1 ? path.replace(/\/+$/, '') : path];
+    const clean = path.length > 1 ? path.replace(/\/+$/, '') : path;
+    const per = /^\/api\/courses\/([a-z0-9-]{1,60})\/progress$/.exec(clean);
+    const route: Partial<Record<string, Handler>> | undefined = per
+      ? { GET: (_r, c) => readProgress(c, per[1]), PUT: (r, c) => writeProgress(r, c, per[1]) }
+      : ROUTES[clean];
     if (!route) throw err(404, 'Not found.');
     const method = req.method === 'HEAD' ? 'GET' : (req.method ?? 'GET');
     const handler = route[method];

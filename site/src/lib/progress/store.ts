@@ -5,6 +5,9 @@ import validateProgress from '../../schemas/generated/validate-progress';
 
 import { createSync, takeHandoff, type Sync } from '../api';
 import { getBootstrap } from '../bootstrap';
+import { currentCourseId } from '../current-course';
+import { DEFAULT_COURSE_ID } from '../routes';
+import { getUiState } from '../ui-state';
 import { reportSaveStatus } from '../save-status';
 import { STORAGE_KEY } from './keys';
 
@@ -146,8 +149,10 @@ function createCore({ initial, persist, persistent, recovered, signedIn }: CoreO
       state.startedAt = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
       save();
     },
+    /** Learn30: the theme is account-wide (UiState); kept on progress too for older readers/exports. */
     setTheme(theme: 'light' | 'dark') {
       state.settings.theme = theme;
+      if (signedIn) getUiState().setTheme(theme);
       save();
     },
     replace(next: Progress) {
@@ -215,7 +220,7 @@ export interface SyncedStore {
  */
 export function createSyncedStore(
   bootstrapped: unknown,
-  opts: { fetchImpl?: typeof fetch; delay?: number; handoff?: { storage: Storage | null; key: string } } = {},
+  opts: { fetchImpl?: typeof fetch; delay?: number; handoff?: { storage: Storage | null; key: string }; courseId?: string; theme?: 'light' | 'dark' } = {},
 ): SyncedStore {
   // A newer copy flushed by the previous page in this tab wins over a bootstrap that may predate it.
   const handed = opts.handoff ? takeHandoff(opts.handoff.storage, opts.handoff.key) : null;
@@ -224,15 +229,18 @@ export function createSyncedStore(
   const valid = bootstrapped !== null && bootstrapped !== undefined && validateProgress(bootstrapped);
   let store: Store | null = null;
   const sync = createSync({
-    url: '/api/progress',
+    url: `/api/courses/${opts.courseId ?? DEFAULT_COURSE_ID}/progress`,
     body: () => store!.get(),
     delay: opts.delay,
     fetchImpl: opts.fetchImpl,
     onStatus: (s) => reportSaveStatus('progress', s),
     handoff: opts.handoff,
   });
+  const initial = valid ? (bootstrapped as Progress) : defaultProgress();
+  // The account-wide theme (UiState) wins over a theme saved inside an older progress document.
+  if (opts.theme) initial.settings = { ...(initial.settings ?? {}), theme: opts.theme };
   store = createCore({
-    initial: valid ? (bootstrapped as Progress) : defaultProgress(),
+    initial,
     persist: () => sync.schedule(),
     persistent: () => true,
     recovered: !valid && bootstrapped !== null && bootstrapped !== undefined,
@@ -250,20 +258,60 @@ function sessionStore(): Storage | null {
   }
 }
 
-let singleton: Store | null = null;
-/** The page's store: the signed-in learner's server-synced progress, or memory only when signed out. */
-export function getStore(): Store {
-  if (singleton) return singleton;
+export { currentCourseId };
+
+const stores = new Map<string, Store>();
+
+/** The progress the page bootstrap carries for `courseId`, or undefined when it doesn't have it. */
+function bootstrappedProgress(courseId: string): unknown {
   const boot = getBootstrap();
-  if (boot.user) {
-    const { store, sync } = createSyncedStore(boot.progress, { handoff: { storage: sessionStore(), key: `aip-handoff:progress:${boot.user.id}` } });
-    if (typeof window !== 'undefined') window.addEventListener('pagehide', () => sync.flush());
-    singleton = store;
-  } else singleton = createMemoryStore();
-  return singleton;
+  if (boot.course) return boot.course.id === courseId ? boot.course.progress : undefined;
+  // Global page: `progress` is the first course's (spec 002 progress-api-v2).
+  return courseId === DEFAULT_COURSE_ID ? boot.progress : undefined;
+}
+
+function syncedFor(courseId: string, progress: unknown): Store {
+  const boot = getBootstrap();
+  const { store, sync } = createSyncedStore(progress, {
+    courseId,
+    theme: boot.ui?.theme,
+    handoff: { storage: sessionStore(), key: `aip-handoff:progress:${boot.user!.id}:${courseId}` },
+  });
+  if (typeof window !== 'undefined') window.addEventListener('pagehide', () => sync.flush());
+  stores.set(courseId, store);
+  return store;
+}
+
+/**
+ * A course's store (default: this page's course): the signed-in learner's server-synced progress, or
+ * memory only when signed out. Progress the page doesn't carry must be loaded with loadStore().
+ */
+export function getStore(courseId: string = currentCourseId()): Store {
+  const have = stores.get(courseId);
+  if (have) return have;
+  const boot = getBootstrap();
+  if (!boot.user) {
+    const s = createMemoryStore();
+    stores.set(courseId, s);
+    return s;
+  }
+  const progress = bootstrappedProgress(courseId);
+  if (progress === undefined) throw new Error(`Progress for "${courseId}" is not on this page: use loadStore()`);
+  return syncedFor(courseId, progress);
+}
+
+/** Any course's store, fetching its progress first when the page doesn't carry it (Settings picker). */
+export async function loadStore(courseId: string, fetchImpl: typeof fetch = fetch): Promise<Store> {
+  const have = stores.get(courseId);
+  if (have) return have;
+  const boot = getBootstrap();
+  if (!boot.user || bootstrappedProgress(courseId) !== undefined) return getStore(courseId);
+  const res = await fetchImpl(`/api/courses/${courseId}/progress`, { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
+  if (!res.ok) throw new Error(`Could not load progress (${res.status})`);
+  return stores.get(courseId) ?? syncedFor(courseId, await res.json());
 }
 
 /** Test hook: drop the page singleton. */
 export function resetStoreSingleton() {
-  singleton = null;
+  stores.clear();
 }

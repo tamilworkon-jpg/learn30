@@ -1,24 +1,27 @@
 // T183 — the signed-in learner's course start date (moved out of the removed LearnerSettings in T189).
 import { useEffect, useState } from 'preact/hooks';
-import { getStore } from '../../lib/progress/store';
+import { useChosenStore } from './course-choice';
 import { COURSE_DAYS, finishDate, formatDate, fromDateInput, toDateInput } from '../../lib/schedule';
 import '../../styles/profiles.css';
 import '../../styles/account.css';
 
-export default function ScheduleSettings() {
+/** The chosen course's start date (Learn30: each course has its own schedule). */
+export default function ScheduleSettings({ courseIds }: { courseIds: string[] }) {
+  const { store } = useChosenStore(courseIds);
   const [start, setStart] = useState('');
   const [ready, setReady] = useState(false);
   const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
 
   useEffect(() => {
-    const store = getStore();
+    setReady(false);
+    if (!store) return;
     setStart(toDateInput(new Date(store.get().startedAt)));
     setReady(true);
     const off = store.subscribe((p) => setStart(toDateInput(new Date(p.startedAt))));
     return () => {
       off();
     };
-  }, []);
+  }, [store]);
 
   let finishPreview = '';
   try {
@@ -40,7 +43,8 @@ export default function ScheduleSettings() {
         onSubmit={(e) => {
           e.preventDefault();
           try {
-            getStore().setStartDate(fromDateInput(start));
+            if (!store) return;
+            store.setStartDate(fromDateInput(start));
             setMsg({ kind: 'ok', text: `Start date saved. You finish on ${finishPreview}.` });
           } catch (x) {
             setMsg({ kind: 'err', text: (x as Error).message });

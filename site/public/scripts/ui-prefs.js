@@ -18,15 +18,17 @@
   if (user) {
     var p = boot.progress || {};
     var ui = boot.ui || {};
+    var course = (boot.course && boot.course.id) || 'aws-ai-practitioner';
     // A change flushed by the previous page of this tab may not have reached the server before this
     // page was requested (src/lib/api.ts hand-off): prefer it.
     try {
-      p = JSON.parse(sessionStorage.getItem('aip-handoff:progress:' + user.id) || 'null') || p;
+      p = JSON.parse(sessionStorage.getItem('aip-handoff:progress:' + user.id + ':' + course) || 'null') || p;
       ui = JSON.parse(sessionStorage.getItem('aip-handoff:ui:' + user.id) || 'null') || ui;
     } catch {
       /* use the bootstrap */
     }
-    theme = p.settings && p.settings.theme;
+    // Learn30: the theme is account-wide (UiState); older bootstraps only had progress.settings.theme.
+    theme = ui.theme || (p.settings && p.settings.theme);
     sidebar = ui.sidebar;
     sections = ui.sections;
   } else {
