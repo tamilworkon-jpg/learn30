@@ -1,0 +1,19 @@
+# Demo Course "services" cheat-sheet cards (test fixture): study tools.
+- name: Recall card deck
+  aka: [Flashcards]
+  category: Analytics & data
+  purpose: "Cards with a question on one side and the answer on the other, reviewed from memory."
+  examCue: "Choose this when the goal is to practise retrieving facts or definitions from memory."
+  notThis: "Not a place to store long notes; one card holds one short question."
+  inScope: true
+  taskStatements: ['1.1', '1.2']
+  lessonRefs: ['day-01#explanation', 'day-02#deep-dive']
+- name: Focus timer
+  aka: [Block timer]
+  category: Analytics & data
+  purpose: "A timer that runs a fixed focus block and then signals a short break."
+  examCue: "Choose this to structure a session as single-task blocks with breaks."
+  notThis: "Not a review scheduler; it shapes one session, not the gaps between sessions."
+  inScope: true
+  taskStatements: ['2.1']
+  lessonRefs: ['day-02#explanation']

@@ -205,8 +205,8 @@ test.describe('mock exam (T086) @visual', () => {
   });
 
   test('real routes: /mock/1 and /day/29 (content or graceful "coming soon"); dark theme exam', async ({ page }) => {
-    const hasMock1 = existsSync('src/content/questions/mock-1.yaml');
-    const hasDay29 = existsSync('src/content/lessons/day-29.mdx');
+    const hasMock1 = existsSync('src/content/questions/aws-ai-practitioner/mock-1.yaml');
+    const hasDay29 = existsSync('src/content/lessons/aws-ai-practitioner/day-29.mdx');
     const problems = trackConsole(page);
     await seed(
       page,

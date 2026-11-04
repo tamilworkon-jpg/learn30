@@ -1,0 +1,8 @@
+# Demo Course (test fixture): one module of three days.
+weeks:
+  - { number: 1, title: 'Learning how to learn', days: [1, 3], badge: week-1 }
+badges: [week-1, mock-pass, course-complete]
+days:
+  - { day: 1, kind: lesson, title: 'Active recall', taskStatements: ['1.1'] }
+  - { day: 2, kind: lesson, title: 'Spaced repetition & focus blocks', taskStatements: ['1.2', '2.1', '2.2'] }
+  - { day: 3, kind: mock, title: 'Practice test & review', taskStatements: ['1.1', '1.2', '2.1', '2.2'] }

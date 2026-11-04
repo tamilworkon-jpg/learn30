@@ -1,0 +1,80 @@
+- id: q-day-01-001
+  set: day-01
+  type: single
+  stem: "A learner re-reads a chapter and every page feels familiar. Which conclusion is BEST supported?"
+  options:
+    - { id: a, text: "The learner can now explain the chapter from memory", explanation: "Wrong: familiarity comes from recognising the page, which does not show that the ideas can be recalled." }
+    - { id: b, text: "The learner recognises the material but has not yet tested recall", explanation: "Correct: recognition is cheap; only answering from memory shows whether the ideas can be rebuilt." }
+    - { id: c, text: "The chapter no longer needs any review", explanation: "Wrong: memories fade quickly without retrieval, whatever the second read felt like." }
+    - { id: d, text: "Highlighting the chapter again will lock the ideas in", explanation: "Wrong: highlighting is passive and gives no practice at retrieving the ideas." }
+  answer: [b]
+  explanation: "Recognition tells you that you have seen an idea; recall shows that you can rebuild it without the page. A self-test is the only way to tell the two apart."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: easy
+
+- id: q-day-01-002
+  set: day-01
+  type: single
+  stem: "Which note is MOST useful for active recall practice?"
+  options:
+    - { id: a, text: "A highlighted paragraph copied from the textbook", explanation: "Wrong: a copied paragraph can only be re-read, not answered." }
+    - { id: b, text: "A summary of the whole chapter in one long block", explanation: "Wrong: one long block gives nothing specific to answer or check." }
+    - { id: c, text: "The question 'Name the three causes described in this section'", explanation: "Correct: a short, specific question forces you to produce an answer you can check." }
+    - { id: d, text: "The question 'Explain everything in the chapter'", explanation: "Wrong: the question is too vague to answer and mark right or wrong." }
+  answer: [c]
+  explanation: "Recall questions should be short and specific so you can answer them from memory and check the answer quickly."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: easy
+
+- id: q-day-01-003
+  set: day-01
+  type: single
+  stem: "During a self-test an answer comes slowly and is only partly right. What should the learner do next?"
+  options:
+    - { id: a, text: "Skip checking, because the attempt itself is enough", explanation: "Wrong: without checking, a mistake can be remembered as if it were correct." }
+    - { id: b, text: "Check the source, correct the answer and add it to tomorrow's list", explanation: "Correct: the effortful attempt helps, and checking plus a later retry turns it into a strong memory." }
+    - { id: c, text: "Stop self-testing and go back to re-reading", explanation: "Wrong: struggling is part of how retrieval strengthens memory." }
+    - { id: d, text: "Mark it as right because most of it was there", explanation: "Wrong: honest marking is what shows which ideas need another review." }
+  answer: [b]
+  explanation: "Effortful retrieval helps even when it is incomplete, as long as you check the answer, correct it and come back to it in a later session."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#explanation
+  difficulty: medium
+
+- id: q-day-01-004
+  set: day-01
+  type: multi
+  stem: "Which actions turn a page of notes into active recall practice? (Select TWO.)"
+  options:
+    - { id: a, text: "Writing a short question in the margin for each idea", explanation: "Correct: each question becomes something to answer from memory." }
+    - { id: b, text: "Covering the notes and answering out loud before looking", explanation: "Correct: answering before looking is retrieval, not recognition." }
+    - { id: c, text: "Highlighting the key sentences in a second colour", explanation: "Wrong: highlighting adds no retrieval practice." }
+    - { id: d, text: "Reading the page three times in a row", explanation: "Wrong: repeated reading builds familiarity, not recall." }
+    - { id: e, text: "Copying the page neatly into a new notebook", explanation: "Wrong: copying is passive and does not test memory." }
+  answer: [a, b]
+  explanation: "Active recall means producing the answer yourself: write questions for each idea, then answer them with the notes covered and check afterwards."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#hands-on
+  difficulty: easy
+
+- id: q-day-01-005
+  set: day-01
+  type: single
+  stem: "A learner marks six self-test answers: four right, two missed. What is the BEST use of the two missed answers?"
+  options:
+    - { id: a, text: "Delete them so the list only shows strengths", explanation: "Wrong: missed answers are the most useful information from the self-test." }
+    - { id: b, text: "Add them to the list for the next session", explanation: "Correct: the list shows exactly which ideas need another recall attempt." }
+    - { id: c, text: "Re-read them once and consider them done", explanation: "Wrong: one re-read builds familiarity; the ideas still need to be recalled later." }
+    - { id: d, text: "Ignore them until the end of the month", explanation: "Wrong: missed ideas fade fastest, so they should come back soon." }
+  answer: [b]
+  explanation: "Missed answers show where understanding is weak. Keeping them on a list for the next session targets review time where it helps most."
+  domain: D1
+  taskStatement: "1.1"
+  lessonRef: day-01#summary
+  difficulty: easy

@@ -7,7 +7,7 @@ import { noHorizontalScroll, shot, trackConsole } from './helpers';
 import { done, editProgress, progress, readProgress, seed } from './progress-fixtures';
 
 // T107 — streak, badges, celebration, mobile layout.
-const course = load(readFileSync('src/data/course.yaml', 'utf8')) as Course;
+const course = load(readFileSync('src/courses/aws-ai-practitioner/course.yaml', 'utf8')) as Course;
 const pad = (n: number) => String(n).padStart(2, '0');
 const today = () => {
   const d = new Date();
