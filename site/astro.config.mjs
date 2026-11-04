@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import preact from '@astrojs/preact';
 import tailwindcss from '@tailwindcss/vite';
+/* global process */
 
 export default defineConfig({
   base: '/',
@@ -32,5 +33,7 @@ export default defineConfig({
   server: { host: true, port: 4321, allowedHosts: ['localhost', '.devtunnels.ms', '.app.github.dev'] },
   vite: {
     plugins: [tailwindcss()],
+    // Learn30 spec 002: test-only fixture courses (tests/fixtures/courses/) are built only for e2e runs.
+    define: { __AIP_FIXTURE_COURSES__: JSON.stringify(process.env.AIP_FIXTURE_COURSES === '1') },
   },
 });

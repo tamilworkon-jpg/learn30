@@ -8,8 +8,8 @@ import { parseLesson } from '../../src/lib/lesson-parse';
 import type { Question } from '../../src/lib/types';
 
 // TC-Q Q1–Q6 for every authored question set (Q7 is the reviewer-model answer-key check in T181).
-const dir = resolve(__dirname, '../../src/content/questions');
-const lessonDir = resolve(__dirname, '../../src/content/lessons');
+const dir = resolve(__dirname, '../../src/content/questions/aws-ai-practitioner');
+const lessonDir = resolve(__dirname, '../../src/content/lessons/aws-ai-practitioner');
 const files = existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.yaml')) : [];
 const sets = new Map(files.map((f) => [f.replace('.yaml', ''), load(readFileSync(resolve(dir, f), 'utf8')) as Question[]]));
 

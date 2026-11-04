@@ -1,0 +1,16 @@
+# Course catalogue (home page `/`). The AWS Certified AI Practitioner course is course #1: its dashboard is
+# /course/aws-ai-practitioner; its other pages keep their routes (/day/NN, /outline, /mock/N, …).
+- id: aws-ai-practitioner
+  title: 'AWS Certified AI Practitioner'
+  shortTitle: 'AWS AI Practitioner'
+  provider: 'AWS'
+  examCode: 'AIF-C01'
+  description: 'Learn how AI, machine learning and generative AI work and how to use them on AWS: Amazon Bedrock, SageMaker AI, agents, prompt engineering and RAG, plus responsible, secure and governed AI.'
+  lengthDays: 30
+  hoursPerDay: 1
+  level: 'Foundational'
+  status: available
+  entryHref: '/course/aws-ai-practitioner'
+  outlineHref: '/outline'
+  accent: '#503e9d'
+  illustration: '/illustrations/orientation.svg'

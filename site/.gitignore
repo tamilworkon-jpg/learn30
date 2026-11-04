@@ -4,5 +4,5 @@ dist-e2e/
 .astro/
 test-results/
 playwright-report/
-data/
+/data/
 tests/e2e/__screenshots__/sanity/

@@ -65,7 +65,7 @@ describe('lookup validator (K9/K10 rules)', () => {
 });
 
 describe('authored glossary + service cards (T103/T104)', () => {
-  const content = readLookupContent(contentDir);
+  const content = readLookupContent(contentDir, 'aws-ai-practitioner');
   const result = validateLookup({ ...content, guide: examGuide, course, requireAllInScope: true });
   const terms = content.glossary.flatMap((f) => f.items);
   const cards = content.services.flatMap((f) => f.items);
@@ -90,7 +90,7 @@ describe('authored glossary + service cards (T103/T104)', () => {
 });
 
 describe('metrics cheat sheet data (T100)', () => {
-  const { sectionsByDay } = readLookupContent(contentDir);
+  const { sectionsByDay } = readLookupContent(contentDir, 'aws-ai-practitioner');
   it('every metric has a valid task statement and resolvable lessonRef', () => {
     const tsIds = new Set(examGuide.domains.flatMap((d) => d.tasks.map((t) => t.id)));
     for (const m of metricGroups.flatMap((g) => g.metrics)) {

@@ -1,0 +1,11 @@
+# Course-specific assessment and validation rules (CourseRules, src/lib/course-data.ts).
+mock: { questions: 65, minutes: 90, passScaled: 700, count: 3 }
+# Mock questions per exam domain (sums to mock.questions).
+mockSplit: { D1: 13, D2: 16, D3: 18, D4: 9, D5: 9 }
+# Day → mock numbers launched on that day.
+mockLaunches: { 29: [1], 30: [2, 3] }
+# Day → required section order on mock days (review days use the shared review order).
+mockSectionOrder: { 29: [launch, remediation], 30: [launch, remediation, finalRevision, examStrategy] }
+minQuestions: 900
+dailyQuestions: [15, 20]
+moduleQuestions: [55, 60]
