@@ -6,7 +6,7 @@
 
 ## Setup & run
 ```powershell
-cd c:\LocalDrive\Learning\ai-practioner\site
+cd c:\LocalDrive\Learning\learn30\site
 npm install
 npm run validate:content   # content completeness & coverage checks
 npm run build              # static build + Pagefind search index

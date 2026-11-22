@@ -6,3 +6,8 @@ test-results/
 playwright-report/
 /data/
 tests/e2e/__screenshots__/sanity/
+.vercel/
+.env*.local
+
+.vercel
+.env*

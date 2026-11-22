@@ -1,0 +1,11 @@
+# Never upload local learner data, build output or caches with `vercel deploy`.
+node_modules
+data
+dist
+dist-e2e
+.astro
+.vercel
+test-results
+playwright-report
+tests/e2e/__screenshots__
+.env*

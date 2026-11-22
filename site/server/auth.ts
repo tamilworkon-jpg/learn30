@@ -1,7 +1,7 @@
 import { createHash, randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import type { IncomingMessage } from 'node:http';
 import type { TLSSocket } from 'node:tls';
-import type { DatabaseSync } from 'node:sqlite';
+import type { DbOps } from './db';
 
 // ---------- Passwords (scrypt, contract §3) ----------
 /** Cost for new hashes. Older hashes (e.g. N=2^14) still verify and are upgraded on the next successful login. */
@@ -142,6 +142,8 @@ export interface UserRow {
   display_name: string;
   pass_hash: string;
   created_at: string;
+  is_admin: number;
+  last_login_at: string | null;
 }
 
 export interface PublicUser {
@@ -149,10 +151,11 @@ export interface PublicUser {
   username: string;
   displayName: string;
   createdAt: string;
+  isAdmin: boolean;
 }
 
 export function publicUser(u: UserRow): PublicUser {
-  return { id: u.id, username: u.username, displayName: u.display_name, createdAt: u.created_at };
+  return { id: u.id, username: u.username, displayName: u.display_name, createdAt: u.created_at, isAdmin: !!u.is_admin };
 }
 
 export interface Session {
@@ -162,9 +165,10 @@ export interface Session {
   refreshCookie: string | null;
 }
 
-export function createSession(db: DatabaseSync, userId: number, now: number): string {
+export async function createSession(db: DbOps, userId: number, now: number): Promise<string> {
   const token = newToken();
-  db.prepare('INSERT INTO sessions (token_hash, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)').run(
+  await db.run(
+    'INSERT INTO sessions (token_hash, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)',
     tokenHash(token),
     userId,
     new Date(now).toISOString(),
@@ -174,34 +178,33 @@ export function createSession(db: DatabaseSync, userId: number, now: number): st
 }
 
 /** Look up the request's session; deletes it if expired; slides the expiry at most once per hour. */
-export function getSession(db: DatabaseSync, req: IncomingMessage, now: number): Session | null {
+export async function getSession(db: DbOps, req: IncomingMessage, now: number): Promise<Session | null> {
   const token = readCookie(req, COOKIE_NAME);
   if (!token || token.length > 100) return null;
   const th = tokenHash(token);
-  const row = db
-    .prepare(
-      `SELECT s.expires_at AS expires_at, u.id AS id, u.username AS username, u.display_name AS display_name,
-              u.pass_hash AS pass_hash, u.created_at AS created_at
-         FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ?`,
-    )
-    .get(th) as (UserRow & { expires_at: string }) | undefined;
+  const row = await db.get<UserRow & { expires_at: string }>(
+    `SELECT s.expires_at AS expires_at, u.id AS id, u.username AS username, u.display_name AS display_name,
+            u.pass_hash AS pass_hash, u.created_at AS created_at, u.is_admin AS is_admin, u.last_login_at AS last_login_at
+       FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ?`,
+    th,
+  );
   if (!row) return null;
   const expires = Date.parse(row.expires_at);
   if (!(expires > now)) {
-    db.prepare('DELETE FROM sessions WHERE token_hash = ?').run(th);
+    await db.run('DELETE FROM sessions WHERE token_hash = ?', th);
     return null;
   }
   let refreshCookie: string | null = null;
   if (now + SESSION_TTL_MS - expires >= SESSION_REFRESH_MS) {
-    db.prepare('UPDATE sessions SET expires_at = ? WHERE token_hash = ?').run(new Date(now + SESSION_TTL_MS).toISOString(), th);
+    await db.run('UPDATE sessions SET expires_at = ? WHERE token_hash = ?', new Date(now + SESSION_TTL_MS).toISOString(), th);
     refreshCookie = sessionCookie(token, isHttps(req));
   }
   const { expires_at: _e, ...user } = row;
   return { user, tokenHash: th, refreshCookie };
 }
 
-export function purgeExpiredSessions(db: DatabaseSync, now: number): void {
-  db.prepare('DELETE FROM sessions WHERE expires_at <= ?').run(new Date(now).toISOString());
+export async function purgeExpiredSessions(db: DbOps, now: number): Promise<void> {
+  await db.run('DELETE FROM sessions WHERE expires_at <= ?', new Date(now).toISOString());
 }
 
 // ---------- Client identity (contract §3) ----------
@@ -220,7 +223,13 @@ export function isLoopback(addr: string): boolean {
  * that sends X-Forwarded-For is keyed on the address the proxy appended (the right-most entry: earlier
  * entries are supplied by the client and could be forged to dodge the per-IP cap).
  */
-export function clientOf(req: IncomingMessage, trustProxy: boolean): Client {
+export function clientOf(req: IncomingMessage, trustProxy: boolean, ipHeader?: string): Client {
+  // Behind a platform proxy that sets (and overwrites) a client-IP header, e.g. Vercel's x-real-ip.
+  if (ipHeader) {
+    const v = req.headers[ipHeader.toLowerCase()];
+    const ip = (Array.isArray(v) ? v[0] : (v ?? '')).split(',')[0].trim();
+    if (ip && ip.length <= 64) return { ip, loopback: false };
+  }
   const peer = req.socket.remoteAddress ?? '';
   const loopback = isLoopback(peer);
   if (loopback && trustProxy) {

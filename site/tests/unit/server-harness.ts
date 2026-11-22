@@ -17,6 +17,7 @@ export const FAKE_DIST: Record<string, string> = {
   'login/index.html': page('Login'),
   'signup/index.html': page('Signup'),
   'glossary/index.html': page('Glossary'),
+  'admin/index.html': page('Admin'),
   // Learn30: course pages live under /course/<id>/… (old root pages above are 301 legacy addresses).
   'course/aws-ai-practitioner/index.html': page('Course dashboard'),
   'course/aws-ai-practitioner/glossary/index.html': page('Course glossary'),
@@ -66,7 +67,7 @@ export const TEST_SCRYPT_N = 2 ** 11;
  * Requests come from 127.0.0.1 (a loopback peer). The harness trusts X-Forwarded-For from loopback, so a test
  * can act as a remote client by sending `X-Forwarded-For: <ip>`. Sign-up / account caps are generous unless overridden.
  */
-export async function startHarness(opts: Partial<Omit<AppOptions, 'dbPath' | 'distDir' | 'now'>> = {}): Promise<Harness> {
+export async function startHarness(opts: Partial<Omit<AppOptions, 'dbPath' | 'db' | 'distDir' | 'now'>> = {}): Promise<Harness> {
   const root = mkdtempSync(join(tmpdir(), 'aip-server-'));
   const dist = join(root, 'dist');
   for (const [rel, content] of Object.entries(FAKE_DIST)) {
@@ -77,8 +78,11 @@ export async function startHarness(opts: Partial<Omit<AppOptions, 'dbPath' | 'di
   writeFileSync(join(root, 'secret.txt'), 'outside-dist');
   const dbPath = join(root, 'data', 'test.db');
   const clock = { t: Date.parse('2026-11-02T10:00:00.000Z') };
+  // AIP_TEST_LIBSQL=1 runs the same suite through the libSQL client (the adapter used with Turso on Vercel).
+  const db = process.env.AIP_TEST_LIBSQL === '1' ? { url: 'file:' + dbPath.replace(/\\/g, '/') } : { path: dbPath };
+  mkdirSync(dirname(dbPath), { recursive: true });
   const app = createApp({
-    dbPath,
+    db,
     distDir: dist,
     now: () => clock.t,
     scryptN: TEST_SCRYPT_N,
@@ -87,7 +91,8 @@ export async function startHarness(opts: Partial<Omit<AppOptions, 'dbPath' | 'di
     ...opts,
     limits: { signupsPerHour: 10_000, ...opts.limits },
   });
-  const server: Server = createServer(app.handler);
+  await app.ready;
+  const server: Server = createServer((rq, rs) => void app.handler(rq, rs));
   await new Promise<void>((r) => server.listen(0, '127.0.0.1', r));
   const port = (server.address() as AddressInfo).port;
 
@@ -134,8 +139,13 @@ export async function startHarness(opts: Partial<Omit<AppOptions, 'dbPath' | 'di
     async close() {
       server.closeAllConnections();
       await new Promise<void>((r) => server.close(() => r()));
-      app.close();
-      rmSync(root, { recursive: true, force: true });
+      await app.close();
+      try {
+        rmSync(root, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 });
+      } catch (e) {
+        // The native libSQL driver can hold the file on Windows until the process exits; leave the temp dir.
+        if (process.env.AIP_TEST_LIBSQL !== '1') throw e;
+      }
     },
   };
 }

@@ -8,7 +8,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { defaultProgress } from '../../server/api';
 import { loadCourseIds } from '../../server/courses';
-import { openDb } from '../../server/db';
+import { openDb, SCHEMA_VERSION } from '../../server/db';
 import { startHarness, type Harness, type Res } from './server-harness';
 
 const AWS = 'aws-ai-practitioner';
@@ -102,7 +102,7 @@ describe('L030 progress API v2', () => {
 });
 
 describe('L030 migration of a pre-Learn30 database', () => {
-  it('moves each progress row to the first course and the theme to ui_state; idempotent', () => {
+  it('moves each progress row to the first course and the theme to ui_state; idempotent', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'aip-migrate-'));
     const path = join(dir, 'old.db');
     const old = new DatabaseSync(path);
@@ -118,22 +118,23 @@ describe('L030 migration of a pre-Learn30 database', () => {
     old.prepare("INSERT INTO ui_state VALUES (2, '{\"lessonView\":\"full\"}', '2026-10-21T00:00:00Z')").run();
     old.close();
 
-    const db = openDb(path);
-    const rows = db.prepare('SELECT user_id, course_id, doc FROM progress ORDER BY user_id').all() as { user_id: number; course_id: string; doc: string }[];
+    const db = await openDb(path);
+    const rows = await db.all<{ user_id: number; course_id: string; doc: string }>('SELECT user_id, course_id, doc FROM progress ORDER BY user_id');
     expect(rows.map((r) => [r.user_id, r.course_id])).toEqual([
       [1, AWS],
       [2, AWS],
     ]);
     expect(JSON.parse(rows[0].doc).days['1'].status).toBe('completed');
-    const ui = (id: number) => JSON.parse((db.prepare('SELECT doc FROM ui_state WHERE user_id = ?').get(id) as { doc: string }).doc);
-    expect(ui(1)).toEqual({ theme: 'dark' });
-    expect(ui(2)).toEqual({ lessonView: 'full' });
-    db.close();
+    const ui = async (id: number) => JSON.parse((await db.get<{ doc: string }>('SELECT doc FROM ui_state WHERE user_id = ?', id))!.doc);
+    expect(await ui(1)).toEqual({ theme: 'dark' });
+    expect(await ui(2)).toEqual({ lessonView: 'full' });
+    await db.close();
     // Re-opening does not migrate again.
-    const again = openDb(path);
-    expect((again.prepare('SELECT COUNT(*) AS n FROM progress').get() as { n: number }).n).toBe(2);
-    expect((again.prepare('PRAGMA user_version').get() as { user_version: number }).user_version).toBe(2);
-    again.close();
+    const again = await openDb(path);
+    expect((await again.get<{ n: number }>('SELECT COUNT(*) AS n FROM progress'))!.n).toBe(2);
+    expect((await again.get<{ user_version: number }>('PRAGMA user_version'))!.user_version).toBe(SCHEMA_VERSION);
+    expect((await again.get<{ is_admin: number }>('SELECT is_admin FROM users WHERE id = 1'))!.is_admin).toBe(0);
+    await again.close();
   });
 });
 

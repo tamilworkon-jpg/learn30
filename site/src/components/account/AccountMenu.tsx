@@ -79,6 +79,11 @@ export default function AccountMenu() {
               <p class="account-username muted" data-account-username>
                 @{user.username}
               </p>
+              {user.isAdmin && (
+                <a class="account-item" href="/admin" data-admin-link>
+                  Admin console
+                </a>
+              )}
               <a class="account-item" href="/settings#account">
                 Settings
               </a>

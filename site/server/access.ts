@@ -18,7 +18,12 @@ const COURSE_MOCK = /^\/course\/[a-z0-9-]+\/mock(\/.*)?$/;
  * sheets, coverage and search stay public.
  */
 export function requiresSignIn(route: string): boolean {
-  return route === '/settings' || COURSE_DASHBOARD.test(route) || COURSE_MOCK.test(route);
+  return route === '/settings' || isAdminPage(route) || COURSE_DASHBOARD.test(route) || COURSE_MOCK.test(route);
+}
+
+/** The admin console: signed-in admins only (everyone else gets the 404 page). */
+export function isAdminPage(route: string): boolean {
+  return route === '/admin' || route.startsWith('/admin/');
 }
 
 /** Old addresses keep working (301): /courses → /, and the first course's pre-Learn30 root pages → /course/<id>/…. */

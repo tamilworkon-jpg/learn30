@@ -1,0 +1,15 @@
+---
+// Admin console (/admin): every learner's progress per course, and account management. The server shows this
+// page only to signed-in admins (everyone else gets the 404 page); its data comes from /api/admin/users.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AdminPanel from '../components/admin/AdminPanel';
+import { allCourses } from '../lib/course-data';
+
+const courses = allCourses()
+  .filter((c) => c.status === 'available')
+  .map((c) => ({ id: c.id, title: c.shortTitle || c.title, lengthDays: c.lengthDays }));
+---
+
+<BaseLayout title="Admin console" description="Learn30 admin console: learners, progress and accounts.">
+  <AdminPanel client:load courses={courses} />
+</BaseLayout>

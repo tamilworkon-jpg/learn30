@@ -18,7 +18,7 @@ describe('SV1 auth flows (T188)', () => {
     const { res, cookie } = await h.signup('Alice_1', 'password123', 'Alice');
     expect(res.status).toBe(201);
     const { user } = res.json() as { user: Record<string, unknown> };
-    expect(user).toEqual({ id: expect.any(Number), username: 'alice_1', displayName: 'Alice', createdAt: new Date(h.clock.t).toISOString() });
+    expect(user).toEqual({ id: expect.any(Number), username: 'alice_1', displayName: 'Alice', createdAt: new Date(h.clock.t).toISOString(), isAdmin: false });
     const sc = res.headers['set-cookie']![0];
     expect(sc).toMatch(/^aip_session=[A-Za-z0-9_-]{43}; /);
     for (const attr of ['HttpOnly', 'SameSite=Lax', 'Path=/', 'Max-Age=2592000']) expect(sc).toContain(attr);

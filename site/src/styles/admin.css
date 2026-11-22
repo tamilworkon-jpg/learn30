@@ -1,0 +1,191 @@
+/* Admin console (/admin). Colours come from theme tokens (light + dark). */
+.admin-stats {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+.admin-stats li {
+  display: grid;
+  gap: 2px;
+  padding: 16px;
+}
+.admin-stats strong {
+  font-size: 28px;
+  line-height: 1.1;
+}
+.admin-create-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0 16px;
+}
+.admin-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+.admin-actions,
+.admin-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.admin-row-actions .btn {
+  padding: 6px 10px;
+  font-size: 14px;
+}
+.admin-list-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.admin-filter {
+  width: min(240px, 60vw);
+}
+.admin-table-wrap {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.admin-table thead th {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.admin-table tbody th {
+  font-weight: 400;
+  min-width: 160px;
+}
+.admin-name {
+  display: block;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.admin-small {
+  font-size: 13px;
+}
+.admin-badge {
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--brand-purple);
+  color: #fff;
+  font-size: 12px;
+}
+.admin-course {
+  display: grid;
+  gap: 4px;
+  min-width: 200px;
+}
+.admin-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-bar-row progress {
+  flex: 1;
+  height: 10px;
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--border);
+}
+.admin-bar-row progress::-webkit-progress-bar {
+  background: var(--border);
+  border-radius: 999px;
+}
+.admin-bar-row progress::-webkit-progress-value {
+  background: var(--brand-purple);
+  border-radius: 999px;
+}
+.admin-bar-row progress::-moz-progress-bar {
+  background: var(--brand-purple);
+  border-radius: 999px;
+}
+[data-theme='dark'] .admin-bar-row progress::-webkit-progress-value {
+  background: var(--accent);
+}
+[data-theme='dark'] .admin-bar-row progress::-moz-progress-bar {
+  background: var(--accent);
+}
+.admin-pct {
+  font-weight: 600;
+  min-width: 3.5ch;
+  text-align: right;
+}
+.admin-danger {
+  color: var(--trap-text);
+}
+[data-theme='dark'] .admin-danger {
+  color: #fca5a5;
+}
+.admin-inline {
+  max-width: 420px;
+}
+.admin-detail {
+  display: grid;
+  gap: 16px;
+  padding: 8px 0;
+}
+.admin-detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.admin-detail-course {
+  display: grid;
+  gap: 8px;
+}
+.admin-days {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.admin-day {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.admin-day.is-completed {
+  background: var(--tip-bg);
+  color: var(--tip-text);
+  border-color: currentColor;
+  font-weight: 600;
+}
+.admin-day.is-in-progress {
+  background: var(--real-bg);
+  color: var(--real-text);
+  border-color: currentColor;
+}
+.admin-attempts {
+  font-size: 14px;
+}

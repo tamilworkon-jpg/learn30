@@ -108,3 +108,25 @@ JSON-escaped so it cannot break out of the element (`<` → `<`, `>` → `>`, `&
 - Playwright `webServer`: `npm run build && tsx server/index.ts` with `PORT=$E2E_PORT|4321` and a fresh temp `AIP_DB` per run (deleted at start). `reuseExistingServer: false` (a stale server on the port must never be reused silently).
 - `tests/e2e/fixtures.ts` exports `test`/`expect` with an auto-fixture that signs up a **fresh random user per test** (isolation under parallel workers) and stores the cookie in the page context; `seed(page, progress)` becomes `PUT /api/progress` for that user (same signature as today). Specs import `test` from `./fixtures`. Specs for signed-out behaviour opt out (`test.use({ signedIn: false })`).
 - New: `tests/unit/server-*.test.ts` (in-process server on an ephemeral port + temp DB: auth flows, CSRF, rate limit, validation, traversal, bootstrap escaping) and `tests/e2e/auth.spec.ts` (sign up, log out, log in, wrong password, protected-page redirect with `next`, progress + slide position survive reload and a second browser context, signed-out banner, legacy import offer, axe on login/signup).
+
+## 9. Admin console, closed sign-up and hosted databases (Vercel)
+
+Supersedes the "no new runtime dependencies" rule in §1 for hosted deployments only (local `npm start` still uses `node:sqlite`).
+
+- **Database adapter** (`server/db-adapter.ts`): one async interface (`get/all/run/exec/transaction`) over `node:sqlite` (`AIP_DB`, a local file) or `@libsql/client` (`AIP_DB_URL` / `TURSO_DATABASE_URL` + `AIP_DB_AUTH_TOKEN` / `TURSO_AUTH_TOKEN`; `libsql://` is sent over HTTPS). Migrations run in write transactions; the version is `PRAGMA user_version` locally and the `schema_meta` table on libSQL. Migration 3 adds `users.is_admin INTEGER NOT NULL DEFAULT 0` and `users.last_login_at TEXT` (set on login / sign-up). Account deletion removes `sessions`, `progress`, `ui_state` rows explicitly (HTTP connections do not keep `PRAGMA foreign_keys`).
+- **Config**: `AIP_SIGNUP=open|closed` (default `open` locally, `closed` on Vercel). Closed: `POST /api/auth/signup` → 403 `{ error }`; signed-out `GET /signup` → 302 `/login` (query kept). `AIP_ADMIN_USERNAME` + `AIP_ADMIN_PASSWORD` (both or neither): at start-up the account is created as an admin, or an existing one is promoted (password unchanged).
+- **`user`** gains `isAdmin: boolean`. **Bootstrap** gains `site: { signup: boolean }` on every page, signed out included.
+- **Page access**: `/admin` requires sign-in (302 → `/login?next=%2Fadmin`); signed-in non-admins get the 404 page (status 404).
+- **Admin API** (session with `is_admin = 1`, else 401 / 403; writes need the §3 CSRF rules):
+
+| Method + path | Request | Response |
+|---|---|---|
+| `GET /api/admin/users` | — | 200 `{ users: AdminUser[], courseIds, signupOpen, maxUsers }` |
+| `POST /api/admin/users` | `{ username, password, displayName?, isAdmin? }` | 201 `{ user: AdminUser }` (no cookie) · 400 `{ error, field }` · 409 taken · 403 `AIP_MAX_USERS` |
+| `GET /api/admin/users/:id` | — | 200 `{ user, detail: { [courseId]: { stats, days: { [day]: { status, completedAt, bestScore } }, attempts: [{ assessmentId, kind, submittedAt, percent, scaled, correct, total }] } } }` · 404 |
+| `PATCH /api/admin/users/:id` | `{ displayName?, password?, isAdmin? }` | 200 `{ user }`; a new password deletes the learner's sessions · 409 removing your own admin role · 400 unknown field |
+| `DELETE /api/admin/users/:id` | — | 204 (account + all data) · 409 yourself · 404 |
+
+`AdminUser` = `{ id, username, displayName, isAdmin, createdAt, lastLoginAt, lastActiveAt, courses: { [courseId]: { startedAt, updatedAt, completed, inProgress, attempts, averageScore, bestMock, streak: { current, longest }, lastPosition } } }` — never a password hash. `DELETE /api/me` by the only admin → 409.
+- **Vercel** (`npm run build:vercel` → `site/.vercel/output`, Build Output API v3): non-HTML files in `static/` (CDN); `functions/index.func` = `server/vercel.ts` bundled by esbuild (Node 22) + `dist/**/*.html`; routes add the §1 security headers + HSTS, then the filesystem, then everything else → the function. Rate limits key on `x-real-ip` and are per function instance.
+- **Tests**: `tests/unit/server-admin.test.ts`; `AIP_TEST_LIBSQL=1 npx vitest run tests/unit/server-` runs the whole server suite through the libSQL adapter.

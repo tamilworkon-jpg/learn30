@@ -1,10 +1,10 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import type { DatabaseSync } from 'node:sqlite';
+import type { Db, DbOps } from './db';
 import type { ErrorObject } from 'ajv';
 import validateProgress from '../src/schemas/generated/validate-progress';
 import { EXAM_GUIDE_VERSION } from '../src/lib/constants';
 import type { Progress } from '../src/lib/types';
-import { DEFAULT_COURSE_ID, tx } from './db';
+import { DEFAULT_COURSE_ID } from './db';
 import {
   checkDisplayName,
   checkPassword,
@@ -25,12 +25,13 @@ import {
   type Session,
   type UserRow,
 } from './auth';
+import { adminRoute } from './admin';
 
 export const MAX_BODY = 1024 * 1024;
 export const MAX_UI_BYTES = 64 * 1024;
 
 export interface ApiContext {
-  db: DatabaseSync;
+  db: Db;
   limiter: RateLimiter;
   now: () => number;
   session: Session | null;
@@ -41,9 +42,11 @@ export interface ApiContext {
   maxUsers: number;
   /** Course ids accepted by /api/courses/<id>/progress (registry; spec 002). */
   courseIds: readonly string[];
+  /** Anyone may create an account (false: only admins create accounts, /api/admin/users). */
+  allowSignup: boolean;
 }
 
-class HttpError extends Error {
+export class HttpError extends Error {
   constructor(
     readonly status: number,
     readonly body: Record<string, unknown> | null,
@@ -53,7 +56,7 @@ class HttpError extends Error {
   }
 }
 
-const err = (status: number, error: string, extra: Record<string, unknown> = {}) => new HttpError(status, { error, ...extra });
+export const err = (status: number, error: string, extra: Record<string, unknown> = {}) => new HttpError(status, { error, ...extra });
 
 export function sendJson(res: ServerResponse, status: number, body: unknown, headers: Record<string, string | string[]> = {}): void {
   const data = body === null ? null : Buffer.from(JSON.stringify(body), 'utf8');
@@ -104,7 +107,7 @@ function checkCsrf(req: IncomingMessage): void {
   }
 }
 
-async function readJson(req: IncomingMessage): Promise<unknown> {
+export async function readJson(req: IncomingMessage): Promise<unknown> {
   const body = await readBody(req);
   if (body.length === 0) return undefined;
   if (req.headers['content-type'] === undefined) throw err(403, 'Forbidden.');
@@ -119,7 +122,7 @@ function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
 
-function objectBody(v: unknown): Record<string, unknown> {
+export function objectBody(v: unknown): Record<string, unknown> {
   if (v === undefined) return {};
   if (!isObject(v)) throw err(400, 'Request body must be a JSON object.');
   return v;
@@ -181,8 +184,8 @@ function ajvText(errors: ErrorObject[] | null | undefined): string {
 
 // ---------- Data access ----------
 /** One course's saved progress (null when the learner has not saved any for it yet). */
-export function getProgress(db: DatabaseSync, userId: number, courseId: string = DEFAULT_COURSE_ID): unknown {
-  const row = db.prepare('SELECT doc FROM progress WHERE user_id = ? AND course_id = ?').get(userId, courseId) as { doc: string } | undefined;
+export async function getProgress(db: DbOps, userId: number, courseId: string = DEFAULT_COURSE_ID): Promise<unknown> {
+  const row = await db.get<{ doc: string }>('SELECT doc FROM progress WHERE user_id = ? AND course_id = ?', userId, courseId);
   return row ? JSON.parse(row.doc) : null;
 }
 
@@ -190,12 +193,12 @@ export function getProgress(db: DatabaseSync, userId: number, courseId: string =
  * A course's progress, created with today's start date the first time the learner opens the course
  * (page bootstrap or GET): the schedule then starts on that day instead of moving until a first save.
  */
-export function ensureProgress(db: DatabaseSync, userId: number, courseId: string, now: number): unknown {
-  const have = getProgress(db, userId, courseId);
+export async function ensureProgress(db: DbOps, userId: number, courseId: string, now: number): Promise<unknown> {
+  const have = await getProgress(db, userId, courseId);
   if (have) return have;
   const doc = defaultProgress(now);
-  db.prepare('INSERT OR IGNORE INTO progress (user_id, course_id, doc, updated_at) VALUES (?, ?, ?, ?)').run(userId, courseId, JSON.stringify(doc), new Date(now).toISOString());
-  return getProgress(db, userId, courseId) ?? doc;
+  await db.run('INSERT OR IGNORE INTO progress (user_id, course_id, doc, updated_at) VALUES (?, ?, ?, ?)', userId, courseId, JSON.stringify(doc), new Date(now).toISOString());
+  return (await getProgress(db, userId, courseId)) ?? doc;
 }
 
 export interface CourseSummary {
@@ -206,8 +209,8 @@ export interface CourseSummary {
 }
 
 /** Per-course summary for the catalogue (GET /api/progress/summary, bootstrap on global pages). */
-export function getSummary(db: DatabaseSync, userId: number): { courses: Record<string, CourseSummary> } {
-  const rows = db.prepare('SELECT course_id, doc, updated_at FROM progress WHERE user_id = ? ORDER BY course_id').all(userId) as { course_id: string; doc: string; updated_at: string }[];
+export async function getSummary(db: DbOps, userId: number): Promise<{ courses: Record<string, CourseSummary> }> {
+  const rows = await db.all<{ course_id: string; doc: string; updated_at: string }>('SELECT course_id, doc, updated_at FROM progress WHERE user_id = ? ORDER BY course_id', userId);
   const courses: Record<string, CourseSummary> = {};
   for (const r of rows) {
     let doc: Partial<Progress> = {};
@@ -227,41 +230,42 @@ export function getSummary(db: DatabaseSync, userId: number): { courses: Record<
   return { courses };
 }
 
-export function getUi(db: DatabaseSync, userId: number): unknown {
-  const row = db.prepare('SELECT doc FROM ui_state WHERE user_id = ?').get(userId) as { doc: string } | undefined;
+export async function getUi(db: DbOps, userId: number): Promise<unknown> {
+  const row = await db.get<{ doc: string }>('SELECT doc FROM ui_state WHERE user_id = ?', userId);
   return row ? JSON.parse(row.doc) : {};
 }
 
-function findUser(db: DatabaseSync, username: string): UserRow | undefined {
-  return db.prepare('SELECT * FROM users WHERE username = ?').get(username) as UserRow | undefined;
+export function findUser(db: DbOps, username: string): Promise<UserRow | undefined> {
+  return db.get<UserRow>('SELECT * FROM users WHERE username = ?', username);
 }
 
-function requireSession(ctx: ApiContext): Session {
+export function requireSession(ctx: ApiContext): Session {
   if (!ctx.session) throw err(401, 'Not signed in.');
   return ctx.session;
 }
 
 // ---------- Handlers ----------
-type Result = { status: number; body: unknown; cookie?: string };
+export type Result = { status: number; body: unknown; cookie?: string };
 
 const INCORRECT = 'Incorrect username or password.';
 
 const tooMany = (wait: number) => new HttpError(429, { error: 'Too many attempts. Try again later.' }, { 'Retry-After': String(wait) });
 
 /** Reserve a rate-limited attempt (before any await, so parallel requests all count) or throw 429. */
-function reserve(r: Reservation | number): Reservation {
+export function reserve(r: Reservation | number): Reservation {
   if (typeof r === 'number') throw tooMany(r);
   return r;
 }
 
-function userCount(db: DatabaseSync): number {
-  return (db.prepare('SELECT COUNT(*) AS n FROM users').get() as { n: number }).n;
+export async function userCount(db: DbOps): Promise<number> {
+  return Number((await db.get<{ n: number }>('SELECT COUNT(*) AS n FROM users'))?.n ?? 0);
 }
 
-const accountLimit = (max: number) =>
+export const accountLimit = (max: number) =>
   err(403, `This server has reached its limit of ${max} accounts. Ask whoever runs it to raise AIP_MAX_USERS.`, { field: 'username' });
 
 async function signup(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
+  if (!ctx.allowSignup) throw err(403, 'Sign-up is closed. Ask an administrator to create an account for you.');
   const b = objectBody(await readJson(req));
   const ipUser = typeof b.username === 'string' ? b.username.trim().toLowerCase().slice(0, 64) : '';
   const { limiter, client } = ctx;
@@ -280,8 +284,8 @@ async function signup(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
       if (!d) throw err(400, 'Display name must be 1–30 characters (no control or invisible characters).', { field: 'displayName' });
       displayName = d;
     }
-    if (findUser(ctx.db, username)) throw err(409, 'That username is taken.', { field: 'username' });
-    if (userCount(ctx.db) >= ctx.maxUsers) {
+    if (await findUser(ctx.db, username)) throw err(409, 'That username is taken.', { field: 'username' });
+    if ((await userCount(ctx.db)) >= ctx.maxUsers) {
       failure.release();
       throw accountLimit(ctx.maxUsers);
     }
@@ -290,15 +294,12 @@ async function signup(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
     const iso = new Date(now).toISOString();
     let user: UserRow;
     try {
-      user = tx(ctx.db, () => {
-        // Re-checked inside the (synchronous) transaction: parallel sign-ups cannot overshoot the cap.
-        if (userCount(ctx.db) >= ctx.maxUsers) throw accountLimit(ctx.maxUsers);
-        const r = ctx.db
-          .prepare('INSERT INTO users (username, display_name, pass_hash, created_at) VALUES (?, ?, ?, ?)')
-          .run(username, displayName, passHash, iso);
-        const id = Number(r.lastInsertRowid);
+      user = await ctx.db.transaction(async (t) => {
+        // Re-checked inside the write transaction: parallel sign-ups cannot overshoot the cap.
+        if ((await userCount(t)) >= ctx.maxUsers) throw accountLimit(ctx.maxUsers);
+        const r = await t.run('INSERT INTO users (username, display_name, pass_hash, created_at, last_login_at) VALUES (?, ?, ?, ?, ?)', username, displayName, passHash, iso, iso);
         // No progress rows yet: each course's progress is created on its first save (GET returns the default).
-        return { id, username, display_name: displayName, pass_hash: passHash, created_at: iso };
+        return { id: r.lastInsertRowid, username, display_name: displayName, pass_hash: passHash, created_at: iso, is_admin: 0, last_login_at: iso };
       });
     } catch (e) {
       if (e instanceof HttpError) {
@@ -309,7 +310,7 @@ async function signup(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
       throw e;
     }
     failure.release();
-    const token = createSession(ctx.db, user.id, now);
+    const token = await createSession(ctx.db, user.id, now);
     return { status: 201, body: { user: publicUser(user) }, cookie: sessionCookie(token, isHttps(req)) };
   } catch (e) {
     success.release();
@@ -325,16 +326,18 @@ async function login(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
   const attempt = reserve(limiter.fails.reserve(slots));
   const username = checkUsername(b.username);
   const password = typeof b.password === 'string' && b.password.length <= MAX_PASSWORD_INPUT ? b.password : '';
-  const user = username ? findUser(ctx.db, username) : undefined;
+  const user = username ? await findUser(ctx.db, username) : undefined;
   const ok = await verifyPassword(password, user?.pass_hash ?? (await getDummyHash(ctx.scryptN)));
   if (!user || !ok || !password) throw err(401, INCORRECT);
   attempt.release();
   limiter.fails.clear(slots[0].key);
   if (needsRehash(user.pass_hash, ctx.scryptN)) {
     const upgraded = await hashPassword(password, ctx.scryptN);
-    ctx.db.prepare('UPDATE users SET pass_hash = ? WHERE id = ? AND pass_hash = ?').run(upgraded, user.id, user.pass_hash);
+    await ctx.db.run('UPDATE users SET pass_hash = ? WHERE id = ? AND pass_hash = ?', upgraded, user.id, user.pass_hash);
   }
-  const token = createSession(ctx.db, user.id, ctx.now());
+  const now = ctx.now();
+  await ctx.db.run('UPDATE users SET last_login_at = ? WHERE id = ?', new Date(now).toISOString(), user.id);
+  const token = await createSession(ctx.db, user.id, now);
   return { status: 200, body: { user: publicUser(user) }, cookie: sessionCookie(token, isHttps(req)) };
 }
 
@@ -348,7 +351,7 @@ async function reverify(ctx: ApiContext, s: Session, password: unknown, field: s
 
 async function logout(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
   await readBody(req);
-  if (ctx.session) ctx.db.prepare('DELETE FROM sessions WHERE token_hash = ?').run(ctx.session.tokenHash);
+  if (ctx.session) await ctx.db.run('DELETE FROM sessions WHERE token_hash = ?', ctx.session.tokenHash);
   return { status: 204, body: null, cookie: clearCookie(isHttps(req)) };
 }
 
@@ -369,11 +372,11 @@ async function patchMe(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
     await reverify(ctx, s, b.currentPassword, 'currentPassword', 'Current password is incorrect.');
     passHash = await hashPassword(b.newPassword, ctx.scryptN);
   }
-  tx(ctx.db, () => {
-    ctx.db.prepare('UPDATE users SET display_name = ?, pass_hash = ? WHERE id = ?').run(displayName, passHash, s.user.id);
+  await ctx.db.transaction(async (t) => {
+    await t.run('UPDATE users SET display_name = ?, pass_hash = ? WHERE id = ?', displayName, passHash, s.user.id);
     // A password change signs out every other session.
     if (passHash !== s.user.pass_hash) {
-      ctx.db.prepare('DELETE FROM sessions WHERE user_id = ? AND token_hash <> ?').run(s.user.id, s.tokenHash);
+      await t.run('DELETE FROM sessions WHERE user_id = ? AND token_hash <> ?', s.user.id, s.tokenHash);
     }
   });
   return { status: 200, body: { user: publicUser({ ...s.user, display_name: displayName, pass_hash: passHash }) } };
@@ -383,8 +386,25 @@ async function deleteMe(req: IncomingMessage, ctx: ApiContext): Promise<Result> 
   const s = requireSession(ctx);
   const b = objectBody(await readJson(req));
   await reverify(ctx, s, b.password, 'password', 'Password is incorrect.');
-  ctx.db.prepare('DELETE FROM users WHERE id = ?').run(s.user.id);
+  if (s.user.is_admin && (await adminCount(ctx.db)) <= 1) throw err(409, 'You are the only administrator. Make another account an admin before deleting this one.', { field: 'password' });
+  await deleteUserRows(ctx.db, s.user.id);
   return { status: 204, body: null, cookie: clearCookie(isHttps(req)) };
+}
+
+/**
+ * Delete an account and everything it owns. Child rows are removed explicitly: foreign-key enforcement is a
+ * per-connection setting that stateless (HTTP) libSQL connections do not keep, so ON DELETE CASCADE alone could
+ * leave progress behind for a later account that reuses the id.
+ */
+export async function deleteUserRows(db: Db, userId: number): Promise<void> {
+  await db.transaction(async (t) => {
+    for (const table of ['sessions', 'progress', 'ui_state']) await t.run(`DELETE FROM ${table} WHERE user_id = ?`, userId);
+    await t.run('DELETE FROM users WHERE id = ?', userId);
+  });
+}
+
+export async function adminCount(db: DbOps): Promise<number> {
+  return Number((await db.get<{ n: number }>('SELECT COUNT(*) AS n FROM users WHERE is_admin = 1'))?.n ?? 0);
 }
 
 function knownCourse(ctx: ApiContext, courseId: string): string {
@@ -392,9 +412,9 @@ function knownCourse(ctx: ApiContext, courseId: string): string {
   return courseId;
 }
 
-const readProgress = (ctx: ApiContext, courseId: string): Result => {
+const readProgress = async (ctx: ApiContext, courseId: string): Promise<Result> => {
   const s = requireSession(ctx);
-  return { status: 200, body: ensureProgress(ctx.db, s.user.id, knownCourse(ctx, courseId), ctx.now()) };
+  return { status: 200, body: await ensureProgress(ctx.db, s.user.id, knownCourse(ctx, courseId), ctx.now()) };
 };
 
 async function writeProgress(req: IncomingMessage, ctx: ApiContext, courseId: string): Promise<Result> {
@@ -402,11 +422,13 @@ async function writeProgress(req: IncomingMessage, ctx: ApiContext, courseId: st
   knownCourse(ctx, courseId);
   const doc = await readJson(req);
   if (!validateProgress(doc)) throw err(400, `Invalid progress: ${ajvText(validateProgress.errors)}`);
-  ctx.db
-    .prepare(
-      'INSERT INTO progress (user_id, course_id, doc, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(user_id, course_id) DO UPDATE SET doc = excluded.doc, updated_at = excluded.updated_at',
-    )
-    .run(s.user.id, courseId, JSON.stringify(doc), new Date(ctx.now()).toISOString());
+  await ctx.db.run(
+    'INSERT INTO progress (user_id, course_id, doc, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(user_id, course_id) DO UPDATE SET doc = excluded.doc, updated_at = excluded.updated_at',
+    s.user.id,
+    courseId,
+    JSON.stringify(doc),
+    new Date(ctx.now()).toISOString(),
+  );
   return { status: 204, body: null };
 }
 
@@ -417,13 +439,16 @@ async function putUi(req: IncomingMessage, ctx: ApiContext): Promise<Result> {
   if (e) throw err(400, e);
   const json = JSON.stringify(doc);
   if (Buffer.byteLength(json, 'utf8') > MAX_UI_BYTES) throw err(400, 'UI state is larger than 64 KB.');
-  ctx.db
-    .prepare('INSERT INTO ui_state (user_id, doc, updated_at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET doc = excluded.doc, updated_at = excluded.updated_at')
-    .run(s.user.id, json, new Date(ctx.now()).toISOString());
+  await ctx.db.run(
+    'INSERT INTO ui_state (user_id, doc, updated_at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET doc = excluded.doc, updated_at = excluded.updated_at',
+    s.user.id,
+    json,
+    new Date(ctx.now()).toISOString(),
+  );
   return { status: 204, body: null };
 }
 
-type Handler = (req: IncomingMessage, ctx: ApiContext) => Promise<Result> | Result;
+export type Handler = (req: IncomingMessage, ctx: ApiContext) => Promise<Result> | Result;
 
 const ROUTES: Record<string, Partial<Record<string, Handler>>> = {
   '/api/auth/signup': { POST: signup },
@@ -440,10 +465,10 @@ const ROUTES: Record<string, Partial<Record<string, Handler>>> = {
     PUT: (req, ctx) => writeProgress(req, ctx, DEFAULT_COURSE_ID),
   },
   '/api/progress/summary': {
-    GET: (_req, ctx) => ({ status: 200, body: getSummary(ctx.db, requireSession(ctx).user.id) }),
+    GET: async (_req, ctx) => ({ status: 200, body: await getSummary(ctx.db, requireSession(ctx).user.id) }),
   },
   '/api/ui': {
-    GET: (_req, ctx) => ({ status: 200, body: getUi(ctx.db, requireSession(ctx).user.id) }),
+    GET: async (_req, ctx) => ({ status: 200, body: await getUi(ctx.db, requireSession(ctx).user.id) }),
     PUT: putUi,
   },
 };
@@ -456,7 +481,7 @@ export async function handleApi(req: IncomingMessage, res: ServerResponse, path:
     const per = /^\/api\/courses\/([a-z0-9-]{1,60})\/progress$/.exec(clean);
     const route: Partial<Record<string, Handler>> | undefined = per
       ? { GET: (_r, c) => readProgress(c, per[1]), PUT: (r, c) => writeProgress(r, c, per[1]) }
-      : ROUTES[clean];
+      : (ROUTES[clean] ?? adminRoute(clean));
     if (!route) throw err(404, 'Not found.');
     const method = req.method === 'HEAD' ? 'GET' : (req.method ?? 'GET');
     const handler = route[method];

@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { apiJson, isApiError } from '../../lib/api';
 import { nextFromLocation, validateDisplayName, validatePassword, validateUsername } from '../../lib/auth';
+import { signupOpen } from '../../lib/bootstrap';
 import '../../styles/account.css';
 
 type Mode = 'login' | 'signup';
@@ -109,11 +110,13 @@ export default function AuthForm({ mode }: { mode: Mode }) {
   const [busy, setBusy] = useState(false);
   const [next, setNext] = useState('/');
   const [ready, setReady] = useState(false);
+  const [canSignup, setCanSignup] = useState(true);
   const inputs = useRef<Partial<Record<Field, HTMLInputElement | null>>>({});
   const formError = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     setNext(nextFromLocation());
+    setCanSignup(signupOpen());
     setReady(true);
   }, []);
 
@@ -224,10 +227,16 @@ export default function AuthForm({ mode }: { mode: Mode }) {
       <button type="submit" class="btn auth-submit" disabled={busy}>
         {busy ? (mode === 'login' ? 'Signing in…' : 'Creating account…') : mode === 'login' ? 'Sign in' : 'Create account'}
       </button>
-      <p class="auth-switch">
-        {mode === 'login' ? 'New here? ' : 'Already have an account? '}
-        <a href={otherHref}>{mode === 'login' ? 'Create an account' : 'Sign in'}</a>
-      </p>
+      {mode === 'login' && !canSignup ? (
+        <p class="auth-switch" data-signup-closed>
+          New here? Ask your administrator for a username and password.
+        </p>
+      ) : (
+        <p class="auth-switch">
+          {mode === 'login' ? 'New here? ' : 'Already have an account? '}
+          <a href={otherHref}>{mode === 'login' ? 'Create an account' : 'Sign in'}</a>
+        </p>
+      )}
     </form>
   );
 }
